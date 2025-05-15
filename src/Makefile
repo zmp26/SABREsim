@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -Wall -std=c++17
 EXECUTABLE = SABREsim
 
-OBJECTS = Rotation.o Vec3.o SABRE_Detector.o Beamspot.o main.o
+OBJECTS = Rotation.o Vec3.o SABRE_Detector.o Beamspot.o SABRE_EnergyResolutionModel.o main.o
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -19,7 +19,10 @@ SABRE_Detector.o: SABRE_Detector.cpp SABRE_Detector.h
 Beamspot.o: Beamspot.cpp Beamspot.h
 	$(CC) $(CFLAGS) -c $<
 
-main.o: main.cpp SABRE_Detector.h Vec3.h Rotation.h
+SABRE_EnergyResolutionModel.o: SABRE_EnergyResolutionModel.cpp SABRE_EnergyResolutionModel.h
+	$(CC) $(CFLAGS) -c $<
+
+main.o: main.cpp SABRE_Detector.h Vec3.h Rotation.h Beamspot.h SABRE_EnergyResolutionModel.h
 	$(CC) $(CFLAGS) -c $<
 
 clean:

@@ -9,6 +9,7 @@ using namespace std;
 #include "Vec3.h"
 #include "Rotation.h"
 #include "Beamspot.h"
+#include "SABRE_EnergyResolutionModel.h"
 
 static const std::pair<int, int> offsets[] = {
 	{112,40},	//detector0
@@ -74,6 +75,12 @@ int main(int argc, char * argv[]){
 	}
 	cout << endl;
 
+	//prepare the SABRE_EnergyResolutionModels here (1/SABRE detector, so 5 total in the array)
+	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels;
+	for(size_t i=0; i<SABRE_Array.size(); i++){
+		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.05,1.));////sigma of 0.05 MeV for all rings/wedges and threshold of 1MeV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
+	}
+
 	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
 		nevents += 1;
 		detected1 = false;
@@ -81,7 +88,7 @@ int main(int argc, char * argv[]){
 
 		beamspot.Spread();
 
-		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << endl;
+		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << endl;//kin2mc right now
 		if(nevents%25000==0) cout << "Processed " << nevents << " events..." << endl;
 
 		//loop through the SABRE Array and see if we detect the ejectile or recoil
@@ -92,20 +99,27 @@ int main(int argc, char * argv[]){
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 				Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit1_rw.first,hit1_rw.second);
 				//outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << e1 << endl;//right now use e1 (kinematic energy) but should use the smeared energy eventually
-				outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << e2 << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl; //localx and localy are local coordinates on the detector plane
-				detected1 = true;
-				hitbu1 += 1;
-				SABRE_Array_hits[i] += 1;
+
+				//need to wrap the below text in an if statement checking if the detected energy is above the threshold --> SABRE_EnergyResolutionModel!
+				double smeared_ering, smeared_ewedge;
+				if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smeared_ering) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smeared_ewedge)){
+					outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smeared_ering << "\t" << smeared_ewedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl; //localx and localy are local coordinates on the detector plane
+					detected1 = true;
+					hitbu1 += 1;
+					SABRE_Array_hits[i] += 1;
+				}
 			}
 
 			pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
 			if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 				Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit2_rw.first,hit2_rw.second);
-				//outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << e2 << endl;//right now usee e2 (kinematic energy) but should use the smeared energy eventually
-				outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << e2 << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl; //localx and localy are local coordinates on the detector plane
-				detected2 = true;
-				hitbu2 += 1;
-				SABRE_Array_hits[i] += 1;
+				double smeared_ering, smeared_ewedge;
+				if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smeared_ering) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smeared_ewedge)){
+					outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smeared_ering << "\t" << smeared_ewedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl; //localx and localy are local coordinates on the detector plane
+					detected2 = true;
+					hitbu2 += 1;
+					SABRE_Array_hits[i] += 1;
+				}
 			}
 
 			if(detected1 && detected2) hitboth += 1;
@@ -125,6 +139,8 @@ int main(int argc, char * argv[]){
 	for(int i=0; i<5; i++){
 		cout << "Detector_" << i << " had total hits = " << SABRE_Array_hits[i] << endl;
 	}
+	cout << endl;
+	cout << "Output can be found here: " << argv[2] << endl;
 	cout << endl;
 
 	for(SABRE_Detector* detector : SABRE_Array){

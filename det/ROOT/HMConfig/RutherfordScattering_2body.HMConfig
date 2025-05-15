@@ -1,0 +1,80 @@
+#this file contains the information to produce histograms in the histogram manager used in li7_he3he4_6li_4he2h_3body.cxx
+#lines that begin with # are ignored, otherwise a line with out the correct syntax may cause issues
+#format as follows:
+# LOCAL/ROOT/TDIRECTORY/PATH/HERE HISTOTYPE HISTONAME HISTOTITLE HISTODIMi_NBINS HISTODIMi_MIN HISTODIMi_MAX ...
+#where:
+#			LOCAL/ROOT/TDIRECTORY/PATH/HERE is the TDirectory location in the output root file you would like the histogram to be saved to
+#			HISTOTYPE is one of: TH1, TH2, TProfile, or TProfile2D
+#			HISTONAME is the ROOT name of the histogram (these must be unique!)
+#			HISTOTITLE is the title to display when drawing the histogram
+#			HISTODIMi_NBINS is the number of bins in the first dimension of the histogram (typically x)
+#			HISTODIMi_MIN is the minimum of the range along the dimension
+#			HISTODIMi_MAX is the maximum of the range along the dimension
+#
+# one should use the proper number of nbins, min, and max for the HISTOTYPE (i.e. TH1 have 1 dim, TH2/TP2D have 2 dims)
+#
+#
+# pure kinematics histograms:
+kin2mc TH1D hELab1 ELab1 256 0 10
+kin2mc TH1D hELab2 ELab2 256 0 10
+# angle
+kin2mc TH1D hThetaLab1 ThetaLab1 256 0 180
+kin2mc TH1D hThetaLab2 ThetaLab2 256 0 180
+kin2mc TH1D hPhiLab1 PhiLab1 256 0 360
+kin2mc TH1D hPhiLab2 PhiLab2 256 0 360
+# energy vs angle
+kin2mc TH2D hELabThetaLab_1 ELabVsThetaLab_1 256 0 180 256 0 10
+kin2mc TH2D hELabThetaLab_2 ELabVsThetaLab_2 256 0 180 256 0 10
+kin2mc TH2D hELabPhiLab_1 ELabVsPhiLab_1 256 0 360 256 0 10
+kin2mc TH2D hELabPhiLab_2 ELabVsPhiLab_2 256 0 360 256 0 10
+# theta vs phi
+kin2mc TH2D hThetaLabPhiLab_1 ThetaLabVsPhiLab_1 256 0 180 256 0 360
+kin2mc TH2D hThetaLabPhiLab_2 ThetaLabVsPhiLab_2 256 0 180 256 0 360
+#
+#
+#
+#
+#
+# SABRE ring/wedge hit summary histograms:
+SABRE TH1D hSABRE0_RingHit SABRE0_RingHit 16 -0.5 15.5
+SABRE TH1D hSABRE0_WedgeHit SABRE0_WedgeHit 8 -0.5 7.5
+SABRE TH1D hSABRE1_RingHit SABRE1_RingHit 16 -0.5 15.5
+SABRE TH1D hSABRE1_WedgeHit SABRE1_WedgeHit 8 -0.5 7.5
+SABRE TH1D hSABRE2_RingHit SABRE2_RingHit 16 -0.5 15.5
+SABRE TH1D hSABRE2_WedgeHit SABRE2_WedgeHit 8 -0.5 7.5
+SABRE TH1D hSABRE3_RingHit SABRE3_RingHit 16 -0.5 15.5
+SABRE TH1D hSABRE3_WedgeHit SABRE3_WedgeHit 8 -0.5 7.5
+SABRE TH1D hSABRE4_RingHit SABRE4_RingHit 16 -0.5 15.5
+SABRE TH1D hSABRE4_WedgeHit SABRE4_WedgeHit 8 -0.5 7.5
+#SABRE energy summary histograms:
+SABRE TH1D hSABRE0_ESummary SABRE0_ESummary 256 0 10
+SABRE TH1D hSABRE1_ESummary SABRE1_ESummary 256 0 10
+SABRE TH1D hSABRE2_ESummary SABRE2_ESummary 256 0 10
+SABRE TH1D hSABRE3_ESummary SABRE3_ESummary 256 0 10
+SABRE TH1D hSABRE4_ESummary SABRE4_ESummary 256 0 10
+#
+SABRE TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 256 0 10
+SABRE TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 256 0 10
+SABRE TH2D hSABRE1_ESummaryWedges SABRE1_ESummaryWedges 8 -0.5 7.5 256 0 10
+SABRE TH2D hSABRE1_ESummaryRings SABRE1_ESummaryRings 16 -0.5 15.5 256 0 10
+SABRE TH2D hSABRE2_ESummaryWedges SABRE2_ESummaryWedges 8 -0.5 7.5 256 0 10
+SABRE TH2D hSABRE2_ESummaryRings SABRE2_ESummaryRings 16 -0.5 15.5 256 0 10
+SABRE TH2D hSABRE3_ESummaryWedges SABRE3_ESummaryWedges 8 -0.5 7.5 256 0 10
+SABRE TH2D hSABRE3_ESummaryRings SABRE3_ESummaryRings 16 -0.5 15.5 256 0 10
+SABRE TH2D hSABRE4_ESummaryWedges SABRE4_ESummaryWedges 8 -0.5 7.5 256 0 10
+SABRE TH2D hSABRE4_ESummaryRings SABRE4_ESummaryRings 16 -0.5 15.5 256 0 10
+#
+#
+#
+#
+#
+# geometric histograms
+# start with local (rho,phi) converted to (x,y) values:
+SABRE/GEOM TH2D hSABRE0_hitsMapLocal SABRE0_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
+SABRE/GEOM TH2D hSABRE1_hitsMapLocal SABRE1_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
+SABRE/GEOM TH2D hSABRE2_hitsMapLocal SABRE2_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
+SABRE/GEOM TH2D hSABRE3_hitsMapLocal SABRE3_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
+SABRE/GEOM TH2D hSABRE4_hitsMapLocal SABRE4_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
+SABRE/GEOM TH2D hSABREARRAY_hitsMapLocal SABREARRAY_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
+# and now do global (theta,phi) values:
+SABRE/GEOM TH2D hSABRE_AngleHitsMap SABRE_AngleHitsMap 180 0 180 360 0 360
