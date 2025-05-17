@@ -26,11 +26,11 @@ Float_t DEGRAD=0.017453293;
 
 
 struct PHYSDATA {float e, theta, phi;};
-struct SABREDATA {float detectorIndex, theta, phi, energy, localx, localy; int ring, wedge;};
+struct SABREDATA {float detectorIndex=-666, theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
 
 struct DetectorHit {
 	int ring, wedge;
-	double energy;
+	double ringEnergy, wedgeEnergy;
 	//double ering, ewedge;
 };
 
@@ -53,9 +53,9 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 
 	TFile* outfile = new TFile(output_rootfilename,"RECREATE");
 	HistoManager *histoman = new HistoManager(outfile);
-	histoman->loadHistoConfig("RutherfordScattering_2body.HMConfig");
+	histoman->loadHistoConfig("HMConfig/RutherfordScattering_2body.HMConfig");
 
-	TTree* kin2 = new TTree(ntpname, "3-body simulation tree");
+	TTree* kin2 = new TTree(ntpname, "2-body simulation tree");
 
 	PHYSDATA physdata1, physdata2;//, physdata3, physdata4;		//holds the physics data for ejectile and recoil
 	SABREDATA sabredata1, sabredata2;							//holds the sabre detection data for ejectile and recoil if detected by SABRE
@@ -63,20 +63,23 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 	kin2->Branch("physdata1",&physdata1, "e/F:theta/F:phi/F");//branch to hold physics data for 
 	kin2->Branch("physdata2",&physdata2, "e/F:theta/F:phi/F");
 
-	kin2->Branch("sabredata1",&sabredata1,"detectorIndex/I:ring/I:wedge/I:theta/F:phi/F:energy/F");
-	kin2->Branch("sabredata2",&sabredata2,"detectorIndex/I:ring/I:wedge/I:theta/F:phi/F:energy/F");
+	kin2->Branch("sabredata1",&sabredata1,"detectorIndex/I:ring/I:wedge/I:theta/F:phi/F:ringEnergy/F:wedgeEnergy/F");
+	kin2->Branch("sabredata2",&sabredata2,"detectorIndex/I:ring/I:wedge/I:theta/F:phi/F:ringEnergy/F:wedgeEnergy/F");
 
 	//kin2->Branch();
 
 	string line;
 	//map<int,pair<int,int>> detector_hits;//ex: {404, {3,6}} means particle 4 in detector 4 in (r,w) = (3,6).
-	map<int, DetectorHit> detector_hits;//ex: detector_hits[402] = {3,6,4.56} means that particle 4 (first digit) was detected in SABRE2 (last digit) with energy 4.56 in (ring=3,wedge=6)
+	//map<int, DetectorHit> detector_hits;//ex: detector_hits[402] = {3,6,4.56} means that particle 4 (first digit) was detected in SABRE2 (last digit) with energy 4.56 in (ring=3,wedge=6)
 	bool hit1 = false, hit2 = false;
 
+	cout << "Processing " << input_filename << "..." << endl;
+	int count = 0;
 	while(getline(infile,line)){
-
 		//new:
 		if(line == "-1"){//end event
+			count += 1;
+			if(count%100000 == 0) cout << "Processed " << count << " events..." << endl;
 			kin2->Fill();
 
 			/*fill histograms w/ histomanager here*/
@@ -98,101 +101,139 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 			if(sabredata1.detectorIndex == 0){
 				histoman->getHisto1D("hSABRE0_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE0_WedgeHit")->Fill(sabredata1.wedge);
-				histoman->getHisto1D("hSABRE0_ESummary")->Fill(sabredata1.energy);
-				histoman->getHisto2D("hSABRE0_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.energy);
-				histoman->getHisto2D("hSABRE0_ESummaryRings")->Fill(sabredata1.ring, sabredata1.energy);
+				//histoman->getHisto1D("hSABRE0_ESummary")->Fill(sabredata1.energy);
+				histoman->getHisto2D("hSABRE0_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE0_ESummaryRings")->Fill(sabredata1.ring, sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE0_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata1.theta, sabredata1.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
+				histoman->getHisto2D("hSABRE0_ringEVSsimE")->Fill(physdata1.e, sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE0_wedgeEVSsimE")->Fill(physdata1.e, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE0_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata1.theta);
+				histoman->getHisto2D("hSABRE0_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata1.phi);
 			} else if(sabredata1.detectorIndex == 1) {
 				histoman->getHisto1D("hSABRE1_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE1_WedgeHit")->Fill(sabredata1.wedge);
-				histoman->getHisto1D("hSABRE1_ESummary")->Fill(sabredata1.energy);
-				histoman->getHisto2D("hSABRE1_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.energy);
-				histoman->getHisto2D("hSABRE1_ESummaryRings")->Fill(sabredata1.ring, sabredata1.energy);
+				//histoman->getHisto1D("hSABRE1_ESummary")->Fill(sabredata1.energy);
+				histoman->getHisto2D("hSABRE1_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE1_ESummaryRings")->Fill(sabredata1.ring, sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE1_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata1.theta, sabredata1.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
+				histoman->getHisto2D("hSABRE1_ringEVSsimE")->Fill(physdata1.e, sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE1_wedgeEVSsimE")->Fill(physdata1.e, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE1_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata1.theta);
+				histoman->getHisto2D("hSABRE1_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata1.phi);
 			} else if(sabredata1.detectorIndex == 2){
 				histoman->getHisto1D("hSABRE2_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE2_WedgeHit")->Fill(sabredata1.wedge);
-				histoman->getHisto1D("hSABRE2_ESummary")->Fill(sabredata1.energy);
-				histoman->getHisto2D("hSABRE2_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.energy);
-				histoman->getHisto2D("hSABRE2_ESummaryRings")->Fill(sabredata1.ring, sabredata1.energy);
+				//histoman->getHisto1D("hSABRE2_ESummary")->Fill(sabredata1.energy);
+				histoman->getHisto2D("hSABRE2_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE2_ESummaryRings")->Fill(sabredata1.ring, sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE2_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata1.theta, sabredata1.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
+				histoman->getHisto2D("hSABRE2_ringEVSsimE")->Fill(physdata1.e, sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE2_wedgeEVSsimE")->Fill(physdata1.e, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE2_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata1.theta);
+				histoman->getHisto2D("hSABRE2_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata1.phi);
 			} else if(sabredata1.detectorIndex == 3){
 				histoman->getHisto1D("hSABRE3_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE3_WedgeHit")->Fill(sabredata1.wedge);
-				histoman->getHisto1D("hSABRE3_ESummary")->Fill(sabredata1.energy);
-				histoman->getHisto2D("hSABRE3_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.energy);
-				histoman->getHisto2D("hSABRE3_ESummaryRings")->Fill(sabredata1.ring, sabredata1.energy);
+				//histoman->getHisto1D("hSABRE3_ESummary")->Fill(sabredata1.energy);
+				histoman->getHisto2D("hSABRE3_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE3_ESummaryRings")->Fill(sabredata1.ring, sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE3_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata1.theta, sabredata1.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
+				histoman->getHisto2D("hSABRE3_ringEVSsimE")->Fill(physdata1.e, sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE3_wedgeEVSsimE")->Fill(physdata1.e, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE3_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata1.theta);
+				histoman->getHisto2D("hSABRE3_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata1.phi);
 			} else if(sabredata1.detectorIndex == 4){
 				histoman->getHisto1D("hSABRE4_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE4_WedgeHit")->Fill(sabredata1.wedge);
-				histoman->getHisto1D("hSABRE4_ESummary")->Fill(sabredata1.energy);
-				histoman->getHisto2D("hSABRE4_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.energy);
-				histoman->getHisto2D("hSABRE4_ESummaryRings")->Fill(sabredata1.ring, sabredata1.energy);
+				//histoman->getHisto1D("hSABRE4_ESummary")->Fill(sabredata1.energy);
+				histoman->getHisto2D("hSABRE4_ESummaryWedges")->Fill(sabredata1.wedge, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE4_ESummaryRings")->Fill(sabredata1.ring, sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE4_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata1.theta, sabredata1.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
+				histoman->getHisto2D("hSABRE4_ringEVSsimE")->Fill(physdata1.e, sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE4_wedgeEVSsimE")->Fill(physdata1.e, sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE4_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata1.theta);
+				histoman->getHisto2D("hSABRE4_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata1.phi);
 			}
 
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata2.detectorIndex == 0){
 				histoman->getHisto1D("hSABRE0_RingHit")->Fill(sabredata2.ring);
 				histoman->getHisto1D("hSABRE0_WedgeHit")->Fill(sabredata2.wedge);
-				histoman->getHisto1D("hSABRE0_ESummary")->Fill(sabredata2.energy);
-				histoman->getHisto2D("hSABRE0_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.energy);
-				histoman->getHisto2D("hSABRE0_ESummaryRings")->Fill(sabredata2.ring, sabredata2.energy);
+				//histoman->getHisto1D("hSABRE0_ESummary")->Fill(sabredata2.energy);
+				histoman->getHisto2D("hSABRE0_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE0_ESummaryRings")->Fill(sabredata2.ring, sabredata2.ringEnergy);
 				histoman->getHisto2D("hSABRE0_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata2.theta, sabredata2.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
+				histoman->getHisto2D("hSABRE0_ringEVSsimE")->Fill(physdata1.e, sabredata2.ringEnergy);
+				histoman->getHisto2D("hSABRE0_wedgeEVSsimE")->Fill(physdata1.e, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE0_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata2.theta);
+				histoman->getHisto2D("hSABRE0_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata2.phi);
 			} else if(sabredata2.detectorIndex == 1) {
 				histoman->getHisto1D("hSABRE1_RingHit")->Fill(sabredata2.ring);
 				histoman->getHisto1D("hSABRE1_WedgeHit")->Fill(sabredata2.wedge);
-				histoman->getHisto1D("hSABRE1_ESummary")->Fill(sabredata2.energy);
-				histoman->getHisto2D("hSABRE1_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.energy);
-				histoman->getHisto2D("hSABRE1_ESummaryRings")->Fill(sabredata2.ring, sabredata2.energy);
+				//histoman->getHisto1D("hSABRE1_ESummary")->Fill(sabredata2.energy);
+				histoman->getHisto2D("hSABRE1_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE1_ESummaryRings")->Fill(sabredata2.ring, sabredata2.ringEnergy);
 				histoman->getHisto2D("hSABRE1_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata2.theta, sabredata2.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
+				histoman->getHisto2D("hSABRE1_ringEVSsimE")->Fill(physdata1.e, sabredata2.ringEnergy);
+				histoman->getHisto2D("hSABRE1_wedgeEVSsimE")->Fill(physdata1.e, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE1_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata2.theta);
+				histoman->getHisto2D("hSABRE1_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata2.phi);
 			} else if(sabredata2.detectorIndex == 2){
 				histoman->getHisto1D("hSABRE2_RingHit")->Fill(sabredata2.ring);
 				histoman->getHisto1D("hSABRE2_WedgeHit")->Fill(sabredata2.wedge);
-				histoman->getHisto1D("hSABRE2_ESummary")->Fill(sabredata2.energy);
-				histoman->getHisto2D("hSABRE2_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.energy);
-				histoman->getHisto2D("hSABRE2_ESummaryRings")->Fill(sabredata2.ring, sabredata2.energy);
+				//histoman->getHisto1D("hSABRE2_ESummary")->Fill(sabredata2.energy);
+				histoman->getHisto2D("hSABRE2_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE2_ESummaryRings")->Fill(sabredata2.ring, sabredata2.ringEnergy);
 				histoman->getHisto2D("hSABRE2_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata2.theta, sabredata2.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
+				histoman->getHisto2D("hSABRE2_ringEVSsimE")->Fill(physdata1.e, sabredata2.ringEnergy);
+				histoman->getHisto2D("hSABRE2_wedgeEVSsimE")->Fill(physdata1.e, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE2_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata2.theta);
+				histoman->getHisto2D("hSABRE2_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata2.phi);
 			} else if(sabredata2.detectorIndex == 3){
 				histoman->getHisto1D("hSABRE3_RingHit")->Fill(sabredata2.ring);
 				histoman->getHisto1D("hSABRE3_WedgeHit")->Fill(sabredata2.wedge);
-				histoman->getHisto1D("hSABRE3_ESummary")->Fill(sabredata2.energy);
-				histoman->getHisto2D("hSABRE3_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.energy);
-				histoman->getHisto2D("hSABRE3_ESummaryRings")->Fill(sabredata2.ring, sabredata2.energy);
+				//histoman->getHisto1D("hSABRE3_ESummary")->Fill(sabredata2.energy);
+				histoman->getHisto2D("hSABRE3_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE3_ESummaryRings")->Fill(sabredata2.ring, sabredata2.ringEnergy);
 				histoman->getHisto2D("hSABRE3_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata2.theta, sabredata2.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
+				histoman->getHisto2D("hSABRE3_ringEVSsimE")->Fill(physdata1.e, sabredata2.ringEnergy);
+				histoman->getHisto2D("hSABRE3_wedgeEVSsimE")->Fill(physdata1.e, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE3_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata2.theta);
+				histoman->getHisto2D("hSABRE3_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata2.phi);
 			} else if(sabredata2.detectorIndex == 4){
 				histoman->getHisto1D("hSABRE4_RingHit")->Fill(sabredata2.ring);
 				histoman->getHisto1D("hSABRE4_WedgeHit")->Fill(sabredata2.wedge);
-				histoman->getHisto1D("hSABRE4_ESummary")->Fill(sabredata2.energy);
-				histoman->getHisto2D("hSABRE4_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.energy);
-				histoman->getHisto2D("hSABRE4_ESummaryRings")->Fill(sabredata2.ring, sabredata2.energy);
+				//histoman->getHisto1D("hSABRE4_ESummary")->Fill(sabredata2.energy);
+				histoman->getHisto2D("hSABRE4_ESummaryWedges")->Fill(sabredata2.wedge, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE4_ESummaryRings")->Fill(sabredata2.ring, sabredata2.ringEnergy);
 				histoman->getHisto2D("hSABRE4_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata2.theta, sabredata2.phi);
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata2.localx, -sabredata2.localy);
+				histoman->getHisto2D("hSABRE4_ringEVSsimE")->Fill(physdata1.e, sabredata2.ringEnergy);
+				histoman->getHisto2D("hSABRE4_wedgeEVSsimE")->Fill(physdata1.e, sabredata2.wedgeEnergy);
+				histoman->getHisto2D("hSABRE4_ringThetaVSsimTheta")->Fill(physdata1.theta, sabredata2.theta);
+				histoman->getHisto2D("hSABRE4_wedgePhiVSsimPhi")->Fill(physdata1.phi, sabredata2.phi);
 			}
 
 
-
-			detector_hits.clear();
 			hit1 = false;
 			hit2 = false;
 			sabredata1 = {-1,-999,-999,-999,-999,-999};
@@ -200,14 +241,9 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 		} else if(line.substr(0,2) == "10"){//particle1/ejectile detection
 			stringstream ss(line);
 			int detector_particle_id, ring, wedge;
-			double energy, x, y;
-			if(ss >> detector_particle_id >> ring >> wedge >> energy >> x >> y){
+			double ringE, wedgeE, x, y;
+			if(ss >> detector_particle_id >> ring >> wedge >> ringE >> wedgeE >> x >> y){
 				int detector_index = detector_particle_id % 10;
-				DetectorHit h;
-				h.ring = ring;
-				h.wedge = wedge;
-				h.energy = energy;
-				detector_hits[detector_particle_id] = h;
 				//double energy = physdata1.e;
 				std::pair<double,double> angles = getReconstructedAngles(detector_index, ring, wedge, sabre_thetaphimap);
 				double theta_recon = angles.first;
@@ -219,7 +255,8 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				sabre_hit.wedge = wedge;
 				sabre_hit.theta = theta_recon;
 				sabre_hit.phi = phi_recon;
-				sabre_hit.energy = energy;
+				sabre_hit.ringEnergy = ringE;
+				sabre_hit.wedgeEnergy = wedgeE;
 				sabre_hit.localx = x;
 				sabre_hit.localy = y;
 
@@ -235,14 +272,9 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 		} else if(line.substr(0,2) == "20"){//particle2/recoil detection
 			stringstream ss(line);
 			int detector_particle_id, ring, wedge;
-			double energy, x, y;
-			if(ss >> detector_particle_id >> ring >> wedge >> energy >> x >> y){
+			double ringE, wedgeE, x, y;
+			if(ss >> detector_particle_id >> ring >> wedge >> ringE >> wedgeE >> x >> y){
 				int detector_index = detector_particle_id % 10;
-				DetectorHit h;
-				h.ring = ring;
-				h.wedge = wedge;
-				h.energy = energy;
-				detector_hits[detector_particle_id] = h;
 				std::pair<double,double> angles = getReconstructedAngles(detector_index, ring, wedge, sabre_thetaphimap);
 				double theta_recon = angles.first;
 				double phi_recon = angles.second;
@@ -253,7 +285,8 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				sabre_hit.wedge = wedge;
 				sabre_hit.theta = theta_recon;
 				sabre_hit.phi = phi_recon;
-				sabre_hit.energy = energy;
+				sabre_hit.ringEnergy = ringE;
+				sabre_hit.wedgeEnergy = wedgeE;
 				sabre_hit.localx = x;
 				sabre_hit.localy = y;
 
@@ -274,8 +307,7 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 			if(physdata2.theta < 0) physdata2.theta += 180.;
 			if(physdata2.phi < 0) physdata2.phi += 360.;
 		}
-
-	}
+	}//end while getline loop
 
 	outfile->cd();
 	kin2->Write();
@@ -284,15 +316,18 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 	UpdateHistoAxes(histoman);
 
 	histoman->WriteAll(true);
+	cout << endl;
+	cout << "Processed " << count << " events." << endl;
+	cout << "ROOT file saved to " << output_rootfilename << endl << endl;
 }
 
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map){
 	static const std::pair<int, int> offsets[] = {
-		{112,40},	//detector0
-		{96,32},	//detector1
-		{80,16},	//detector2
-		{64,24},	//detector3
-		{48,0}		//detector4
+		{112,40},	//detector0 {ringOffset,wedgeOffset}
+		{96,32},	//detector1 {ringOffset,wedgeOffset}
+		{80,16},	//detector2 {ringOffset,wedgeOffset}
+		{64,24},	//detector3 {ringOffset,wedgeOffset}
+		{48,0}		//detector4 {ringOffset,wedgeOffset}
 	};
 
 	if(detectorIndex < 0 || detectorIndex >= 5){
@@ -305,11 +340,11 @@ std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int
 
 std::map<std::pair<int,int>,std::pair<double,double>> readAngleMaps(){
 	const vector<string> filenames = {
-		"SABRE0_phi306_anglemap.txt",
-		"SABRE1_phi18_anglemap.txt",
-		"SABRE2_phi234_anglemap.txt",
-		"SABRE3_phi162_anglemap.txt",
-		"SABRE4_phi90_anglemap.txt"
+		"../../anglemaps/SABRE0_phi306_anglemap.txt",
+		"../../anglemaps/SABRE1_phi18_anglemap.txt",
+		"../../anglemaps/SABRE2_phi234_anglemap.txt",
+		"../../anglemaps/SABRE3_phi162_anglemap.txt",
+		"../../anglemaps/SABRE4_phi90_anglemap.txt"
 	};
 
 	std::map<std::pair<int,int>,std::pair<double,double>> retmap;
@@ -368,5 +403,35 @@ void UpdateHistoAxes(HistoManager* histoman){
 	histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->GetYaxis()->SetTitle("+y <--------------------------------------------------> -y");
 	histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->GetXaxis()->CenterTitle();
 	histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->GetYaxis()->CenterTitle();
+
+	vector<TString> histonames = {
+		"hSABRE0_ringEVSsimE",
+		"hSABRE1_ringEVSsimE",
+		"hSABRE2_ringEVSsimE",
+		"hSABRE3_ringEVSsimE",
+		"hSABRE4_ringEVSsimE",
+		"hSABRE0_wedgeEVSsimE",
+		"hSABRE1_wedgeEVSsimE",
+		"hSABRE2_wedgeEVSsimE",
+		"hSABRE3_wedgeEVSsimE",
+		"hSABRE4_wedgeEVSsimE",
+		"hSABRE0_ringThetaVSsimTheta",
+		"hSABRE1_ringThetaVSsimTheta",
+		"hSABRE2_ringThetaVSsimTheta",
+		"hSABRE3_ringThetaVSsimTheta",
+		"hSABRE4_ringThetaVSsimTheta",
+		"hSABRE0_wedgePhiVSsimPhi",
+		"hSABRE1_wedgePhiVSsimPhi",
+		"hSABRE2_wedgePhiVSsimPhi",
+		"hSABRE3_wedgePhiVSsimPhi",
+		"hSABRE4_wedgePhiVSsimPhi"
+	};
+
+	for(const auto& name : histonames){
+		histoman->getHisto2D(name)->GetXaxis()->SetTitle("Simulation");
+		histoman->getHisto2D(name)->GetYaxis()->SetTitle("Pure Kinematics");
+		histoman->getHisto2D(name)->GetXaxis()->CenterTitle();
+		histoman->getHisto2D(name)->GetYaxis()->CenterTitle();
+	}
 
 }

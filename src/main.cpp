@@ -4,6 +4,7 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <time.h>
+#include <string>
 
 #include "SABRE_Detector.h"
 #include "Vec3.h"
@@ -24,8 +25,9 @@ int main(int argc, char * argv[]){
 	int nevents = 0;
 	bool detected1 = false;
 	bool detected2 = false;
-	int hitbu1 = 0;
-	int hitbu2 = 0;
+	//bool detectedboth = false;
+	int hit1 = 0;
+	int hit2 = 0;
 	int hitboth = 0;
 	float dx = 0, dy = 0;
 	float e1, theta1, phi1, thetacm, e2, theta2, phi2;//kin2mc output
@@ -57,7 +59,7 @@ int main(int argc, char * argv[]){
 
 	cout << endl;
 	cout << "Processing physics data file " << argv[1] << endl;
-	cout << "Writing to output file " << argv[2] << endl;
+	cout << "Writing to output file " << argv[2] << endl << endl;
 	cout << "Beam spot spread is (dx,dy) = (" << dx << ", " << dy << ")" << endl << endl;
 
 	double DEG2RAD = M_PI/180.;
@@ -71,7 +73,7 @@ int main(int argc, char * argv[]){
 	vector<int> SABRE_Array_hits = {0,0,0,0,0};
 	for(size_t i=0; i<PHI.size(); i++){
 		SABRE_Array.push_back(new SABRE_Detector(INNER_R, OUTER_R, PHI_COVERAGE*DEG2RAD, PHI[i]*DEG2RAD, TILT*DEG2RAD, ZDIST));
-		cout << "Successfully created SABRE_Detector at PHI[" << i << "] = " << PHI[i] << endl;
+		//cout << "Successfully created SABRE_Detector at PHI[" << i << "] = " << PHI[i] << endl;
 	}
 	cout << endl;
 
@@ -81,51 +83,114 @@ int main(int argc, char * argv[]){
 		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.05,1.));////sigma of 0.05 MeV for all rings/wedges and threshold of 1MeV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
 	}
 
+/*want to debug this so that I can actually use beamspot, but for now let's just assume perfect precision beamspot at (0,0,0)
+	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
+		nevents += 1;
+		detected1 = false;
+		detected2 = false;
+		//detectedboth = false;
+
+		beamspot.Spread();
+
+		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << endl;
+		if(nevents%50000==0) cout << "Processed " << nevents << " events..." << endl;
+
+
+		for(size_t i=0; i<SABRE_Array.size(); i++){
+
+			//check the first ejectile:
+			if(beamspot.Set(SABRE_Array[i]->GetRingTiltCoords(0,0), SABRE_Array[i]->GetNormTilted(), theta1, phi1)){
+				//cout << "true" << endl;
+				//this means that the trajectory of the particle intersects SABRE_Array[i] when eminating from an origin of (Dx, Dy, 0) instead of (0,0,0)
+				float newTheta, newPhi;
+				newTheta = beamspot.GetTheta();
+				newPhi = beamspot.GetPhi();
+				//since we know that the trajectory of the particle intersects SABRE_Array[i], we can just pass these new theta and new phi to the original function to get ring,wedge!
+				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(newTheta*DEG2RAD,newPhi*DEG2RAD);
+				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
+					//cout << "true" << endl;
+					Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit1_rw.first,hit1_rw.second);
+					double smeared_ering, smeared_ewedge;
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smeared_ering) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smeared_ewedge)){
+						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smeared_ering << "\t" << smeared_ewedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected1 = true;
+						hit1 += 1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+			}
+
+			//check the second ejectile:
+			if(beamspot.Set(SABRE_Array[i]->GetRingTiltCoords(0,0), SABRE_Array[i]->GetNormTilted(), theta2, phi2)){
+				//this means that the trajectory of the particle intersects SABRE_Array[i]
+				float newTheta, newPhi;
+				newTheta = beamspot.GetTheta();
+				newPhi = beamspot.GetPhi();
+				//since we know the trajectory of the particle intersects SABRE_Array[i], we can just pass these new theta and new phi to the original function to get ring,wedge!
+				pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(newTheta*DEG2RAD,newPhi*DEG2RAD);
+				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
+					Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit2_rw.first,hit2_rw.second);
+					double smeared_ering, smeared_ewedge;
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smeared_ering) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smeared_ewedge)){
+						outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smeared_ering << "\t" << smeared_ewedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected2 = true;
+						hit2 += 1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+			}
+
+			if(detected1 && detected2){
+				hitboth += 1;
+				break;
+			}
+
+		}
+
+		outfile << eoev << endl;
+	}
+*/
+
 	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
 		nevents += 1;
 		detected1 = false;
 		detected2 = false;
 
-		beamspot.Spread();
+		//beamspot.Spread();//not necessary right now since Set() not working right
 
-		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << endl;//kin2mc right now
-		if(nevents%25000==0) cout << "Processed " << nevents << " events..." << endl;
+		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << endl;
+		if(nevents%50000==0) cout << "Processed " << nevents << " events..." << endl;
 
-		//loop through the SABRE Array and see if we detect the ejectile or recoil
 		for(size_t i=0; i<SABRE_Array.size(); i++){
-			//const auto& [ringOffset,wedgeOffset] = offsets[i];
+			double smearedERing, smearedEWedge;
 
-			pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
+			pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD);
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
-				Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit1_rw.first,hit1_rw.second);
-				//outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << e1 << endl;//right now use e1 (kinematic energy) but should use the smeared energy eventually
-
-				//need to wrap the below text in an if statement checking if the detected energy is above the threshold --> SABRE_EnergyResolutionModel!
-				double smeared_ering, smeared_ewedge;
-				if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smeared_ering) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smeared_ewedge)){
-					outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smeared_ering << "\t" << smeared_ewedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl; //localx and localy are local coordinates on the detector plane
+				if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smearedERing), SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smearedEWedge)){
+					Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit1_rw.first,hit1_rw.second);
+					outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 					detected1 = true;
-					hitbu1 += 1;
+					hit1+=1;
 					SABRE_Array_hits[i] += 1;
 				}
 			}
 
+			smearedERing = 0.;
+			smearedEWedge = 0.;
 			pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
 			if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
-				Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit2_rw.first,hit2_rw.second);
-				double smeared_ering, smeared_ewedge;
-				if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smeared_ering) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smeared_ewedge)){
-					outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smeared_ering << "\t" << smeared_ewedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl; //localx and localy are local coordinates on the detector plane
+				if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smearedEWedge)){
+					Vec3 localCoords = SABRE_Array[i]->GetHitCoordinates(hit2_rw.first,hit2_rw.second);
+					outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 					detected2 = true;
-					hitbu2 += 1;
+					hit2+=1;
 					SABRE_Array_hits[i] += 1;
 				}
 			}
-
-			if(detected1 && detected2) hitboth += 1;
 		}
 
 		outfile << eoev << endl;
+
 	}
 
 	infile.close();
@@ -133,8 +198,8 @@ int main(int argc, char * argv[]){
 
 	cout << endl;
 	cout << "Files are closed. Processed " << nevents << " events." << endl;
-	cout << "Events with ejectile in SABRE: " << hitbu1 << endl;
-	cout << "Events with recoil in SABRE: " << hitbu2 << endl;
+	cout << "Events with ejectile in SABRE: " << hit1 << endl;
+	cout << "Events with recoil in SABRE: " << hit2 << endl;
 	cout << "Events with both ejectile and recoil in SABRE: " << hitboth << endl << endl;
 	for(int i=0; i<5; i++){
 		cout << "Detector_" << i << " had total hits = " << SABRE_Array_hits[i] << endl;

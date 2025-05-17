@@ -33,10 +33,14 @@ public:
 	inline Vec3& operator=(const Vec3& rhs) { SetVectorCartesian(rhs.GetX(), rhs.GetY(), rhs.GetZ()); return *this; };
 	inline Vec3 operator+(const Vec3& rhs) const { return Vec3(this->GetX()+rhs.GetX(), this->GetY()+rhs.GetY(), this->GetZ()+rhs.GetZ()); };
 	inline Vec3 operator-(const Vec3& rhs) const { return Vec3(this->GetX()-rhs.GetX(), this->GetY()-rhs.GetY(), this->GetZ()-rhs.GetZ()); };
+	inline Vec3 operator*(const int& rhs) const { return Vec3(GetX()*rhs,GetY()*rhs,GetZ()*rhs);};
 
 
 	double Dot(const Vec3& rhs) const;
 	Vec3 Cross(const Vec3& rhs) const;
+
+	double Mag2() const { return GetX()*GetX() + GetY()*GetY() + GetZ()*GetZ(); };
+	double Mag() const { return sqrt(Mag2()); };
 
 
 
@@ -53,5 +57,7 @@ private:
 	double m_data[3];
 
 };
+
+inline Vec3 operator*(const int& lhs, const Vec3& rhs);
 
 #endif

@@ -6,29 +6,34 @@
 
 using namespace std;
 
+#include "Vec3.h"
+
 class Beamspot
 {
 private:
-	float fXMax;
-	float fYMax;
-	float fDx;
-	float fDy;
-	float fXOffset;
-	float fYOffset;
-	float fTheta;
-	float fPhi;
+	double fXMax;
+	double fYMax;
+	double fDx;
+	double fDy;
+	double fXOffset;
+	double fYOffset;
+	double fTheta;
+	double fPhi;
 	const double DEGRAD = 0.017453293;
 public:
-	void SetXMax(float xmax) { fXMax = xmax; }
-	void SetYMax(float ymax) { fYMax = ymax; }
-	void SetXOffset(float xoffset) { fXOffset = xoffset; }
-	void SetYOffset(float yoffset) { fYOffset = yoffset; }
+	void SetXMax(double xmax) { fXMax = xmax; }
+	void SetYMax(double ymax) { fYMax = ymax; }
+	void SetXOffset(double xoffset) { fXOffset = xoffset; }
+	void SetYOffset(double yoffset) { fYOffset = yoffset; }
+	void SetTheta(double theta) { fTheta = theta; }
+	void SetPhi(double phi) { fPhi = phi; }
 	void Spread(void);
-	void Set(float z, float theta, float phi);
-	float GetTheta(void) { return fTheta; }
-	float GetPhi(void) { return fPhi; }
-	float GetDx(void) { return fDx; }
-	float GetDy(void) { return fDy; }
+	void Set(double z, double theta, double phi);
+	bool Set(const Vec3& detectorPoint, const Vec3& detectorNormal, double theta, double phi);
+	double GetTheta(void) { return fTheta; }
+	double GetPhi(void) { return fPhi; }
+	double GetDx(void) { return fDx; }
+	double GetDy(void) { return fDy; }
 	void Print(void);
 };
 

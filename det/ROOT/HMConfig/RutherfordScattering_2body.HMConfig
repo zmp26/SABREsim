@@ -15,56 +15,79 @@
 #
 #
 # pure kinematics histograms:
-kin2mc TH1D hELab1 ELab1 256 0 10
-kin2mc TH1D hELab2 ELab2 256 0 10
+kin2mc TH1D hELab1 ELab1 400 0 20
+kin2mc TH1D hELab2 ELab2 400 0 20
 # angle
-kin2mc TH1D hThetaLab1 ThetaLab1 256 0 180
-kin2mc TH1D hThetaLab2 ThetaLab2 256 0 180
-kin2mc TH1D hPhiLab1 PhiLab1 256 0 360
-kin2mc TH1D hPhiLab2 PhiLab2 256 0 360
+kin2mc TH1D hThetaLab1 ThetaLab1 180 -0.5 179.5
+kin2mc TH1D hThetaLab2 ThetaLab2 180 -0.5 179.5
+kin2mc TH1D hPhiLab1 PhiLab1 360 -0.5 359.5
+kin2mc TH1D hPhiLab2 PhiLab2 360 -0.5 359.5
 # energy vs angle
-kin2mc TH2D hELabThetaLab_1 ELabVsThetaLab_1 256 0 180 256 0 10
-kin2mc TH2D hELabThetaLab_2 ELabVsThetaLab_2 256 0 180 256 0 10
-kin2mc TH2D hELabPhiLab_1 ELabVsPhiLab_1 256 0 360 256 0 10
-kin2mc TH2D hELabPhiLab_2 ELabVsPhiLab_2 256 0 360 256 0 10
+kin2mc TH2D hELabThetaLab_1 ELabVsThetaLab_1 180 -0.5 179.5 400 0 20
+kin2mc TH2D hELabThetaLab_2 ELabVsThetaLab_2 180 -0.5 179.5 400 0 20
+kin2mc TH2D hELabPhiLab_1 ELabVsPhiLab_1 360 -0.5 359.5 400 0 20
+kin2mc TH2D hELabPhiLab_2 ELabVsPhiLab_2 360 -0.5 359.5 400 0 20
 # theta vs phi
-kin2mc TH2D hThetaLabPhiLab_1 ThetaLabVsPhiLab_1 256 0 180 256 0 360
-kin2mc TH2D hThetaLabPhiLab_2 ThetaLabVsPhiLab_2 256 0 180 256 0 360
+kin2mc TH2D hThetaLabPhiLab_1 ThetaLabVsPhiLab_1 180 -0.5 179.5 360 -0.5 359.5
+kin2mc TH2D hThetaLabPhiLab_2 ThetaLabVsPhiLab_2 180 -0.5 179.5 360 -0.5 359.5
 #
 #
 #
 #
 #
 # SABRE ring/wedge hit summary histograms:
-SABRE TH1D hSABRE0_RingHit SABRE0_RingHit 16 -0.5 15.5
-SABRE TH1D hSABRE0_WedgeHit SABRE0_WedgeHit 8 -0.5 7.5
-SABRE TH1D hSABRE1_RingHit SABRE1_RingHit 16 -0.5 15.5
-SABRE TH1D hSABRE1_WedgeHit SABRE1_WedgeHit 8 -0.5 7.5
-SABRE TH1D hSABRE2_RingHit SABRE2_RingHit 16 -0.5 15.5
-SABRE TH1D hSABRE2_WedgeHit SABRE2_WedgeHit 8 -0.5 7.5
-SABRE TH1D hSABRE3_RingHit SABRE3_RingHit 16 -0.5 15.5
-SABRE TH1D hSABRE3_WedgeHit SABRE3_WedgeHit 8 -0.5 7.5
-SABRE TH1D hSABRE4_RingHit SABRE4_RingHit 16 -0.5 15.5
-SABRE TH1D hSABRE4_WedgeHit SABRE4_WedgeHit 8 -0.5 7.5
+SABRE TH1I hSABRE0_RingHit SABRE0_RingHit 16 -0.5 15.5
+SABRE TH1I hSABRE0_WedgeHit SABRE0_WedgeHit 8 -0.5 7.5
+SABRE TH1I hSABRE1_RingHit SABRE1_RingHit 16 -0.5 15.5
+SABRE TH1I hSABRE1_WedgeHit SABRE1_WedgeHit 8 -0.5 7.5
+SABRE TH1I hSABRE2_RingHit SABRE2_RingHit 16 -0.5 15.5
+SABRE TH1I hSABRE2_WedgeHit SABRE2_WedgeHit 8 -0.5 7.5
+SABRE TH1I hSABRE3_RingHit SABRE3_RingHit 16 -0.5 15.5
+SABRE TH1I hSABRE3_WedgeHit SABRE3_WedgeHit 8 -0.5 7.5
+SABRE TH1I hSABRE4_RingHit SABRE4_RingHit 16 -0.5 15.5
+SABRE TH1I hSABRE4_WedgeHit SABRE4_WedgeHit 8 -0.5 7.5
 #SABRE energy summary histograms:
-SABRE TH1D hSABRE0_ESummary SABRE0_ESummary 256 0 10
-SABRE TH1D hSABRE1_ESummary SABRE1_ESummary 256 0 10
-SABRE TH1D hSABRE2_ESummary SABRE2_ESummary 256 0 10
-SABRE TH1D hSABRE3_ESummary SABRE3_ESummary 256 0 10
-SABRE TH1D hSABRE4_ESummary SABRE4_ESummary 256 0 10
+#SABRE TH1D hSABRE0_ESummary SABRE0_ESummary 2000 0 10
+#SABRE TH1D hSABRE1_ESummary SABRE1_ESummary 2000 0 10
+#SABRE TH1D hSABRE2_ESummary SABRE2_ESummary 2000 0 10
+#SABRE TH1D hSABRE3_ESummary SABRE3_ESummary 2000 0 10
+#SABRE TH1D hSABRE4_ESummary SABRE4_ESummary 2000 0 10
 #
-SABRE TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 256 0 10
-SABRE TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 256 0 10
-SABRE TH2D hSABRE1_ESummaryWedges SABRE1_ESummaryWedges 8 -0.5 7.5 256 0 10
-SABRE TH2D hSABRE1_ESummaryRings SABRE1_ESummaryRings 16 -0.5 15.5 256 0 10
-SABRE TH2D hSABRE2_ESummaryWedges SABRE2_ESummaryWedges 8 -0.5 7.5 256 0 10
-SABRE TH2D hSABRE2_ESummaryRings SABRE2_ESummaryRings 16 -0.5 15.5 256 0 10
-SABRE TH2D hSABRE3_ESummaryWedges SABRE3_ESummaryWedges 8 -0.5 7.5 256 0 10
-SABRE TH2D hSABRE3_ESummaryRings SABRE3_ESummaryRings 16 -0.5 15.5 256 0 10
-SABRE TH2D hSABRE4_ESummaryWedges SABRE4_ESummaryWedges 8 -0.5 7.5 256 0 10
-SABRE TH2D hSABRE4_ESummaryRings SABRE4_ESummaryRings 16 -0.5 15.5 256 0 10
+SABRE TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE TH2D hSABRE1_ESummaryWedges SABRE1_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE TH2D hSABRE1_ESummaryRings SABRE1_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE TH2D hSABRE2_ESummaryWedges SABRE2_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE TH2D hSABRE2_ESummaryRings SABRE2_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE TH2D hSABRE3_ESummaryWedges SABRE3_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE TH2D hSABRE3_ESummaryRings SABRE3_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE TH2D hSABRE4_ESummaryWedges SABRE4_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE TH2D hSABRE4_ESummaryRings SABRE4_ESummaryRings 16 -0.5 15.5 400 0 20
 #
+#sabre histograms for sabre angle, ringE, wedgeE vs kinmc angle, energy, energy
+SABRE/Kin_vs_Sim TH2D hSABRE0_ringEVSsimE SABRE0_ringEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE1_ringEVSsimE SABRE1_ringEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE2_ringEVSsimE SABRE2_ringEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE3_ringEVSsimE SABRE3_ringEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE4_ringEVSsimE SABRE4_ringEVSsimE 400 0 20 400 0 20
 #
+SABRE/Kin_vs_Sim TH2D hSABRE0_wedgeEVSsimE SABRE0_wedgeEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE1_wedgeEVSsimE SABRE1_wedgeEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE2_wedgeEVSsimE SABRE2_wedgeEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE3_wedgeEVSsimE SABRE3_wedgeEVSsimE 400 0 20 400 0 20
+SABRE/Kin_vs_Sim TH2D hSABRE4_wedgeEVSsimE SABRE4_wedgeEVSsimE 400 0 20 400 0 20
+#
+SABRE/Kin_vs_Sim TH2D hSABRE0_ringThetaVSsimTheta SABRE0_ringThetaVSsimTheta 360 0 180 360 0 180
+SABRE/Kin_vs_Sim TH2D hSABRE1_ringThetaVSsimTheta SABRE1_ringThetaVSsimTheta 360 0 180 360 0 180
+SABRE/Kin_vs_Sim TH2D hSABRE2_ringThetaVSsimTheta SABRE2_ringThetaVSsimTheta 360 0 180 360 0 180
+SABRE/Kin_vs_Sim TH2D hSABRE3_ringThetaVSsimTheta SABRE3_ringThetaVSsimTheta 360 0 180 360 0 180
+SABRE/Kin_vs_Sim TH2D hSABRE4_ringThetaVSsimTheta SABRE4_ringThetaVSsimTheta 360 0 180 360 0 180
+#
+SABRE/Kin_vs_Sim TH2D hSABRE0_wedgePhiVSsimPhi SABRE0_wedgePhiVSsimPhi 720 0 360 720 0 360
+SABRE/Kin_vs_Sim TH2D hSABRE1_wedgePhiVSsimPhi SABRE1_wedgePhiVSsimPhi 720 0 360 720 0 360
+SABRE/Kin_vs_Sim TH2D hSABRE2_wedgePhiVSsimPhi SABRE2_wedgePhiVSsimPhi 720 0 360 720 0 360
+SABRE/Kin_vs_Sim TH2D hSABRE3_wedgePhiVSsimPhi SABRE3_wedgePhiVSsimPhi 720 0 360 720 0 360
+SABRE/Kin_vs_Sim TH2D hSABRE4_wedgePhiVSsimPhi SABRE4_wedgePhiVSsimPhi 720 0 360 720 0 360
 #
 #
 #
@@ -77,4 +100,4 @@ SABRE/GEOM TH2D hSABRE3_hitsMapLocal SABRE3_hitsMapLocal 128 -0.2 0.2 128 -0.2 0
 SABRE/GEOM TH2D hSABRE4_hitsMapLocal SABRE4_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
 SABRE/GEOM TH2D hSABREARRAY_hitsMapLocal SABREARRAY_hitsMapLocal 128 -0.2 0.2 128 -0.2 0.2
 # and now do global (theta,phi) values:
-SABRE/GEOM TH2D hSABRE_AngleHitsMap SABRE_AngleHitsMap 180 0 180 360 0 360
+SABRE/GEOM TH2D hSABRE_AngleHitsMap SABRE_AngleHitsMap 360 0 180 720 0 360

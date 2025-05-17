@@ -20,7 +20,6 @@ public:
 	void setWedgeResolution(int wedge, double sigmaMeV);
 	void setRingThreshold(int ring, double thresholdMeV);
 	void setWedgeThreshold(int wedge, double thresholdMeV);
-	void setNormalDist(double sigma, double centroid=0.);
 
 	//getters
 	double getRingResolution(int ring) { if(ring>=0 && ring<NUM_RINGS) { return ringSigmas[ring]; } else { return -1.; } }
