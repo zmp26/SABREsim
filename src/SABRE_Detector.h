@@ -79,6 +79,8 @@ public:
 	Vec3 GetTrajectoryCoordinates(double theta, double phi);
 	std::pair<int,int> GetTrajectoryRingWedge(double theta, double phi);
 	Vec3 GetHitCoordinates(int ringch, int wedgech);
+	Vec3 GetHitCoordinatesRandomWiggle(int ringch, int wedgech);
+
 
 	/*Basic Getters*/
 	inline int GetNumberOfWedges() { return m_nWedges; };
@@ -89,6 +91,15 @@ public:
 	inline double GetTiltAngle() { return m_tilt; };
 	inline Vec3 GetTranslation() { return m_translation; };
 	inline Vec3 GetNormTilted() { return TransformToTiltedFrame(m_norm_flat); };
+
+		/*Determine if a hit is within the bulk detector*/
+	inline bool IsInside(double r, double phi){
+		double phi_1 = m_deltaPhi_flat/2.;
+		double phi_2 = M_PI*2. - m_deltaPhi_flat/2.;
+		return (((r > m_Rinner && r < m_Router) || CheckPositionEqual(r, m_Rinner) || CheckPositionEqual(r, m_Router)) && (phi > phi_2 || phi < phi_1 || CheckAngleEqual(phi, phi_1) || CheckAngleEqual(phi, phi_2)));
+	};
+
+	void WriteTransformedCorners(std::ofstream& outfile);
 
 private:
 	/*Class Constants*/
@@ -117,13 +128,6 @@ private:
 	*/
 	inline bool CheckPositionEqual(double val1, double val2) { return fabs(val1-val2) > POSITION_TOL ? false : true; };
 	inline bool CheckAngleEqual(double val1, double val2) { return fabs(val1-val2) > ANGULAR_TOL ? false : true; };
-
-	/*Determine if a hit is within the bulk detector*/
-	inline bool IsInside(double r, double phi){
-		double phi_1 = m_deltaPhi_flat/2.;
-		double phi_2 = M_PI*2. - m_deltaPhi_flat/2.;
-		return (((r > m_Rinner && r < m_Router) || CheckPositionEqual(r, m_Rinner) || CheckPositionEqual(r, m_Router)) && (phi > phi_2 || phi < phi_1 || CheckAngleEqual(phi, phi_1) || CheckAngleEqual(phi, phi_2)));
-	};
 
 	/*
 		For a given radius/phi are you inside of a given ring/wedge channel or are you on the spacing between channels?

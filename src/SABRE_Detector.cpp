@@ -53,7 +53,12 @@
   -- gwm, Dec 2020; based on the og code from kgh
 
 */
+#include <random>
+#include <cmath>
+#include <fstream>
+
 #include "SABRE_Detector.h"
+#include "Vec3.h"
 
 SABRE_Detector::SABRE_Detector() :
 m_Router(0.1351), m_Rinner(0.0326), m_deltaPhi_flat(54.4*deg2rad), m_phiCentral(0.0), m_tilt(0.0), m_translation(0.,0.,0.), m_norm_flat(0,0,1.0)
@@ -252,6 +257,10 @@ std::pair<int, int> SABRE_Detector::GetTrajectoryRingWedge(double theta, double 
 	double phi_denominator = std::cos(m_phiCentral)*std::cos(phi) + std::sin(m_phiCentral)*std::sin(phi);
 	double phi_flat = std::atan2(phi_numerator, phi_denominator);
 	if(phi_flat < 0) phi_flat += M_PI*2.0;
+	// double phi_flat_numerator = std::sin(theta)*std::sin(phi-m_phiCentral);
+	// double phi_flat_denominator = std::cos(m_tilt)*std::sin(theta)*std::cos(phi-m_phiCentral) - std::sin(m_tilt)*std::cos(theta);
+	// double phi_flat = std::atan2(phi_flat_numerator,phi_flat_denominator);
+	// if(phi_flat < 0) phi_flat += 2*M_PI;
 
 	//Calculate the *potential* R in the flat detector
 	double r_numerator = m_translation.GetZ()*std::cos(phi)*std::sin(theta);
@@ -310,4 +319,67 @@ Vec3 SABRE_Detector::GetHitCoordinates(int ringch, int wedgech) {
 	Vec3 hit(x, y, z);
 
 	return TransformToTiltedFrame(hit);
+}
+/*
+	Given a ring/wedge of this SABRE detector, calculate the coordinates of a hit.
+	Adds a "random wiggle" of the point in the area of the pixel. This avoids
+	dense colletion of points near the edges when just randomly sampling r, phi separately.
+*/
+//added by zmp:
+Vec3 SABRE_Detector::GetHitCoordinatesRandomWiggle(int ringch, int wedgech){
+	if(!CheckRingChannel(ringch) || !CheckWedgeChannel(wedgech)){
+		return Vec3();
+	}
+
+	//define pixel boundaries
+	double r_min = m_Rinner + ringch*m_deltaR_flat_ring;
+	double r_max = m_Rinner + (ringch + 1)*m_deltaR_flat_ring;
+	double phi_min = -m_deltaPhi_flat/2.0 + wedgech*m_deltaPhi_flat_wedge;
+	double phi_max = -m_deltaPhi_flat/2.0 + (wedgech + 1)*m_deltaPhi_flat_wedge;
+
+	//random number generation
+	static thread_local std::mt19937 gen(std::random_device{}());
+	std::uniform_real_distribution<double> ur(0.,1.);
+
+	//uniform area sampling
+	double r = std::sqrt(ur(gen)*(r_max*r_max - r_min*r_min) + r_min*r_min);
+	double phi = phi_min + ur(gen)*(phi_max - phi_min);
+
+	double x = r*std::cos(phi);
+	double y = r*std::sin(phi);
+	double z = 0.;
+
+	Vec3 hit(x,y,z);
+
+	return TransformToTiltedFrame(hit);
+}
+
+void SABRE_Detector::WriteTransformedCorners(std::ofstream& outfile) {
+	//outfile << std::setprecision(10);
+
+	for(int ring=0; ring<m_nRings; ring++){
+		for(int wedge=0; wedge<m_nWedges; wedge++){
+			double r_inner = m_Rinner + ring*m_deltaR_flat_ring;
+			double r_outer = m_Rinner + (ring+1)*m_deltaR_flat_ring;
+			double phi_start = -m_deltaPhi_flat/2. + wedge*m_deltaPhi_flat_wedge;
+			double phi_end = -m_deltaPhi_flat/2. + (wedge+1)*m_deltaPhi_flat_wedge;
+
+			Vec3 corner0_flat(r_outer*std::cos(phi_start),r_outer*std::sin(phi_start),0);
+			Vec3 corner1_flat(r_inner*std::cos(phi_start),r_inner*std::sin(phi_start),0);
+			Vec3 corner2_flat(r_inner*std::cos(phi_end),r_inner*std::sin(phi_end),0);
+			Vec3 corner3_flat(r_outer*std::cos(phi_end),r_outer*std::sin(phi_end),0);
+
+			Vec3 corner0_tilt = TransformToTiltedFrame(corner0_flat);
+			Vec3 corner1_tilt = TransformToTiltedFrame(corner1_flat);
+			Vec3 corner2_tilt = TransformToTiltedFrame(corner2_flat);
+			Vec3 corner3_tilt = TransformToTiltedFrame(corner3_flat);
+
+			outfile << ring << " " << wedge << " "
+						  << corner0_tilt.GetX() << " " << corner0_tilt.GetY() << " "
+						  << corner1_tilt.GetX() << " " << corner1_tilt.GetY() << " " 
+						  << corner2_tilt.GetX() << " " << corner2_tilt.GetY() << " "
+						  << corner3_tilt.GetX() << " " << corner3_tilt.GetY() << "\n";
+						  //<< ring << " " << wedge << "\n";
+		}
+	}
 }
