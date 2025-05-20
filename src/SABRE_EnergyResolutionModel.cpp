@@ -50,14 +50,14 @@ double SABRE_EnergyResolutionModel::applyEnergyResolution(double kinEnergyMeV, d
 }
 
 bool SABRE_EnergyResolutionModel::detectEnergyInRing(int ring, double kinEnergyMeV, double& detectedEnergyMeV){
-	if(ring<=0 || ring >= NUM_RINGS) return false;
+	if(ring<0 || ring >= NUM_RINGS) return false;
 
 	detectedEnergyMeV = applyEnergyResolution(kinEnergyMeV,getRingResolution(ring));
 	return detectedEnergyMeV >= getRingThreshold(ring);
 }
 
 bool SABRE_EnergyResolutionModel::detectEnergyInWedge(int wedge, double kinEnergyMeV, double& detectedEnergyMeV){
-	if(wedge<=0 || wedge >= NUM_WEDGES) return false;
+	if(wedge<0 || wedge >= NUM_WEDGES) return false;
 
 	detectedEnergyMeV = applyEnergyResolution(kinEnergyMeV,getWedgeResolution(wedge));
 	return detectedEnergyMeV >= getWedgeThreshold(wedge);
