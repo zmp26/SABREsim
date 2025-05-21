@@ -1,0 +1,142 @@
+#this file contains the information to produce histograms in the histogram manager used in detPlotter_3body.cxx
+#lines that begin with # are ignored, otherwise a line with out the correct syntax may cause issues
+#format as follows:
+# LOCAL/ROOT/TDIRECTORY/PATH/HERE HISTOTYPE HISTONAME HISTOTITLE HISTODIMi_NBINS HISTODIMi_MIN HISTODIMi_MAX ...
+#where:
+#			LOCAL/ROOT/TDIRECTORY/PATH/HERE is the TDirectory location in the output root file you would like the histogram to be saved to
+#			HISTOTYPE is one of: TH1, TH2, TProfile, or TProfile2D
+#			HISTONAME is the ROOT name of the histogram (these must be unique!)
+#			HISTOTITLE is the title to display when drawing the histogram
+#			HISTODIMi_NBINS is the number of bins in the first dimension of the histogram (typically x)
+#			HISTODIMi_MIN is the minimum of the range along the dimension
+#			HISTODIMi_MAX is the maximum of the range along the dimension
+#
+# one should use the proper number of nbins, min, and max for the HISTOTYPE (i.e. TH1 have 1 dim, TH2/TP2D have 2 dims)
+#
+#
+# pure kinematics histograms:
+kin2mc TH1D hELab1 ELab1 400 0 20
+kin2mc TH1D hELab2 ELab2 400 0 20
+kin2mc TH1D hELab3 ELab3 400 0 20
+kin2mc TH1D hELab4 ELab4 400 0 20
+# angle
+kin2mc TH1D hThetaLab1 ThetaLab1 180 -0.5 179.5
+kin2mc TH1D hThetaLab2 ThetaLab2 180 -0.5 179.5
+kin2mc TH1D hThetaLab3 ThetaLab3 180 -0.5 179.5
+kin2mc TH1D hThetaLab4 ThetaLab4 180 -0.5 179.5
+kin2mc TH1D hPhiLab1 PhiLab1 360 -0.5 359.5
+kin2mc TH1D hPhiLab2 PhiLab2 360 -0.5 359.5
+kin2mc TH1D hPhiLab3 PhiLab3 360 -0.5 359.5
+kin2mc TH1D hPhiLab4 PhiLab4 360 -0.5 359.5
+# energy vs angle
+kin2mc TH2D hELabThetaLab_1 ELabVsThetaLab_1 180 -0.5 179.5 400 0 20
+kin2mc TH2D hELabThetaLab_2 ELabVsThetaLab_2 180 -0.5 179.5 400 0 20
+kin2mc TH2D hELabThetaLab_3 ELabVsThetaLab_3 180 -0.5 179.5 400 0 20
+kin2mc TH2D hELabThetaLab_4 ELabVsThetaLab_4 180 -0.5 179.5 400 0 20
+kin2mc TH2D hELabPhiLab_1 ELabVsPhiLab_1 360 -0.5 359.5 400 0 20
+kin2mc TH2D hELabPhiLab_2 ELabVsPhiLab_2 360 -0.5 359.5 400 0 20
+kin2mc TH2D hELabPhiLab_3 ELabVsPhiLab_3 360 -0.5 359.5 400 0 20
+kin2mc TH2D hELabPhiLab_4 ELabVsPhiLab_4 360 -0.5 359.5 400 0 20
+# theta vs phi
+kin2mc TH2D hThetaLabPhiLab_1 ThetaLabVsPhiLab_1 180 -0.5 179.5 360 -0.5 359.5
+kin2mc TH2D hThetaLabPhiLab_2 ThetaLabVsPhiLab_2 180 -0.5 179.5 360 -0.5 359.5
+kin2mc TH2D hThetaLabPhiLab_3 ThetaLabVsPhiLab_3 180 -0.5 179.5 360 -0.5 359.5
+kin2mc TH2D hThetaLabPhiLab_4 ThetaLabVsPhiLab_4 180 -0.5 179.5 360 -0.5 359.5
+#
+#
+#
+#
+#
+# SABRE ring/wedge hit summary histograms:
+SABRE/SABRE0/RingWedge TH1I hSABRE0_RingHit SABRE0_RingHit 16 -0.5 15.5
+SABRE/SABRE0/RingWedge TH1I hSABRE0_WedgeHit SABRE0_WedgeHit 8 -0.5 7.5
+SABRE/SABRE1/RingWedge TH1I hSABRE1_RingHit SABRE1_RingHit 16 -0.5 15.5
+SABRE/SABRE1/RingWedge TH1I hSABRE1_WedgeHit SABRE1_WedgeHit 8 -0.5 7.5
+SABRE/SABRE2/RingWedge TH1I hSABRE2_RingHit SABRE2_RingHit 16 -0.5 15.5
+SABRE/SABRE2/RingWedge TH1I hSABRE2_WedgeHit SABRE2_WedgeHit 8 -0.5 7.5
+SABRE/SABRE3/RingWedge TH1I hSABRE3_RingHit SABRE3_RingHit 16 -0.5 15.5
+SABRE/SABRE3/RingWedge TH1I hSABRE3_WedgeHit SABRE3_WedgeHit 8 -0.5 7.5
+SABRE/SABRE4/RingWedge TH1I hSABRE4_RingHit SABRE4_RingHit 16 -0.5 15.5
+SABRE/SABRE4/RingWedge TH1I hSABRE4_WedgeHit SABRE4_WedgeHit 8 -0.5 7.5
+#SABRE energy summary histograms:
+#SABRE TH1D hSABRE0_ESummary SABRE0_ESummary 2000 0 10
+#SABRE TH1D hSABRE1_ESummary SABRE1_ESummary 2000 0 10
+#SABRE TH1D hSABRE2_ESummary SABRE2_ESummary 2000 0 10
+#SABRE TH1D hSABRE3_ESummary SABRE3_ESummary 2000 0 10
+#SABRE TH1D hSABRE4_ESummary SABRE4_ESummary 2000 0 10
+#
+SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE1/Summary TH2D hSABRE1_ESummaryWedges SABRE1_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE/SABRE1/Summary TH2D hSABRE1_ESummaryRings SABRE1_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE2/Summary TH2D hSABRE2_ESummaryWedges SABRE2_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE/SABRE2/Summary TH2D hSABRE2_ESummaryRings SABRE2_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE3/Summary TH2D hSABRE3_ESummaryWedges SABRE3_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE/SABRE3/Summary TH2D hSABRE3_ESummaryRings SABRE3_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE4/Summary TH2D hSABRE4_ESummaryWedges SABRE4_ESummaryWedges 8 -0.5 7.5 400 0 20
+SABRE/SABRE4/Summary TH2D hSABRE4_ESummaryRings SABRE4_ESummaryRings 16 -0.5 15.5 400 0 20
+#
+#SABRE pixel summary histos
+SABRE/SABRE0/Summary TH3D hSABRE0_ESummaryPixels SABRE0_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
+SABRE/SABRE1/Summary TH3D hSABRE1_ESummaryPixels SABRE1_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
+SABRE/SABRE2/Summary TH3D hSABRE2_ESummaryPixels SABRE2_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
+SABRE/SABRE3/Summary TH3D hSABRE3_ESummaryPixels SABRE3_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
+SABRE/SABRE4/Summary TH3D hSABRE4_ESummaryPixels SABRE4_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
+#
+#
+#
+#
+#
+# SABRE detector EDif histos
+SABRE/SABRE0/EDif TH1D hSABRE0_EDif SABRE0_EDif 40 -1 1
+SABRE/SABRE1/EDif TH1D hSABRE1_EDif SABRE0_EDif 40 -1 1
+SABRE/SABRE2/EDif TH1D hSABRE2_EDif SABRE0_EDif 40 -1 1
+SABRE/SABRE3/EDif TH1D hSABRE3_EDif SABRE0_EDif 40 -1 1
+SABRE/SABRE4/EDif TH1D hSABRE4_EDif SABRE0_EDif 40 -1 1
+#
+# SABRE pixel EDif histos
+SABRE/SABRE0/EDif TH3D hSABRE0_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
+SABRE/SABRE1/EDif TH3D hSABRE1_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
+SABRE/SABRE2/EDif TH3D hSABRE2_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
+SABRE/SABRE3/EDif TH3D hSABRE3_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
+SABRE/SABRE4/EDif TH3D hSABRE4_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
+#sabre histograms for sabre angle, ringE, wedgeE vs kinmc angle, energy, energy
+#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_ringEVSkinE SABRE0_ringEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_ringEVSkinE SABRE1_ringEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_ringEVSkinE SABRE2_ringEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_ringEVSkinE SABRE3_ringEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_ringEVSkinE SABRE4_ringEVSkinE 400 0 20 400 0 20
+#
+#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_wedgeEVSkinE SABRE0_wedgeEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_wedgeEVSkinE SABRE1_wedgeEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_wedgeEVSkinE SABRE2_wedgeEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_wedgeEVSkinE SABRE3_wedgeEVSkinE 400 0 20 400 0 20
+#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_wedgeEVSkinE SABRE4_wedgeEVSkinE 400 0 20 400 0 20
+#
+#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_ringThetaVSkinTheta SABRE0_ringThetaVSkinTheta 90 0 180 90 0 180
+#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_ringThetaVSkinTheta SABRE1_ringThetaVSkinTheta 90 0 180 90 0 180
+#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_ringThetaVSkinTheta SABRE2_ringThetaVSkinTheta 90 0 180 90 0 180
+#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_ringThetaVSkinTheta SABRE3_ringThetaVSkinTheta 90 0 180 90 0 180
+#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_ringThetaVSkinTheta SABRE4_ringThetaVSkinTheta 90 0 180 90 0 180
+#
+#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_wedgePhiVSkinPhi SABRE0_wedgePhiVSkinPhi 180 0 360 180 0 360
+#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_wedgePhiVSkinPhi SABRE1_wedgePhiVSkinPhi 180 0 360 180 0 360
+#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_wedgePhiVSkinPhi SABRE2_wedgePhiVSkinPhi 180 0 360 180 0 360
+#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_wedgePhiVSkinPhi SABRE3_wedgePhiVSkinPhi 180 0 360 180 0 360
+#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_wedgePhiVSkinPhi SABRE4_wedgePhiVSkinPhi 180 0 360 180 0 360
+#
+#
+#
+# geometric histograms
+# start with local (rho,phi) converted to (x,y) values:
+SABRE/SABRE0/GEOM TH2D hSABRE0_hitsMapLocal SABRE0_hitsMapLocal 400 -0.2 0.2 400 -0.2 0.2
+SABRE/SABRE1/GEOM TH2D hSABRE1_hitsMapLocal SABRE1_hitsMapLocal 400 -0.2 0.2 400 -0.2 0.2
+SABRE/SABRE2/GEOM TH2D hSABRE2_hitsMapLocal SABRE2_hitsMapLocal 400 -0.2 0.2 400 -0.2 0.2
+SABRE/SABRE3/GEOM TH2D hSABRE3_hitsMapLocal SABRE3_hitsMapLocal 400 -0.2 0.2 400 -0.2 0.2
+SABRE/SABRE4/GEOM TH2D hSABRE4_hitsMapLocal SABRE4_hitsMapLocal 400 -0.2 0.2 400 -0.2 0.2
+SABRE/GEOM TH2D hSABREARRAY_hitsMapLocal SABREARRAY_hitsMapLocal 400 -0.2 0.2 400 -0.2 0.2
+# and now do global (theta,phi) values:
+SABRE/GEOM TH2D hSABRE_AngleHitsMap SABRE_AngleHitsMap 180 0 180 360 0 360
+#sabre pixel map
+SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
+#
