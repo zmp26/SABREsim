@@ -93,7 +93,7 @@ int main(int argc, char * argv[]){
 	}
 	cout << endl;
 
-	int onePartHits = 0, twoPartHits=0, threePartHits=0;
+	int onePartHits = 0, twoPartHits=0, threePartHits=0, fourPartHits=0;
 
 	//need the transformed corners for each detector, so lets just output that here really quickly:
 	// ofstream cornerfiles[5];
@@ -229,7 +229,82 @@ int main(int argc, char * argv[]){
 			}
 		}
 	} else if(kinX == 4){//kin4mc
+		while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
+			nevents += 1;
+			detected1 = false;
+			detected2 = false;
+			detected3 = false;
+			detected4 = false;
 
+			outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << endl;
+			if(nevents%50000==0) cout << "Processed " << nevents << " events..." << endl;
+
+			for(size_t i=0; i<SABRE_Array.size(); i++){
+				double smearedERing, smearedEWedge;
+
+				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
+				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
+						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected1 = true;
+						hit1+=1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+
+				smearedERing = 0.;
+				smearedEWedge = 0.;
+				pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
+				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);	
+						outfile << 200+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected2 = true;
+						hit2+=1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+
+				smearedERing = 0.;
+				smearedEWedge = 0.;
+				pair<int,int> hit3_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
+				if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit3_rw.first,e3,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit3_rw.second,e3,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first,hit3_rw.second);
+						outfile << 300+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected3 = true;
+						hit3+=1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+
+				smearedERing = 0.;
+				smearedEWedge = 0.;
+				pair<int,int> hit4_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
+				if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit4_rw.first,e4,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit4_rw.second,e4,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
+						outfile << 400+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected4 = true;
+						hit4+=1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+			}
+
+			outfile << eoev << endl;
+
+			if((detected1&&!detected2&&!detected3&&!detected4) || (!detected1&&detected2&&!detected3&&!detected4) || (!detected1&&!detected2&&detected3&&!detected4) || (!detected1&&!detected2&&!detected3&&detected4)){
+				onePartHits += 1;
+			} else if((detected1&&detected2&&!detected3&&!detected4) || (!detected1&&detected2&&detected3&&!detected4) || (!detected1&&!detected2&&detected3&&detected4) || (detected1&&!detected2&&!detected3&&detected4)){
+				twoPartHits += 1;
+			} else if((detected1&&detected2&&detected3&&!detected4) || (!detected1&&detected2&&detected3&&detected4) || (detected1&&!detected2&&detected3&&detected4) || (detected1&&detected2&&!detected3&&detected4)){
+				threePartHits += 1;
+			} else if((detected1&&detected2&&detected3&&detected4)){
+				fourPartHits += 1;
+			}
+		}
 	}
 
 	infile.close();
@@ -245,6 +320,7 @@ int main(int argc, char * argv[]){
 	if(onePartHits>0) cout << "1 Particle Events: " << onePartHits << endl;
 	if(twoPartHits>0) cout << "2 Particle Events: " << twoPartHits << endl;
 	if(threePartHits>0) cout << "3 Particle Events: " << threePartHits << endl;
+	if(fourPartHits>0) cout << "4 Particle Events: " << fourPartHits << endl;
 	for(int i=0; i<5; i++){
 		cout << "Detector_" << i << " had total hits = " << SABRE_Array_hits[i] << endl;
 	}
