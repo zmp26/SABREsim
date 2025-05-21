@@ -216,7 +216,7 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 
 	TFile* outfile = new TFile(output_rootfilename,"RECREATE");
 	HistoManager *histoman = new HistoManager(outfile);
-	histoman->loadHistoConfig("HMConfig/RutherfordScattering_2body.HMConfig");
+	histoman->loadHistoConfig("HMConfig/_2body.HMConfig");
 	DeterminePolygons(histoman);
 
 	TTree* kin2 = new TTree(ntpname, "2-body simulation tree");
