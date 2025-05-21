@@ -5,7 +5,6 @@ using namespace std;
 #include <fstream>
 #include <time.h>
 #include <string>
-
 #include "SABRE_Detector.h"
 #include "Vec3.h"
 #include "Rotation.h"
@@ -25,14 +24,17 @@ int main(int argc, char * argv[]){
 	int nevents = 0;
 	bool detected1 = false;
 	bool detected2 = false;
+	bool detected3 = false;
+	bool detected4 = false;
 	//bool detectedboth = false;
 	int hit1 = 0;
 	int hit2 = 0;
+	int hit3 = 0;
+	int hit4 = 0;
 	int hitboth = 0;
 	//float dx = 0, dy = 0;
 	float e1, theta1, phi1, thetacm, e2, theta2, phi2;//kin2mc output
-	float e3, theta3, phi3;//kin3mc output
-	//float e4, theta4, phi4;//kin4mc output
+	float e3, theta3, phi3, e4, theta4, phi4;//kin3/4mc output
 
 	//set seed for RNG
 	srand(time(NULL));
@@ -70,7 +72,7 @@ int main(int argc, char * argv[]){
 	// beamspot.SetXOffset(0);
 	// beamspot.SetYOffset(0);
 
-	//cout << endl;
+	cout << endl;
 	cout << "Kin" << kinX << "mc selected!" << endl;
 	cout << "Processing physics data file " << argv[2] << endl;
 	cout << "Writing to output file " << argv[3] << endl << endl;
@@ -90,6 +92,8 @@ int main(int argc, char * argv[]){
 		//cout << "Successfully created SABRE_Detector at PHI[" << i << "] = " << PHI[i] << endl;
 	}
 	cout << endl;
+
+	int onePartHits = 0, twoPartHits=0, threePartHits=0;
 
 	//need the transformed corners for each detector, so lets just output that here really quickly:
 	// ofstream cornerfiles[5];
@@ -160,8 +164,69 @@ int main(int argc, char * argv[]){
 
 		}
 	} else if(kinX == 3){//kin3mc
-		while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3){
+		while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
+			nevents += 1;
+			detected1 = false;
+			detected3 = false;
+			detected4 = false;
 
+			//outfile << std::format("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f",e1,theta1,phi1,e2,theta2,phi2,e3,theta3,phi3,e4,theta4,phi4) << endl;
+			outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << endl;
+			if(nevents%50000==0) cout << "Processed " << nevents << " events..." << endl;
+
+			for(size_t i=0; i<SABRE_Array.size(); i++){
+				double smearedERing, smearedEWedge;
+
+				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
+				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
+						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",100+i,hit1_rw.first,hit1_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
+						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected1=true;
+						hit1+=1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+
+				smearedERing = 0.;
+				smearedEWedge = 0.;
+				pair<int,int> hit3_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
+				if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected2){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit3_rw.first,e3,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit3_rw.second,e3,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first,hit3_rw.second);
+						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",300+i,hit3_rw.first,hit3_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
+						outfile << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected3 = true;
+						hit3 += 1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+
+				smearedERing = 0.;
+				smearedEWedge = 0.;
+				pair<int,int> hit4_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
+				if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit4_rw.first,e4,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit4_rw.second,e4,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
+						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",400+i,hit4_rw.first,hit4_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
+						outfile << 400+i << "\t" << hit4_rw.first << "\t" << hit4_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						detected4 = true;
+						hit4 += 1;
+						SABRE_Array_hits[i] += 1;
+					}
+				}
+			}
+
+			outfile << eoev << endl;
+
+			if((detected1&&!detected3&&!detected4) || (!detected1&&detected3&&!detected4) || (!detected1&&!detected3&&detected4)){
+				onePartHits += 1;
+			} else if((detected1&&detected3&&!detected4) || (!detected1&&detected3&&detected4) || (detected1&&!detected3&&detected4)){
+				twoPartHits += 1;
+			} else if((detected1&&detected3&&detected4)){
+				threePartHits += 1;
+			}
 		}
 	} else if(kinX == 4){//kin4mc
 
@@ -172,9 +237,14 @@ int main(int argc, char * argv[]){
 
 	cout << endl;
 	cout << "Files are closed. Processed " << nevents << " events." << endl;
-	cout << "Events with ejectile in SABRE: " << hit1 << endl;
-	cout << "Events with recoil in SABRE: " << hit2 << endl;
-	cout << "Events with both ejectile and recoil in SABRE: " << hitboth << endl << endl;
+	if(kinX==2||kinX==3||kinX==4) cout << "Events with ejectile in SABRE: " << hit1 << endl;
+	if(kinX==2) cout << "Events with recoil in SABRE: " << hit2 << endl;
+	if(kinX==3) cout << "Events with bu1 in SABRE: " << hit3 << "\nEvents with bu2 in SABRE: " << hit4 << endl;
+	if(kinX==4) cout << "Events with bu1 in SABRE: " << hit2 << "\nEvents with bu2 in SABRE: " << hit3 << "\nEvents with bu3 in SABRE: " << hit4 << endl; 
+	//cout << "Events with both ejectile and recoil in SABRE: " << hitboth << endl << endl;
+	if(onePartHits>0) cout << "1 Particle Events: " << onePartHits << endl;
+	if(twoPartHits>0) cout << "2 Particle Events: " << twoPartHits << endl;
+	if(threePartHits>0) cout << "3 Particle Events: " << threePartHits << endl;
 	for(int i=0; i<5; i++){
 		cout << "Detector_" << i << " had total hits = " << SABRE_Array_hits[i] << endl;
 	}
