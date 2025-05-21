@@ -1,4 +1,4 @@
-#this file contains the information to produce histograms in the histogram manager used in li7_he3he4_6li_4he2h_3body.cxx
+#this file contains the information to produce histograms in the histogram manager used in detPlotter_2body.cxx
 #lines that begin with # are ignored, otherwise a line with out the correct syntax may cause issues
 #format as follows:
 # LOCAL/ROOT/TDIRECTORY/PATH/HERE HISTOTYPE HISTONAME HISTOTITLE HISTODIMi_NBINS HISTODIMi_MIN HISTODIMi_MAX ...
