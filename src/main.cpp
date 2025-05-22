@@ -259,7 +259,7 @@ int main(int argc, char * argv[]){
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);	
-						outfile << 200+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 						detected2 = true;
 						hit2+=1;
 						SABRE_Array_hits[i] += 1;
@@ -272,7 +272,7 @@ int main(int argc, char * argv[]){
 				if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit3_rw.first,e3,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit3_rw.second,e3,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first,hit3_rw.second);
-						outfile << 300+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						outfile << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 						detected3 = true;
 						hit3+=1;
 						SABRE_Array_hits[i] += 1;
@@ -285,7 +285,7 @@ int main(int argc, char * argv[]){
 				if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit4_rw.first,e4,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit4_rw.second,e4,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
-						outfile << 400+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
+						outfile << 400+i << "\t" << hit4_rw.first << "\t" << hit4_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 						detected4 = true;
 						hit4+=1;
 						SABRE_Array_hits[i] += 1;
