@@ -128,3 +128,26 @@ SABRE/GEOM TH2D hSABRE_AngleHitsMap SABRE_AngleHitsMap 180 0 180 360 0 360
 #sabre pixel map
 SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# Histograms below to compare with Rachel calibration data from thesis
+# reaction 4 = 10B(3He,d)11C_gs				-->		Unstable, but to gamma decay so use kin2mc
+# reaction 8 = 12C(3He,a)11C_2000keV		-->		Unstable, but to internal conversion so use kin2mc
+SABRE/SABRE0 TH1D hSABRE0_ring0_E SABRE0_ring0_E 400 0 20
+SABRE/SABRE1 TH1D hSABRE1_ring0_E SABRE1_ring0_E 400 0 20
+SABRE/SABRE2 TH1D hSABRE2_ring0_E SABRE2_ring0_E 400 0 20
+SABRE/SABRE3 TH1D hSABRE3_ring0_E SABRE3_ring0_E 400 0 20
+SABRE/SABRE4 TH1D hSABRE4_ring0_E SABRE4_ring0_E 400 0 20
+#
+SABRE TH1D hSABRE_ring0_E SABRE_ring0_E 400 0 20

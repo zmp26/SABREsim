@@ -121,6 +121,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE0_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE0_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				if(sabredata1.ring==0) { histoman->getHisto1D("hSABRE0_ring0_E")->Fill(sabredata1.ringEnergy); histoman->getHisto1D("hSABRE_ring0_E")->Fill(sabredata1.ringEnergy);}
 			} else if(sabredata1.detectorIndex == 1) {
 				histoman->getHisto1D("hSABRE1_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE1_WedgeHit")->Fill(sabredata1.wedge);
@@ -140,6 +141,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE1_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE1_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				if(sabredata1.ring==0) { histoman->getHisto1D("hSABRE1_ring0_E")->Fill(sabredata1.ringEnergy); histoman->getHisto1D("hSABRE_ring0_E")->Fill(sabredata1.ringEnergy);}
 			} else if(sabredata1.detectorIndex == 2){
 				histoman->getHisto1D("hSABRE2_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE2_WedgeHit")->Fill(sabredata1.wedge);
@@ -159,6 +161,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE2_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE2_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				if(sabredata1.ring==0) { histoman->getHisto1D("hSABRE2_ring0_E")->Fill(sabredata1.ringEnergy); histoman->getHisto1D("hSABRE_ring0_E")->Fill(sabredata1.ringEnergy);}
 			} else if(sabredata1.detectorIndex == 3){
 				histoman->getHisto1D("hSABRE3_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE3_WedgeHit")->Fill(sabredata1.wedge);
@@ -178,6 +181,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE3_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE3_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				if(sabredata1.ring==0) { histoman->getHisto1D("hSABRE3_ring0_E")->Fill(sabredata1.ringEnergy); histoman->getHisto1D("hSABRE_ring0_E")->Fill(sabredata1.ringEnergy);}
 			} else if(sabredata1.detectorIndex == 4){
 				histoman->getHisto1D("hSABRE4_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE4_WedgeHit")->Fill(sabredata1.wedge);
@@ -197,6 +201,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE4_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE4_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				if(sabredata1.ring==0) { histoman->getHisto1D("hSABRE4_ring0_E")->Fill(sabredata1.ringEnergy); histoman->getHisto1D("hSABRE_ring0_E")->Fill(sabredata1.ringEnergy);}
 			}
 			//cout << "fillSABREHistos test" << endl;
 } 
