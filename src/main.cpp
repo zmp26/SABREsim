@@ -118,7 +118,7 @@ int main(int argc, char * argv[]){
 	//prepare the SABRE_EnergyResolutionModels here (1/SABRE detector, so 5 total in the array)
 	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels;
 	for(size_t i=0; i<SABRE_Array.size(); i++){
-		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.001,0.1));////sigma of 0.001 MeV for all rings/wedges and threshold of 100 keV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
+		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.050,0.1));////sigma of 0.050 MeV for all rings/wedges and threshold of 100 keV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
 	}
 
 	if(kinX == 2){//kin2mc
@@ -192,7 +192,7 @@ int main(int argc, char * argv[]){
 				smearedERing = 0.;
 				smearedEWedge = 0.;
 				pair<int,int> hit3_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
-				if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected2){
+				if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit3_rw.first,e3,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit3_rw.second,e3,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first,hit3_rw.second);
 						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",300+i,hit3_rw.first,hit3_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
