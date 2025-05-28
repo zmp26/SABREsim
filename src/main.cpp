@@ -89,7 +89,11 @@ int main(int argc, char * argv[]){
 	vector<int> SABRE_Array_hits = {0,0,0,0,0};
 	for(size_t i=0; i<PHI.size(); i++){
 		SABRE_Array.push_back(new SABRE_Detector(INNER_R, OUTER_R, PHI_COVERAGE*DEG2RAD, PHI[i]*DEG2RAD, TILT*DEG2RAD, ZDIST));
-		//cout << "Successfully created SABRE_Detector at PHI[" << i << "] = " << PHI[i] << endl;
+		cout << "Successfully created SABRE_Detector at PHI[" << i << "] = " << PHI[i] << endl;
+		cout << "\tNormal X: " << SABRE_Array[i]->GetNormTilted().GetX() << endl;
+		cout << "\tNormal Y: " << SABRE_Array[i]->GetNormTilted().GetY() << endl;
+		cout << "\tNormal Z: " << SABRE_Array[i]->GetNormTilted().GetZ() << endl;
+		cout << endl;
 	}
 	cout << endl;
 

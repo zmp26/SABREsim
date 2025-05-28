@@ -36,16 +36,26 @@ kin2mc TH2D hThetaLabPhiLab_2 ThetaLabVsPhiLab_2 180 -0.5 179.5 360 -0.5 359.5
 #
 #
 # SABRE ring/wedge hit summary histograms:
+SABRE TH1I hSABRE_ChannelHits SABRE_ChannelHits 128 -0.5 127.5
+SABRE TH1I hSABRE_RingChannelHits SABRE_RingChannelHits 80 47.5 127.5
+SABRE TH1I hSABRE_WedgeChannelHits SABRE_WedgeChannelHits 48 -0.5 47.5
+SABRE TH2D hSABRE_ChannelESummary SABRE_ChannelESummary 128 -0.5 127.5 2000 0 20
+SABRE TH2D hSABRE_SabreRingEVsLi6ExE SABRE_SabreRingEVsLi6ExE 600 -2 10 500 0 10
 SABRE/SABRE0/RingWedge TH1I hSABRE0_RingHit SABRE0_RingHit 16 -0.5 15.5
 SABRE/SABRE0/RingWedge TH1I hSABRE0_WedgeHit SABRE0_WedgeHit 8 -0.5 7.5
+SABRE/SABRE0/RingWedge TH1I hSABRE0_ChannelHits SABRE0_ChannelHits 128 -0.5 127.5
 SABRE/SABRE1/RingWedge TH1I hSABRE1_RingHit SABRE1_RingHit 16 -0.5 15.5
 SABRE/SABRE1/RingWedge TH1I hSABRE1_WedgeHit SABRE1_WedgeHit 8 -0.5 7.5
+SABRE/SABRE1/RingWedge TH1I hSABRE1_ChannelHits SABRE1_ChannelHits 128 -0.5 127.5
 SABRE/SABRE2/RingWedge TH1I hSABRE2_RingHit SABRE2_RingHit 16 -0.5 15.5
 SABRE/SABRE2/RingWedge TH1I hSABRE2_WedgeHit SABRE2_WedgeHit 8 -0.5 7.5
+SABRE/SABRE2/RingWedge TH1I hSABRE2_ChannelHits SABRE2_ChannelHits 128 -0.5 127.5
 SABRE/SABRE3/RingWedge TH1I hSABRE3_RingHit SABRE3_RingHit 16 -0.5 15.5
 SABRE/SABRE3/RingWedge TH1I hSABRE3_WedgeHit SABRE3_WedgeHit 8 -0.5 7.5
+SABRE/SABRE3/RingWedge TH1I hSABRE3_ChannelHits SABRE3_ChannelHits 128 -0.5 127.5
 SABRE/SABRE4/RingWedge TH1I hSABRE4_RingHit SABRE4_RingHit 16 -0.5 15.5
 SABRE/SABRE4/RingWedge TH1I hSABRE4_WedgeHit SABRE4_WedgeHit 8 -0.5 7.5
+SABRE/SABRE4/RingWedge TH1I hSABRE4_ChannelHits SABRE4_ChannelHits 128 -0.5 127.5
 #SABRE energy summary histograms:
 #SABRE TH1D hSABRE0_ESummary SABRE0_ESummary 2000 0 10
 #SABRE TH1D hSABRE1_ESummary SABRE1_ESummary 2000 0 10
@@ -55,14 +65,33 @@ SABRE/SABRE4/RingWedge TH1I hSABRE4_WedgeHit SABRE4_WedgeHit 8 -0.5 7.5
 #
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE0/Summary TH1D hSABRE0_ERingSummary SABRE0_ERingSummary 400 0 20
+SABRE/SABRE0/Summary TH1D hSABRE0_EWedgeSummary SABRE0_EWedgeSummary 400 0 20
+SABRE/SABRE0/Summary TH2D hSABRE0_ChannelESummary SABRE0_ChannelESummary 128 -0.5 127.5 2000 0 20
+#
 SABRE/SABRE1/Summary TH2D hSABRE1_ESummaryWedges SABRE1_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE1/Summary TH2D hSABRE1_ESummaryRings SABRE1_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE1/Summary TH2D hSABRE1_ChannelESummary SABRE1_ChannelESummary 128 -0.5 127.5 2000 0 20
+SABRE/SABRE1/Summary TH1D hSABRE1_ERingSummary SABRE1_ERingSummary 400 0 20
+SABRE/SABRE1/Summary TH1D hSABRE1_EWedgeSummary SABRE1_EWedgeSummary 400 0 20
+#
 SABRE/SABRE2/Summary TH2D hSABRE2_ESummaryWedges SABRE2_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE2/Summary TH2D hSABRE2_ESummaryRings SABRE2_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE2/Summary TH2D hSABRE2_ChannelESummary SABRE2_ChannelESummary 128 -0.5 127.5 2000 0 20
+SABRE/SABRE2/Summary TH1D hSABRE2_ERingSummary SABRE2_ERingSummary 400 0 20
+SABRE/SABRE2/Summary TH1D hSABRE2_EWedgeSummary SABRE2_EWedgeSummary 400 0 20
+#
 SABRE/SABRE3/Summary TH2D hSABRE3_ESummaryWedges SABRE3_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE3/Summary TH2D hSABRE3_ESummaryRings SABRE3_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE3/Summary TH2D hSABRE3_ChannelESummary SABRE3_ChannelESummary 128 -0.5 127.5 2000 0 20
+SABRE/SABRE3/Summary TH1D hSABRE3_ERingSummary SABRE3_ERingSummary 400 0 20
+SABRE/SABRE3/Summary TH1D hSABRE3_EWedgeSummary SABRE3_EWedgeSummary 400 0 20
+#
 SABRE/SABRE4/Summary TH2D hSABRE4_ESummaryWedges SABRE4_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE4/Summary TH2D hSABRE4_ESummaryRings SABRE4_ESummaryRings 16 -0.5 15.5 400 0 20
+SABRE/SABRE4/Summary TH2D hSABRE4_ChannelESummary SABRE4_ChannelESummary 128 -0.5 127.5 2000 0 20
+SABRE/SABRE4/Summary TH1D hSABRE4_ERingSummary SABRE4_ERingSummary 400 0 20
+SABRE/SABRE4/Summary TH1D hSABRE4_EWedgeSummary SABRE4_EWedgeSummary 400 0 20
 #
 #SABRE pixel summary histos
 SABRE/SABRE0/Summary TH3D hSABRE0_ESummaryPixels SABRE0_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
