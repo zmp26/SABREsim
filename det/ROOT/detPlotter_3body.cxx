@@ -1042,9 +1042,34 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventMMM(pd1.e, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi);
 				CaseResult case1 = results.first;
 				CaseResult case2 = results.second;
-				//fill histograms here
+				//fill angle between lab vector and VCM (in lab frame) vector histograms here
 				histoman->getHisto1D("h1par_RecMissMassExE")->Fill(case1.recInvMass-recoilMass);
 				histoman->getHisto1D("h1par_RecMissMassExE")->Fill(case2.recInvMass-recoilMass);
+				histoman->getHisto1D("h1par_LabVCMAngle1")->Fill(case1.breakup1_LabAngleWRTVCM);
+				histoman->getHisto1D("h1par_LabVCMAngle1")->Fill(case2.breakup1_LabAngleWRTVCM);
+				histoman->getHisto1D("h1par_LabVCMAngle2")->Fill(case1.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h1par_LabVCMAngle2")->Fill(case2.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h1par_LabVCMAngleSum")->Fill(case1.breakup1_LabAngleWRTVCM+case1.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h1par_LabVCMAngleSum")->Fill(case2.breakup1_LabAngleWRTVCM+case2.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h1par_CosLabVCMAngleSum")->Fill(TMath::Cos((case1.breakup1_LabAngleWRTVCM+case1.breakup2_LabAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h1par_CosLabVCMAngleSum")->Fill(TMath::Cos((case2.breakup1_LabAngleWRTVCM+case2.breakup2_LabAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h1par_CosLabVCMAngle1")->Fill(TMath::Cos(case1.breakup1_LabAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h1par_CosLabVCMAngle1")->Fill(TMath::Cos(case2.breakup1_LabAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h1par_CosLabVCMAngle2")->Fill(TMath::Cos(case1.breakup2_LabAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h1par_CosLabVCMAngle2")->Fill(TMath::Cos(case2.breakup2_LabAngleWRTVCM*DEGRAD));
+				//fill angle between CM vector and VCM (in lab frame) vector histograms here
+				histoman->getHisto1D("h1par_CMVCMAngle1")->Fill(case1.breakup1_CMAngleWRTVCM);
+				histoman->getHisto1D("h1par_CMVCMAngle1")->Fill(case2.breakup1_CMAngleWRTVCM);
+				histoman->getHisto1D("h1par_CMVCMAngle2")->Fill(case1.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h1par_CMVCMAngle2")->Fill(case2.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h1par_CMVCMAngleSum")->Fill(case1.breakup1_CMAngleWRTVCM+case1.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h1par_CMVCMAngleSum")->Fill(case2.breakup1_CMAngleWRTVCM+case2.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h1par_CosCMVCMAngleSum")->Fill(TMath::Cos((case1.breakup1_CMAngleWRTVCM+case1.breakup2_CMAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h1par_CosCMVCMAngleSum")->Fill(TMath::Cos((case2.breakup1_CMAngleWRTVCM+case2.breakup2_CMAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h1par_CosCMVCMAngle1")->Fill(TMath::Cos(case1.breakup1_CMAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h1par_CosCMVCMAngle1")->Fill(TMath::Cos(case2.breakup1_CMAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h1par_CosCMVCMAngle2")->Fill(TMath::Cos(case1.breakup2_CMAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h1par_CosCMVCMAngle2")->Fill(TMath::Cos(case2.breakup2_CMAngleWRTVCM*DEGRAD));
 			} else if(eventLines.size()==3){
 				//2 sabre hit
 				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
@@ -1068,6 +1093,31 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				//fill histograms here:
 				histoman->getHisto1D("h2par_RecInvMassExE")->Fill(case1.recInvMass-recoilMass);
 				histoman->getHisto1D("h2par_RecInvMassExE")->Fill(case2.recInvMass-recoilMass);
+				histoman->getHisto1D("h2par_LabVCMAngle1")->Fill(case1.breakup1_LabAngleWRTVCM);
+				histoman->getHisto1D("h2par_LabVCMAngle1")->Fill(case2.breakup1_LabAngleWRTVCM);
+				histoman->getHisto1D("h2par_LabVCMAngle2")->Fill(case1.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h2par_LabVCMAngle2")->Fill(case2.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h2par_LabVCMAngleSum")->Fill(case1.breakup1_LabAngleWRTVCM+case1.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h2par_LabVCMAngleSum")->Fill(case2.breakup1_LabAngleWRTVCM+case2.breakup2_LabAngleWRTVCM);
+				histoman->getHisto1D("h2par_CosLabVCMAngleSum")->Fill(TMath::Cos((case1.breakup1_LabAngleWRTVCM+case1.breakup2_LabAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h2par_CosLabVCMAngleSum")->Fill(TMath::Cos((case2.breakup1_LabAngleWRTVCM+case2.breakup2_LabAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h2par_CosLabVCMAngle1")->Fill(TMath::Cos(case1.breakup1_LabAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h2par_CosLabVCMAngle1")->Fill(TMath::Cos(case2.breakup1_LabAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h2par_CosLabVCMAngle2")->Fill(TMath::Cos(case1.breakup2_LabAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h2par_CosLabVCMAngle2")->Fill(TMath::Cos(case2.breakup2_LabAngleWRTVCM*DEGRAD));
+				//fill angle between CM vector and VCM (in lab frame) vector histograms here
+				histoman->getHisto1D("h2par_CMVCMAngle1")->Fill(case1.breakup1_CMAngleWRTVCM);
+				histoman->getHisto1D("h2par_CMVCMAngle1")->Fill(case2.breakup1_CMAngleWRTVCM);
+				histoman->getHisto1D("h2par_CMVCMAngle2")->Fill(case1.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h2par_CMVCMAngle2")->Fill(case2.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h2par_CMVCMAngleSum")->Fill(case1.breakup1_CMAngleWRTVCM+case1.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h2par_CMVCMAngleSum")->Fill(case2.breakup1_CMAngleWRTVCM+case2.breakup2_CMAngleWRTVCM);
+				histoman->getHisto1D("h2par_CosCMVCMAngleSum")->Fill(TMath::Cos((case1.breakup1_CMAngleWRTVCM+case1.breakup2_CMAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h2par_CosCMVCMAngleSum")->Fill(TMath::Cos((case2.breakup1_CMAngleWRTVCM+case2.breakup2_CMAngleWRTVCM)*DEGRAD));
+				histoman->getHisto1D("h2par_CosCMVCMAngle1")->Fill(TMath::Cos(case1.breakup1_CMAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h2par_CosCMVCMAngle1")->Fill(TMath::Cos(case2.breakup1_CMAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h2par_CosCMVCMAngle2")->Fill(TMath::Cos(case1.breakup2_CMAngleWRTVCM*DEGRAD));
+				histoman->getHisto1D("h2par_CosCMVCMAngle2")->Fill(TMath::Cos(case2.breakup2_CMAngleWRTVCM*DEGRAD));
 
 			} else if(eventLines.size()==4){
 				//3 sabre hit, this should not happen with kin3mc if you restrict theta and phi to SPS!
