@@ -1093,8 +1093,6 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 	cout << endl;
 	cout << "Processed " << count << " events.\n";
 	cout << "ROOT file saved to " << output_rootfilename << "\n";
-
-
 }
 
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map){
