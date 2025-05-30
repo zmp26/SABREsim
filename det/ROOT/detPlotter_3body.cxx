@@ -102,7 +102,7 @@ static const std::pair<int, int> offsets[] = {
 	{48,0}		//detector4 {ringOffset,wedgeOffset}
 };
 
-double PERC = 0.1;
+double PERC = 0.10;
 double LOWER = 1-PERC, UPPER = 1+PERC;
 
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map);
@@ -165,6 +165,10 @@ void fillKinHistos(HistoManager* histoman, PHYSDATA& physdata1, PHYSDATA& physda
 }
 
 void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &physdata1){
+			int ringoffset = offsets[sabredata1.detectorIndex].first;
+			int wedgeoffset = offsets[sabredata1.detectorIndex].second;
+			int globalring = sabredata1.ring + ringoffset;
+			int globalwedge = sabredata1.wedge + wedgeoffset;
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata1.detectorIndex == 0){
 				histoman->getHisto1D("hSABRE0_RingHit")->Fill(sabredata1.ring);
@@ -186,6 +190,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE0_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE0_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE0_ChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE0_ChannelHits")->Fill(globalwedge);
+				histoman->getHisto1D("hSABRE0_ERingSummary")->Fill(sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE0_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE0_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE0_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			} else if(sabredata1.detectorIndex == 1) {
 				histoman->getHisto1D("hSABRE1_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE1_WedgeHit")->Fill(sabredata1.wedge);
@@ -205,6 +215,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE1_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE1_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE1_ChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE1_ChannelHits")->Fill(globalwedge);
+				histoman->getHisto1D("hSABRE1_ERingSummary")->Fill(sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE1_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE1_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE1_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			} else if(sabredata1.detectorIndex == 2){
 				histoman->getHisto1D("hSABRE2_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE2_WedgeHit")->Fill(sabredata1.wedge);
@@ -224,6 +240,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE2_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE2_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE2_ChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE2_ChannelHits")->Fill(globalwedge);
+				histoman->getHisto1D("hSABRE2_ERingSummary")->Fill(sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE2_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE2_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE2_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			} else if(sabredata1.detectorIndex == 3){
 				histoman->getHisto1D("hSABRE3_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE3_WedgeHit")->Fill(sabredata1.wedge);
@@ -243,6 +265,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE3_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE3_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE3_ChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE3_ChannelHits")->Fill(globalwedge);
+				histoman->getHisto1D("hSABRE3_ERingSummary")->Fill(sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE3_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE3_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE3_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			} else if(sabredata1.detectorIndex == 4){
 				histoman->getHisto1D("hSABRE4_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE4_WedgeHit")->Fill(sabredata1.wedge);
@@ -262,8 +290,22 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2DPoly("hSABRE_PixelMap")->Fill(sabredata1.localx, sabredata1.localy);
 				histoman->getHisto3D("hSABRE4_PixelEDif")->Fill(sabredata1.wedge, sabredata1.ring, sabredata1.ringEnergy-sabredata1.wedgeEnergy);
 				histoman->getHisto3D("hSABRE4_ESummaryPixels")->Fill(sabredata1.wedge,sabredata1.ring,sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE4_ChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE4_ChannelHits")->Fill(globalwedge);
+				histoman->getHisto1D("hSABRE4_ERingSummary")->Fill(sabredata1.ringEnergy);
+				histoman->getHisto1D("hSABRE4_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
+				histoman->getHisto2D("hSABRE4_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE4_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			}
 			//cout << "fillSABREHistos test" << endl;
+
+			//all sabre histograms:
+			histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalring);
+			histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalwedge);
+			histoman->getHisto1D("hSABRE_RingChannelHits")->Fill(globalring);
+			histoman->getHisto1D("hSABRE_WedgeChannelHits")->Fill(globalwedge);
+			histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+			histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 }
 
 std::vector<IMMMA_Tool_3*> prepareIMMMA_Tool_3s(std::vector<Reaction>& reactions, bool output=false){
@@ -328,6 +370,19 @@ void UpdateCMCMinMax(CMCMinMax& minmax, double value){
 			minmax.max = value;
 		}
 	}
+}
+
+double calculateSPS_ExE(double spsE, double spsTheta, double spsPhi, TMassTable& table){
+	TLorentzVector beam, target, ejectile, recoil;
+	double smearedSPSE = getSPSEnergy(spsE);
+	double beamEnergy = 7.5;
+	beam.SetPxPyPzE(0.,0.,sqrt(2*table.GetMassMeV("He",3)*beamEnergy),beamEnergy+table.GetMassMeV("He",3));
+	target.SetPxPyPzE(0.,0.,0.,table.GetMassMeV("Li",7));
+	double pej = sqrt(2*smearedSPSE*table.GetMassMeV("He",4));
+	ejectile.SetPxPyPzE(pej*sin(DEGRAD*spsTheta)*cos(DEGRAD*spsPhi), pej*sin(DEGRAD*spsTheta)*sin(DEGRAD*spsPhi), pej*cos(DEGRAD*spsTheta),smearedSPSE+table.GetMassMeV("He",4));
+	recoil = beam + target - ejectile;
+
+	return (recoil.M() - table.GetMassMeV("Li",6));
 }
 
 void analyze3BodyDetectorStepOutput(const char* input_filename, const char* output_rootfilename, const char* ntpname = "kin3"){
@@ -493,10 +548,17 @@ void analyze3BodyDetectorStepOutput(const char* input_filename, const char* outp
 
 
 					//---------------------------------------------------------EVENT ANALYSIS-------------------------------------------------------------------------------------------------------------
-					results = tools[i]->AnalyzeEventMMM(pd1.e,pd1.theta,pd1.phi,sd1.ringEnergy,sd1.theta,sd1.phi);
+					//now do it for the detector system
+					//first, let's get a "smeared" SPS energy:
+					double spsenergy = pd1.e;//getSPSEnergy(pd1.e);
+					double spstheta = pd1.theta;//force theta = 20 degrees for ejectile (we may have some better resolution - check Rachel thesis to see)
+					double spsphi = pd1.phi;//force phi = 0 degrees for ejectile
+					results = tools[i]->AnalyzeEventMMM(spsenergy,pd1.theta,spsphi,sd1.ringEnergy,sd1.theta,sd1.phi);
 
 					CaseResult guess1 = results.first;
 					CaseResult guess2 = results.second;
+
+					Double_t exe = results.first.recoilExE;//can use first or second here since it is the same SPS event for both
 
 					UpdateCMCMinMax(Vcm1,guess1.Vcm1);
 					UpdateCMCMinMax(Vcm2,guess1.Vcm2);
@@ -548,6 +610,7 @@ void analyze3BodyDetectorStepOutput(const char* input_filename, const char* outp
 						histoman->getHisto1D("hMMMCase1_PhiCM2")->Fill(guess1.PhiCM2);
 						histoman->getHisto1D("hMMMCase1_ThetaCMSum")->Fill(guess1.ThetaCM1+guess1.ThetaCM2);
 						histoman->getHisto1D("hMMMCase1_PhiCMSep")->Fill(abs(guess1.PhiCM1 - guess1.PhiCM2));
+
 						MMMcase1+=1;
 					} else if(MMMfirstcount<MMMsecondcount){
 						//this means we determine it to be case 2 (reversed with how we defined the tool (first particle detected was bu2 from tool))
@@ -592,6 +655,10 @@ void analyze3BodyDetectorStepOutput(const char* input_filename, const char* outp
 				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
 				fillSABREHistos(histoman,sd1,pd1);
 				fillSABREHistos(histoman,sd3,pd3);
+				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
+				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd3.ringEnergy);
+				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy+sd3.ringEnergy);
+				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
 
 				sabre2hit += 1;
 
@@ -668,7 +735,11 @@ void analyze3BodyDetectorStepOutput(const char* input_filename, const char* outp
 					//conduct IM checks here:
 					//arguments:
 					//ejectileE ejectileTheta ejectilePhi detected1E detected1theta detected1phi detected2E detected2theta deteted2phi
-					results = tools[i]->AnalyzeEventIMM(pd1.e,pd1.theta,pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi, sd3.ringEnergy, sd3.theta, sd3.phi);
+					//get sps energy:
+					double spsenergy = pd1.e;//getSPSEnergy(pd1.e);
+					double spstheta = pd1.theta;//force theta = 20 degrees for ejectile (we may have some better resolution - check Rachel thesis to see)
+					double spsphi = pd1.phi;//force phi = 0 degrees for ejectile
+					results = tools[i]->AnalyzeEventIMM(spsenergy,pd1.theta,spsphi, sd1.ringEnergy, sd1.theta, sd1.phi, sd3.ringEnergy, sd3.theta, sd3.phi);
 
 					//fill histograms for first guess here:
 					CaseResult guess1 = results.first;
@@ -887,6 +958,143 @@ void analyze3BodyDetectorStepOutput(const char* input_filename, const char* outp
 	cout << "PhiCMSep   " << PhiCMSep.ToString() << endl;
 	cout << endl;
 	cout << "ROOT file saved to " << output_rootfilename << endl << endl;
+}
+
+void LiFha_3plus(const char* input_filename, const char* output_rootfilename, const char* ntpname = "kin3"){
+	//this function assumes ejectile theta and phi are restricted to the SPS
+	std::map<std::pair<int,int>,std::pair<double,double>> sabre_thetaphimap = readAngleMaps();
+
+	ifstream infile(input_filename);
+	if(!infile.is_open()){
+		cerr << "Error: Could not open file " << input_filename << endl;
+		return;
+	}
+
+	TFile *outfile = new TFile(output_rootfilename,"RECREATE");
+	HistoManager *histoman = new HistoManager(outfile);
+	histoman->loadHistoConfig("HMConfig/LiFha_2par_3plus.HMConfig");
+
+	//mass table
+	TMassTable fMassTable;
+	fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");
+
+
+	Double_t beamMass = fMassTable.GetMassMeV("He",3);
+	Double_t targetMass = fMassTable.GetMassMeV("Li",7);
+	Double_t ejectileMass = fMassTable.GetMassMeV("He",4);
+	Double_t recoilMass = fMassTable.GetMassMeV("Li",6);
+	Double_t bu1Mass = fMassTable.GetMassMeV("He",4);
+	Double_t bu2Mass = fMassTable.GetMassMeV("H",2);
+	//reactions:
+	std::vector<Reaction> reactions;
+	Reaction r;
+	r.beam.SetAll(3,"He",beamMass);
+	r.target.SetAll(7,"Li",targetMass);
+	r.ejectile.SetAll(4,"He",ejectileMass);
+	r.recoil.SetAll(6,"Li",recoilMass);
+	r.breakup1.SetAll(4,"He",bu1Mass);
+	r.breakup2.SetAll(2,"H",bu2Mass);
+	r.beamEnergy = 7.5;
+	r.recoilExE = 2.186;
+	reactions.push_back(r);
+
+	std::vector<IMMMA_Tool_3*> tools = prepareIMMMA_Tool_3s(reactions,true);
+	cout << "VCM1 (4He)  = " << tools[0]->GetExpectedVcm_bu1() << endl;
+	cout << "VCM2 (2H)   = " << tools[0]->GetExpectedVcm_bu2() << endl;
+	cout << "KECM1 (4He) = " << tools[0]->GetExpectedKEcm_bu1() << endl;
+	cout << "KECM2 (2H)  = " << tools[0]->GetExpectedKEcm_bu2() << endl;
+	cout << "ECM         = " << tools[0]->GetExpectedEcm() << endl;
+	cout << endl;
+
+	TTree* kin3 = new TTree(ntpname,"LiFha 2par 6Li_3plus");
+
+	PHYSDATA physdata1, physdata2, physdata3, physdata4;
+	SABREDATA sabredata1, sabredata2;
+
+	string line;
+	bool hit1 = false, hit2 = false;
+
+	cout << "Processing " << input_filename << "..." << endl;
+	int count = 0;
+
+	std::vector<std::string> eventLines;
+	while(std::getline(infile,line)){
+		if(line == "-1"){
+			PHYSDATA pd1, pd2, pd3, pd4;
+			SABREDATA sd1, sd2;
+			if(eventLines.size()==1){
+				//only kinematics line
+				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
+			} else if(eventLines.size()==2){
+				//1 sabre hit
+				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				parseSABREData(eventLines[1],sd1);
+				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
+				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//wow this is ugly but it works
+				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
+				fillSABREHistos(histoman,sd1,pd1);
+				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
+				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy);
+				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy);
+				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
+				//do MMM here
+				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventMMM(pd1.e, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi);
+				CaseResult case1 = results.first;
+				CaseResult case2 = results.second;
+				//fill histograms here
+				histoman->getHisto1D("h1par_RecMissMassExE")->Fill(case1.recInvMass-recoilMass);
+				histoman->getHisto1D("h1par_RecMissMassExE")->Fill(case2.recInvMass-recoilMass);
+			} else if(eventLines.size()==3){
+				//2 sabre hit
+				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				parseSABREData(eventLines[1],sd1);
+				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first,sd1.wedge+offsets[sd1.detectorIndex].second}].first;
+				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first,sd1.wedge+offsets[sd1.detectorIndex].second}].second;
+				parseSABREData(eventLines[2],sd2);
+				sd2.theta = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first,sd2.wedge+offsets[sd2.detectorIndex].second}].first;
+				sd2.phi = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first,sd2.wedge+offsets[sd2.detectorIndex].second}].second;
+				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
+				fillSABREHistos(histoman,sd1,pd3);
+				fillSABREHistos(histoman,sd2,pd4);
+				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
+				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
+				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy+sd2.ringEnergy);
+				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
+				//do IMM here
+				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventIMM(pd1.e,pd1.theta,pd1.phi,sd1.ringEnergy,sd1.theta,sd1.phi,sd2.ringEnergy,sd2.theta,sd2.phi);
+				CaseResult case1 = results.first;
+				CaseResult case2 = results.second;
+				//fill histograms here:
+				histoman->getHisto1D("h2par_RecInvMassExE")->Fill(case1.recInvMass-recoilMass);
+				histoman->getHisto1D("h2par_RecInvMassExE")->Fill(case2.recInvMass-recoilMass);
+
+			} else if(eventLines.size()==4){
+				//3 sabre hit, this should not happen with kin3mc if you restrict theta and phi to SPS!
+			} else {
+				cerr << "Warning: Unexpected eventLines.size() = " << eventLines.size() << endl;
+			}
+
+			eventLines.clear();
+			count += 1;
+			if(count%100000==0) cout << "Processed " << count << " events..." << endl;
+
+		} else {
+			eventLines.push_back(line);
+		}
+	}
+
+	outfile->cd();
+	kin3->Write();
+
+	UpdateHistoAxes(histoman);
+
+	histoman->WriteAll(true);
+	cout << endl;
+	cout << "Processed " << count << " events.\n";
+	cout << "ROOT file saved to " << output_rootfilename << "\n";
+
+
 }
 
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map){

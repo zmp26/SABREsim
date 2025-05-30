@@ -345,13 +345,25 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 
 //std::map<std::pair<int,int>, std::pair<double,double>> sabre0_thetaphimap, sabre1_thetaphimap, sabre2_thetaphimap, sabre3_thetaphimap, sabre4_thetaphimap;
 
+double getSPSEnergy(double kinEnMeV, double sigmaMeV=0.015){
+	double smearedE;
+
+	TRandom3 *rand_gen = new TRandom3(0);
+	smearedE = rand_gen->Gaus(kinEnMeV,sigmaMeV);
+
+	delete rand_gen;
+
+	return smearedE;
+}
+
 double calculateSPS_ExE(double spsE, double spsTheta, double spsPhi, TMassTable& table){
 	TLorentzVector beam, target, ejectile, recoil;
+	double smearedSPSE = getSPSEnergy(spsE);
 	double beamEnergy = 7.5;
 	beam.SetPxPyPzE(0.,0.,sqrt(2*table.GetMassMeV("He",3)*beamEnergy),beamEnergy+table.GetMassMeV("He",3));
 	target.SetPxPyPzE(0.,0.,0.,table.GetMassMeV("Li",7));
-	double pej = sqrt(2*spsE*table.GetMassMeV("He",4));
-	ejectile.SetPxPyPzE(pej*sin(DEGRAD*spsTheta)*cos(DEGRAD*spsPhi), pej*sin(DEGRAD*spsTheta)*sin(DEGRAD*spsPhi), pej*cos(DEGRAD*spsTheta),spsE+table.GetMassMeV("He",4));
+	double pej = sqrt(2*smearedSPSE*table.GetMassMeV("He",4));
+	ejectile.SetPxPyPzE(pej*sin(DEGRAD*spsTheta)*cos(DEGRAD*spsPhi), pej*sin(DEGRAD*spsTheta)*sin(DEGRAD*spsPhi), pej*cos(DEGRAD*spsTheta),smearedSPSE+table.GetMassMeV("He",4));
 	recoil = beam + target - ejectile;
 
 	return (recoil.M() - table.GetMassMeV("Li",6));
@@ -449,6 +461,8 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				//cout << "test" << endl;
 				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
+				histoman->getHisto1D("hSABRE_SabreRingE")->Fill(sd1.ringEnergy);
+				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
 			} else if(eventLines.size()==3){
 				//kinematics1, particle 1 and particle 2
 				parsePhysData(eventLines[0],pd1,pd2);
@@ -464,6 +478,10 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd2.ringEnergy);
+				histoman->getHisto1D("hSABRE_SabreRingE")->Fill(sd1.ringEnergy);
+				histoman->getHisto1D("hSABRE_SabreRingE")->Fill(sd1.ringEnergy);
+				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
+
 				//cout << "test" << endl;
 			} else {
 				cerr << "Warning: Unexpected eventLines.size() = " << eventLines.size() << endl;
