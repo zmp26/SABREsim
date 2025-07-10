@@ -33,3 +33,7 @@ void ConsoleColorizer::PrintOrange(const std::string& text){
 	//orange is not a default color w/ associated code, so let's use PrintRGB to do this!
 	PrintRGB(text,255,165,0);
 }
+
+void ConsoleColorizer::PrintWhite(const std::string& text){
+	PrintRGB(text,255,255,255);
+}

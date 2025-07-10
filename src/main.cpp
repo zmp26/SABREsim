@@ -44,6 +44,20 @@ int main(int argc, char * argv[]){
 	// 	cout << "argument " << narg << " = " << argv[narg] << endl;
 	// }
 
+	if(argc == 2 && (std::string(argv[1]) == "help" || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")){
+		ConsoleColorizer::PrintWhite("Usage:\n\t");
+		ConsoleColorizer::PrintYellow("./SABREsim X kinXmcFile.out detOutputFile.det\n\n");
+		ConsoleColorizer::PrintWhite("Where ");
+		ConsoleColorizer::PrintYellow("X = 2,3,4 ");
+		ConsoleColorizer::PrintWhite("for kin2mc, kin3mc, kin4mc input  files\nAnd ");
+		ConsoleColorizer::PrintYellow("kinInputFile.out ");
+		ConsoleColorizer::PrintWhite("is the filename (or path to) the kinXmc output file\nAnd ");
+		ConsoleColorizer::PrintYellow("detOutputFile.det ");
+		ConsoleColorizer::PrintWhite("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
+		ConsoleColorizer::PrintYellow("\t./SABREsim 2 ../kinmc/TEST.out ../det/TEST.det\n\n");
+		return 1;
+	}
+
 	if(argc!=4){
 		// cerr << "Error: Please provide input as command line arguments!" << endl;
 		// cerr << "Expected arguments in order of: X kinInputFile.out detOutputFile.det" << endl;
@@ -59,8 +73,7 @@ int main(int argc, char * argv[]){
 		ConsoleColorizer::PrintYellow("kinInputFile.out ");
 		ConsoleColorizer::PrintRed("is the filename (or path to) the kinXmc output file\nAnd ");
 		ConsoleColorizer::PrintYellow("detOutputFile.det ");
-		ConsoleColorizer::PrintRed("is the filename (or path to) the detection output file (what this code writes to)\n\n");
-		ConsoleColorizer::PrintRed("Example command:\n");
+		ConsoleColorizer::PrintRed("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
 		ConsoleColorizer::PrintYellow("\t./SABREsim 2 ../kinmc/TEST.out ../det/TEST.det\n\n");
 		return 1;
 	}
