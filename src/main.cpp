@@ -10,6 +10,7 @@ using namespace std;
 #include "Rotation.h"
 #include "Beamspot.h"
 #include "SABRE_EnergyResolutionModel.h"
+#include "ConsoleColorizer.h"
 
 static const std::pair<int, int> offsets[] = {
 	{112,40},	//detector0
@@ -44,12 +45,23 @@ int main(int argc, char * argv[]){
 	// }
 
 	if(argc!=4){
-		cerr << "Error: Please provide input as command line arguments!" << endl;
-		cerr << "Expected arguments in order of: X kinInputFile.out detOutputFile.det" << endl;
-		cerr << "Where X = 2,3,4 for kin2mc, kin3mc, kin4mc input files" << endl;
-		cerr << "And kinInputFile.out is the filename (or path to) the kinXmc output file" << endl;
-		cerr << "And detOutputFile.det is the filename (or path to) the detection output file (what this code writes to)" << endl;
-		cout << endl;
+		// cerr << "Error: Please provide input as command line arguments!" << endl;
+		// cerr << "Expected arguments in order of: X kinInputFile.out detOutputFile.det" << endl;
+		// cerr << "Where X = 2,3,4 for kin2mc, kin3mc, kin4mc input files" << endl;
+		// cerr << "And kinInputFile.out is the filename (or path to) the kinXmc output file" << endl;
+		// cerr << "And detOutputFile.det is the filename (or path to) the detection output file (what this code writes to)" << endl;
+		// cout << endl;
+		ConsoleColorizer::PrintRed("\nError! Please provide input as command line arguments!\nExpected arguments in order of: ");
+		ConsoleColorizer::PrintYellow("X kinXmcFile.out detOutputFile.det\n");
+		ConsoleColorizer::PrintRed("Where ");
+		ConsoleColorizer::PrintYellow("X = 2,3,4 ");
+		ConsoleColorizer::PrintRed("for kin2mc, kin3mc, kin4mc input  files\nAnd ");
+		ConsoleColorizer::PrintYellow("kinInputFile.out ");
+		ConsoleColorizer::PrintRed("is the filename (or path to) the kinXmc output file\nAnd ");
+		ConsoleColorizer::PrintYellow("detOutputFile.det ");
+		ConsoleColorizer::PrintRed("is the filename (or path to) the detection output file (what this code writes to)\n\n");
+		ConsoleColorizer::PrintRed("Example command:\n");
+		ConsoleColorizer::PrintYellow("\t./SABREsim 2 ../kinmc/TEST.out ../det/TEST.det\n\n");
 		return 1;
 	}
 
