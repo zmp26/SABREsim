@@ -28,11 +28,17 @@ int main(int argc, char * argv[]){
 	bool detected3 = false;
 	bool detected4 = false;
 	//bool detectedboth = false;
-	int hit1 = 0;
-	int hit2 = 0;
-	int hit3 = 0;
-	int hit4 = 0;
-	int hitboth = 0;
+	int hit1 = 0;//num events where particle 1 is seen in SABRE
+	int hit2 = 0;//num events where particle 2 is seen in SABRE
+	int hit3 = 0;//num events where particle 3 is seen in SABRE
+	int hit4 = 0;//num events where particle 4 is seen in SABRE
+	int hit34 = 0;//num events where particles 3 and 4 are seen in SABRE in coincidence
+	int hitonly3 = 0;//num events where only particle 3 is detected (no particle 4 seen)
+	int hitonly4 = 0;//num events where only particle 4 is detected (no particle 3 seen)
+	int hit1only = 0;//num events in kin2mc where only part1 is detected in SABRE (ej)
+	int hit2only = 0;//num events in kin2mc where only part2 is detected in SABRE (rec)
+	int hitboth = 0;//num events in kin2mc where both ej and rec detected in SABRE
+	//int hitboth = 0;
 	//float dx = 0, dy = 0;
 	float e1, theta1, phi1, thetacm, e2, theta2, phi2;//kin2mc output
 	float e3, theta3, phi3, e4, theta4, phi4;//kin3/4mc output
@@ -189,6 +195,16 @@ int main(int argc, char * argv[]){
 				}
 			}
 
+			if(detected1&&detected2){
+				hitboth += 1;
+			}
+			if(detected1&&!detected2){
+				hit1only += 1;
+			}
+			if(!detected1&&detected2){
+				hit2only += 1;
+			}
+
 			outfile << eoev << endl;
 
 		}
@@ -245,9 +261,20 @@ int main(int argc, char * argv[]){
 						SABRE_Array_hits[i] += 1;
 					}
 				}
+
 			}
 
 			outfile << eoev << endl;
+
+			if(detected3 && detected4){
+				hit34 += 1;
+			}
+			if(detected3&&!detected4){
+				hitonly3 += 1;
+			}
+			if(detected4&&!detected3){
+				hitonly4 += 1;
+			}
 
 			if((detected1&&!detected3&&!detected4) || (!detected1&&detected3&&!detected4) || (!detected1&&!detected3&&detected4)){
 				onePartHits += 1;
@@ -340,10 +367,10 @@ int main(int argc, char * argv[]){
 	outfile.close();
 
 	cout << endl;
-	cout << "Files are closed. Processed " << nevents << " events." << endl;
-	if(kinX==2||kinX==3||kinX==4) cout << "Events with ejectile in SABRE: " << hit1 << endl;
-	if(kinX==2) cout << "Events with recoil in SABRE: " << hit2 << endl;
-	if(kinX==3) cout << "Events with bu1 in SABRE: " << hit3 << "\nEvents with bu2 in SABRE: " << hit4 << endl;
+	cout << "Files are closed. Processed " << nevents << " events.\n" << endl;
+	if(kinX==2||kinX==3||kinX==4) cout << "Events with ejectile in SABRE: " << hit1 << " (" << float(hit1)*100./float(nevents) << "\%)" << endl;
+	if(kinX==2) cout << "Events with recoil in SABRE: " << hit2 << " (" << float(hit2)*100./float(nevents) << "\%)\nEvents with only ejectile in SABRE: " << hit1only << " (" << float(hit1only)*100./float(nevents) << "\%)\nEvents with only recoil in SABRE: " << hit2only << " (" << float(hit2only)*100./float(nevents) << "\%)\nEvents with both recoil and ejectile in SABRE: " << hitboth << " (" << float(hitboth)*100./float(nevents) << "\%)" << endl;
+	if(kinX==3) cout << "Events with (at least) bu1 in SABRE: " << hit3 << "\nEvents with (at least) bu2 in SABRE: " << hit4 << "\nEvents with only bu1 in SABRE: " << hitonly3 << " (" << hitonly3*100./nevents << "\% of all events)" << "\nEvents with only bu2 in SABRE: " << hitonly4 << " (" << hitonly4*100./nevents << "\% of all events)" << "\nEvents with both bu1 and bu2 in SABRE: " << hit34 << " (" << hit34*100./nevents << "\% of all events)" << endl;
 	if(kinX==4) cout << "Events with bu1 in SABRE: " << hit2 << "\nEvents with bu2 in SABRE: " << hit3 << "\nEvents with bu3 in SABRE: " << hit4 << endl; 
 	//cout << "Events with both ejectile and recoil in SABRE: " << hitboth << endl << endl;
 	if(onePartHits>0) cout << "1 Particle Events: " << onePartHits << endl;
