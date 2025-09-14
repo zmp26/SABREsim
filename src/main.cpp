@@ -151,9 +151,10 @@ int main(int argc, char * argv[]){
 	// }
 
 	//prepare the SABRE_EnergyResolutionModels here (1/SABRE detector, so 5 total in the array)
+	//REWRITE this to read resolution in from a file, much easier than re-making everytime for a change in sigma!
 	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels;
 	for(size_t i=0; i<SABRE_Array.size(); i++){
-		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.050,0.1));////sigma of 0.050 MeV for all rings/wedges and threshold of 100 keV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
+		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.050,0.1));////sigma of 0.050 MeV for all rings/wedges and threshold of 0.100 MeV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
 	}
 
 	if(kinX == 2){//kin2mc
