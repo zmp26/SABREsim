@@ -304,6 +304,9 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2D("hSABRE3_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE3_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 				if(sabredata1.ring==0) { histoman->getHisto1D("hSABRE3_ring0_E")->Fill(sabredata1.ringEnergy); histoman->getHisto1D("hSABRE_ring0_E")->Fill(sabredata1.ringEnergy);}
+				if(sabredata1.ring==7){ histoman->getHisto1D("hSABRE3_Ring7Summary")->Fill(sabredata1.ringEnergy);}
+				if(sabredata1.ring==8){ histoman->getHisto1D("hSABRE3_Ring8Summary")->Fill(sabredata1.ringEnergy);}
+				if(sabredata1.ring==9){ histoman->getHisto1D("hSABRE3_Ring9Summary")->Fill(sabredata1.ringEnergy);}
 			} else if(sabredata1.detectorIndex == 4){
 				histoman->getHisto1D("hSABRE4_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE4_WedgeHit")->Fill(sabredata1.wedge);
@@ -463,6 +466,9 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 				histoman->getHisto1D("hSABRE_SabreRingE")->Fill(sd1.ringEnergy);
 				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
+				if(sd1.ring == 7){ }
+				if(sd1.ring == 8){ }
+				if(sd1.ring == 9){ }
 			} else if(eventLines.size()==3){
 				//kinematics1, particle 1 and particle 2
 				parsePhysData(eventLines[0],pd1,pd2);
