@@ -2,3 +2,5 @@
 *.so
 SABREsim
 *.root
+*.out
+*.det
