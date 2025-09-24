@@ -28,6 +28,9 @@ SABRE_DeadLayerModel.o: SABRE_DeadLayerModel.cpp SABRE_DeadLayerModel.h
 ConsoleColorizer.o: ConsoleColorizer.cpp ConsoleColorizer.h
 	$(CC) $(CFLAGS) -c $<
 
+#SABRE_ChannelMap.o: SABRE_ChannelMap.cpp SABRE_ChannelMap.h
+#	$(CC) $(CFLAGS) -c $<
+
 main.o: main.cpp SABRE_Detector.h Vec3.h Rotation.h Beamspot.h SABRE_EnergyResolutionModel.h
 	$(CC) $(CFLAGS) -c $<
 
