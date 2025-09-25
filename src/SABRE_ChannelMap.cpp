@@ -2,50 +2,77 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 SABRE_ChannelMap::SABRE_ChannelMap(const std::string& filename){
+	LoadMap(filename);
+}
+
+void SABRE_ChannelMap::LoadMap(const std::string& filename){
+	//reads in from config/ChannelMap_Feb2021_SABRE.txt
 	std::ifstream file(filename);
-	if(!file){
-		throw std::runtime_error("Failed to open file: " + filename);
+	if(!file.is_open()){
+		throw std::runtime_error("Could not open channel map file: " + filename);
 	}
 
 	std::string line;
-	int lineNumber = 0;
+	int maxChannel = -1;
 
-	while(lineNumber < 3 && std::getline(file, line)){
-		lineNumber += 1;
+	std::string discard;
+	//skip first two lines
+	std::getline(file, discard);
+	std::getline(file, discard);
+
+	//first pass to extract maxChannel for memory purposes
+	while(std::getline(file,line)){
+		if(line.empty()) continue;
+		std::istringstream ss(line);
+		int globalChannel;
+		ss >> globalChannel;
+		if(globalChannel > maxChannel) maxChannel = globalChannel;
 	}
 
-	while(std::getline(file, line)){
+	channelMap_.resize(maxChannel+1);
+
+	file.clear();
+	file.seekg(0,std::ios::beg);
+
+	//skip first two lines
+	std::getline(file, discard);
+	std::getline(file, discard);
+
+	//second pass to extract data
+	while(std::getline(file,line)){
 		if(line.empty()) continue;
 
-		std::istringstream iss(line);
-		int global_channel, detectorID_number;
-		std::string detectorType_identifier, detectorPart_identifier;
+		std::istringstream ss(line);
+		int globalChannel;
+		int detectorID;
+		std::string detectorType;
+		std::string detectorPart;
 
-		if(!(iss >> global_channel >> detectorID_number >> detectorType_identifier >> detectorPart_identifier)){
-			throw std::runtime_error("Failed to parse line: " + line);
+		ss >> globalChannel >> detectorID >> detectorType >> detectorPart;
+
+		if(globalChannel >= 0 && globalChannel < static_cast<int>(channelMap_.size())){
+			ChannelInfo info;
+			info.detectorID = detectorID;
+			info.detectorType = detectorType;
+			info.detectorPart = detectorPart;
+			info.valid = (detectorID != -1);
+
+			channelMap_[globalChannel] = info;
 		}
-
-		SABRE_ChannelMap::DetectorKey key = std::make_tuple(detectorID_number, detectorType_identifier, detectorPart_identifier);
-		keyToGlobalChannel[key] = global_channel;
-		globalChannelToKey[global_channel] = key;
 	}
+
+	file.close();
+
 }
 
-int SABRE_ChannelMap::getGlobalChannel(int detectorID, const std::string& type, const std::string& part) const {
-	SABRE_ChannelMap::DetectorKey key = std::make_tuple(detectorID, type, part);
-	auto it = keyToGlobalChannel.find(key);
-	if(it == keyToGlobalChannel.end()){
-		throw std::runtime_error("Detector key not found");
+const ChannelInfo& SABRE_ChannelMap::GetChannelInfo(int globalChannel) const {
+	if(globalChannel < 0 || globalChannel >= static_cast<int>(channelMap_.size())){
+		static ChannelInfo invalid = {-1, "INVALID", "INVALID", false};
+		return invalid;
 	}
-	return it->second;
-}
 
-SABRE_ChannelMap::DetectorKey SABRE_ChannelMap::getDetectorKey(int global_channel) const {
-	auto it = globalChannelToKey.find(global_channel);
-	if(it == globalChannelToKey.end()){
-		throw std::runtime_error("Global channel not found");
-	}
-	return it->second;
+	return channelMap_[globalChannel];
 }
