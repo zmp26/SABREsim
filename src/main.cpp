@@ -13,6 +13,10 @@ using namespace std;
 #include "ConsoleColorizer.h"
 #include "TargetEnergyLoss.h"
 #include "SABRE_DeadLayerModel.h"
+#include <TApplication.h>
+#include <TH1.h>
+#include <TCanvas.h>
+#include <TStyle.h>
 
 static const std::pair<int, int> offsets[] = {
 	{112,40},	//detector0
@@ -170,7 +174,12 @@ int main(int argc, char * argv[]){
 
 	SABRE_DeadLayerModel deadLayerLoss;//nothing to set up since we are using a single number here -> this will change!
 
+	//ROOT application for GUI handling:
+	//TApplication app("SABREsim",&argc,argv);
+	TH1D* hEnergyLosses = new TH1D("hEnergyLosses","Energy Loss Distribution for 6Li in LiF;Energy Loss (keV);Counts",500,0,500);
+
 	if(kinX == 2){//kin2mc
+		std::vector<double> losses;
 		while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
 			nevents += 1;
 			detected1 = false;
@@ -193,6 +202,10 @@ int main(int argc, char * argv[]){
 					//apply dead layer energy loss to e1_aftertarget:
 					double e1_afterDeadLayer = deadLayerLoss.ApplyEnergyLoss(e1_aftertarget);
 
+					// if(nevents%10000 == 0){
+					// 	std::cout << "hit1 target_energy_loss = " << abs(e1-e1_aftertarget) << " MeV" << std::endl;
+					// }
+
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
 						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
@@ -210,6 +223,9 @@ int main(int argc, char * argv[]){
 					double e2_aftertarget = targetLoss->ApplyEnergyLoss(e2, theta2);
 					//apply dead layer energy loss to e1_aftertarget:
 					double e2_afterDeadLayer = deadLayerLoss.ApplyEnergyLoss(e2_aftertarget);
+
+					//if(nevents%10000 == 0) std::cout << "hit2 target_energy_loss = " << e2-e2_aftertarget << " MeV" << std::endl;
+					hEnergyLosses->Fill(abs(e2-e2_aftertarget)*1000.);
 
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
@@ -234,6 +250,15 @@ int main(int argc, char * argv[]){
 			outfile << eoev << endl;
 
 		}
+
+		TCanvas *c1 = new TCanvas("c1","SABREsim ELoss Dist",800,600);
+		gStyle->SetOptStat(1111);
+		hEnergyLosses->Draw();
+		// app.SetReturnFromRun(true);
+		// app.Run();
+		c1->Update();
+		c1->SaveAs("ELossDist.png");
+
 	} else if(kinX == 3){//kin3mc
 		while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
 			nevents += 1;
@@ -414,6 +439,8 @@ int main(int argc, char * argv[]){
 		delete detector;
 	}
 	SABRE_Array_hits.clear();
+
+	return 1;
 }
 
 /*Geometric Efficiencies Commented Out Below*/

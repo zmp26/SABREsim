@@ -4,3 +4,6 @@ SABREsim
 *.root
 *.out
 *.det
+*.png
+*.jpg
+*.gif

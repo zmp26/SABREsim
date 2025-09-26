@@ -29,10 +29,10 @@
 
 void Lithium6_1plus(){
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
-	TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring9ESummary_0plus";
+	TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring8ESummary_0plus";
 
 	TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring9Summary";
+	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
 	//open data file and retrieve histo
 
@@ -143,7 +143,7 @@ void Lithium6_1plus(){
 	c1->Update();
 
 	//save to new root file:
-	TString outfile_root_name = "Lithium6_1plus_simVSdata_ELoss.root";
+	TString outfile_root_name = "Lithium6_1plus_simVSdata_ELoss2.root";
 	TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
 	if(!outfile_root || outfile_root->IsZombie()){
 		std::cerr << "Error creating output file" << std::endl;

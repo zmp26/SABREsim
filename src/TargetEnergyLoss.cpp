@@ -44,8 +44,8 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 
 	std::string funcStr;
 	std::vector<double> params;
-	double arealDensity;
-	double materialDensity;
+	double arealDensity=-1;
+	double materialDensity=-1;
 
 	std::string line;
 	while(std::getline(file,line)){
@@ -105,7 +105,7 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 	}
 
 	if(materialDensity <= 0){
-		std::cerr << "Error: Invalid areal density\n";
+		std::cerr << "Error: Invalid material density\n";
 		return nullptr;
 	}
 
@@ -117,26 +117,26 @@ double TargetEnergyLoss::GetPathLength(double theta_deg) const {
 	return linearThickness/std::cos(theta_rad);
 }
 
-double TargetEnergyLoss::EvaluateLossFunction(double energy) const {
+double TargetEnergyLoss::EvaluateLossFunction(double energy_MeV) const {
 	if(!lossFunction) throw std::runtime_error("Loss function not initialized!");
-	return lossFunction->Eval(energy);//keV/ug/cm^2
+	return lossFunction->Eval(energy_MeV*1000.)/1000.;//MeV/ug/cm^2
 }
 
-double TargetEnergyLoss::ApplyEnergyLoss(double energy_in, double theta_deg){
+double TargetEnergyLoss::ApplyEnergyLoss(double energy_MeV, double theta_deg){
 	double path_cm = GetPathLength(theta_deg);//cm
 
 	//effective areal density along path length in ug/cm^2:
-	double effectiveArealDensity = path_cm*materialDensity*1e6;
+	double effectiveArealDensity = path_cm*materialDensity*1e6;// ug/cm^2
 
-	double dEdx = EvaluateLossFunction(energy_in);
+	double dEdx_MeV = EvaluateLossFunction(energy_MeV);// MeV/ug/cm^2
 
-	double deltaE_MeV = (dEdx*effectiveArealDensity)/1000.;
+	double deltaE_MeV = (dEdx_MeV*effectiveArealDensity);// MeV
 
-	double energy_out = energy_in - (deltaE_MeV);
+	double energy_out_MeV = energy_MeV - (deltaE_MeV);
 
-	if(energy_out < 0) energy_out = 0.;
+	if(energy_out_MeV < 0) energy_out_MeV = 0.;
 
-	return energy_out;
+	return energy_out_MeV;
 }
 
 void TargetEnergyLoss::SetLossFunction(const std::string& funcStr, const std::vector<double>& params){
@@ -146,3 +146,25 @@ void TargetEnergyLoss::SetLossFunction(const std::string& funcStr, const std::ve
 		lossFunction->SetParameter(i, params[i]);
 	}
 }
+
+/*
+
+//old version (constant subtraction)
+
+#include "TargetEnergyLoss.h"
+
+TargetEnergyLoss::TargetEnergyLoss() {}
+
+double TargetEnergyLoss::ApplyEnergyLoss(double energyMeV) const {
+	double energyLossMeV = kEnergyLossKeV / 1000.;
+	double energyOut = energyMeV - energyLossMeV;
+
+	if(energyOut < 0){
+		energyOut = 0.;
+	}
+
+	return energyOut;
+}
+
+
+*/
