@@ -1,11 +1,13 @@
 CC = g++
-CFLAGS = -Wall -std=c++17
+ROOTCFLAGS := $(shell root-config --cflags)
+ROOTLIBS := $(shell root-config --libs)
+CFLAGS = -Wall -std=c++17 $(ROOTCFLAGS)
 EXECUTABLE = SABREsim
 
 OBJECTS = Rotation.o Vec3.o SABRE_Detector.o Beamspot.o SABRE_EnergyResolutionModel.o SABRE_DeadLayerModel.o ConsoleColorizer.o SABRE_ChannelMap.o TargetEnergyLoss.o main.o
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(ROOTLIBS)
 
 Rotation.o: Rotation.cpp Rotation.h
 	$(CC) $(CFLAGS) -c $<

@@ -160,7 +160,14 @@ int main(int argc, char * argv[]){
 	}
 
 	//set up TargetEnergyLoss and SABRE_DeadLayerModel here:
-	TargetEnergyLoss targetLoss;//nothing to set up since we are using a single number here -> this will change!
+	std::string targetEnergyLossPath = "../config/TargetELoss_6Li_in_LiF.conf";
+	TargetEnergyLoss* targetLoss = TargetEnergyLoss::LoadFromConfigFile(targetEnergyLossPath);
+	if(!targetLoss){
+		ConsoleColorizer::PrintRed("Failed to load TargetEnergyLoss from config file at " + targetEnergyLossPath + "\n");
+		return 1;
+	}
+
+
 	SABRE_DeadLayerModel deadLayerLoss;//nothing to set up since we are using a single number here -> this will change!
 
 	if(kinX == 2){//kin2mc
@@ -182,11 +189,11 @@ int main(int argc, char * argv[]){
 				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD);
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 					//apply target energy loss to e1:
-					double e1_aftertarget = targetLoss.ApplyEnergyLoss(e1);
+					double e1_aftertarget = targetLoss->ApplyEnergyLoss(e1, theta1);
 					//apply dead layer energy loss to e1_aftertarget:
 					double e1_afterDeadLayer = deadLayerLoss.ApplyEnergyLoss(e1_aftertarget);
 
-					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smearedEWedge)){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
 						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 						detected1 = true;
@@ -200,11 +207,11 @@ int main(int argc, char * argv[]){
 				pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 					//apply target energy loss to e1:
-					double e2_aftertarget = targetLoss.ApplyEnergyLoss(e2);
+					double e2_aftertarget = targetLoss->ApplyEnergyLoss(e2, theta2);
 					//apply dead layer energy loss to e1_aftertarget:
 					double e2_afterDeadLayer = deadLayerLoss.ApplyEnergyLoss(e2_aftertarget);
 
-					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2,smearedEWedge)){
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
 						outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
 						detected2 = true;
