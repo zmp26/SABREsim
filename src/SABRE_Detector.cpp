@@ -311,7 +311,7 @@ std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, d
 								 std::cos(theta));
 
 	Vec3 planeNormal = GetNormTilted();
-	Vec3 planePoint = GetHitCoordinates(8,4);//roughly somewhere near the center of the detector
+	Vec3 planePoint = m_translation;// GetHitCoordinates(8,4);//roughly somewhere near the center of the detector
 
 	double denom = planeNormal.Dot(direction);
 	if(std::fabs(denom) < 1e-6) return std::make_pair(-1,-1);
@@ -322,7 +322,7 @@ std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, d
 	Vec3 hitpoint = offset + direction*t;
 
 	Vec3 shifted = hitpoint - m_translation;
-	Vec3 detFrameVec = m_YRot.Inverse()*(m_ZRot.Inverse()*shifted);
+	Vec3 detFrameVec = m_YRot.GetInverse()*(m_ZRot.GetInverse()*shifted);
 
 	double r =std::sqrt(detFrameVec.GetX()*detFrameVec.GetX() + detFrameVec.GetY()*detFrameVec.GetY());
 	double hitphi = std::atan2(detFrameVec.GetY(), detFrameVec.GetX());
@@ -351,6 +351,7 @@ std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, d
 	return std::make_pair(ring,wedge);
 
 }
+
 
 /*
 	Given a ring/wedge of this SABRE detector, calculate the coordinates of a hit.

@@ -38,10 +38,10 @@ void Lithium6_1plus(){
 
 	//uncomment below for DESKTOP
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring7ESummary_1plus";
+	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring7Summary";
+	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2_offset.root";
+	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
 	//open data file and retrieve histo
 
@@ -187,10 +187,10 @@ void Lithium6_0plus(){
 
 	//uncomment below for DESKTOP
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
-	TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring9ESummary_0plus";
+	TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring8ESummary_0plus";
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV_ELoss2.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring9Summary";
+	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV_ELoss2_offset.root";
+	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
 	//open data file and retrieve histo
 

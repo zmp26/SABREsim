@@ -78,7 +78,7 @@ public:
 
 	Vec3 GetTrajectoryCoordinates(double theta, double phi);
 	std::pair<int,int> GetTrajectoryRingWedge(double theta, double phi);
-	std::pair<int,int> GetOffsetTrajectoryRingWedge(double theta, double phi, const Vec3& offset)//zmp edit 9/28/2025
+	std::pair<int,int> GetOffsetTrajectoryRingWedge(double theta, double phi, const Vec3& offset);//zmp edit 9/28/2025
 	Vec3 GetHitCoordinates(int ringch, int wedgech);
 	Vec3 GetHitCoordinatesRandomWiggle(int ringch, int wedgech);
 

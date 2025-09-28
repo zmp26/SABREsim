@@ -202,6 +202,7 @@ int main(int argc, char * argv[]){
 
 				//get <ring,wedge> pair based on theta,phi
 				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD);
+				//pair<int,int> hit1_rw = SABRE_Array[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 					//apply target energy loss to e1:
 					double e1_aftertarget = targetLoss->ApplyEnergyLoss(e1, theta1);
@@ -228,6 +229,7 @@ int main(int argc, char * argv[]){
 				smearedERing = 0.;
 				smearedEWedge = 0.;
 				pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
+				//pair<int,int> hit2_rw = SABRE_Array[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 					//apply target energy loss to e1:
 					double e2_aftertarget = targetLoss->ApplyEnergyLoss(e2, theta2);
