@@ -209,6 +209,7 @@ int main(int argc, char * argv[]){
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta1*DEG2RAD,phi1*DEG2RAD);
 					Vec3 normal = SABRE_Array[i]->GetNormTilted();
+					normal = normal*(1/normal.Mag());
 					double e1_afterDeadLayer = deadLayerLoss->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
 
 					// if(nevents%10000 == 0){
@@ -234,6 +235,7 @@ int main(int argc, char * argv[]){
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta2*DEG2RAD,phi2*DEG2RAD);
 					Vec3 normal = SABRE_Array[i]->GetNormTilted();
+					normal = normal*(1/normal.Mag());
 					double e2_afterDeadLayer = deadLayerLoss->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
 
 					//if(nevents%10000 == 0) std::cout << "hit2 target_energy_loss = " << e2-e2_aftertarget << " MeV" << std::endl;

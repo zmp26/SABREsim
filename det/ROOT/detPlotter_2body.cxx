@@ -384,11 +384,13 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 
 	TFile* outfile = new TFile(output_rootfilename,"RECREATE");
 	HistoManager *histoman = new HistoManager(outfile);
-	histoman->loadHistoConfig("HMConfig/_2body.HMConfig");
+	histoman->loadHistoConfig("./HMConfig/_2body.HMconfig");
 	DeterminePolygons(histoman);
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");
+	//fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");//uncomment this when on surface laptop -> eventually update this to be in a total config file
+	fMassTable.Init("/home/zmpur/IMMMA_Tool/threebody/masstable.dat");//uncomment this when on DESKTOP
+
 
 	// //reaction:
 	// std::vector<Reaction> reactions;
