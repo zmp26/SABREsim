@@ -17,13 +17,13 @@ public:
 	TargetEnergyLoss(const TargetEnergyLoss&) = delete;
 	TargetEnergyLoss& operator=(const TargetEnergyLoss&) = delete;
 
-	double ApplyEnergyLoss(double energy_in, double theta_deg);
+	double ApplyEnergyLoss(double energy_MeV, double theta_deg);
 
 	double GetPathLength(double theta_deg) const;
 
 	void SetLossFunction(const std::string& funcStr, const std::vector<double>& params);
 
-	double EvaluateLossFunction(double energy) const;
+	double EvaluateLossFunction(double energy_MeV) const;
 
 	static TargetEnergyLoss* LoadFromConfigFile(const std::string& filename);
 

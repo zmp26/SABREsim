@@ -44,8 +44,8 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 
 	std::string funcStr;
 	std::vector<double> params;
-	double arealDensity=-1;
-	double materialDensity=-1;
+	double arealDensity_=-1;
+	double materialDensity_=-1;
 
 	std::string line;
 	while(std::getline(file,line)){
@@ -72,14 +72,14 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 			}
 		} else if(key == "arealDensity"){
 			try{
-				arealDensity = std::stod(value);
+				arealDensity_ = std::stod(value);
 			} catch(...){
 				std::cerr << "Error parsing arealDensity\n";
 				return nullptr;
 			}
 		} else if(key == "materialDensity"){
 			try{
-				materialDensity = std::stod(value);
+				materialDensity_ = std::stod(value);
 			} catch (...){
 				std::cerr << "Error parsing materialDensity\n";
 				return nullptr;
@@ -99,17 +99,17 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 		return nullptr;
 	}
 
-	if(arealDensity <= 0){
+	if(arealDensity_ <= 0){
 		std::cerr << "Error: Invalid areal density\n";
 		return nullptr;
 	}
 
-	if(materialDensity <= 0){
+	if(materialDensity_ <= 0){
 		std::cerr << "Error: Invalid material density\n";
 		return nullptr;
 	}
 
-	return new TargetEnergyLoss(funcStr, params, arealDensity, materialDensity);
+	return new TargetEnergyLoss(funcStr, params, arealDensity_, materialDensity_);
 }
 
 double TargetEnergyLoss::GetPathLength(double theta_deg) const {
