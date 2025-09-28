@@ -300,6 +300,59 @@ std::pair<int, int> SABRE_Detector::GetTrajectoryRingWedge(double theta, double 
 }
 
 /*
+	Given a unit vector (R=1, theta, phi) which corresponds to some particle's trajectory
+	and a vector containing translational offset information,
+	determine whether that particle will intersect with this SABRE detector. If it does,
+	determine which ring and wedge the hit occurs in.
+*/
+std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, double phi, const Vec3& offset){
+	Vec3 direction(std::sin(theta)*std::cos(phi),
+								 std::sin(theta)*std::sin(phi),
+								 std::cos(theta));
+
+	Vec3 planeNormal = GetNormTilted();
+	Vec3 planePoint = GetHitCoordinates(8,4);//roughly somewhere near the center of the detector
+
+	double denom = planeNormal.Dot(direction);
+	if(std::fabs(denom) < 1e-6) return std::make_pair(-1,-1);
+
+	double t = (planePoint - offset).Dot(planeNormal) / denom;
+	if(t<0) return std::make_pair(-1,-1);
+
+	Vec3 hitpoint = offset + direction*t;
+
+	Vec3 shifted = hitpoint - m_translation;
+	Vec3 detFrameVec = m_YRot.Inverse()*(m_ZRot.Inverse()*shifted);
+
+	double r =std::sqrt(detFrameVec.GetX()*detFrameVec.GetX() + detFrameVec.GetY()*detFrameVec.GetY());
+	double hitphi = std::atan2(detFrameVec.GetY(), detFrameVec.GetX());
+	if(hitphi < 0) hitphi += 2.*M_PI;
+
+	if(!IsInside(r, hitphi)) return std::make_pair(-1,-1);
+
+	int ring = -1;
+	int wedge = -1;
+
+	for(int i=0; i<m_nRings; i++){
+		if(IsRing(r, i) || IsRingTopEdge(r, i) || IsRingBottomEdge(r, i)){
+			ring = i;
+			break;
+		}
+	}
+
+	for(int i=0; i<m_nWedges; i++){
+		if(IsWedge(hitphi,i) || IsWedgeTopEdge(hitphi,i) || IsWedgeBottomEdge(hitphi,i)){
+			wedge = i;
+			break;
+		}
+	}
+
+	if(ring < 0 || wedge < 0) return std::make_pair(-1,-1);
+	return std::make_pair(ring,wedge);
+
+}
+
+/*
 	Given a ring/wedge of this SABRE detector, calculate the coordinates of a hit.
 	Currently gives a point in the *center* of the pixel. Better method would be to
 	randomly wiggle the point within the pixel. Method intended for use with data, or
