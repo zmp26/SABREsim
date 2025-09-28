@@ -91,7 +91,7 @@ double SABRE_DeadLayerModel::EvaluateLossFunction(double energy_MeV) const {
 
 double SABRE_DeadLayerModel::ApplyEnergyLoss(double energy_MeV, Vec3& trajectory, Vec3& detectorNormal){
 	//get angle between detector normal and particle trajectory:
-	double angle_deg = TMath::DegToRad()*(TMath::ACos(detectorNormal.Dot(trajectory)/(trajectory.Mag()*detectorNormal.Mag())));
+	double angle_deg = TMath::RadToDeg()*(TMath::ACos(detectorNormal.Dot(trajectory)));///(trajectory.Mag()*detectorNormal.Mag())));
 	double path_cm = GetPathLength(angle_deg);
 
 	double effectiveArealDensity = path_cm*materialDensity*1e6; //ug/cm^2
