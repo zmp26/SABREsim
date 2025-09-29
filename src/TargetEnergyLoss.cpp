@@ -114,7 +114,7 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 
 double TargetEnergyLoss::GetPathLength(double theta_deg) const {
 	double theta_rad = TMath::DegToRad()*theta_deg;
-	return linearThickness/std::cos(theta_rad);
+	return fabs(linearThickness/std::cos(theta_rad));
 }
 
 double TargetEnergyLoss::EvaluateLossFunction(double energy_MeV) const {

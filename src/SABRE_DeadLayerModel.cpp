@@ -81,7 +81,7 @@ SABRE_DeadLayerModel* SABRE_DeadLayerModel::LoadFromConfigFile(const std::string
 
 double SABRE_DeadLayerModel::GetPathLength(double theta_deg) const {
 	double theta_rad = TMath::DegToRad()*theta_deg;
-	return linearThickness/std::cos(theta_rad);
+	return fabs(linearThickness/std::cos(theta_rad));
 }
 
 double SABRE_DeadLayerModel::EvaluateLossFunction(double energy_MeV) const {
@@ -101,6 +101,8 @@ double SABRE_DeadLayerModel::ApplyEnergyLoss(double energy_MeV, Vec3& trajectory
 	double deltaE_MeV = (dEdx_MeV*effectiveArealDensity); //MeV
 
 	double energy_out_MeV = energy_MeV - (deltaE_MeV);
+
+	//std::cout << "path_cm = " << path_cm << std::endl;
 
 	if(energy_out_MeV < 0) energy_out_MeV = 0.;
 
