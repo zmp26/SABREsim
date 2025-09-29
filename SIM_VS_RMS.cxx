@@ -40,7 +40,7 @@ void Lithium6_1plus(){
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2_offset.root";
+	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2_offset_NEWTEST.root";
 	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
 	//open data file and retrieve histo
