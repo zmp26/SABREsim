@@ -11,22 +11,26 @@ void ConsoleColorizer::PrintRGB(const std::string& text, int r, int g, int b){
 
 void ConsoleColorizer::PrintRed(const std::string& text){
 	//std::cout << "\033[31m" << text << "\033[0m";
-	PrintCode(text, "31");
+	//PrintCode(text, "31");
+	PrintRGB(text, 255, 0, 0);
 }
 
 void ConsoleColorizer::PrintGreen(const std::string& text){
 	//std::cout << "\033[32m" << text << "\033[0m";
-	PrintCode(text, "32");
+	//PrintCode(text, "32");
+	PrintRGB(text, 0, 255, 0);
 }
 
 void ConsoleColorizer::PrintBlue(const std::string& text){
 	//std::cout << "\033[34m" << text << "\033[0m";
-	PrintCode(text, "34");
+	//PrintCode(text, "34");
+	PrintRGB(text, 0, 0, 255);
 }
 
 void ConsoleColorizer::PrintYellow(const std::string& text){
 	//std::cout << "\033[33m" << text << "\033[0m";
-	PrintCode(text, "33");
+	//PrintCode(text, "33");
+	PrintRGB(text, 255, 255, 0);
 }
 
 void ConsoleColorizer::PrintOrange(const std::string& text){
