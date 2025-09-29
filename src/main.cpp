@@ -163,22 +163,56 @@ int main(int argc, char * argv[]){
 		SABREARRAY_EnergyResolutionModels.push_back(new SABRE_EnergyResolutionModel(0.050,0.1));////sigma of 0.050 MeV for all rings/wedges and threshold of 0.100 MeV for all rings/wedges -- default, but can update with setters and eventually read in from a file!
 	}
 
-	//set up TargetEnergyLoss and SABRE_DeadLayerModel here:
-	std::string targetEnergyLossPath = "../config/TargetELoss_6Li_in_LiF.conf";
-	TargetEnergyLoss* targetLoss = TargetEnergyLoss::LoadFromConfigFile(targetEnergyLossPath);
-	if(!targetLoss){
-		ConsoleColorizer::PrintRed("Failed to load TargetEnergyLoss from config file at " + targetEnergyLossPath + "\n");
+	//set up TargetEnergyLosses here:
+	//6Li in LiF target (75 ug/cm^2) for E(6Li) from 0 keV to 20000 keV
+	std::string targetEnergyLossPath_6Li_in_LiF = "../config/TargetELoss_6Li_in_LiF.conf";
+	TargetEnergyLoss* targetLoss_6Li_in_LiF = TargetEnergyLoss::LoadFromConfigFile(targetEnergyLossPath_6Li_in_LiF);
+	if(!targetLoss_6Li_in_LiF){
+		ConsoleColorizer::PrintRed("Failed to load TargetEnergyLoss from config file at " + targetEnergyLossPath_6Li_in_LiF + "\n");
 		return 1;
 	}
 
-
-	// SABRE_DeadLayerModel deadLayerLoss;//nothing to set up since we are using a single number here -> this will change!
-	std::string deadLayerEnergyLossPath = "../config/DeadLayerELoss_6Li_in_Si.conf";
-	SABRE_DeadLayerModel* deadLayerLoss = SABRE_DeadLayerModel::LoadFromConfigFile(deadLayerEnergyLossPath);
-	if(!targetLoss){
-		ConsoleColorizer::PrintRed("Failed to load SABRE_DeadLayerModel from config file at " + deadLayerEnergyLossPath);
+	//alphas in LiF target (75 ug/cm^2) for E(alpha) from 0 keV to 20000 keV
+	std::string targetEnergyLossPath_alpha_in_LiF = "../config/TargetELoss_alpha_in_LiF.conf";
+	TargetEnergyLoss* targetLoss_alpha_in_LiF = TargetEnergyLoss::LoadFromConfigFile(targetEnergyLossPath_alpha_in_LiF);
+	if(!targetLoss_alpha_in_LiF){
+		ConsoleColorizer::PrintRed("Failed to load TargetEnergyLoss from config file at " + targetEnergyLossPath_alpha_in_LiF + "\n");
 		return 1;
 	}
+
+	//detuerons in LiF target (75 ug/cm^2) for E(deuteron) from 0 keV to 20000 keV
+	std::string targetenergyLossPath_deuteron_in_LiF = "../config/TargetELoss_deuteron_in_LiF.conf";
+	TargetEnergyLoss* targetLoss_deuteron_in_LiF = TargetEnergyLoss::LoadFromConfigFile(targetenergyLossPath_deuteron_in_LiF);
+	if(!targetLoss_deuteron_in_LiF){
+		ConsoleColorizer::PrintRed("Failed to load TargetEnergyLoss from config file at " + targetenergyLossPath_deuteron_in_LiF + "\n");
+		return 1;
+	}
+
+	//set up SABRE_DeadLayerModels here:
+	//6Li in Si (50nm dead layer) for E(6Li) from 0 keV to 10000 keV
+	std::string deadLayerEnergyLossPath_6Li = "../config/DeadLayerELoss_6Li_in_Si.conf";
+	SABRE_DeadLayerModel* deadLayerLoss_6Li = SABRE_DeadLayerModel::LoadFromConfigFile(deadLayerEnergyLossPath_6Li);
+	if(!deadLayerLoss_6Li){
+		ConsoleColorizer::PrintRed("Failed to load SABRE_DeadLayerModel from config file at " + deadLayerEnergyLossPath_6Li);
+		return 1;
+	}
+
+	//alphas in Si (50nm dead layer) for E(alpha) from 0 keV to 20000 keV
+	std::string deadLayerEnergyLossPath_alpha = "../config/DeadLayerELoss_alpha_in_Si.conf";
+	SABRE_DeadLayerModel* deadLayerLoss_alpha = SABRE_DeadLayerModel::LoadFromConfigFile(deadLayerEnergyLossPath_alpha);
+	if(!deadLayerLoss_alpha){
+		ConsoleColorizer::PrintRed("Failed to load SABRE_DeadLayerModel from config file at " + deadLayerEnergyLossPath_alpha + "\n");
+		return 1;
+	}
+
+	//deuterons in Si (50nm dead layer) for E(deuteron) from 0 keV to 20000 keV
+	std::string deadLayerEnergyLossPath_deuteron = "../config/DeadLayerELoss_deuteron_in_Si.conf";
+	SABRE_DeadLayerModel* deadLayerLoss_deuteron = SABRE_DeadLayerModel::LoadFromConfigFile(deadLayerEnergyLossPath_deuteron);
+	if(!deadLayerLoss_deuteron){
+		ConsoleColorizer::PrintRed("Failed to load SABRE_DeadLayerModel from config file at " + deadLayerEnergyLossPath_deuteron + "\n");
+		return 1;
+	}
+
 
 	//ROOT application for GUI handling:
 	//TApplication app("SABREsim",&argc,argv);
@@ -197,6 +231,10 @@ int main(int argc, char * argv[]){
 			if(nevents%50000==0) cout << "Processed " << nevents << " events..." << endl;
 
 			for(size_t i=0; i<SABRE_Array.size(); i++){
+				/*///////////////////////////////////////////////
+				//  check if particle 1 (ejectile) is detected //
+				///////////////////////////////////////////////*/
+
 				//prep variables to hold "smeared" ring and wedge energy after applying resolution
 				double smearedERing, smearedEWedge;
 
@@ -204,14 +242,16 @@ int main(int argc, char * argv[]){
 				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD);
 				//pair<int,int> hit1_rw = SABRE_Array[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
+
 					//apply target energy loss to e1:
-					double e1_aftertarget = targetLoss->ApplyEnergyLoss(e1, theta1);
+					double e1_aftertarget = targetLoss_6Li_in_LiF->ApplyEnergyLoss(e1, theta1);
+
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta1*DEG2RAD,phi1*DEG2RAD);
 					Vec3 normal = SABRE_Array[i]->GetNormTilted();
 					normal = normal*(1/normal.Mag());
-					double e1_afterDeadLayer = deadLayerLoss->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
+					double e1_afterDeadLayer = deadLayerLoss_6Li->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
 
 					// if(nevents%10000 == 0){
 					// 	std::cout << "hit1 target_energy_loss = " << abs(e1-e1_aftertarget) << " MeV" << std::endl;
@@ -226,23 +266,31 @@ int main(int argc, char * argv[]){
 					}
 				}
 
+
+				/*/////////////////////////////////////////////
+				//  check if particle 2 (recoil) is detected //
+				/////////////////////////////////////////////*/
+
 				smearedERing = 0.;
 				smearedEWedge = 0.;
+
 				pair<int,int> hit2_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
 				//pair<int,int> hit2_rw = SABRE_Array[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
+
 					//apply target energy loss to e1:
-					double e2_aftertarget = targetLoss->ApplyEnergyLoss(e2, theta2);
+					double e2_aftertarget = targetLoss_6Li_in_LiF->ApplyEnergyLoss(e2, theta2);
+
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta2*DEG2RAD,phi2*DEG2RAD);
 					Vec3 normal = SABRE_Array[i]->GetNormTilted();
 					normal = normal*(1/normal.Mag());
-					double e2_afterDeadLayer = deadLayerLoss->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
+					double e2_afterDeadLayer = deadLayerLoss_6Li->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
 
 					//if(nevents%10000 == 0) std::cout << "hit2 target_energy_loss = " << e2-e2_aftertarget << " MeV" << std::endl;
 					//hEnergyLosses->Fill(abs(e2-e2_aftertarget)*1000.);//for target energy loss
-					hEnergyLosses->Fill(abs(e2_aftertarget-e2_afterDeadLayer)*1000.);//for dead layer energy loss
+					hEnergyLosses->Fill((e2_afterDeadLayer-e2_aftertarget)*1000.);//for dead layer energy loss
 
 					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
@@ -288,11 +336,25 @@ int main(int argc, char * argv[]){
 			if(nevents%50000==0) cout << "Processed " << nevents << " events..." << endl;
 
 			for(size_t i=0; i<SABRE_Array.size(); i++){
+				/*///////////////////////////////////////////////
+				//  check if particle 1 (ejectile) is detected //
+				///////////////////////////////////////////////*/
 				double smearedERing, smearedEWedge;
 
 				pair<int,int> hit1_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
-					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1,smearedEWedge)){
+
+					//apply target energy loss to e1:
+					double e1_aftertarget = targetLoss_6Li_in_LiF->ApplyEnergyLoss(e1, theta1);
+
+					//apply dead layer energy loss to e1_aftertarget:
+					Vec3 trajectory;
+					trajectory.SetVectorSpherical(1,theta1*DEG2RAD,phi1*DEG2RAD);
+					Vec3 normal = SABRE_Array[i]->GetNormTilted();
+					normal = normal*(1/normal.Mag());
+					double e1_afterDeadLayer = deadLayerLoss_6Li->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
+
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit1_rw.second,e1_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
 						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",100+i,hit1_rw.first,hit1_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
 						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
@@ -302,11 +364,28 @@ int main(int argc, char * argv[]){
 					}
 				}
 
+
+				/*//////////////////////////////////////////
+				//  check if particle 3 (bu1) is detected //
+				//////////////////////////////////////////*/
 				smearedERing = 0.;
 				smearedEWedge = 0.;
+
 				pair<int,int> hit3_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
+
 				if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
-					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit3_rw.first,e3,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit3_rw.second,e3,smearedEWedge)){
+
+					//apply target energy loss to e3:
+					double e3_aftertarget = targetLoss_6Li_in_LiF->ApplyEnergyLoss(e3, theta3);
+
+					//apply dead layer energy loss to e3_aftertarget:
+					Vec3 trajectory;
+					trajectory.SetVectorSpherical(1,theta3*DEG2RAD,phi3*DEG2RAD);
+					Vec3 normal = SABRE_Array[i]->GetNormTilted();
+					normal = normal*(1/normal.Mag());
+					double e3_afterDeadLayer = deadLayerLoss_6Li->ApplyEnergyLoss(e3_aftertarget, trajectory, normal);
+
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit3_rw.first,e3_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit3_rw.second,e3_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first,hit3_rw.second);
 						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",300+i,hit3_rw.first,hit3_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
 						outfile << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
@@ -316,11 +395,28 @@ int main(int argc, char * argv[]){
 					}
 				}
 
+
+				/*//////////////////////////////////////////
+				//  check if particle 4 (bu2) is detected //
+				//////////////////////////////////////////*/
 				smearedERing = 0.;
 				smearedEWedge = 0.;
+
 				pair<int,int> hit4_rw = SABRE_Array[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
+
 				if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
-					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit4_rw.first,e4,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit4_rw.second,e4,smearedEWedge)){
+
+					//apply target energy loss to e4:
+					double e4_aftertarget = targetLoss_6Li_in_LiF->ApplyEnergyLoss(e4, theta4);
+
+					//apply dead layer energy loss to e4_aftertarget:
+					Vec3 trajectory;
+					trajectory.SetVectorSpherical(1,theta4*DEG2RAD,phi4*DEG2RAD);
+					Vec3 normal = SABRE_Array[i]->GetNormTilted();
+					normal = normal*(1/normal.Mag());
+					double e4_afterDeadLayer = deadLayerLoss_6Li->ApplyEnergyLoss(e4_aftertarget, trajectory, normal);
+
+					if(SABREARRAY_EnergyResolutionModels[i]->detectEnergyInRing(hit4_rw.first,e4_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels[i]->detectEnergyInWedge(hit4_rw.second,e4_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
 						//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",400+i,hit4_rw.first,hit4_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
 						outfile << 400+i << "\t" << hit4_rw.first << "\t" << hit4_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << endl;
