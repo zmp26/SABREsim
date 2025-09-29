@@ -18,7 +18,7 @@ public:
 	static constexpr double RAD2DEG = 180./M_PI;
 
 	det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
-		   std::vector<SABRE_EnergyResolutionModel*>& resolutionModels,
+		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 		   TargetEnergyLoss* targetLoss,
 		   SABRE_DeadLayerModel* deadLayerLoss);
 
