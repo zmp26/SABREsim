@@ -197,7 +197,33 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 }
 
 void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
-	std::cout << "passing..." << std::endl;
+	//std::cout << "passing..." << std::endl;
+
+	if(!infile.is_open()){
+		ConsoleColorizer::PrintRed("Error: Cannot open input file!\n");
+		return;
+	}
+
+	if(!outfile.is_open()){
+		ConsoleColorizer::PrintRed("Error: Cannot open output file!\n");
+		return;
+	}
+
+	det3mc det3mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_);
+
+	det3mcProcessor.Run(infile, outfile);
+
+	nevents_ = det3mcProcessor.GetNumEvents();
+	detectorHits_ = det3mcProcessor.GetDetectorHits();
+	hit1_ = det3mcProcessor.GetHit1();
+	hit3_ = det3mcProcessor.GetHit3();
+	hit4_ = det3mcProcessor.GetHit4();
+	hit34_ = det3mcProcessor.GetHitBoth34();
+	hitOnly3_ = det3mcProcessor.GetHitOnly3();
+	hitOnly4_ = det3mcProcessor.GetHitOnly4();
+	onePartHits_ = det3mcProcessor.GetOnePartHits();
+	twoPartHits_ = det3mcProcessor.GetTwoPartHits();
+	threePartHits_ = det3mcProcessor.GetThreePartHits();
 }
 
 void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){

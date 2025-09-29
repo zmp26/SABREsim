@@ -4,7 +4,7 @@ ROOTLIBS := $(shell root-config --libs)
 CFLAGS = -Wall -std=c++17 $(ROOTCFLAGS)
 EXECUTABLE = SABREsim
 
-OBJECTS = Rotation.o Vec3.o SABRE_Detector.o Beamspot.o SABRE_EnergyResolutionModel.o SABRE_DeadLayerModel.o ConsoleColorizer.o SABRE_ChannelMap.o TargetEnergyLoss.o SABREsim.o det2mc.o main.o
+OBJECTS = Rotation.o Vec3.o SABRE_Detector.o Beamspot.o SABRE_EnergyResolutionModel.o SABRE_DeadLayerModel.o ConsoleColorizer.o SABRE_ChannelMap.o TargetEnergyLoss.o SABREsim.o det2mc.o det3mc.o main.o
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(ROOTLIBS)
@@ -40,6 +40,9 @@ SABREsim.o: SABREsim.cpp SABREsim.h
 	$(CC) $(CFLAGS) -c $<
 
 det2mc.o: det2mc.cpp det2mc.h
+	$(CC) $(CFLAGS) -c $<
+
+det3mc.o: det3mc.cpp det3mc.h
 	$(CC) $(CFLAGS) -c $<
 
 main.o: main.cpp SABREsim.h

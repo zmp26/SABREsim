@@ -976,7 +976,8 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 
 	//mass table
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");
+	//fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");//uncomment this for surface laptop!
+	fMassTable.Init("/home/zmpur/IMMMA_Tool/threebody/masstable.dat"); //uncomment this for DESKTOP!
 
 
 	Double_t beamMass = fMassTable.GetMassMeV("He",3);

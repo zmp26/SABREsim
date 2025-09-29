@@ -10,6 +10,7 @@
 #include "TargetEnergyLoss.h"
 #include "SABRE_DeadLayerModel.h"
 #include "det2mc.h"
+#include "det3mc.h"
 
 class SABREsim {
 public:
