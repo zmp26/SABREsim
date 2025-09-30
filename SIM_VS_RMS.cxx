@@ -325,3 +325,107 @@ void Lithium6_0plus(){
 	std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
 	std::cout << "Scale factors saved to Lithium6_0plus_scales.txt" << std::endl;
 }
+
+void Lithium6_3plus_1par(){
+
+}
+
+void Lithium6_3plus_2par(){
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/NEW_LiFha_2par_exp_3plus_OUTPUT_FORCETHETA20PHI0.root";
+	TString dataHistLocalPath = "2par/3plus/hSABRE_ChannelHits_3plus";
+
+	TString simFilePath = "/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_moretheta.root";
+	TString simHistLocalPath = "2par/3plus/h2SABRE_ChannelHits_3plus";
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		return;
+	}
+
+	TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
+	if(!hData){
+		std::cerr << "Error retrieving data histogram" << std::endl;
+		datafile->Close();
+		return;
+	}
+	hData->SetDirectory(0);
+	datafile->Close();
+
+	TFile *simfile = new TFile(simFilePath,"READ");
+	if(!simfile || simfile->IsZombie()){
+		std::cerr << "Error opening sim file" << std::endl;
+		return;
+	}
+
+	TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
+	if(!hSim){
+		std::cerr << "Error retrieving sim histogram" << std::endl;
+		simfile->Close();
+		return;
+	}
+	hSim->SetDirectory(0);
+	simfile->Close();
+
+	if(hData->GetNbinsX() != hSim->GetNbinsX()){
+		std::cerr << "Histogram bin counts do not match!" << std::endl;
+		return;
+	}
+
+	double dataIntegral = hData->Integral();
+	double simIntegral = hSim->Integral();
+
+	double scaleFactor = 0.;
+	if(simIntegral > 0){
+		scaleFactor = dataIntegral/simIntegral;
+		hSim->Scale(scaleFactor);
+		std::cout << "Applied global scale factor " << scaleFactor << " to sim" << std::endl;
+	} else {
+		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
+		return;
+	}
+
+	TCanvas *c1 = new TCanvas("c1", "Data vs Sim", 800, 600);
+	gStyle->SetOptStat(0);
+	const int rebinfactor = 1;
+
+	double maxdata = hData->GetMaximum();
+	double maxsim = hSim->GetMaximum();
+
+	double ymax = std::max(maxdata,maxsim)*1.1;
+	hData->SetMaximum(ymax);
+
+	hData->SetLineColor(kViolet);
+	hData->SetLineWidth(4);
+	hData->SetTitle("^{6}Li (3^{+} E = 2.186 MeV) Data vs Sim;Energy (MeV);Counts");
+	hData->Draw("HIST");
+
+	hSim->SetLineColor(kOrange);
+	hSim->SetLineWidth(4);
+	hSim->Draw("HIST SAME");
+
+	TLegend* legend = new TLegend(0.65, 0.75, 0.88, 0.88);
+	legend->AddEntry(hData,"Data","l");
+	TString simlabel = Form("Sim (scaled x %.3f)", scaleFactor);
+	legend->AddEntry(hSim,simlabel,"l");
+	legend->Draw();
+
+	c1->Update();
+
+	//save to a new root file:
+	TString outfile_root_name = "Lithium6_3plus_2par_simVSdata.root";
+	TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
+	if(!outfile_root || outfile_root->IsZombie()){
+		std::cerr << "Error creating output root file" << std::endl;
+		return;
+	}
+
+	hData->Write("hData");
+	hSim->Write("hSim");
+	c1->Write("overlay_canvas");
+	outfile_root->Close();
+
+	std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
+
+}
+

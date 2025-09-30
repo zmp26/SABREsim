@@ -280,7 +280,9 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 2par/3plus/CMVCMAngle/AntiExECut TH1D h2par_CosCMVCMAngleSum_AntiExECut 2par_CosCMVCMAngleSum_AntiExECut 200 -2 2
 2par/3plus/CMVCMAngle/AntiExECut TH2D h2par_CosCMVsCosCM_AntiExECut 2par_CosCMVsCosCM_AntiExECut 100 -1 1 100 -1 1
 #
-2par/3plus TH2D h2par_SabreRingESumVsLi6ExE 2par_SabreRingESumVsLi6ExE 600 -2 10 500 0 10
+2par/3plus TH2D h2par_SabreRingESumVsLi6ExE_3plus 2par_SabreRingESumVsLi6ExE_3plus 600 -2 10 500 0 10
+2par/3plus TH1D h2SABRE_ChannelHits_3plus SABRE_ChannelHits_3plus 128 -0.5 127.5
+2par/3plus TH2D h2SABRE_ChannelESummary_3plus SABRE_ChannelESummary_3plus 128 -0.5 127.5 2000 0 20
 #
 #
 #
@@ -357,3 +359,4 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 2par/3plus/CMThetaPhi/AntiExECut TH2D h2par_CMTheta1VsCMPhi2_AntiExECut 2par_CMTheta1VsCMPhi2_AntiExECut 90 0 360 45 0 180
 2par/3plus/CMThetaPhi/AntiExECut TH2D h2par_CMTheta2VsCMPhi1_AntiExECut 2par_CMTheta2VsCMPhi1_AntiExECut 90 0 360 45 0 180
 #
+1and2par/3plus TH2D h1and2par_SabreRingEVsLi6ExE 1and2par_SabreRingEVsLi6ExE 600 -2 10 500 0 10

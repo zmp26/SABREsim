@@ -977,7 +977,8 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 	//mass table
 	TMassTable fMassTable;
 	//fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");//uncomment this for surface laptop!
-	fMassTable.Init("/home/zmpur/IMMMA_Tool/threebody/masstable.dat"); //uncomment this for DESKTOP!
+	//fMassTable.Init("/home/zmpur/IMMMA_Tool/threebody/masstable.dat"); //uncomment this for DESKTOP!
+	fMassTable.Init("../../config/masstable.dat");
 
 
 	Double_t beamMass = fMassTable.GetMassMeV("He",3);
@@ -1098,6 +1099,7 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				histoman->getHisto2D("h1par_CosCMVsCosCM")->Fill(TMath::Cos(case2.breakup1_CMAngleWRTVCM),TMath::Cos(case2.breakup2_CMAngleWRTVCM));
 
 				histoman->getHisto2D("h1par_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
+				histoman->getHisto2D("h1and2par_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 
 			} else if(eventLines.size()==3){
 				//2 sabre hit
@@ -1164,7 +1166,28 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				histoman->getHisto2D("h2par_CosCMVsCosCM")->Fill(TMath::Cos(case1.breakup1_CMAngleWRTVCM),TMath::Cos(case1.breakup2_CMAngleWRTVCM));
 				histoman->getHisto2D("h2par_CosCMVsCosCM")->Fill(TMath::Cos(case2.breakup1_CMAngleWRTVCM),TMath::Cos(case2.breakup2_CMAngleWRTVCM));
 
-				histoman->getHisto2D("h2par_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
+				histoman->getHisto2D("h2par_SabreRingESumVsLi6ExE_3plus")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
+				histoman->getHisto2D("h1and2par_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
+
+				int ringoffset = offsets[sd1.detectorIndex].first;
+				int wedgeoffset = offsets[sd1.detectorIndex].second;
+				int globalring = sd1.ring + ringoffset;
+				int globalwedge = sd1.wedge + wedgeoffset;
+
+				histoman->getHisto1D("h2SABRE_ChannelHits_3plus")->Fill(globalring);
+				histoman->getHisto1D("h2SABRE_ChannelHits_3plus")->Fill(globalwedge);
+				histoman->getHisto2D("h2SABRE_ChannelESummary_3plus")->Fill(globalring,sd1.ringEnergy);
+				histoman->getHisto2D("h2SABRE_ChannelESummary_3plus")->Fill(globalwedge,sd1.wedgeEnergy);
+
+				ringoffset = offsets[sd2.detectorIndex].first;
+				wedgeoffset = offsets[sd2.detectorIndex].second;
+				globalring = sd2.ring + ringoffset;
+				globalwedge = sd2.wedge + wedgeoffset;
+
+				histoman->getHisto1D("h2SABRE_ChannelHits_3plus")->Fill(globalring);
+				histoman->getHisto1D("h2SABRE_ChannelHits_3plus")->Fill(globalwedge);
+				histoman->getHisto2D("h2SABRE_ChannelESummary_3plus")->Fill(globalring,sd2.ringEnergy);
+				histoman->getHisto2D("h2SABRE_ChannelESummary_3plus")->Fill(globalwedge,sd2.wedgeEnergy);
 
 				histoman->getHisto2D("h2par_LabThetaVsLabPhi1")->Fill(case1.PhiLab1,case1.ThetaLab1);
 				histoman->getHisto2D("h2par_LabThetaVsLabPhi1")->Fill(case2.PhiLab1,case2.ThetaLab1);
