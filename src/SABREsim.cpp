@@ -87,19 +87,19 @@ bool SABREsim::InitializeModels(){
 	}
 
 	//load target energy losses
-	targetLoss_6Li_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("../config/TargetELoss_6Li_in_LiF.conf");
+	targetLoss_6Li_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_6Li_in_LiF.conf");
 	if(!targetLoss_6Li_in_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load 6Li in LiF target loss config file\n");
 		return false;
 	}
 
-	targetLoss_alpha_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("../config/TargetELoss_alpha_in_LiF.conf");
+	targetLoss_alpha_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_alpha_in_LiF.conf");
 	if(!targetLoss_alpha_in_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load alpha in LiF target loss config file\n");
 		return false;
 	}
 
-	targetLoss_deuteron_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("../config/TargetELoss_deuteron_in_LiF.conf");
+	targetLoss_deuteron_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_deuteron_in_LiF.conf");
 	if(!targetLoss_deuteron_in_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load deuteron in LiF target loss config file\n");
 		return false;
@@ -107,19 +107,19 @@ bool SABREsim::InitializeModels(){
 
 
 	//load dead layer models
-	deadLayerLoss_6Li_ = SABRE_DeadLayerModel::LoadFromConfigFile("../config/DeadLayerELoss_6Li_in_Si.conf");
+	deadLayerLoss_6Li_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_6Li_in_Si.conf");
 	if(!deadLayerLoss_6Li_){
 		ConsoleColorizer::PrintRed("Failed to load 6Li dead layer config file\n");
 		return false;
 	}
 
-	deadLayerLoss_alpha_ = SABRE_DeadLayerModel::LoadFromConfigFile("../config/DeadLayerELoss_alpha_in_Si.conf");
+	deadLayerLoss_alpha_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_alpha_in_Si.conf");
 	if(!deadLayerLoss_alpha_){
 		ConsoleColorizer::PrintRed("Failed to load alpha dead layer config file\n");
 		return false;
 	}
 
-	deadLayerLoss_deuteron_ = SABRE_DeadLayerModel::LoadFromConfigFile("../config/DeadLayerELoss_deuteron_in_Si.conf");
+	deadLayerLoss_deuteron_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_deuteron_in_Si.conf");
 	if(!deadLayerLoss_deuteron_){
 		ConsoleColorizer::PrintRed("Failed to load deuteron dead layer config file\n");
 		return false;
