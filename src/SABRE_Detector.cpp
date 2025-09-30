@@ -327,11 +327,14 @@ std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, d
 	double r =std::sqrt(detFrameVec.GetX()*detFrameVec.GetX() + detFrameVec.GetY()*detFrameVec.GetY());
 	double hitphi = std::atan2(detFrameVec.GetY(), detFrameVec.GetX());
 	if(hitphi < 0) hitphi += 2.*M_PI;
+	if(hitphi)
 
 	if(!IsInside(r, hitphi)) return std::make_pair(-1,-1);
 
 	int ring = -1;
 	int wedge = -1;
+
+	if(hitphi > M_PI) hitphi -= 2*M_PI;
 
 	for(int i=0; i<m_nRings; i++){
 		if(IsRing(r, i) || IsRingTopEdge(r, i) || IsRingBottomEdge(r, i)){
