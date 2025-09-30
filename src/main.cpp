@@ -551,7 +551,7 @@ int main(int argc, char * argv[]){
 
 	if(argc == 2 && (std::string(argv[1]) == "help" || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")){
 		ConsoleColorizer::PrintWhite("Usage:\n\t");
-		ConsoleColorizer::PrintYellow("./SABREsim X kinXmcFile.out detOutputFile.det\n\n");
+		ConsoleColorizer::PrintYellow("bin/SABREsim X path/to/kinXmcFile.out path/to/detOutputFile.det\n\n");
 		ConsoleColorizer::PrintWhite("Where ");
 		ConsoleColorizer::PrintYellow("X = 2,3,4 ");
 		ConsoleColorizer::PrintWhite("for kin2mc, kin3mc, kin4mc input  files\nAnd ");
@@ -559,7 +559,7 @@ int main(int argc, char * argv[]){
 		ConsoleColorizer::PrintWhite("is the filename (or path to) the kinXmc output file\nAnd ");
 		ConsoleColorizer::PrintYellow("detOutputFile.det ");
 		ConsoleColorizer::PrintWhite("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
-		ConsoleColorizer::PrintYellow("\t./SABREsim 2 ../kinmc/TEST.out ../det/TEST.det\n\n");
+		ConsoleColorizer::PrintYellow("\tbin/SABREsim 2 kinmc/TEST.out det/TEST.det\n\n");
 		return 1;
 	}
 
@@ -573,7 +573,7 @@ int main(int argc, char * argv[]){
 		ConsoleColorizer::PrintRed("is the filename (or path to) the kinXmc output file\nAnd ");
 		ConsoleColorizer::PrintYellow("detOutputFile.det ");
 		ConsoleColorizer::PrintRed("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
-		ConsoleColorizer::PrintYellow("\t./SABREsim 2 ../kinmc/TEST.out ../det/TEST.det\n\n");
+		ConsoleColorizer::PrintYellow("\tbin/SABREsim 2 kinmc/TEST.out det/TEST.det\n\n");
 		return 1;
 	}
 
