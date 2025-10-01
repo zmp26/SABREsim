@@ -95,11 +95,11 @@ struct CMCMinMax{
 };
 
 static const std::pair<int, int> offsets[] = {
-	{112,40},	//detector0 {ringOffset,wedgeOffset}
-	{96,32},	//detector1 {ringOffset,wedgeOffset}
-	{80,16},	//detector2 {ringOffset,wedgeOffset}
-	{64,24},	//detector3 {ringOffset,wedgeOffset}
-	{48,0}		//detector4 {ringOffset,wedgeOffset}
+	{112,40},	//detector0 {ringOffset,wedgeOffset} // rings span channels 112 - 127, wedges span channels 40 - 47
+	{96,32},	//detector1 {ringOffset,wedgeOffset} // rings span channels 96 - 111, wedges span channels 32 - 39
+	{80,16},	//detector2 {ringOffset,wedgeOffset} // rings span channels 80 - 95, wedges span channels 16 - 23
+	{64,24},	//detector3 {ringOffset,wedgeOffset} // rings span channels 64 - 69, wedges span channels 24 - 31
+	{48,0}		//detector4 {ringOffset,wedgeOffset} // rings span channels 48 - 63, wedges span channels 0 - 7
 };
 
 double PERC = 0.10;
