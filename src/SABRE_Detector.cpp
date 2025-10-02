@@ -56,7 +56,7 @@
 #include <random>
 #include <cmath>
 #include <fstream>
-
+#include <iostream>
 #include "SABRE_Detector.h"
 #include "Vec3.h"
 
@@ -270,6 +270,9 @@ std::pair<int, int> SABRE_Detector::GetTrajectoryRingWedge(double theta, double 
 	//Calculate the distance from the origin to the hit on the detector
 	//double R_to_detector = (r_flat*std::cos(phi_flat)*std::sin(m_tilt) + m_translation.GetZ())/std::cos(theta);
 
+	std::cout << "Theta = " << theta*rad2deg << ", phi = " << phi*rad2deg << std::endl;
+	std::cout << "r = " << r_flat << ", hitphi = " << phi_flat << std::endl << std::endl;
+
 
 	//Check to see if our flat coords fall inside the flat detector
 	if(IsInside(r_flat, phi_flat)) {
@@ -327,31 +330,38 @@ std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, d
 	double r =std::sqrt(detFrameVec.GetX()*detFrameVec.GetX() + detFrameVec.GetY()*detFrameVec.GetY());
 	double hitphi = std::atan2(detFrameVec.GetY(), detFrameVec.GetX());
 	if(hitphi < 0) hitphi += 2.*M_PI;
-	if(hitphi)
 
 	if(!IsInside(r, hitphi)) return std::make_pair(-1,-1);
 
 	int ring = -1;
 	int wedge = -1;
 
-	if(hitphi > M_PI) hitphi -= 2*M_PI;
+	if(hitphi > M_PI) hitphi -= 2.*M_PI;
 
-	for(int i=0; i<m_nRings; i++){
-		if(IsRing(r, i) || IsRingTopEdge(r, i) || IsRingBottomEdge(r, i)){
+	std::cout << "Theta = " << theta*rad2deg << ", phi = " << phi << std::endl;
+	std::cout << "r = " << r << ", hitphi = " << hitphi << std::endl << std::endl;
+
+	for(int i=0; i < m_nRings; i++){
+		if(IsRingTopEdge(r,i) || IsRingBottomEdge(r,i)){
+			return std::make_pair(-1,-1);
+		}
+		if(IsRing(r,i)){
 			ring = i;
 			break;
 		}
 	}
 
 	for(int i=0; i<m_nWedges; i++){
-		if(IsWedge(hitphi,i) || IsWedgeTopEdge(hitphi,i) || IsWedgeBottomEdge(hitphi,i)){
+		if(IsWedgeTopEdge(hitphi,i) || IsWedgeBottomEdge(hitphi,i)){
+			return std::make_pair(-1,-1);
+		}
+		if(IsWedge(hitphi,i)){
 			wedge = i;
 			break;
 		}
 	}
 
-	if(ring < 0 || wedge < 0) return std::make_pair(-1,-1);
-	return std::make_pair(ring,wedge);
+	return std::make_pair(ring, wedge);
 
 }
 

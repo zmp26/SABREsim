@@ -107,6 +107,7 @@ private:
 	static constexpr int m_nRings = 16;
 	static constexpr int m_nWedges = 8;
 	static constexpr double deg2rad = M_PI/180.;
+	static constexpr double rad2deg = 180./M_PI;
 	/*These are implicitly the width and the spacing between detector active strips*/
 	static constexpr double POSITION_TOL = 0.0001;
 	static constexpr double ANGULAR_TOL = 0.1*M_PI/180.;
