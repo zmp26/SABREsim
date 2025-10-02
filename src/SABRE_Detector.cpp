@@ -303,6 +303,97 @@ std::pair<int, int> SABRE_Detector::GetTrajectoryRingWedge(double theta, double 
 }
 
 /*
+#include <cmath>
+#include <utility>
+#include "Vec3.h"
+#include "Rotation.h"
+
+std::pair<double, double> GetFlatCoordinatesFromOffsetRay(
+    const Vec3& origin,
+    double theta,
+    double phi,
+    double phiCentral,
+    double tilt,
+    double detectorZ
+) {
+    // Step 1: Define ray direction vector from spherical angles
+    Vec3 direction;
+    direction.SetVectorSpherical(1.0, theta, phi); // Unit vector
+
+    // Step 2: Compute detector normal vector
+    Vec3 detectorNormal(
+        std::sin(tilt) * std::cos(phiCentral),
+        std::sin(tilt) * std::sin(phiCentral),
+        std::cos(tilt)
+    );
+
+    // Step 3: Compute detector position vector
+    Vec3 detectorPos(0.0, 0.0, detectorZ);
+
+    // Step 4: Compute intersection time t
+    Vec3 delta = origin - detectorPos;
+    double numerator = -delta.Dot(detectorNormal);
+    double denominator = direction.Dot(detectorNormal);
+
+    if (std::abs(denominator) < 1e-8) {
+        // Ray is parallel to the detector plane
+        return std::make_pair(-1.0, -1.0);
+    }
+
+    double t_hit = numerator / denominator;
+
+    if (t_hit < 0) {
+        // Hit is behind the ray origin
+        return std::make_pair(-1.0, -1.0);
+    }
+
+    // Step 5: Compute hit point
+    Vec3 hitPoint = Vec3(
+        origin.GetX() + t_hit * direction.GetX(),
+        origin.GetY() + t_hit * direction.GetY(),
+        origin.GetZ() + t_hit * direction.GetZ()
+    );
+
+    // Step 6: Convert to detector-local coordinates
+    Vec3 relativeHit = hitPoint - detectorPos;
+
+    ZRotation rotZ(-phiCentral); // undo φ rotation
+    YRotation rotY(-tilt);       // undo tilt
+
+    // Combined rotation
+    double temp[3];
+    for (int i = 0; i < 3; ++i) {
+        temp[i] = 0.0;
+        for (int j = 0; j < 3; ++j) {
+            temp[i] += rotZ.m_matrix[i][j] * relativeHit.GetIndex(j);
+        }
+    }
+
+    Vec3 intermediate(temp[0], temp[1], temp[2]);
+
+    double local[3];
+    for (int i = 0; i < 3; ++i) {
+        local[i] = 0.0;
+        for (int j = 0; j < 3; ++j) {
+            local[i] += rotY.m_matrix[i][j] * intermediate.GetIndex(j);
+        }
+    }
+
+    Vec3 localHit(local[0], local[1], local[2]);
+
+    // Step 7: Compute r_flat and phi_flat in local (detector) frame
+    double x = localHit.GetX();
+    double y = localHit.GetY();
+
+    double r_flat = std::sqrt(x*x + y*y);
+    double phi_flat = std::atan2(y, x);
+    if (phi_flat < 0) phi_flat += 2.0 * M_PI;
+
+    return std::make_pair(r_flat, phi_flat);
+}
+*/
+
+/*
 	Given a unit vector (R=1, theta, phi) which corresponds to some particle's trajectory
 	and a vector containing translational offset information,
 	determine whether that particle will intersect with this SABRE detector. If it does,
