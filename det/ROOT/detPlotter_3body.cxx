@@ -26,6 +26,9 @@ using namespace std;
 
 Float_t DEGRAD=0.017453293;
 
+int numrings = 16;
+int numwedges = 8;
+
 
 struct PHYSDATA {double e, theta, phi;};
 struct SABREDATA {int detectorIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
@@ -272,6 +275,11 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2D("hSABRE3_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE3_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			} else if(sabredata1.detectorIndex == 4){
+				//update globalring value to account for reversed counting:
+				//std::cout << "before: globalring = " << globalring << "\tlocal ring = " << sabredata1.ring << std::endl;
+				//globalring = 63 - sabredata1.ring;
+				//std::cout << "after: globalring = " << globalring << "\t local ring = " << sabredata1.ring << std::endl << std::endl;
+
 				histoman->getHisto1D("hSABRE4_RingHit")->Fill(sabredata1.ring);
 				histoman->getHisto1D("hSABRE4_WedgeHit")->Fill(sabredata1.wedge);
 				//histoman->getHisto1D("hSABRE4_ESummary")->Fill(sabredata1.energy);
@@ -296,16 +304,23 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto1D("hSABRE4_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
 				histoman->getHisto2D("hSABRE4_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE4_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
+
+				histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalwedge);
+				histoman->getHisto1D("hSABRE_RingChannelHits")->Fill(globalring);
+				histoman->getHisto1D("hSABRE_WedgeChannelHits")->Fill(globalwedge);
+				histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+				histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			}
 			//cout << "fillSABREHistos test" << endl;
 
 			//all sabre histograms:
-			histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalring);
-			histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalwedge);
-			histoman->getHisto1D("hSABRE_RingChannelHits")->Fill(globalring);
-			histoman->getHisto1D("hSABRE_WedgeChannelHits")->Fill(globalwedge);
-			histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
-			histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
+			// histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalring);
+			// histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalwedge);
+			// histoman->getHisto1D("hSABRE_RingChannelHits")->Fill(globalring);
+			// histoman->getHisto1D("hSABRE_WedgeChannelHits")->Fill(globalwedge);
+			// histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+			// histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 }
 
 std::vector<IMMMA_Tool_3*> prepareIMMMA_Tool_3s(std::vector<Reaction>& reactions, bool output=false){
@@ -1173,6 +1188,8 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				int wedgeoffset = offsets[sd1.detectorIndex].second;
 				int globalring = sd1.ring + ringoffset;
 				int globalwedge = sd1.wedge + wedgeoffset;
+
+				//if(sd1.detectorIndex==4) globalring = 63 - sd1.ring;
 
 				histoman->getHisto1D("h2SABRE_ChannelHits_3plus")->Fill(globalring);
 				histoman->getHisto1D("h2SABRE_ChannelHits_3plus")->Fill(globalwedge);
