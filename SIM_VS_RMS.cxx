@@ -40,7 +40,7 @@ void Lithium6_1plus(){
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2_offset_NEWTEST.root";
+	TString simFilePath = "/mnt/e/SABREsim/det/kin3mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2_offset_NEWTEST.root";
 	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
 	//open data file and retrieve histo
@@ -334,7 +334,7 @@ void Lithium6_3plus_2par(){
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/NEW_LiFha_2par_exp_3plus_OUTPUT_FORCETHETA20PHI0.root";
 	TString dataHistLocalPath = "2par/3plus/hSABRE_ChannelHits_3plus";
 
-	TString simFilePath = "/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_moretheta.root";
+	TString simFilePath = "/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_moretheta_offset0.root";
 	TString simHistLocalPath = "2par/3plus/h2SABRE_ChannelHits_3plus";
 
 	TFile *datafile = new TFile(dataFilePath,"READ");
