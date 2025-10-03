@@ -7,8 +7,13 @@
 #include <TCanvas.h>
 #include <TStyle.h>
 #include <TString.h>
+#include <TH1.h>
+#include <TH2.h>
 #include <string>
 #include "ConsoleColorizer.h"
+#include "Beamspot.h"
+#include "UniformProfile.h"
+#include "GaussianProfile.h"
 
 static const std::pair<int,int> offsets[] = {
 	{112,40}, {96,32}, {80,16}, {64,24}, {48,0}
@@ -158,6 +163,58 @@ void SABREsim::Run(){
 		Simulate3body(infile,outfile);
 	} else if(kinX_ == 4){
 		Simulate4body(infile,outfile);
+	} else if(kinX_ == 0){ 
+		//temporarily test Beamspot here!
+
+		/* Establish beamspots here */
+		Beamspot uniformbeam, gaussianbeam;
+
+		uniformbeam.SetProfile(new UniformProfile(0.01,0.01));
+		uniformbeam.SetBeamAxisOffset(0.,0.);
+
+		gaussianbeam.SetProfile(new GaussianProfile(0.01, 0.01));
+		gaussianbeam.SetBeamAxisOffset(0.,0.);
+
+		TH2D* uniformbeam_xy = new TH2D("uniformbeam_xy","uniformbeam_xy", 1000, -0.05, 0.05, 1000, -0.05, 0.05);
+		TH2D* gaussianbeam_xy = new TH2D("gaussianbeam_xy","gaussianbeam_xy", 1000, -0.05, 0.05, 1000, -0.05, 0.05);
+		TH1D* uniformbeam_y = new TH1D("uniformbeam_y","uniformbeam_y",1000, -0.05, 0.05);
+		TH1D* uniformbeam_x = new TH1D("uniformbeam_x","uniformbeam_x",1000, -0.05, 0.05);
+		TH1D* gaussianbeam_x = new TH1D("gaussianbeam_x","gaussianbeam_x",1000, -0.05, 0.05);
+		TH1D* gaussianbeam_y = new TH1D("gaussianbeam_y","gaussianbeam_y",1000, -0.05, 0.05);
+
+		int numevents = 1000000; 
+		for(int i=0; i<numevents; i++){
+			if(i%50000 == 0) ConsoleColorizer::PrintBlue(std::string(Form("Processed %d events...\n",i)));
+
+			/* Generate a point at z=0 */
+			Vec3 uniformbeam_point = uniformbeam.GeneratePoint(0.);
+			Vec3 gaussianbeam_point = gaussianbeam.GeneratePoint(0.);
+
+			uniformbeam_xy->Fill(uniformbeam_point.GetX(),uniformbeam_point.GetY());
+			gaussianbeam_xy->Fill(gaussianbeam_point.GetX(), gaussianbeam_point.GetY());
+			uniformbeam_x->Fill(uniformbeam_point.GetX());
+			uniformbeam_y->Fill(uniformbeam_point.GetY());
+			gaussianbeam_x->Fill(gaussianbeam_point.GetX());
+			gaussianbeam_y->Fill(gaussianbeam_point.GetY());
+		}
+
+		ConsoleColorizer::PrintBlue(std::string(Form("\n\nProcessed %d events!\n",numevents)));
+
+		TCanvas* c1 = new TCanvas("c1","c1",800,600);
+		uniformbeam_xy->Draw();
+		c1->SaveAs("uniformbeam_xy.png");
+		gaussianbeam_xy->Draw();
+		c1->SaveAs("gaussianbeam_xy.png");
+
+		//delete
+		delete uniformbeam_xy;
+		delete gaussianbeam_xy;
+		delete uniformbeam_x;
+		delete gaussianbeam_x;
+		delete uniformbeam_y;
+		delete gaussianbeam_y;
+		delete c1;
+
 	} else {
 		//ConsoleColorizer::PrintRed(Form("Invalid kinX = %d\n",kinX_).Data());
 		ConsoleColorizer::PrintRed("Invalid kinX = " + std::to_string(kinX_) + "\n");

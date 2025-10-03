@@ -47,7 +47,8 @@ int main(int argc, char * argv[]){
 	}
 
 	int kinX = std::stoi(argv[1]);
-	if(kinX != 2 && kinX !=3 && kinX !=4){
+	//if(kinX != 2 && kinX !=3 && kinX !=4){//uncomment this to exclude debugging kinX == 0 option
+	if(kinX != 0 && kinX != 2 && kinX != 3 && kinX != 4){
 		ConsoleColorizer::PrintRed("Error: Invalid kinematics type. Use 2 for 2-body, 3 for 3-body, 4 for 4-body!");
 		return 1;
 	}
