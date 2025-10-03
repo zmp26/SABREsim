@@ -270,8 +270,8 @@ std::pair<int, int> SABRE_Detector::GetTrajectoryRingWedge(double theta, double 
 	//Calculate the distance from the origin to the hit on the detector
 	//double R_to_detector = (r_flat*std::cos(phi_flat)*std::sin(m_tilt) + m_translation.GetZ())/std::cos(theta);
 
-	std::cout << "Theta = " << theta*rad2deg << ", phi = " << phi*rad2deg << std::endl;
-	std::cout << "r = " << r_flat << ", hitphi = " << phi_flat << std::endl << std::endl;
+	//std::cout << "Theta = " << theta*rad2deg << ", phi = " << phi*rad2deg << std::endl;
+	//std::cout << "r = " << r_flat << ", hitphi = " << phi_flat << std::endl << std::endl;
 
 
 	//Check to see if our flat coords fall inside the flat detector
@@ -399,61 +399,125 @@ std::pair<double, double> GetFlatCoordinatesFromOffsetRay(
 	determine whether that particle will intersect with this SABRE detector. If it does,
 	determine which ring and wedge the hit occurs in.
 */
-std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, double phi, const Vec3& offset){
-	Vec3 direction(std::sin(theta)*std::cos(phi),
-								 std::sin(theta)*std::sin(phi),
-								 std::cos(theta));
+// std::pair<int, int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, double phi, const Vec3& offset){
+// 	Vec3 direction(std::sin(theta)*std::cos(phi),
+// 								 std::sin(theta)*std::sin(phi),
+// 								 std::cos(theta));
 
-	Vec3 planeNormal = GetNormTilted();
-	Vec3 planePoint = m_translation;// GetHitCoordinates(8,4);//roughly somewhere near the center of the detector
+// 	Vec3 planeNormal = GetNormTilted();
+// 	Vec3 planePoint = m_translation;// GetHitCoordinates(8,4);//roughly somewhere near the center of the detector
 
-	double denom = planeNormal.Dot(direction);
-	if(std::fabs(denom) < 1e-6) return std::make_pair(-1,-1);
+// 	double denom = planeNormal.Dot(direction);
+// 	if(std::fabs(denom) < 1e-6) return std::make_pair(-1,-1);
 
-	double t = (planePoint - offset).Dot(planeNormal) / denom;
-	if(t<0) return std::make_pair(-1,-1);
+// 	double t = (planePoint - offset).Dot(planeNormal) / denom;
+// 	if(t<0) return std::make_pair(-1,-1);
 
-	Vec3 hitpoint = offset + direction*t;
+// 	Vec3 hitpoint = offset + direction*t;
 
-	Vec3 shifted = hitpoint - m_translation;
-	Vec3 detFrameVec = m_YRot.GetInverse()*(m_ZRot.GetInverse()*shifted);
+// 	Vec3 shifted = hitpoint - m_translation;
+// 	Vec3 detFrameVec = m_YRot.GetInverse()*(m_ZRot.GetInverse()*shifted);
 
-	double r =std::sqrt(detFrameVec.GetX()*detFrameVec.GetX() + detFrameVec.GetY()*detFrameVec.GetY());
-	double hitphi = std::atan2(detFrameVec.GetY(), detFrameVec.GetX());
-	if(hitphi < 0) hitphi += 2.*M_PI;
+// 	double r =std::sqrt(detFrameVec.GetX()*detFrameVec.GetX() + detFrameVec.GetY()*detFrameVec.GetY());
+// 	double hitphi = std::atan2(detFrameVec.GetY(), detFrameVec.GetX());
+// 	if(hitphi < 0) hitphi += 2.*M_PI;
 
-	if(!IsInside(r, hitphi)) return std::make_pair(-1,-1);
+// 	if(!IsInside(r, hitphi)) return std::make_pair(-1,-1);
 
-	int ring = -1;
-	int wedge = -1;
+// 	int ring = -1;
+// 	int wedge = -1;
 
-	if(hitphi > M_PI) hitphi -= 2.*M_PI;
+// 	if(hitphi > M_PI) hitphi -= 2.*M_PI;
 
-	std::cout << "Theta = " << theta*rad2deg << ", phi = " << phi << std::endl;
-	std::cout << "r = " << r << ", hitphi = " << hitphi << std::endl << std::endl;
+// 	std::cout << "Theta = " << theta*rad2deg << ", phi = " << phi << std::endl;
+// 	std::cout << "r = " << r << ", hitphi = " << hitphi << std::endl << std::endl;
 
-	for(int i=0; i < m_nRings; i++){
-		if(IsRingTopEdge(r,i) || IsRingBottomEdge(r,i)){
-			return std::make_pair(-1,-1);
-		}
-		if(IsRing(r,i)){
-			ring = i;
-			break;
-		}
+// 	for(int i=0; i < m_nRings; i++){
+// 		if(IsRingTopEdge(r,i) || IsRingBottomEdge(r,i)){
+// 			return std::make_pair(-1,-1);
+// 		}
+// 		if(IsRing(r,i)){
+// 			ring = i;
+// 			break;
+// 		}
+// 	}
+
+// 	for(int i=0; i<m_nWedges; i++){
+// 		if(IsWedgeTopEdge(hitphi,i) || IsWedgeBottomEdge(hitphi,i)){
+// 			return std::make_pair(-1,-1);
+// 		}
+// 		if(IsWedge(hitphi,i)){
+// 			wedge = i;
+// 			break;
+// 		}
+// 	}
+
+// 	return std::make_pair(ring, wedge);
+
+// }
+
+std::pair<int,int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, double phi, const Vec3& offset){
+	
+	//establish direction vector of particle
+	Vec3 direction;
+	direction.SetVectorSpherical(1., theta, phi);
+
+	Vec3 detectorNormal = GetNormTilted();
+	Vec3 detectorPoint = m_translation;
+
+	//parameterize intersection and calculate t
+	Vec3 delta = offset - detectorPoint;
+	double numerator = -delta.Dot(detectorNormal);
+	double denominator = direction.Dot(detectorNormal);
+
+	if(std::fabs(denominator) < 1e-6){
+		return std::make_pair(-1,-1);//parallel
 	}
 
-	for(int i=0; i<m_nWedges; i++){
-		if(IsWedgeTopEdge(hitphi,i) || IsWedgeBottomEdge(hitphi,i)){
-			return std::make_pair(-1,-1);
-		}
-		if(IsWedge(hitphi,i)){
-			wedge = i;
-			break;
-		}
+	double t_hit = numerator/denominator;
+	if(t_hit < 0){
+		//hit is behind ray origin point 
+		return std::make_pair(-1,-1);
 	}
 
-	return std::make_pair(ring, wedge);
+	Vec3 hitpoint = Vec3(offset.GetX() + t_hit*direction.GetX(),
+						 offset.GetY() + t_hit*direction.GetY(),
+						 offset.GetZ() + t_hit*direction.GetZ());
+	Vec3 shifted = hitpoint - detectorPoint;
+	Vec3 relativeHit = m_YRot.GetInverse()*(m_ZRot.GetInverse()*shifted);
 
+	double x = relativeHit.GetX();
+	double y = relativeHit.GetY();
+
+	double r_flat = std::sqrt(x*x + y*y);
+	double phi_flat = std::atan2(y,x);
+	if(phi_flat < 0) phi_flat += M_PI*2.;
+
+	if(IsInside(r_flat, phi_flat)){
+		int ringch, wedgech;
+		if(phi_flat > M_PI) phi_flat -= 2.*M_PI;
+		for(int i=0; i<m_nRings; i++){
+			if(IsRingTopEdge(r_flat,i) || IsRingBottomEdge(r_flat,i)){
+				ringch = -1;
+				break;
+			} else if(IsRing(r_flat,i)){
+				ringch = i;
+				break;
+			}
+		}
+		for(int i=0; i<m_nWedges; i++){
+			if(IsWedgeTopEdge(phi_flat,i) || IsWedgeBottomEdge(phi_flat,i)){
+				wedgech = -1;
+				break;
+			} else if(IsWedge(phi_flat,i)){
+				wedgech = i;
+				break;
+			}
+		}
+		return std::make_pair(ringch,wedgech);
+	} else {
+		return std::make_pair(-1,-1);
+	}
 }
 
 

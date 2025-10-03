@@ -39,6 +39,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			double smearedERing = 0., smearedEWedge = 0.;
 
 			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
+			//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0., 0., 0.});
+
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
 				//apply target energy loss to e1:
@@ -67,6 +69,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			smearedEWedge = 0.;
 
 			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
+			//std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD,{0., 0., 0.});
 
 			if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
 
@@ -98,6 +101,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			smearedEWedge = 0.;
 
 			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
+			//std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD,{0., 0., 0.});
 
 			if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
 

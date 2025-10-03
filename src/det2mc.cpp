@@ -42,7 +42,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 
 				//get <ring,wedge> pair based on theta,phi
 				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
-				//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD, {0.,0.,0.});
+				//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD, {0, 0, 0});
 				//pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
@@ -77,7 +77,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 				smearedERing = 0.;
 				smearedEWedge = 0.;
 				std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
-				//std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0., 0., 0.});
+				//std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0, 0, 0});
 				//pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 
