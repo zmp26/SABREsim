@@ -389,8 +389,8 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 
 	TMassTable fMassTable;
 	//fMassTable.Init("/mnt/e/kinematics/IMMMA_Tool/threebody/masstable.dat");//uncomment this when on surface laptop -> eventually update this to be in a total config file
-	fMassTable.Init("/home/zmpur/IMMMA_Tool/threebody/masstable.dat");//uncomment this when on DESKTOP
-
+	//fMassTable.Init("/home/zmpur/IMMMA_Tool/threebody/masstable.dat");//uncomment this when on DESKTOP
+	fMassTable.Init("../../config/masstable.dat");
 
 	// //reaction:
 	// std::vector<Reaction> reactions;
