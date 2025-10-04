@@ -12,6 +12,9 @@ public:
 	static void PrintOrange(const std::string& text);
 	static void PrintWhite(const std::string& text);
 
+	static void PrintPurple(const std::string& text);
+	static void PrintGold(const std::string& text);
+
 	static void PrintCode(const std::string& text, const std::string& code);
 	static void PrintRGB(const std::string& text, int r, int g, int b);
 };
