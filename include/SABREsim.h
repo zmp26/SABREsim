@@ -45,6 +45,9 @@ private:
 
 	SABRE_DeadLayerModel* deadLayerLoss_; //pointer to current SABRE_DeadLayerModel in use!
 
+	BeamProfile* profile_;
+	Beamspot* beamspot_;
+
 	long nevents_;
 	std::vector<long> detectorHits_;
 	long hit1_, hit2_, hit3_, hit4_;
@@ -54,6 +57,7 @@ private:
 
 	void InitializeDetectors();
 	bool InitializeModels();
+	void InitializeBeamspot();
 	void CleanUp();
 
 	void Simulate2body(std::ifstream& infile, std::ofstream& outfile);

@@ -138,6 +138,16 @@ bool SABREsim::InitializeModels(){
 	return true;
 }
 
+void SABREsim::InitializeBeamspot(){
+	//eventually interface with file read in so no need to remake when changing!
+
+	profile_ = new GaussianProfile(0.002, 0.002);//meters
+
+	beamspot_ = new Beamspot();
+	beamspot_->SetProfile(profile_);
+	beamspot_->SetBeamAxisOffset(0.,0.);//aligned along z axis (no lateral offset)
+}
+
 void SABREsim::Run(){
 	std::ifstream infile(kinInputFilename_);
 	if(!infile){
@@ -152,6 +162,7 @@ void SABREsim::Run(){
 	}
 
 	InitializeDetectors();
+	InitializeBeamspot();
 	if(!InitializeModels()){
 		ConsoleColorizer::PrintRed("Model initializiation failed. Exiting...\n");
 		return;
@@ -240,7 +251,7 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_);
+	det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
 
 	det2mcProcessor.Run(infile,outfile);
 
@@ -266,7 +277,7 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	det3mc det3mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_);
+	det3mc det3mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
 
 	det3mcProcessor.Run(infile, outfile);
 

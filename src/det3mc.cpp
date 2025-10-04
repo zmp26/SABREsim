@@ -7,7 +7,8 @@ static const int eoev = -1;//end of event value (eoev), printed between events i
 det3mc::det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 			   TargetEnergyLoss* targetLoss,
-			   SABRE_DeadLayerModel* deadLayerLoss)
+			   SABRE_DeadLayerModel* deadLayerLoss,
+			   Beamspot* beamspot)
 	: SABRE_Array_(SABRE_Array),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_(targetLoss),
@@ -16,7 +17,8 @@ det3mc::det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  hit1_(0), hit3_(0), hit4_(0),
 	  hitBoth34_(0), hitOnly3_(0), hitOnly4_(0),
 	  onePartHits_(0), twoPartHits_(0), threePartHits_(0),
-	  detectorHits_(SABRE_Array.size())
+	  detectorHits_(SABRE_Array.size()),
+	  beamspot_(beamspot)
 	{
 
 	}
@@ -28,9 +30,13 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		nevents_ += 1;
 		bool detected1 = false, detected3 = false, detected4 = false;
 
+		//get reaction origin based on beamspot
+		//Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
+		Vec3 reactionOrigin = {0.,0.,0.};
+
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
 
-		if(nevents_%50000==0) std::cout << "Processed " << nevents_ << " events..." << std::endl;
+		if(nevents_%50000==0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n"); //std::cout << "Processed " << nevents_ << " events..." << std::endl;
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 			/*///////////////////////////////////////////////
@@ -38,8 +44,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			///////////////////////////////////////////////*/
 			double smearedERing = 0., smearedEWedge = 0.;
 
-			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
-			//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0., 0., 0.});
+			//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
+			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,reactionOrigin);
 
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
@@ -68,8 +74,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			smearedERing = 0.;
 			smearedEWedge = 0.;
 
-			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
-			//std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD,{0., 0., 0.});
+			//std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
+			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD,reactionOrigin);
 
 			if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
 
@@ -100,8 +106,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			smearedERing = 0.;
 			smearedEWedge = 0.;
 
-			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
-			//std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD,{0., 0., 0.});
+			//std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
+			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD,reactionOrigin);
 
 			if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
 

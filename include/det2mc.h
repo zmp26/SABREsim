@@ -11,6 +11,7 @@
 #include "Vec3.h"
 #include "TH1.h"
 #include <cmath>
+#include "Beamspot.h"
 
 class det2mc {
 public:
@@ -20,7 +21,8 @@ public:
 	det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 		   TargetEnergyLoss* targetLoss,
-		   SABRE_DeadLayerModel* deadLayerLoss);
+		   SABRE_DeadLayerModel* deadLayerLoss,
+		   Beamspot* beamspot);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile);
 
@@ -47,6 +49,8 @@ private:
 	long hit1Only_;
 	long hit2Only_;
 	std::vector<long> detectorHits_;
+
+	Beamspot* beamspot_;
 };
 
 #endif //DET2MC_H

@@ -28,7 +28,7 @@
 #include <fstream>
 #include <TString.h>
 
-void Lithium6_1plus(){
+void Lithium6_1plus(int ring){
 	//uncomment below for surface laptop
 	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
 	// TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
@@ -36,12 +36,18 @@ void Lithium6_1plus(){
 	// TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV.root";
 	// TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
+	//for our sps acceptances, rings 7 and 8 on SABRE3 illuminate
+	if(ring != 7 && ring != 8) {
+		std::cout << "ring not found, try 7 or 8" << std::endl;
+		return;
+	}
+
 	//uncomment below for DESKTOP
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
+	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
 
-	TString simFilePath = "/mnt/e/SABREsim/det/kin3mc/kin2mc_7Li3He4He_6Ligs_7500keV_ELoss2_offset_NEWTEST.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1721_gaus.root";
+	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
 
@@ -132,12 +138,15 @@ void Lithium6_1plus(){
 	double maxdata = hData->GetMaximum();
 	double maxsim = hSim->GetMaximum();
 
-	double ymax = std::max(maxdata,maxsim)*1.1;
+	double ymax = std::max(maxdata,maxsim)*1.1*rebinfactor;
+	std::cout << "maxdata = " << maxdata << "\tmaxsim = " << maxsim << std::endl;
+	std::cout << "ymax = " << ymax << std::endl;
 	hData->SetMaximum(ymax);
 
 	hData->SetLineColor(kViolet);
 	hData->SetLineWidth(4);
-	hData->SetTitle("^{6}Li (1^{+} GS) Data vs Sim;Energy (MeV);Counts");
+	TString title = Form("^{6}Li (1^{+} GS) Data vs Sim (Ring %d);Energy (MeV);Counts",ring);
+	hData->SetTitle(title);
 	std::cout << "fitting data with gaussian:" << std::endl;
 	TH1D* hData_rebin = dynamic_cast<TH1D*>(hData->Rebin(rebinfactor));
 	hData_rebin->Draw("HIST");
@@ -177,7 +186,7 @@ void Lithium6_1plus(){
 	std::cout << "Scale factors saved to Lithium6_1plus_scales.txt" << std::endl;
 }
 
-void Lithium6_0plus(){
+void Lithium6_0plus(int ring){
 //uncomment below for surface laptop
 	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
 	// TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring8ESummary_0plus";
@@ -185,12 +194,17 @@ void Lithium6_0plus(){
 	// TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV.root";
 	// TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
+	if(ring != 8 && ring != 9){
+		std::cout << "ring histo not there, try 8 or 9" << std::endl;
+		return;
+	}
+
 	//uncomment below for DESKTOP
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
-	TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring8ESummary_0plus";
+	TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV_ELoss2_offset.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1622.root";
+	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
 
@@ -281,12 +295,12 @@ void Lithium6_0plus(){
 	double maxdata = hData->GetMaximum();
 	double maxsim = hSim->GetMaximum();
 
-	double ymax = std::max(maxdata,maxsim)*4.1;
+	double ymax = std::max(maxdata,maxsim)*rebinfactor*1.1;
 	hData->SetMaximum(ymax);
 
 	hData->SetLineColor(kViolet);
 	hData->SetLineWidth(4);
-	hData->SetTitle("^{6}Li (0^{+} E = 3.562 MeV) Data vs Sim;Energy (MeV);Counts");
+	hData->SetTitle(Form("^{6}Li (0^{+} E = 3.562 MeV) Data vs Sim (Ring %d);Energy (MeV);Counts",ring));
 	std::cout << "fitting data with gaussian:" << std::endl;
 	TH1D* hData_rebin = dynamic_cast<TH1D*>(hData->Rebin(rebinfactor));
 	hData_rebin->Draw("HIST");

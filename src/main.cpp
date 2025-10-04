@@ -53,11 +53,20 @@ int main(int argc, char * argv[]){
 		return 1;
 	}
 
+std::cout << "\n\n";
+ConsoleColorizer::PrintPurple("███████╗ █████╗ ██████╗ ██████╗ ███████╗███████╗██╗███╗   ███╗\n");
+ConsoleColorizer::PrintPurple("██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██║████╗ ████║\n");
+ConsoleColorizer::PrintPurple("███████╗███████║██████╔╝██████╔╝█████╗  ███████╗██║██╔████╔██║\n");
+ConsoleColorizer::PrintPurple("╚════██║██╔══██║██╔══██╗██╔══██╗██╔══╝  ╚════██║██║██║╚██╔╝██║\n");
+ConsoleColorizer::PrintPurple("███████║██║  ██║██████╔╝██║  ██║███████╗███████║██║██║ ╚═╝ ██║\n");
+ConsoleColorizer::PrintPurple("╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚═╝\n");
+                                                              
+
 	std::cout << std::endl;
 	TString msg = Form("Kin%dmc selected!\n",kinX);
 	ConsoleColorizer::PrintGreen(msg.Data());
 
-	msg = Form(" Processing physics data file %s\n", argv[2]);
+	msg = Form("Processing physics data file %s\n", argv[2]);
 	ConsoleColorizer::PrintGreen(msg.Data());
 
 	msg = Form("Writing to output file %s\n", argv[3]);
