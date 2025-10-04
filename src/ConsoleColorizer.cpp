@@ -41,3 +41,11 @@ void ConsoleColorizer::PrintOrange(const std::string& text){
 void ConsoleColorizer::PrintWhite(const std::string& text){
 	PrintRGB(text,255,255,255);
 }
+
+void ConsoleColorizer::PrintPurple(const std::string& text){
+	PrintRGB(text,70,29,124);
+}
+
+void ConsoleColorizer::PrintGold(const std::string& text){
+	PrintRGB(text,253,208,35);
+}
