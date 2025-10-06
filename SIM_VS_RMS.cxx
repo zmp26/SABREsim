@@ -42,6 +42,9 @@ void Lithium6_1plus(int ring){
 		return;
 	}
 
+	//prep output file name using ring:
+	TString outfile_root_name = Form("Lithium6_1plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
+
 	//uncomment below for DESKTOP
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
@@ -170,7 +173,7 @@ void Lithium6_1plus(int ring){
 	c1->Update();
 
 	//save to new root file:
-	TString outfile_root_name = "Lithium6_1plus_simVSdata_ELoss2.root";
+	//TString outfile_root_name = "Lithium6_1plus_simVSdata_ELoss2.root";
 	TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
 	if(!outfile_root || outfile_root->IsZombie()){
 		std::cerr << "Error creating output file" << std::endl;
@@ -199,11 +202,14 @@ void Lithium6_0plus(int ring){
 		return;
 	}
 
+	//prep output file name using ring:
+	TString outfile_root_name = Form("Lithium6_0plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
+
 	//uncomment below for DESKTOP
 	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
 	TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1622.root";
+	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1721.root";
 	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
@@ -324,7 +330,7 @@ void Lithium6_0plus(int ring){
 	c1->Update();
 
 	//save to new root file:
-	TString outfile_root_name = "Lithium6_0plus_simVSdata_ELoss2.root";
+	//TString outfile_root_name = "Lithium6_0plus_simVSdata_ELoss2.root";
 	TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
 	if(!outfile_root || outfile_root->IsZombie()){
 		std::cerr << "Error creating output file" << std::endl;
