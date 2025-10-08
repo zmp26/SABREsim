@@ -30,11 +30,13 @@
 
 void Lithium6_1plus(int ring){
 	//uncomment below for surface laptop
-	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
-	// TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
 
-	// TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV.root";
-	// TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+	TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1622.root";
+	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+
+	TString anglestring = "1622";
 
 	//for our sps acceptances, rings 7 and 8 on SABRE3 illuminate
 	if(ring != 7 && ring != 8) {
@@ -43,14 +45,16 @@ void Lithium6_1plus(int ring){
 	}
 
 	//prep output file name using ring:
-	TString outfile_root_name = Form("Lithium6_1plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
+	TString outfile_root_name;
+	//outfile_root_name = Form("Lithium6_1plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
+	outfile_root_name = Form("Lithium6_1plus_sim%sVSdata_ring%d.root",anglestring.Data(),ring);
 
 	//uncomment below for DESKTOP
-	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1721_gaus.root";
-	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
+	// TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1721_gaus.root";
+	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
 
@@ -191,11 +195,13 @@ void Lithium6_1plus(int ring){
 
 void Lithium6_0plus(int ring){
 //uncomment below for surface laptop
-	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
-	// TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring8ESummary_0plus";
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
+	TString dataHistLocalPath = "1par/0plus/hSABRE_SABRE3_Ring8ESummary_0plus";
 
-	// TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He_6Li3562keV_7500keV.root";
-	// TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+	TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1622.root";
+	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+
+	TString anglestring = "1622";
 
 	if(ring != 8 && ring != 9){
 		std::cout << "ring histo not there, try 8 or 9" << std::endl;
@@ -203,14 +209,14 @@ void Lithium6_0plus(int ring){
 	}
 
 	//prep output file name using ring:
-	TString outfile_root_name = Form("Lithium6_0plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
+	TString outfile_root_name = Form("Lithium6_0plus_sim%sVSdata_ring%d.root",anglestring.Data(),ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
 
 	//uncomment below for DESKTOP
-	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
-	TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
+	// TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
 
-	TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1721.root";
-	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
+	// TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1721.root";
+	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
 
