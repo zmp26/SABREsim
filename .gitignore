@@ -8,3 +8,4 @@ SABREsim
 *.png
 *.jpg
 *.gif
+config/corners/*

@@ -55,7 +55,7 @@ private:
 	long hit1Only_, hit2Only_, hitBoth_;
 	long onePartHits_, twoPartHits_, threePartHits_, fourPartHits_;
 
-	void InitializeDetectors();
+	void InitializeDetectors(bool WriteCornersToFile=false);
 	bool InitializeModels();
 	void InitializeBeamspot();
 	void CleanUp();

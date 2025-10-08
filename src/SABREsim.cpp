@@ -62,7 +62,7 @@ void SABREsim::CleanUp(){
 
 }
 
-void SABREsim::InitializeDetectors(){
+void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 	double INNER_R = 0.0326;
 	double OUTER_R = 0.1351;
 	double TILT = 40.0;
@@ -80,8 +80,18 @@ void SABREsim::InitializeDetectors(){
 		Vec3 normtilted = det->GetNormTilted();
 		TString outline = Form("Created SABRE_Detector[%zu] at phi = %f norm = (%f, %f, %f)\n",i,PHI[i],normtilted.GetX(),normtilted.GetY(),normtilted.GetZ());
 		ConsoleColorizer::PrintGreen(outline.Data());
+
+		if(WriteCornersToFile){
+
+			TString cornerfilename = Form("config/corners/SABRE%zu_corners.txt",i);
+			std::ofstream cornerfile(cornerfilename);
+
+			det->WriteTransformedCorners(cornerfile);
+		}
+
 	}
 	std::cout << "\n";
+
 }
 
 bool SABREsim::InitializeModels(){
@@ -161,7 +171,7 @@ void SABREsim::Run(){
 		return;
 	}
 
-	InitializeDetectors();
+	InitializeDetectors(true);
 	InitializeBeamspot();
 	if(!InitializeModels()){
 		ConsoleColorizer::PrintRed("Model initializiation failed. Exiting...\n");

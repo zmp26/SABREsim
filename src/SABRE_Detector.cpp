@@ -442,12 +442,34 @@ void SABRE_Detector::WriteTransformedCorners(std::ofstream& outfile) {
 			Vec3 corner2_tilt = TransformToTiltedFrame(corner2_flat);
 			Vec3 corner3_tilt = TransformToTiltedFrame(corner3_flat);
 
-			outfile << ring << " " << wedge << " "
-						  << corner0_tilt.GetX() << " " << corner0_tilt.GetY() << " "
-						  << corner1_tilt.GetX() << " " << corner1_tilt.GetY() << " " 
-						  << corner2_tilt.GetX() << " " << corner2_tilt.GetY() << " "
-						  << corner3_tilt.GetX() << " " << corner3_tilt.GetY() << "\n";
-						  //<< ring << " " << wedge << "\n";
+			int globalRingOffset, globalWedgeOffset;
+			double m_phiCentral_deg = m_phiCentral*rad2deg;
+
+			if(std::fabs(m_phiCentral_deg - 306.) < 1e-6){
+				//SABRE0
+				globalRingOffset = 112;
+				globalWedgeOffset = 40;
+			} else if(std::fabs(m_phiCentral_deg - 18.) < 1e-6){
+				globalRingOffset = 96;
+				globalWedgeOffset = 32;
+			} else if(std::fabs(m_phiCentral_deg - 234.) < 1e-6){
+				globalRingOffset = 80;
+				globalWedgeOffset = 16;
+			} else if(std::fabs(m_phiCentral_deg - 162.) < 1e-6){
+				globalRingOffset = 64;
+				globalWedgeOffset = 24;
+			} else if(std::fabs(m_phiCentral_deg - 90.) < 1e-6){
+				globalRingOffset = 48;
+				globalWedgeOffset = 0;
+			}
+
+			outfile << ring << " " << wedge << " " << ring+globalRingOffset << " " << wedge+globalWedgeOffset << " "
+						  << corner0_tilt.GetX() << " " << corner0_tilt.GetY() << " " << corner0_tilt.GetZ() << " "
+						  << corner1_tilt.GetX() << " " << corner1_tilt.GetY() << " " << corner1_tilt.GetZ() << " "
+						  << corner2_tilt.GetX() << " " << corner2_tilt.GetY() << " " << corner2_tilt.GetZ() << " "
+						  << corner3_tilt.GetX() << " " << corner3_tilt.GetY() << " " << corner3_tilt.GetZ() << "\n";
 		}
 	}
+
+
 }
