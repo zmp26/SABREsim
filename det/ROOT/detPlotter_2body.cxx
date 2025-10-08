@@ -198,6 +198,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			int wedgeoffset = offsets[sabredata1.detectorIndex].second;
 			int globalring = sabredata1.ring + ringoffset;
 			int globalwedge = sabredata1.wedge + wedgeoffset;
+
+			//hSABRE0_pixel_r112w40_ESummary
+			//pixel histo:
+			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary", sabredata1.detectorIndex, globalring, globalwedge);
+			histoman->getHisto1D(pixelhistoname)->Fill(sabredata1.ringEnergy);
+
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata1.detectorIndex == 0){
 				histoman->getHisto1D("hSABRE0_RingHit")->Fill(sabredata1.ring);
