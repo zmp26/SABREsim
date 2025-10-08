@@ -32,8 +32,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		bool detected2 = false;
 
 		//get reaction origin based on beamspot
-		Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
-		//Vec3 reactionOrigin = {0.,0.,0.};
+		//Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
+		Vec3 reactionOrigin = {0.,0.,0.};
 
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << std::endl;
 		if(nevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
