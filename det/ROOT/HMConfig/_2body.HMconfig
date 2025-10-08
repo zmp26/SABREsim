@@ -187,7 +187,7 @@ SABRE/SABRE4 TH1D hSABRE4_ring0_E SABRE4_ring0_E 400 0 20
 SABRE TH1D hSABRE_ring0_E SABRE_ring0_E 400 0 20
 #
 # SABRE Rings vs Wedges (16 rings by 40 wedges - map all rings to same "local ring" but keep wedges separate)
-SABRE TH1D hSABRE_RingsVSWedges SABRE_RingsVSWedges 40 -0.5 39.5 16 -0.5 15.5
+SABRE TH2D hSABRE_RingsVSWedges SABRE_RingsVSWedges 40 -0.5 39.5 16 -0.5 15.5
 #
 #
 # PIXEL HISTOGRAMS BELOW #

@@ -363,7 +363,7 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 1and2par/3plus TH2D h1and2par_SabreRingEVsLi6ExE 1and2par_SabreRingEVsLi6ExE 600 -2 10 500 0 10
 #
 # SABRE Rings vs Wedges (16 rings by 40 wedges - map all rings to same "local ring" but keep wedges separate)
-SABRE TH1D hSABRE_RingsVSWedges SABRE_RingsVSWedges 40 -0.5 39.5 16 -0.5 15.5
+SABRE TH2D hSABRE_RingsVSWedges SABRE_RingsVSWedges 40 -0.5 39.5 16 -0.5 15.5
 #
 #
 # PIXEL HISTOGRAMS BELOW #

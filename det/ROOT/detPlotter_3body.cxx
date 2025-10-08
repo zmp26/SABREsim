@@ -173,6 +173,10 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			int globalring = sabredata1.ring + ringoffset;
 			int globalwedge = sabredata1.wedge + wedgeoffset;
 
+			//rings vs wedges histogram:
+			int zeroToFortyWedge = sabredata1.detectorIndex*numWedges + sabredata1.wedge;//0-7 for SABRE0, 8-15 for SABRE1, etc.
+			histoman->getHisto2D("hSABRE_RingsVSWedges")->Fill(zeroToFortyWedge,sabredata1.ring);
+
 			//hSABRE0_pixel_r112w40_ESummary
 			//pixel histo:
 			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary", sabredata1.detectorIndex, globalring, globalwedge);

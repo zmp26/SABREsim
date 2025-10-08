@@ -53,6 +53,10 @@ static const std::pair<int, int> offsets[] = {
 	{48,0}		//detector4 {ringOffset,wedgeOffset}
 };
 
+//local sabre info:
+int numwedges = 8;
+int numrings = 16;
+
 double PERC = 0.1;
 double LOWER = 1-PERC, UPPER = 1+PERC;
 struct dp3Nucleus{
@@ -203,6 +207,10 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			//pixel histo:
 			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary", sabredata1.detectorIndex, globalring, globalwedge);
 			histoman->getHisto1D(pixelhistoname)->Fill(sabredata1.ringEnergy);
+
+			//rings vs wedges histogram:
+			int zeroToFortyWedge = sabredata1.detectorIndex*numwedges + sabredata1.wedge;//0-7 for SABRE0, 8-15 for SABRE1, etc.
+			histoman->getHisto2D("hSABRE_RingsVSWedges")->Fill(zeroToFortyWedge,sabredata1.ring);
 
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata1.detectorIndex == 0){
