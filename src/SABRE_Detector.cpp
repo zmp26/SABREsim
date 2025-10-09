@@ -470,6 +470,52 @@ void SABRE_Detector::WriteTransformedCorners(std::ofstream& outfile) {
 						  << corner3_tilt.GetX() << " " << corner3_tilt.GetY() << " " << corner3_tilt.GetZ() << "\n";
 		}
 	}
+}
 
+void SABRE_Detector::WriteTransformedCornersSpherical(std::ofstream& outfile){
+	for(int ring=0; ring<m_nRings; ring++){
+		for(int wedge=0; wedge<m_nWedges; wedge++){
+			double r_inner = m_Rinner + ring*m_deltaR_flat_ring;
+			double r_outer = m_Rinner + (ring+1)*m_deltaR_flat_ring;
+			double phi_start = -m_deltaPhi_flat/2. + wedge*m_deltaPhi_flat_wedge;
+			double phi_end = -m_deltaPhi_flat/2. + (wedge+1)*m_deltaPhi_flat_wedge;
 
+			Vec3 corner0_flat(r_outer*std::cos(phi_start),r_outer*std::sin(phi_start),0);
+			Vec3 corner1_flat(r_inner*std::cos(phi_start),r_inner*std::sin(phi_start),0);
+			Vec3 corner2_flat(r_inner*std::cos(phi_end),r_inner*std::sin(phi_end),0);
+			Vec3 corner3_flat(r_outer*std::cos(phi_end),r_outer*std::sin(phi_end),0);
+
+			Vec3 corner0_tilt = TransformToTiltedFrame(corner0_flat);
+			Vec3 corner1_tilt = TransformToTiltedFrame(corner1_flat);
+			Vec3 corner2_tilt = TransformToTiltedFrame(corner2_flat);
+			Vec3 corner3_tilt = TransformToTiltedFrame(corner3_flat);
+
+			int globalRingOffset, globalWedgeOffset;
+			double m_phiCentral_deg = m_phiCentral*rad2deg;
+
+			if(std::fabs(m_phiCentral_deg - 306.) < 1e-6){
+				//SABRE0
+				globalRingOffset = 112;
+				globalWedgeOffset = 40;
+			} else if(std::fabs(m_phiCentral_deg - 18.) < 1e-6){
+				globalRingOffset = 96;
+				globalWedgeOffset = 32;
+			} else if(std::fabs(m_phiCentral_deg - 234.) < 1e-6){
+				globalRingOffset = 80;
+				globalWedgeOffset = 16;
+			} else if(std::fabs(m_phiCentral_deg - 162.) < 1e-6){
+				globalRingOffset = 64;
+				globalWedgeOffset = 24;
+			} else if(std::fabs(m_phiCentral_deg - 90.) < 1e-6){
+				globalRingOffset = 48;
+				globalWedgeOffset = 0;
+			}
+
+			outfile << ring << " " << wedge << " " << ring+globalRingOffset << " " << wedge+globalWedgeOffset << " "
+						  << corner0_tilt.GetR() << " " << corner0_tilt.GetTheta()*rad2deg << " " << corner0_tilt.GetPhi()*rad2deg << " "
+						  << corner1_tilt.GetR() << " " << corner1_tilt.GetTheta()*rad2deg << " " << corner1_tilt.GetPhi()*rad2deg << " "
+						  << corner2_tilt.GetR() << " " << corner2_tilt.GetTheta()*rad2deg << " " << corner2_tilt.GetPhi()*rad2deg << " "
+						  << corner3_tilt.GetR() << " " << corner3_tilt.GetTheta()*rad2deg << " " << corner3_tilt.GetPhi()*rad2deg << "\n";
+		}
+	}
 }

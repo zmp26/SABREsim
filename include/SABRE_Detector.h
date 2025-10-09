@@ -101,6 +101,7 @@ public:
 	};
 
 	void WriteTransformedCorners(std::ofstream& outfile);
+	void WriteTransformedCornersSpherical(std::ofstream& outfile);
 
 private:
 	/*Class Constants*/
