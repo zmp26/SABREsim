@@ -1,6 +1,8 @@
 #include "det2mc.h"
 #include <iostream>
 #include "ConsoleColorizer.h"
+#include "TH1.h"
+#include "TFile.h"
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
@@ -25,6 +27,8 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 
 void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
+
+	TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
 
 	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
 		nevents_ += 1;
@@ -61,6 +65,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e1_afterDeadLayer = deadLayerLoss_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
+					hDeadLayerELoss->Fill(abs(e1_afterDeadLayer - e1_aftertarget)*1000.);
 
 					// if(nevents%10000 == 0){
 					// 	std::cout << "hit1 target_energy_loss = " << abs(e1-e1_aftertarget) << " MeV" << std::endl;
@@ -96,6 +101,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e2_afterDeadLayer = deadLayerLoss_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
+					hDeadLayerELoss->Fill(std::fabs(e2_afterDeadLayer - e2_aftertarget)*1000.);
 
 					//if(nevents%10000 == 0) std::cout << "hit2 target_energy_loss = " << e2-e2_aftertarget << " MeV" << std::endl;
 					//hEnergyLosses->Fill(abs(e2-e2_aftertarget)*1000.);//for target energy loss
@@ -119,6 +125,13 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 
 		outfile << eoev << std::endl;
 	}
+
+	TFile *tempfile = new TFile("EnergyLossHisto.root","RECREATE");
+	//tempfile->cd();
+	hDeadLayerELoss->Write();
+	tempfile->Close();
+	//std::cout << "here" << std::endl;
+
 }
 
 long det2mc::GetNumEvents() const {

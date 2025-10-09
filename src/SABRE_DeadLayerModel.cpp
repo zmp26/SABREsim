@@ -106,6 +106,8 @@ double SABRE_DeadLayerModel::ApplyEnergyLoss(double energy_MeV, Vec3& trajectory
 
 	if(energy_out_MeV < 0) energy_out_MeV = 0.;
 
+	//std::cout << "deltaE_MeV = " << deltaE_MeV << std::endl;
+	//std::cout << "energy_out_MeV = " << energy_out_MeV << std::endl;
 	return energy_out_MeV;
 }
 
