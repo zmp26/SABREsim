@@ -84,9 +84,16 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 		if(WriteCornersToFile){
 
 			TString cornerfilename = Form("config/corners/SABRE%zu_corners.txt",i);
-			std::ofstream cornerfile(cornerfilename);
+			std::ofstream cornerfile_cartesian(cornerfilename);
 
-			det->WriteTransformedCorners(cornerfile);
+			cornerfilename = Form("config/corners/SABRE%zu_corners_spherical.txt",i);
+			std::ofstream cornerfile_spherical(cornerfilename);
+
+			det->WriteTransformedCorners(cornerfile_cartesian);
+			det->WriteTransformedCornersSpherical(cornerfile_spherical);
+
+			cornerfile_cartesian.close();
+			cornerfile_spherical.close();
 		}
 
 	}
