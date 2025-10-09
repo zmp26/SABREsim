@@ -178,7 +178,7 @@ void SABREsim::Run(){
 		return;
 	}
 
-	InitializeDetectors(true);
+	InitializeDetectors();
 	InitializeBeamspot();
 	if(!InitializeModels()){
 		ConsoleColorizer::PrintRed("Model initializiation failed. Exiting...\n");
