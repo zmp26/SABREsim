@@ -473,7 +473,7 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				parsePhysData(eventLines[0],pd1,pd2);
 				parseSABREData(eventLines[1],sd1);
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
-				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//likewise^
+				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//likewise^
 				fillKinHistos(histoman,pd1,pd2);
 				fillSABREHistos(histoman,sd1,pd1);
 				//cout << Form("%d\t%d\t%d\t%f\t%f\t%f\t%f",sd1.detectorIndex,sd1.ring,sd1.wedge,sd1.theta,sd1.phi,sd1.wedgeEnergy,sd1.ringEnergy) << endl;
