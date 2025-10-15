@@ -312,7 +312,38 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 }
 
 void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
-	std::cout << "passing..." << std::endl;
+	
+	if(!infile.is_open()){
+		ConsoleColorizer::PrintRed("Error: Cannot open input file!\n");
+		return;
+	}
+
+	if(!outfile.is_open()){
+		ConsoleColorizer::PrintRed("Error: Cannot open output file!\n");
+		return;
+	}
+
+	det4mc det4mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, targetLoss_, targetLoss_, targetLoss_, deadLayerLoss_, deadLayerLoss_, deadLayerLoss_, deadLayerLoss_, beamspot_);
+
+	det4mcProcessor.Run(infile,outfile);
+
+	nevents_ = det4mcProcessor.GetNumEvents();
+	detectorHits_ = det4mcProcessor.GetDetectorHits();
+	hitej_ = det4mcProcessor.GetHitEj();
+	hit1_ = det4mcProcessor.GetHit1();
+	hit2_ = det4mcProcessor.GetHit2();
+	hit3_ = det4mcProcessor.GetHit3();
+	hit23_ = det4mcProcessor.GetHitBoth23();
+	hitOnlyEj_ = det4mcProcessor.GetHitOnlyEj();
+	hit1Only_ = det4mcProcessor.GetHitOnly1();
+	hit2Only_ = det4mcProcessor.GetHitOnly2();
+	hitOnly3_ = det4mcProcessor.GetHitOnly3();
+	hitOnly23_ = det4mcProcessor.GetHitOnly23();
+	hitOnly123_ = det4mcProcessor.GetHitOnly123();
+	onePartHits_ = det4mcProcessor.GetOnePartHits();
+	twoPartHits_ = det4mcProcessor.GetTwoPartHits();
+	threePartHits_ = det4mcProcessor.GetThreePartHits();
+	fourPartHits_ = det4mcProcessor.GetFourPartHits();
 }
 
 void SABREsim::PrintSummary() const {

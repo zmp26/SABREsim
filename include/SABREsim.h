@@ -11,6 +11,7 @@
 #include "SABRE_DeadLayerModel.h"
 #include "det2mc.h"
 #include "det3mc.h"
+#include "det4mc.h"
 
 class SABREsim {
 public:
@@ -50,8 +51,8 @@ private:
 
 	long nevents_;
 	std::vector<long> detectorHits_;
-	long hit1_, hit2_, hit3_, hit4_;
-	long hit34_, hitOnly3_, hitOnly4_;
+	long hit1_, hit2_, hit3_, hit4_, hit23_, hitej_;
+	long hit34_, hitOnly3_, hitOnly4_, hitOnlyEj_, hitOnly23_, hitOnly123_;
 	long hit1Only_, hit2Only_, hitBoth_;
 	long onePartHits_, twoPartHits_, threePartHits_, fourPartHits_;
 
