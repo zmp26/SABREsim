@@ -332,14 +332,15 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto1D("hSABRE4_EWedgeSummary")->Fill(sabredata1.wedgeEnergy);
 				histoman->getHisto2D("hSABRE4_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE4_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
-
-				histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalring);
-				histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalwedge);
-				histoman->getHisto1D("hSABRE_RingChannelHits")->Fill(globalring);
-				histoman->getHisto1D("hSABRE_WedgeChannelHits")->Fill(globalwedge);
-				histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
-				histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
 			}
+
+			histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalring);
+			histoman->getHisto1D("hSABRE_ChannelHits")->Fill(globalwedge);
+			histoman->getHisto1D("hSABRE_RingChannelHits")->Fill(globalring);
+			histoman->getHisto1D("hSABRE_WedgeChannelHits")->Fill(globalwedge);
+			histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalring,sabredata1.ringEnergy);
+			histoman->getHisto2D("hSABRE_ChannelESummary")->Fill(globalwedge,sabredata1.wedgeEnergy);
+
 			//cout << "fillSABREHistos test" << endl;
 
 			//all sabre histograms:
@@ -429,7 +430,7 @@ double calculateSPS_ExE(double spsE, double spsTheta, double spsPhi, TMassTable&
 	ejectile.SetPxPyPzE(pej*sin(DEGRAD*spsTheta)*cos(DEGRAD*spsPhi), pej*sin(DEGRAD*spsTheta)*sin(DEGRAD*spsPhi), pej*cos(DEGRAD*spsTheta),smearedSPSE+table.GetMassMeV("He",4));
 	recoil = beam + target - ejectile;
 
-	return (recoil.M() - table.GetMassMeV("Li",6));
+	return (recoil.M() - table.GetMassMeV("B",9));
 }
 
 void B10ha_3halfminus(const char* input_filename, const char* output_rootfilename, const char* ntpname = "kin4"){
@@ -509,14 +510,15 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 
 			} else if(eventLines.size() == 2){
 				
-				//1 sabre hit (N-2)
 				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
+
+				//1 sabre hit (N-2)
 				parseSABREData(eventLines[1],sd1);
 				std::pair<double, double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
 				sd1.theta = anglepair.first;
 				sd1.phi = anglepair.second;
 
-				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
 				fillSABREHistos(histoman,sd1,pd1);
 
 				Double_t exe = calculateSPS_ExE(pd1.e, pd1.theta, pd1.phi, fMassTable);
@@ -528,19 +530,24 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				
 
 			} else if(eventLines.size() == 3){
+
+				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
 				
 				//2 sabre hit (N-1)
-				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
-
 				parseSABREData(eventLines[1],sd1);
 				std::pair<double, double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
 				sd1.theta = anglepair.first;
 				sd1.phi = anglepair.second;
 
+				fillSABREHistos(histoman,sd1,pd1);
+
 				parseSABREData(eventLines[2],sd2);
 				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
 				sd2.theta = anglepair.first;
 				sd2.phi = anglepair.second;
+
+				fillSABREHistos(histoman,sd2,pd2);
 
 				Double_t exe = calculateSPS_ExE(pd1.e, pd1.theta, pd1.phi, fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsB9ExE")->Fill(exe, sd1.ringEnergy+sd2.ringEnergy);
@@ -555,23 +562,31 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 
 
 			} else if(eventLines.size() == 4){
+
+				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
 				
 				//3 sabre hit (N)
-				parsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
 				parseSABREData(eventLines[1],sd1);
 				std::pair<double,double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
 				sd1.theta = anglepair.first;
 				sd1.phi = anglepair.second;
+
+				fillSABREHistos(histoman,sd1,pd1);
 
 				parseSABREData(eventLines[2],sd2);
 				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
 				sd2.theta = anglepair.first;
 				sd2.phi = anglepair.second;
 
+				fillSABREHistos(histoman,sd2,pd2);
+
 				parseSABREData(eventLines[3],sd3);
 				anglepair = sabre_thetaphimap[{sd3.ring+offsets[sd3.detectorIndex].first, sd3.wedge+offsets[sd3.detectorIndex].second}];
 				sd3.theta = anglepair.first;
 				sd3.phi = anglepair.second;
+
+				fillSABREHistos(histoman,sd3,pd3);
 
 				Double_t exe = calculateSPS_ExE(pd1.e, pd1.theta, pd1.phi, fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsB9ExE")->Fill(exe, sd1.ringEnergy+sd2.ringEnergy+sd3.ringEnergy);
