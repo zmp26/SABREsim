@@ -13,14 +13,27 @@ det4mc::det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLossEj_(targetLossEj), targetLoss1_(targetLoss1), targetLoss2_(targetLoss2), targetLoss3_(targetLoss3),
 	  deadLayerLossEj_(deadLayerLossEj), deadLayerLoss1_(deadLayerLoss1), deadLayerLoss2_(deadLayerLoss2), deadLayerLoss3_(deadLayerLoss3),
+	  nevents_(0),
+	  hitej_(0), hit1_(0), hit2_(0), hit3_(0),
+	  hitBoth23_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
+	  onePartHits_(0), twoPartHits_(0), threePartHits_(0), fourPartHits_(0),
+	  detectorHits_(SABRE_Array.size()),
 	  beamspot_(beamspot)
 	{
 
 	}
 
 void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
+
+	// std::cerr << "SABRE_Array_ size: " << SABRE_Array_.size()
+	// 		  << ", SABREARRAY_EnergyResolutionModels_ size: " << SABREARRAY_EnergyResolutionModels_.size()
+	// 		  << std::endl;
+
+
 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
+
+
 
 		nevents_ += 1;
 		bool detectedEj = false;	//kin4mc particle 1 == ejectile
@@ -36,16 +49,19 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 
 		if(nevents_%50000==0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
 
+
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 			/*///////////////////////////////////////////////
 			//  check if particle 1 (ejectile) is detected //
 			///////////////////////////////////////////////*/
 			double smearedERing = 0., smearedEWedge = 0.;
 
+
+
 			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,reactionOrigin);
 
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detectedEj){
-
+				//std::cout << "here1" << std::endl;
 				//apply target energy loss to e1:
 				double e1_aftertarget = targetLossEj_->ApplyEnergyLoss(e1, theta1);
 
@@ -75,7 +91,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,reactionOrigin);
 
 			if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected1){
-
+				//std::cout << "here2" << std::endl;
 				//apply energy loss to e1:
 				double e2_aftertarget = targetLoss1_->ApplyEnergyLoss(e2, theta2);
 
@@ -86,13 +102,18 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 				normal = normal*(1/normal.Mag());
 				double e2_afterDeadLayer = deadLayerLoss1_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
 
+				//std::cout << "here2 again" << std::endl;
+
 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
 					outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
 					detected1 = true;
 					hit1_ += 1;
 					detectorHits_[i] += 1;
+					//std::cout << "detectorHits_ incremented in here2" << std::endl;
 				}
+
+				//std::cout << "here2 again again" << std::endl;
 			}
 
 			/*//////////////////////////////////////////
@@ -104,7 +125,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD,reactionOrigin);
 
 			if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected2){
-
+				//std::cout << "here3" << std::endl;
 				//apply energy loss to e3:
 				double e3_aftertarget = targetLoss2_->ApplyEnergyLoss(e3, theta3);
 
@@ -115,13 +136,24 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 				normal = normal * (1/normal.Mag());
 				double e3_afterDeadLayer = deadLayerLoss2_->ApplyEnergyLoss(e3_aftertarget, trajectory, normal);
 
+				//std::cout << "here3 again" << std::endl;
+
 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit3_rw.first,e3_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit3_rw.second,e3_afterDeadLayer,smearedEWedge)){
+					//std::cout << "here3 again again 1" << std::endl;
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first, hit3_rw.second);
-					outfile << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << localCoords.GetY() << std::endl;
+					//std::cout << "here3 again again 2" << std::endl;
+					outfile << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+					//std::cout << "here3 again again 3" << std::endl;
 					detected2 = true;
+					//std::cout << "here3 again again 4" << std::endl;
 					hit2_ += 1;
+					//std::cout << "here3 again again 5" << std::endl;
 					detectorHits_[i] += 1;
+					//std::cout << "here3 again again 6" << std::endl;
 				}
+
+				//std::cout << "here3 again again again" << std::endl;
+
 			}
 
 			/*//////////////////////////////////////////
@@ -133,7 +165,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD,reactionOrigin);
 
 			if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected3){
-
+				//std::cout << "here4" << std::endl;
 				//apply energy loss to e4:
 				double e4_aftertarget = targetLoss3_->ApplyEnergyLoss(e4, theta4);
 
@@ -153,8 +185,11 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 				}
 			}
 
+		//std::cout << "here end 1" << std::endl;
 
 		}
+
+		//std::cout << "here end 2" << std::endl;
 
 		outfile << eoev << std::endl;
 

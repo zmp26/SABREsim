@@ -524,7 +524,7 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy);
 				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
 
-				histoman->getHisto2D("h1par_SabreRingEVsLi6ExE")->Fill(exe, sd1.ringEnergy);
+				histoman->getHisto2D("h1par_SabreRingEVsB9ExE")->Fill(exe, sd1.ringEnergy);
 				
 
 			} else if(eventLines.size() == 3){
