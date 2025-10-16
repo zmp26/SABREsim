@@ -460,8 +460,8 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 
 	TTree* kin3 = new TTree(ntpname,"LiFha 2par 6Li_3plus");
 
-	PHYSDATA physdata1, physdata2, physdata3, physdata4;
-	SABREDATA sabredata1, sabredata2;
+	// PHYSDATA physdata1, physdata2, physdata3, physdata4;
+	// SABREDATA sabredata1, sabredata2;
 
 	string line;
 	bool hit1 = false, hit2 = false;
