@@ -45,12 +45,12 @@ kin4mc TH2D hThetaLabPhiLab_4 ThetaLabVsPhiLab_4 180 -0.5 179.5 360 -0.5 359.5
 #
 #CM
 #
-kin4mc TH1D hThetaCM_3 ThetaCM3 180 0 180
-kin4mc TH1D hThetaCM_4 ThetaCM4 180 0 180
-kin4mc TH2D hThetaCM3_vs_ThetaCM4 ThetaCM3_vs_ThetaCM4 180 0 180 180 0 180
-kin4mc TH2D hCosThetaCM3_vs_CosThetaCM4 CosThetaCM3_vs_CosThetaCM4 100 -1 1 100 -1 1
-kin4mc TH1D hPhiCM_3 PhiCM3 360 0 360
-kin4mc TH1D hPhiCM_4 phiCM4 360 0 360
+#kin4mc TH1D hThetaCM_3 ThetaCM3 180 0 180
+#kin4mc TH1D hThetaCM_4 ThetaCM4 180 0 180
+#kin4mc TH2D hThetaCM3_vs_ThetaCM4 ThetaCM3_vs_ThetaCM4 180 0 180 180 0 180
+#kin4mc TH2D hCosThetaCM3_vs_CosThetaCM4 CosThetaCM3_vs_CosThetaCM4 100 -1 1 100 -1 1
+#kin4mc TH1D hPhiCM_3 PhiCM3 360 0 360
+#kin4mc TH1D hPhiCM_4 phiCM4 360 0 360
 #
 kin4mc TH1D hBreakupLabAngle BreakupLabAngle 180 0 180
 #
@@ -184,7 +184,7 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 2par/CMVCMAngle TH1D h2par_CosCMVCMAngle2 2par_CosCMVCMAngle2 100 -1 1
 2par/CMVCMAngle TH1D h2par_CosCMVCMAngleSum 2par_CosCMVCMAngleSum 200 -2 2
 #
-2par TH2D h2par_SabreRingEVsLi6ExE 2par_SabreRingEVsLi6ExE 600 -2 10 500 0 10
+2par TH2D h2par_SabreRingEVsB9ExE 2par_SabreRingEVsB9ExE 600 -2 10 500 0 10
 #
 #LabVCM
 #
@@ -224,6 +224,7 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 3par/CMThetaPhi TH2D h3par_CMTheta1VsCMPhi2 3par_CMTheta1VsCMPhi2 90 0 360 45 0 180
 3par/CMThetaPhi TH2D h3par_CMTheta2VsCMPhi1 3par_CMTheta2VsCMPhi1 90 0 360 45 0 180
 #
+3par TH2D h3par_SabreRingEVsB9ExE 3par_SabreRingEVsB9ExE 600 -2 10 500 0 10
 #
 2and3par TH2D h2and3par_SabreRingEVsB9ExE 2and3par_SabreRingEVsB9ExE 600 -2 10 500 0 10
 #
