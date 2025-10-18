@@ -657,6 +657,28 @@ std::map<std::pair<int,int>,std::pair<double,double>> readAngleMaps(){
 	return retmap;
 }
 
+std::pair<int,int> findClosestRingWedge(Double_t theta_in, Double_t phi_in, const std::map<std::pair<int, int>, std::pair<double, double>>& angleMap){
+	double minDist = std::numeric_limits<double>::max();
+	std::pair<int,int> bestRingWedge = {-1,-1};
+
+	for(const auto& entry : angleMap){
+		const auto& [ring,wedge] = entry.first;
+		const auto& [theta,phi] = entry.second;
+
+		double dTheta = theta - theta_in;
+		double dPhi = phi = phi_in;
+		double distSq = dTheta*dTheta + dPhi*dPhi;
+
+		if(distSq < minDist){
+			minDist = distSq;
+			bestRingWedge = {ring,wedge};
+		}
+	}
+
+	return bestRingWedge;
+
+}
+
 void readSingleAngleMap(ifstream& infile, std::map<std::pair<int,int>,std::pair<double,double>>& map){
 	string header;
 	getline(infile,header);
