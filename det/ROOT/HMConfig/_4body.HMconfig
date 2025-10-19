@@ -159,8 +159,14 @@ SABRE/GEOM TH2D hSABRE_AngleHitsMap SABRE_AngleHitsMap 180 0 180 360 0 360
 SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 #
 #
+# MMM:
+2par/MMM TH1D hMMM_9BExE_2par_Be8_He4He4 MMM_9BExE_2par_Be8_He4He4 2100 -1 20
 #
+#2par/MMM TH1D hMMM_9BExE_2par_5Li_pHe4 MMM_9BExE_2par_5Li_pHe4 2100 -1 20
 #
+# IMM:
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4 IMM_9BExE_3par_Be8_He4He4 2100 -1 20
+#3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p hIMM_9BExE_3par_5Li_He4p 2100 -1 20
 #
 3par TH1D h3par_RecInvMassExE 3par_RecInvMassExE 1100 -1 10
 2par TH1D h2par_RecMissMassExE 2par_RecMissMassExE 1100 -1 10

@@ -462,9 +462,20 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 	Double_t bu2Mass = fMassTable.GetMassMeV("He",4);
 	Double_t bu3Mass = fMassTable.GetMassMeV("He",4);
 
+	//masses for 9B -> 4He + 5Li, 5Li -> p + 4He:
+	// Double_t beamMass = fMassTable.GetMassMeV("He",3);
+	// Double_t targetMass = fMassTable.GetMassMeV("B",10);
+	// Double_t ejectileMass = fMassTable.GetMassMeV("He",4);
+	// Double_t recoilMass = fMassTable.GetMassMeV("B",9);
+	// Double_t bu1Mass = fMassTable.GetMassMeV("He",4);
+	// Double_t daughter1Mass = fMassTable.GetMassMeV("Li",5);
+	// Double_t bu2Mass = fMassTable.GetMassMeV("H",1);
+	// Double_t bu3Mass = fMassTable.GetMassMeV("He",4);
+
 	//reactions
+	//reaction 10B(3He,4He)9B, 9B -> p + 8Be, 8Be -> 4He + 4He
 	std::vector<Reaction4> reactions;
-	Reaction4 r;
+	Reaction4 r,r2;
 	r.beam.SetAll(3,"He",beamMass);
 	r.target.SetAll(10, "B", targetMass);
 	r.ejectile.SetAll(4, "He", ejectileMass);
@@ -477,6 +488,19 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 	r.recoilExE = 2.186;
 	reactions.push_back(r);
 
+	//reaction 10B(3He,4He)9B, 9B -> 4He + 5Li, 5Li -> p + 4He
+	// r2.beam.SetAll(3,"He",beamMass);
+	// r2.target.SetAll(10,"B",targetMass);
+	// r2.ejectile.SetAll(4,"He",ejectileMass);
+	// r2.recoil.SetAll(9,"B",recoilMass);
+	// r2.breakup1.SetAll(4,"He",bu1Mass);
+	// r2.daughter1.SetAll(5,"Li",daughter1Mass);
+	// r2.breakup2.SetAll(1,"p",bu2Mass);
+	// r2.breakup3.SetAll(4,"He",bu3Mass);
+	// r2.beamEnergy = 7.5;
+	// r2.recoilExE = 0.;
+	// reactions.push_back(r2);
+
 	std::vector<IMMMA_Tool_4*> tools = prepareIMMMA_Tool_4s(reactions,true);
 	std::cout << "VCM1  = " << tools[0]->GetExpectedVcm_bu1() << std::endl;
 	std::cout << "VCM2  = " << tools[0]->GetExpectedVcm_bu2() << std::endl;
@@ -487,6 +511,17 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 	std::cout << "ECM1   = " << tools[0]->GetExpectedEcm1() << std::endl;
 	std::cout << "ECM2   = " << tools[0]->GetExpectedEcm2() << std::endl;
 	std::cout << endl;
+
+	// std::cout << "9B -> 4He + 5Li, 5Li -> p + 4He:" << std::endl;
+	// std::cout << "VCM1   = " << tools[1]->GetExpectedVcm_bu1() << std::endl;
+	// std::cout << "VCM2   = " << tools[1]->GetExpectedVcm_bu2() << std::endl;
+	// std::cout << "VCM3   = " << tools[1]->GetExpectedVcm_bu3() << std::endl;
+	// std::cout << "KECM1  = " << tools[1]->GetExpectedKEcm_bu1() << std::endl;
+	// std::cout << "KECM2  = " << tools[1]->GetExpectedKEcm_bu2() << std::endl;
+	// std::cout << "KECM3  = " << tools[1]->GetExpectedKEcm_bu3() << std::endl;
+	// std::cout << "ECM1    = " << tools[1]->GetExpectedEcm1() << std::endl;
+	// std::cout << "ECM2    = " << tools[1]->GetExpectedEcm2() << std::endl;
+	// std::cout << std::endl;
 
 	TTree* kin4 = new TTree(ntpname, "10B 3par 9B_3halfminus");
 
@@ -559,6 +594,11 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				
 
 				//eventually do MMM here!
+				std::array<CaseResult4,6> results = tools[0]->AnalyzeMMMEvent(pd1.e, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi, sd2.ringEnergy, sd2.theta, sd2.phi);
+				
+				for(size_t i=0; i<results.size(); i++){
+					histoman->getHisto1D("hMMM_9BExE_2par_Be8_He4He4")->Fill(results[i].recoilExE);
+				}
 
 
 			} else if(eventLines.size() == 4){
@@ -597,6 +637,13 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				histoman->getHisto2D("h3par_SabreRingEVsB9ExE")->Fill(exe, sd1.ringEnergy+sd2.ringEnergy+sd3.ringEnergy);
 
 				//eventually do IMM here!
+				std::array<CaseResult4,6> results = tools[0]->AnalyzeIMMEvent(pd1.e, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi, sd2.ringEnergy, sd2.theta, sd2.phi, sd3.ringEnergy, sd3.theta, sd3.phi);
+
+
+				for(size_t i=0; i<results.size(); i++){
+					histoman->getHisto1D("hIMM_9BExE_3par_Be8_He4He4")->Fill(results[i].recoilExE);
+				}
+
 
 
 			} else if(eventLines.size() == 5){
@@ -666,7 +713,7 @@ std::pair<int,int> findClosestRingWedge(Double_t theta_in, Double_t phi_in, cons
 		const auto& [theta,phi] = entry.second;
 
 		double dTheta = theta - theta_in;
-		double dPhi = phi = phi_in;
+		double dPhi = phi - phi_in;
 		double distSq = dTheta*dTheta + dPhi*dPhi;
 
 		if(distSq < minDist){
