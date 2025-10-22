@@ -52,7 +52,7 @@ private:
 	long nevents_;
 	std::vector<long> detectorHits_;
 	long hit1_, hit2_, hit3_, hit4_, hit23_, hitej_;
-	long hit34_, hitOnly3_, hitOnly4_, hitOnlyEj_, hitOnly12_, hitOnly23_, hitOnly13_, hitOnly123_;
+	long hit34_, hitOnly1_, hitOnly2_, hitOnly3_, hitOnly4_, hitOnlyEj_, hitOnly12_, hitOnly23_, hitOnly13_, hitOnly123_;
 	long hit1Only_, hit2Only_, hitBoth_;
 	long onePartHits_, twoPartHits_, threePartHits_, fourPartHits_;
 

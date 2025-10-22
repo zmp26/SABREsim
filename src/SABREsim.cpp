@@ -335,8 +335,8 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	hit3_ = det4mcProcessor.GetHit3();
 	hit23_ = det4mcProcessor.GetHitBoth23();
 	hitOnlyEj_ = det4mcProcessor.GetHitOnlyEj();
-	hit1Only_ = det4mcProcessor.GetHitOnly1();
-	hit2Only_ = det4mcProcessor.GetHitOnly2();
+	hitOnly1_ = det4mcProcessor.GetHitOnly1();
+	hitOnly2_ = det4mcProcessor.GetHitOnly2();
 	hitOnly3_ = det4mcProcessor.GetHitOnly3();
 	hitOnly12_ = det4mcProcessor.GetHitOnly12();
 	hitOnly23_ = det4mcProcessor.GetHitOnly23();
@@ -380,6 +380,13 @@ void SABREsim::PrintSummary() const {
 		std::cout << "2‑particle events: " << twoPartHits_ << "\n";
 		std::cout << "3‑particle events: " << threePartHits_ << "\n";
 		std::cout << "4‑particle events: " << fourPartHits_ << "\n";
+		std::cout << "Only bu1: " << hitOnly1_ << "\n";
+		std::cout << "Only bu2: " << hitOnly2_ << "\n";
+		std::cout << "Only bu3: " << hitOnly3_ << "\n";
+		std::cout << "Only bu1 & bu2: " << hitOnly12_ << "\n";
+		std::cout << "Only bu2 & bu3: " << hitOnly23_ << "\n";
+		std::cout << "Only bu1 & bu3: " << hitOnly13_ << "\n";
+		std::cout << "Only bu1, bu2 & bu3: " << hitOnly123_ << std::endl;
 	}
 	for (size_t i = 0; i < detectorHits_.size(); i++) {
 		std::cout << "Detector_" << i << " total hits = " << detectorHits_[i] << "\n";

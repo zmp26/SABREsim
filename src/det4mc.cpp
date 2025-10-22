@@ -16,6 +16,7 @@ det4mc::det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  nevents_(0),
 	  hitej_(0), hit1_(0), hit2_(0), hit3_(0),
 	  hitBoth23_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
+	  hitOnly12_(0), hitOnly23_(0), hitOnly13_(0), hitOnly123_(0),
 	  onePartHits_(0), twoPartHits_(0), threePartHits_(0), fourPartHits_(0),
 	  detectorHits_(SABRE_Array.size()),
 	  beamspot_(beamspot)
