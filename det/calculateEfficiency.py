@@ -62,15 +62,15 @@ def extractEfficienciesFromSTDOUT_kin3mc(stdout):
 	eff = {'bu1':None,'bu2':None,'both':None}
 	lines = stdout.splitlines()
 	for line in lines:
-		if "only bu1" in line:
+		if "Only bu1" in line:
 			match = re.search(r"\(([\d.]+)%",line)
 			if match:
 				eff['bu1'] = float(match.group(1))
-		elif "only bu2" in line:
+		elif "Only bu2" in line:
 			match = re.search(r"\(([\d.]+)%",line)
 			if match:
 				eff['bu2'] = float(match.group(1))
-		elif "both bu1 and bu2" in line:
+		elif "Both bu1 & bu2" in line:
 			match = re.search(r"\(([\d.]+)%",line)
 			if match:
 				eff['both'] = float(match.group(1))

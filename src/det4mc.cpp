@@ -197,12 +197,19 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		// if(detected1) hit1_ += 1;
 		// if(detected2) hit2_ += 1;
 		// if(detected3) hit3_ += 1;
-		if(detected2&&detected3) hitBoth23_ += 1;
+		
 		if(detectedEj && !detected1 && !detected2 && !detected3) hitOnlyEj_ += 1;
 		if(!detectedEj && detected1 && !detected2 && !detected3) hitOnly1_ += 1;
 		if(!detectedEj && !detected1 && detected2 && !detected3) hitOnly2_ += 1;
 		if(!detectedEj && !detected1 && !detected2 && detected3) hitOnly3_ += 1;
+
+		if(!detectedEj && detected1 && detected2 && !detected3) hitOnly12_ += 1;
+		if(!detectedEj && detected1 && !detected2 && detected3) hitOnly13_ += 1;
 		if(!detectedEj && !detected1 && detected2 && detected3) hitOnly23_ += 1;
+
+		if(detected2&&detected3) hitBoth23_ += 1;
+
+
 		if(!detectedEj && detected1 && detected2 && detected3) hitOnly123_ += 1;
 
 		if((detectedEj && !detected1 && !detected2 && !detected3) || (!detectedEj && detected1 && !detected2 && !detected3) || (!detectedEj && !detected1 && detected2 && !detected3) || (!detectedEj && !detected1 && !detected2 && detected3)) onePartHits_ += 1;
@@ -253,8 +260,16 @@ long det4mc::GetHitOnly3() const {
 	return hitOnly3_;
 }
 
+long det4mc::GetHitOnly12() const {
+	return hitOnly12_;
+}
+
 long det4mc::GetHitOnly23() const {
 	return hitOnly23_;
+}
+
+long det4mc::GetHitOnly13() const {
+	return hitOnly13_;
 }
 
 long det4mc::GetHitOnly123() const {

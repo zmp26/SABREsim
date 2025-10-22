@@ -338,7 +338,9 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	hit1Only_ = det4mcProcessor.GetHitOnly1();
 	hit2Only_ = det4mcProcessor.GetHitOnly2();
 	hitOnly3_ = det4mcProcessor.GetHitOnly3();
+	hitOnly12_ = det4mcProcessor.GetHitOnly12();
 	hitOnly23_ = det4mcProcessor.GetHitOnly23();
+	hitOnly13_ = det4mcProcessor.GetHitOnly13();
 	hitOnly123_ = det4mcProcessor.GetHitOnly123();
 	onePartHits_ = det4mcProcessor.GetOnePartHits();
 	twoPartHits_ = det4mcProcessor.GetTwoPartHits();

@@ -45,7 +45,9 @@ public:
 	long GetHitOnly1() const;								//decay 1 only 					(c)
 	long GetHitOnly2() const;								//decay 2 only 					(d)
 	long GetHitOnly3() const;								//decay 3 only 					(e)
+	long GetHitOnly12() const;								//decay 1&2 only 				(c,d)
 	long GetHitOnly23() const;								//decay 2&3 only 				(d,e)
+	long GetHitOnly13() const;								//decay 1&3 only 				(c,e)
 	long GetHitOnly123() const;								//decay 1,2,3 only 				(c,d,e)
 	long GetOnePartHits() const;							//total events w/ 1 particle
 	long GetTwoPartHits() const;							//total events w/ 2 particles
@@ -76,7 +78,9 @@ private:
 	long hitOnly1_;
 	long hitOnly2_;
 	long hitOnly3_;
+	long hitOnly12_;//new
 	long hitOnly23_;
+	long hitOnly13_;//new
 	long hitOnly123_;
 	long onePartHits_;
 	long twoPartHits_;
