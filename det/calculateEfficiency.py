@@ -48,6 +48,13 @@ def extractEnergyFromFilename_kin4mc(filename):
 		return resonance_energy_keV
 	return None
 
+def extractEnergyFromFilename_kin3mc(filename):
+	matches = re.findall(r'(\d+)keV',filename)
+	if len(matches) >= 2:
+		resonance_energy_keV = int(matches[1])
+		return resonance_energy_keV
+	return None
+
 def extractEfficienciesFromSTDOUT_kin2mc(stdout):
 	eff = {'ej':None, 'rec':None, 'both':None}
 	lines = stdout.splitlines()
@@ -210,7 +217,7 @@ def run_SABREsim_kin3mc(fn, input_dir, output_dir):
 		print("STDERR:",result.stderr)
 		return None
 
-	energy = extractEfficienciesFromSTDOUT_kin3mc(fn)
+	energy = extractEnergyFromFilename_kin3mc(fn)
 	efficiencies = extractEfficienciesFromSTDOUT_kin3mc(result.stdout)
 
 	if energy is None:
@@ -311,193 +318,6 @@ def kin2mc():
 
 	plt.show()
 
-# def kin3mc():
-# 	print("kin3mc() running...")
-# 	#input_dir = sys.argv[2]
-# 	start_time = time.time()
-
-# 	input_dir = os.path.abspath(sys.argv[2])
-# 	output_dir = os.path.abspath(sys.argv[3])
-
-# 	os.makedirs(output_dir,exist_ok=True)
-
-# 	filenames = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
-
-# 	results = []
-
-# 	count = 0
-
-# 	fn_counter = 0
-# 	filenames_size = len(filenames)
-# 	for fn in filenames:
-# 		input_file = os.path.join(input_dir, fn)
-# 		output_file = os.path.join(output_dir, fn.replace(".out",".det"))
-
-# 		print("\n----------------------------------------------------------------------------------\n")
-
-# 		print(f"input_file = {input_file}")
-# 		print(f"output_file = {output_file}")
-
-# 		command = [
-# 		"../src/SABREsim",
-# 		"3",
-# 		input_file,
-# 		output_file
-# 		]
-
-# 		print(f"Running command: {' '.join(command)}")
-
-# 		result = subprocess.run(command, capture_output=True, text=True)
-
-# 		if result.returncode != 0:
-# 			print(f"Error running SABREsim for {fn}")
-# 			print("STDERR:", result.stderr)
-# 			continue
-		
-# 		energy = extractEnergyFromFilename_kin2mc(fn)
-# 		efficiencies = extractEfficienciesFromSTDOUT_kin3mc(result.stdout)
-
-# 		if energy is not None:
-# 			results.append({
-# 				'energy':energy,
-# 				'bu1':efficiencies['bu1'],
-# 				'bu2':efficiencies['bu2'],
-# 				'both':efficiencies['both']
-# 				})
-# 			count += 1
-
-# 		#breaka
-# 		print(f"bu1 eff = {efficiencies['bu1']}\nbu2 eff = {efficiencies['bu2']}\nboth eff = {efficiencies['both']}")
-# 		fn_counter += 1
-# 		print(f"Finished {fn_counter} of {filenames_size}\t({fn_counter*100./filenames_size}%)")
-# 		#break
-
-	#sort by energy
-	# results.sort(key=lambda x: x['energy'])
-
-	# #plot!
-	# energies = [r['energy'] for r in results]
-	# bu1_vals = [r['bu1'] for r in results]
-	# bu2_vals = [r['bu2'] for r in results]
-	# both_vals = [r['both'] for r in results]
-	# bu1_both_vals = [(r['bu1'] + r['both']) for r in results]
-	# bu2_both_vals = [(r['bu2'] + r['both']) for r in results]
-
-	# #normalized:
-	# maxval = max(bu1_vals)
-	# bu1_vals_norm = [val/maxval for val in bu1_vals]
-
-	# maxval = max(bu2_vals)
-	# bu2_vals_norm = [val/maxval for val in bu2_vals]
-
-	# maxval = max(both_vals)
-	# both_vals_norm = [val/maxval for val in both_vals]
-
-	# #plt.plot(energies, bu1_vals, label="Only bu1", marker='o')
-	# #plt.plot(energies, bu2_vals, label="Only bu2", marker='o')
-	# #plt.plot(energies, both_vals, label="Both", marker='o')
-	# #plt.plot(energies, bu1_both_vals, label="Only bu1 + both", marker="o")
-	# #plt.plot(energies, bu2_both_vals, label="Only bu2 + both", marker="o")
-	# plt.plot(energies, bu1_vals_norm, label="Only bu1", marker="o")
-	# plt.plot(energies, bu2_vals_norm, label="Only bu2", marker="o")
-	# plt.plot(energies, both_vals_norm, label="Both bu1 and bu2, normalized", marker="o")
-	# plt.xlabel("Beam Energy (keV)")
-	# plt.ylabel("Relative Efficiency (%)")
-	# plt.title("Detection Efficiency vs Beam Energy")
-	# plt.legend()
-	# plt.grid(True)
-	# plt.tight_layout()
-	# plt.savefig(os.path.join(output_dir,"efficiency_plot.png"))
-
-	# txt_output_path = os.path.join(output_dir, "efficiency_plot_data.txt")
-	# with open(txt_output_path, "w") as f:
-	# 	f.write("Energy(keV)\tbu1_eff\tbu1_eff_norm\tbu2_eff\tbu2_eff_norm\tboth_eff\tboth_eff_norm\n")
-	# 	for i in range(len(energies)):
-	# 		f.write(f"{energies[i]}\t{bu1_vals[i]:.4f}\t{bu1_vals_norm[i]:.4f}\t{bu2_vals[i]:.4f}\t{bu2_vals_norm[i]:.4f}\t{both_vals[i]:.4f}\t{both_vals_norm[i]:.4f}\n")
-	# print(f"\nSaved efficiency plot data to: {txt_output_path}\n")
-
-	# stop_time = time.time()
-	# elapsed_time = stop_time - start_time
-	# print(f"\n\nFinished running {count} files through SABREsim in {elapsed_time:.2f} seconds")
-
-	# plt.show()
-
-
-
-# def kin4mc():
-# 	print("kin4mc() running...")
-
-# 	start_time = time.time()
-
-# 	input_dir = os.path.abspath(sys.argv[2])
-# 	output_dir = os.path.abspath(sys.argv[3])
-
-# 	os.makedirs(output_dir,exist_ok=True)
-
-# 	filenames = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir,f))]
-
-# 	results = []
-
-# 	count = 0
-
-# 	fn_counter = 0
-# 	filenames_size = len(filenames)
-# 	for fn in filenames:
-# 		input_file = os.path.join(input_dir,fn)
-# 		output_file = os.path.join(output_dir,fn.replace(".out",".det"))
-
-# 		print("\n----------------------------------------------------------------------------------\n")
-
-# 		print(f"input_file = {input_file}")
-# 		print(f"output_file = {output_file}")
-
-# 		command = [
-# 		"bin/SABREsim",
-# 		"4",
-# 		input_file,
-# 		output_file
-# 		]
-
-# 		print(f"Running command: {' '.join(command)}")
-
-# 		result = subprocess.run(command, capture_output=True, text=True)
-
-# 		if result.returncode != 0:
-# 			print(f"Error running SABREsim for {fn}")
-# 			print("STDERR: ",result.stderr)
-# 			continue
-
-# 		energy = extractEfficienciesFromSTDOUT_kin4mc(fn)
-# 		efficiencies = extractEfficienciesFromSTDOUT_kin4mc(result.stdout)
-
-# 		if energy is not None:
-# 			results.append({
-# 					'energy':energy,
-# 					'bu1':efficiencies['bu1'],
-# 					'bu2':efficiencies['bu2'],
-# 					'bu3':efficiencies['bu3'],
-# 					'bu1_bu2':efficiencies['bu1_bu2'],
-# 					'bu2_bu3':efficiencies['bu2_bu3'],
-# 					'bu1_bu3':efficiencies['bu1_bu3'],
-# 					'all':efficiencies['all']
-# 				})
-# 			count += 1
-
-# 		print(f"bu1 eff = {efficiencies['bu1']:.4f}\nbu2 eff = {efficiencies['bu2']:.4f}\nbu3 eff = {efficiencies['bu3']:.4f}\nbu1_bu2 eff = {efficiencies['bu1_bu2']:.4f}\nbu2_bu3_eff = {efficiencies['bu2_bu3']:.4f}\nbu1_bu3 eff = {efficiencies['bu1_bu3']:.4f}\nall eff = {efficiencies['all']:.4f}\n")
-# 		fn_counter += 1
-# 		print(f"Finished {fn_counter} of {filenames_size}\t({fn_counter*100./filenames_size}%)")
-
-
-# 	results.sort(key=lambda x:x['energy'])
-
-# 	#output to a file! (I do NOT want to rerun SABREsim if I fuck up the plotting!)
-# 	txt_output_path = os.path.join(output_dir, "kin4mc_efficiency_plot_data.txt")
-# 	with open(txt_output_path, 'w') as f:
-# 		f.write("ExE(keV)\tbu1\tbu2\tbu3\tbu1_bu2\tbu2_bu3\tbu1_bu3\tall")
-# 		for i in range(len(energies)):
-# 			f.write(f"{energies[i]}\t{bu1_vals[i]:.4f}\t{bu2_vals[i]:.4f}\t{bu3_vals[i]:.4f}\t{bu1_bu2_vals[i]:.4f}\t{bu2_bu3_vals[i]:.4f}\t{bu1_bu3_vals[i]:.4f}\t{all_vals[i]:.4f}")
-# 	print(f"\n\nFinished running {count} files through SABREsim in {elapsed_time:.2f} seconds.")
-# 	print(f"\n\nYou can find the data in {txt_output_path}\n")
 
 def kin3mc(maxworkers=8):
 	print("kin3mc() running...")

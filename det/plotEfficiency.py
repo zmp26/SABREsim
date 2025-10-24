@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import sys
 
 
 
@@ -12,13 +12,15 @@ def plotKin4mc():
 
 	plt.figure(figsize=(10,6))
 
-	# plt.plot(df["ExE(keV)"], df["bu1"], label="bu1")
-	# plt.plot(df["ExE(keV)"], df["bu2"], label="bu2")
-	# plt.plot(df["ExE(keV)"], df["bu3"], label="bu3")
-	# plt.plot(df["ExE(keV)"], df["bu1_bu2"], label="bu1_bu2")
-	# plt.plot(df["ExE(keV)"], df["bu2_bu3"], label="bu2_bu3")
-	# plt.plot(df["ExE(keV)"], df["bu1_bu3"], label="bu1_bu3")
-	# plt.plot(df["ExE(keV)"], df["all"], label="all")\
+	# plt.plot(df["ExE(keV)"], df["bu1"], label="p")
+	# plt.plot(df["ExE(keV)"], df["bu2"], label="α")
+	# plt.plot(df["ExE(keV)"], df["bu3"], label="α")
+	# plt.plot(df["ExE(keV)"], df["bu1"]+df["bu2"]+df["bu3"], label="p or α or α")
+	# plt.plot(df["ExE(keV)"], df["bu1_bu2"], label="p+α")
+	# plt.plot(df["ExE(keV)"], df["bu2_bu3"], label="α+α")
+	# plt.plot(df["ExE(keV)"], df["bu1_bu3"], label="α+p")
+	# plt.plot(df["ExE(keV)"], df["bu1_bu2"]+df["bu2_bu3"]+df["bu1_bu3"], label="p+α or α+α or α+p (2par)")
+	#plt.plot(df["ExE(keV)"], df["all"], label="p+α+α (3par)")
 
 	df_norm = df.copy()
 	df_norm["bu1"] = df["bu1"]/df["bu1"].max()
@@ -29,8 +31,8 @@ def plotKin4mc():
 	df_norm["bu1_bu3"] = df["bu1_bu3"]/df["bu1_bu3"].max()
 	df_norm["all"] = df["all"]/df["all"].max()
 
-	plt.plot(df["ExE(keV)"], df_norm["all"], label="all")
-
+	plt.plot(df["ExE(keV)"], df_norm["all"], label="3par (p+α+α)")
+	plt.xlim(0,2200)#for comparison to RM Shaffer thesis
 
 	plt.xlabel("ExE (keV)")
 	plt.ylabel("Efficiency")
@@ -48,16 +50,18 @@ def plotKin3mc():
 
 	plt.figure(figsize=(10,6))
 
-	# plt.plot(df["ExE(keV)"], df["bu1"], label="bu1")
-	# plt.plot(df["ExE(keV)"], df["bu2"], label="bu2")
-	# plt.plot(df["ExE(keV)"], df["both"], label="both")
+	#plt.plot(df["ExE(keV)"], df["bu1"], label="α")
+	#plt.plot(df["ExE(keV)"], df["bu2"], label="d")
+	#plt.plot(df["ExE(keV)"], df["bu1"]+df["bu2"], label="α or d (1par)")
+	#plt.plot(df["ExE(keV)"], df["both"], label="α+d (2par)")
 
 	df_norm = df.copy()
 	df_norm["bu1"] = df["bu1"]/df["bu1"].max()
 	df_norm["bu2"] = df["bu2"]/df["bu2"].max()
 	df_norm["both"] = df["both"]/df["both"].max()
 
-	plt.plot(df["ExE(keV)"], df_norm["both"], label="both")
+	plt.plot(df["ExE(keV)"], df_norm["both"], label="2par (α+d)")
+	plt.xlim(1500,4000)#for comparison to RM Shaffer thesis
 
 	plt.xlabel("ExE (keV)")
 	plt.ylabel("Efficiency")
@@ -66,3 +70,23 @@ def plotKin3mc():
 	plt.grid(True)
 	plt.tight_layout()
 	plt.show()
+
+
+def main():
+	numarg = len(sys.argv)
+	if numarg != 2:
+		print("Invalid number of arguments! See plotEfficiency.py for more info!")
+		return
+	if sys.argv[1] == '3':
+		plotKin3mc()
+		return
+	elif sys.argv[1] == '4':
+		plotKin4mc()
+		return
+	else:
+		print("passing")
+		return
+
+
+if __name__=="__main__":
+	main()
