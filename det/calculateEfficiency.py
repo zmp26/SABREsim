@@ -193,6 +193,42 @@ def run_SABREsim_kin4mc(fn, input_dir, output_dir):
 		'all':efficiencies['all'],
 	}
 
+def run_SABREsim_kin3mc(fn, input_dir, output_dir):
+	input_file = os.path.join(input_dir,fn)
+	output_file = os.path.join(output_dir,fn)
+
+	print(f"\n----------------------------------------------------------------------------------\n")
+	print(f"input file = {input_file}")
+	print(f"output_file = {output_file}")
+
+	command = ["bin/SABREsim", "3", input_file, output_file]
+	print(f"Running command: {' '.join(command)}")
+
+	result = subprocess.run(command, capture_output=True, text=True)
+	if(result.returncode != 0):
+		print(f"Error running SABREsim for {fn}")
+		print("STDERR:",result.stderr)
+		return None
+
+	energy = extractEfficienciesFromSTDOUT_kin3mc(fn)
+	efficiencies = extractEfficienciesFromSTDOUT_kin3mc(result.stdout)
+
+	if energy is None:
+		print(f"returning None for energy in {fn}")
+		return None
+
+	print(
+			f"bu1 eff = {efficiencies['bu1']:.4f}\n"
+			f"bu2 eff = {efficiencies['bu2']:.4f}\n"
+			f"both eff = {efficiencies['both']:.4f}\n"
+		)
+
+	return {
+		'energy':energy,
+		'bu1':efficiencies['bu1'],
+		'bu2':efficiencies['bu2'],
+		'both':efficiencies['both']
+	}
 
 
 
@@ -275,66 +311,66 @@ def kin2mc():
 
 	plt.show()
 
-def kin3mc():
-	print("kin3mc() running...")
-	#input_dir = sys.argv[2]
-	start_time = time.time()
+# def kin3mc():
+# 	print("kin3mc() running...")
+# 	#input_dir = sys.argv[2]
+# 	start_time = time.time()
 
-	input_dir = os.path.abspath(sys.argv[2])
-	output_dir = os.path.abspath(sys.argv[3])
+# 	input_dir = os.path.abspath(sys.argv[2])
+# 	output_dir = os.path.abspath(sys.argv[3])
 
-	os.makedirs(output_dir,exist_ok=True)
+# 	os.makedirs(output_dir,exist_ok=True)
 
-	filenames = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+# 	filenames = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
 
-	results = []
+# 	results = []
 
-	count = 0
+# 	count = 0
 
-	fn_counter = 0
-	filenames_size = len(filenames)
-	for fn in filenames:
-		input_file = os.path.join(input_dir, fn)
-		output_file = os.path.join(output_dir, fn.replace(".out",".det"))
+# 	fn_counter = 0
+# 	filenames_size = len(filenames)
+# 	for fn in filenames:
+# 		input_file = os.path.join(input_dir, fn)
+# 		output_file = os.path.join(output_dir, fn.replace(".out",".det"))
 
-		print("\n----------------------------------------------------------------------------------\n")
+# 		print("\n----------------------------------------------------------------------------------\n")
 
-		print(f"input_file = {input_file}")
-		print(f"output_file = {output_file}")
+# 		print(f"input_file = {input_file}")
+# 		print(f"output_file = {output_file}")
 
-		command = [
-		"../src/SABREsim",
-		"3",
-		input_file,
-		output_file
-		]
+# 		command = [
+# 		"../src/SABREsim",
+# 		"3",
+# 		input_file,
+# 		output_file
+# 		]
 
-		print(f"Running command: {' '.join(command)}")
+# 		print(f"Running command: {' '.join(command)}")
 
-		result = subprocess.run(command, capture_output=True, text=True)
+# 		result = subprocess.run(command, capture_output=True, text=True)
 
-		if result.returncode != 0:
-			print(f"Error running SABREsim for {fn}")
-			print("STDERR:", result.stderr)
-			continue
+# 		if result.returncode != 0:
+# 			print(f"Error running SABREsim for {fn}")
+# 			print("STDERR:", result.stderr)
+# 			continue
 		
-		energy = extractEnergyFromFilename_kin2mc(fn)
-		efficiencies = extractEfficienciesFromSTDOUT_kin3mc(result.stdout)
+# 		energy = extractEnergyFromFilename_kin2mc(fn)
+# 		efficiencies = extractEfficienciesFromSTDOUT_kin3mc(result.stdout)
 
-		if energy is not None:
-			results.append({
-				'energy':energy,
-				'bu1':efficiencies['bu1'],
-				'bu2':efficiencies['bu2'],
-				'both':efficiencies['both']
-				})
-			count += 1
+# 		if energy is not None:
+# 			results.append({
+# 				'energy':energy,
+# 				'bu1':efficiencies['bu1'],
+# 				'bu2':efficiencies['bu2'],
+# 				'both':efficiencies['both']
+# 				})
+# 			count += 1
 
-		#breaka
-		print(f"bu1 eff = {efficiencies['bu1']}\nbu2 eff = {efficiencies['bu2']}\nboth eff = {efficiencies['both']}")
-		fn_counter += 1
-		print(f"Finished {fn_counter} of {filenames_size}\t({fn_counter*100./filenames_size}%)")
-		#break
+# 		#breaka
+# 		print(f"bu1 eff = {efficiencies['bu1']}\nbu2 eff = {efficiencies['bu2']}\nboth eff = {efficiencies['both']}")
+# 		fn_counter += 1
+# 		print(f"Finished {fn_counter} of {filenames_size}\t({fn_counter*100./filenames_size}%)")
+# 		#break
 
 	#sort by energy
 	# results.sort(key=lambda x: x['energy'])
@@ -462,6 +498,51 @@ def kin3mc():
 # 			f.write(f"{energies[i]}\t{bu1_vals[i]:.4f}\t{bu2_vals[i]:.4f}\t{bu3_vals[i]:.4f}\t{bu1_bu2_vals[i]:.4f}\t{bu2_bu3_vals[i]:.4f}\t{bu1_bu3_vals[i]:.4f}\t{all_vals[i]:.4f}")
 # 	print(f"\n\nFinished running {count} files through SABREsim in {elapsed_time:.2f} seconds.")
 # 	print(f"\n\nYou can find the data in {txt_output_path}\n")
+
+def kin3mc(maxworkers=8):
+	print("kin3mc() running...")
+	start_time = time.time()
+
+	input_dir = os.path.abspath(sys.argv[2])
+	output_dir = os.path.abspath(sys.argv[3])
+	os.makedirs(output_dir,exist_ok=True)
+
+	filenames = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir,f))]
+	filenames_size = len(filenames)
+
+	results = []
+	completed = 0
+
+	print(f"Processing {filenames_size} files with {maxworkers} threads...")
+
+	with ThreadPoolExecutor(max_workers=maxworkers) as executor:
+		futures = {executor.submit(run_SABREsim_kin3mc, fn, input_dir, output_dir): fn for fn in filenames}
+
+		for future in as_completed(futures):
+			fn = futures[future]
+			try:
+				result = future.result()
+				if result:
+					results.append(result)
+			except Exception as e:
+				print(f"Error processing {fn}: {e}")
+			finally:
+				completed += 1
+				print(f"Finished {completed}/{filenames_size} ({completed*100./filenames_size:.2f}%)")
+
+		#sort by energy:
+		results.sort(key=lambda x: x['energy'])
+
+		#write to file:
+		txt_output_path = os.path.join(output_dir, "kin3mc_efficiency_plot_data.txt")
+		with open(txt_output_path,'w') as f:
+			f.write("ExE(keV)\tbu1\tbu2\tboth\n")
+			for r in results:
+				f.write(f"{r['energy']:.4f}\t{r['bu1']:.4f}\t{r['bu2']:.4f}\t{r['both']:.4f}\n")
+
+		elapsed_time = time.time() - start_time
+		print(f"\nFinished running {len(results)} files through SABREsim in {elapsed_time} seconds! (That is, like, {elapsed_time/3600.} hours!)")
+		print(f"Results saved to {txt_output_path}")
 
 def kin4mc(maxworkers=8):
 	print("kin4mc() running...")
