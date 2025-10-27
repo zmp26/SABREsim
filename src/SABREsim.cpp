@@ -171,8 +171,8 @@ bool SABREsim::InitializeModels(){
 void SABREsim::InitializeBeamspot(){
 	//eventually interface with file read in so no need to remake when changing!
 
-	//profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.002m = 2mm
-	profile_ = new FixedPointProfile();
+	profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.002m = 2mm
+	//profile_ = new FixedPointProfile();
 
 	beamspot_ = new Beamspot();
 	beamspot_->SetProfile(profile_);
