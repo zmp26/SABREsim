@@ -43,8 +43,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		bool detected3 = false;		//kin4mc particle 4 == breakup 3 (third decay particle -- left over)
 
 		//get reaction origin based on beamspot:
-		//Vec3 reactionOrigin = beamspot_->GeneratePoint();
-		Vec3 reactionOrigin = {0.,0.,0.};
+		Vec3 reactionOrigin = beamspot_->GeneratePoint();
+		//Vec3 reactionOrigin = {0.,0.,0.};
 
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
 

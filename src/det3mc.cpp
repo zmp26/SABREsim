@@ -31,8 +31,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		bool detected1 = false, detected3 = false, detected4 = false;
 
 		//get reaction origin based on beamspot
-		//Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
-		Vec3 reactionOrigin = {0.,0.,0.};
+		Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
+		//Vec3 reactionOrigin = {0.,0.,0.};
 
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
 
