@@ -174,7 +174,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			int globalwedge = sabredata1.wedge + wedgeoffset;
 
 			//rings vs wedges histogram:
-			int zeroToFortyWedge = sabredata1.detectorIndex*numWedges + sabredata1.wedge;//0-7 for SABRE0, 8-15 for SABRE1, etc.
+			int zeroToFortyWedge = sabredata1.detectorIndex*numwedges + sabredata1.wedge;//0-7 for SABRE0, 8-15 for SABRE1, etc.
 			histoman->getHisto2D("hSABRE_RingsVSWedges")->Fill(zeroToFortyWedge,sabredata1.ring);
 
 			//hSABRE0_pixel_r112w40_ESummary
