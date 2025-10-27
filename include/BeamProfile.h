@@ -9,6 +9,9 @@ public:
 	virtual ~BeamProfile() = default;
 
 	virtual std::pair<double, double> Sample() = 0;
+
+	TString ToString();
+
 };
 
 #endif //BEAM_PROFILE_H

@@ -39,6 +39,7 @@
 
 #include "BeamProfile.h"
 #include "Vec3.h"
+#include "TString.h"
 
 class Beamspot {
 public:

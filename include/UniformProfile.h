@@ -19,6 +19,10 @@ public:
 	std::pair<double, double> Sample() override {
 		return {distX(rng), distY(rng)};
 	}
+
+	TString ToString(){
+		return "UniformProfile";
+	}
 };
 
 #endif //UNIFORM_PROFILE_H
