@@ -58,6 +58,9 @@ public:
 
 	Vec3 GeneratePoint(double z = 0.0) const;
 
+	double GetXOffset(){ return xOffset; }
+	double GetYOffset(){ return yOffset; }
+
 private:
 	BeamProfile* profile = nullptr;
 	double xOffset = 0.;

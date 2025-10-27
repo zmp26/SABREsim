@@ -11,7 +11,7 @@ public:
 
 	virtual std::pair<double, double> Sample() = 0;
 
-	TString ToString();
+	virtual TString ToString() const { return "BeamProfile"; };
 
 	double GetParX() { return parX; };
 	double GetParY() { return parY; };
