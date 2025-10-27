@@ -127,6 +127,12 @@ bool SABREsim::InitializeModels(){
 		return false;
 	}
 
+	targetLoss_none_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_none.conf");
+	if(!targetLoss_none_){
+		ConsoleColorizer::PrintRed("Failed to load none target loss config file\n");
+		return false;
+	}
+
 
 	//load dead layer models
 	deadLayerLoss_6Li_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_6Li_in_Si.conf");
@@ -144,6 +150,12 @@ bool SABREsim::InitializeModels(){
 	deadLayerLoss_deuteron_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_deuteron_in_Si.conf");
 	if(!deadLayerLoss_deuteron_){
 		ConsoleColorizer::PrintRed("Failed to load deuteron dead layer config file\n");
+		return false;
+	}
+
+	deadLayerLoss_none_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_none.conf");
+	if(!deadLayerLoss_none_){
+		ConsoleColorizer::PrintRed("Failed to load none dead layer config\n");
 		return false;
 	}
 

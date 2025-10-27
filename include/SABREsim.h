@@ -37,12 +37,14 @@ private:
 	TargetEnergyLoss* targetLoss_6Li_in_LiF_;
 	TargetEnergyLoss* targetLoss_alpha_in_LiF_;
 	TargetEnergyLoss* targetLoss_deuteron_in_LiF_;
+	TargetEnergyLoss* targetLoss_none_;
 
 	TargetEnergyLoss* targetLoss_; //pointer to current TargetEnergyLoss in use!
 
 	SABRE_DeadLayerModel* deadLayerLoss_6Li_;
 	SABRE_DeadLayerModel* deadLayerLoss_alpha_;
 	SABRE_DeadLayerModel* deadLayerLoss_deuteron_;
+	SABRE_DeadLayerModel* deadLayerLoss_none_;
 
 	SABRE_DeadLayerModel* deadLayerLoss_; //pointer to current SABRE_DeadLayerModel in use!
 
