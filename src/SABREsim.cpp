@@ -14,6 +14,7 @@
 #include "Beamspot.h"
 #include "UniformProfile.h"
 #include "GaussianProfile.h"
+#include "FixedPointProfile.h"
 
 static const std::pair<int,int> offsets[] = {
 	{112,40}, {96,32}, {80,16}, {64,24}, {48,0}
@@ -170,7 +171,8 @@ bool SABREsim::InitializeModels(){
 void SABREsim::InitializeBeamspot(){
 	//eventually interface with file read in so no need to remake when changing!
 
-	profile_ = new GaussianProfile(0.002, 0.002);//meters
+	//profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.002m = 2mm
+	profile_ = new FixedPointProfile();
 
 	beamspot_ = new Beamspot();
 	beamspot_->SetProfile(profile_);
@@ -198,10 +200,25 @@ void SABREsim::Run(){
 	}
 
 	if(kinX_ == 2){
+		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
+		// std::cout << "Beamspot profile xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
+		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate2body(infile, outfile);
 	} else if(kinX_ == 3){
+		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
+		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
+		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate3body(infile,outfile);
 	} else if(kinX_ == 4){
+		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
+		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
+		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate4body(infile,outfile);
 	} else if(kinX_ == 0){ 
 		//temporarily test Beamspot here!
