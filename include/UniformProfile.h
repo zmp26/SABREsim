@@ -14,13 +14,16 @@ public:
 		: rng(seed),
 		  distX(-xmax, xmax),
 		  distY(-ymax,ymax)
-	{}
+	{
+		parX = xmax;
+		parY = ymax;
+	}
 
 	std::pair<double, double> Sample() override {
 		return {distX(rng), distY(rng)};
 	}
 
-	TString ToString(){
+	TString ToString() const override{
 		return "UniformProfile";
 	}
 };
