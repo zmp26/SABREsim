@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <random>
+#include "TString.h"
 
 class BeamProfile{
 public:
@@ -11,6 +12,13 @@ public:
 	virtual std::pair<double, double> Sample() = 0;
 
 	TString ToString();
+
+	double GetParX() { return parX; };
+	double GetParY() { return parY; };
+
+protected:
+	double parX=0.;
+	double parY=0.;
 
 };
 

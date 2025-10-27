@@ -14,15 +14,19 @@ public:
 		: rng(seed),
 		  distX(0.,sigmaX),
 		  distY(0.,sigmaY)
-	{}
+	{
+		parX = sigmaX;
+		parY = sigmaY;
+	}
 
 	std::pair<double, double> Sample() override {
 		return {distX(rng), distY(rng)};
 	}
 
-	TString ToString(){
+	TString ToString() const override{
 		return "GaussianProfile";
 	}
+
 };
 
 #endif //GAUSSIAN_PROFILE_H
