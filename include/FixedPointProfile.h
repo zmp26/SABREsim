@@ -2,7 +2,6 @@
 #define FIXED_POINT_PROFILE_H
 
 #include "BeamProfile.h"
-#include "TString.h"
 
 class FixedPointProfile : public BeamProfile {
 

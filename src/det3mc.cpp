@@ -1,6 +1,8 @@
 #include "det3mc.h"
 #include <iostream>
 #include "ConsoleColorizer.h"
+#include "TH2.h"
+#include "TFile.h"
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
@@ -37,6 +39,7 @@ det3mc::det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 
 void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
+	TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
 		
 		nevents_ += 1;
@@ -44,6 +47,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 
 		//get reaction origin based on beamspot
 		Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
+		hBeamSpot->Fill(reactionOrigin.GetX(),reactionOrigin.GetY());
 		//Vec3 reactionOrigin = {0.,0.,0.};
 
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
@@ -165,6 +169,10 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			threePartHits_ += 1;
 		}
 	}
+
+	TFile *tempfile = new TFile("BeamSpotHisto_det3mc.root","RECREATE");
+	hBeamSpot->Write();
+	tempfile->Close();
 }
 
 long det3mc::GetNumEvents() const {
