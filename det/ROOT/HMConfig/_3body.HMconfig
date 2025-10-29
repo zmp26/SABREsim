@@ -79,6 +79,13 @@ SABRE/SABRE4/RingWedge TH1I hSABRE4_ChannelHits SABRE4_ChannelHits 128 -0.5 127.
 #SABRE TH1D hSABRE3_ESummary SABRE3_ESummary 2000 0 10
 #SABRE TH1D hSABRE4_ESummary SABRE4_ESummary 2000 0 10
 #
+# SABRE vs kin3mc
+SABRE_vs_kin TH2D h_SABRETheta_vs_kinTheta SABRETheta_vs_kinTheta 180 -0.5 179.5 180 -0.5 179.5
+SABRE_vs_kin TH2D h_SABREPhi_vs_kinPhi SABREPhi_vs_kinPhi 360 -0.5 359.5 360 -0.5 359.5
+SABRE_vs_kin TH2D h_SABRERingE_vs_kinE SABRERingE_vs_kinE 400 0 20 400 0 20
+SABRE_vs_kin TH2D h_SABREWedgeE_vs_kinE SABREWedgeE_vs_kinE 400 0 20 400 0 20
+#
+# SABRE Summary
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20
 SABRE/SABRE0/Summary TH1D hSABRE0_ERingSummary SABRE0_ERingSummary 400 0 20

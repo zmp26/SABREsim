@@ -116,6 +116,10 @@ void DeterminePolygons(HistoManager *histoman);
 bool parsePhysData(const std::string& line, PHYSDATA& pd1, PHYSDATA& pd2, PHYSDATA& pd3, PHYSDATA& pd4){
 	std::istringstream iss(line);
 	(iss >> pd1.e >> pd1.theta >> pd1.phi >> pd2.e >> pd2.theta >> pd2.phi >> pd3.e >> pd3.theta >> pd3.phi >> pd4.e >> pd4.theta >> pd4.phi);
+	if(pd1.phi < 0) pd1.phi += 360.;
+	if(pd2.phi < 0) pd2.phi += 360.;
+	if(pd3.phi < 0) pd3.phi += 360.;
+	if(pd4.phi < 0) pd4.phi += 360.;
 	return true;
 }
 bool parseSABREData(const std::string& line, SABREDATA& sd){
@@ -125,6 +129,7 @@ bool parseSABREData(const std::string& line, SABREDATA& sd){
 	iss >> index >> ring >> wedge >> ringe >> wedgee >> x >> y;
 	// (iss >> sd.detectorIndex >> sd.ring >> sd.wedge >> sd.ringEnergy >> sd.wedgeEnergy >> sd.localx >> sd.localy);
 	sd.detectorIndex = index%100;
+	sd.particleIndex = index-sd.detectorIndex;
 	sd.ringEnergy = ringe;
 	sd.wedgeEnergy = wedgee;
 	sd.localx = x;
@@ -181,6 +186,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			//pixel histo:
 			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary", sabredata1.detectorIndex, globalring, globalwedge);
 			histoman->getHisto1D(pixelhistoname)->Fill(sabredata1.ringEnergy);
+
+			//SABRE vs kin2mc
+			histoman->getHisto2D("h_SABRETheta_vs_kinTheta")->Fill(sabredata1.theta,physdata1.theta);
+			histoman->getHisto2D("h_SABREPhi_vs_kinPhi")->Fill(sabredata1.phi,physdata1.phi);
+			histoman->getHisto2D("h_SABRERingE_vs_kinE")->Fill(sabredata1.ringEnergy,physdata1.e);
+			histoman->getHisto2D("h_SABREWedgeE_vs_kinE")->Fill(sabredata1.wedgeEnergy,physdata1.e);
 
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata1.detectorIndex == 0){
@@ -493,7 +504,18 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
 				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//wow this is ugly but it works
 				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
-				fillSABREHistos(histoman,sd1,pd1);
+				//fillSABREHistos(histoman,sd1,pd1);
+
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+				} else if(sd1.particleIndex == 300){
+					fillSABREHistos(histoman, sd1, pd3);
+				} else if(sd1.particleIndex == 400){
+					fillSABREHistos(histoman, sd1, pd4);
+				}
+
 				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy);
@@ -561,8 +583,29 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				sd2.theta = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first,sd2.wedge+offsets[sd2.detectorIndex].second}].first;
 				sd2.phi = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first,sd2.wedge+offsets[sd2.detectorIndex].second}].second;
 				fillKinHistos(histoman,pd1,pd2,pd3,pd4);
-				fillSABREHistos(histoman,sd1,pd3);
-				fillSABREHistos(histoman,sd2,pd4);
+				// fillSABREHistos(histoman,sd1,pd3);
+				// fillSABREHistos(histoman,sd2,pd4);
+
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+				} else if(sd1.particleIndex == 300){
+					fillSABREHistos(histoman, sd1, pd3);
+				} else if(sd1.particleIndex == 400){
+					fillSABREHistos(histoman, sd1, pd4);
+				}
+
+				if(sd2.particleIndex == 100){
+					fillSABREHistos(histoman, sd2, pd1);
+				} else if(sd2.particleIndex == 200){
+					fillSABREHistos(histoman, sd2, pd2);
+				} else if(sd2.particleIndex == 300){
+					fillSABREHistos(histoman, sd2, pd3);
+				} else if(sd2.particleIndex == 400){
+					fillSABREHistos(histoman, sd2, pd4);
+				}
+
 				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
 				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy+sd2.ringEnergy);
@@ -1129,6 +1172,7 @@ void UpdateHistoAxes(HistoManager* histoman){
 		"hSABRE4_PixelEDif"
 	};
 
+
 	for(const auto& name : histonames){
 		histoman->getHisto3D(name)->GetXaxis()->SetTitle("Ring Index");
 		histoman->getHisto3D(name)->GetYaxis()->SetTitle("Wedge Index");
@@ -1136,6 +1180,20 @@ void UpdateHistoAxes(HistoManager* histoman){
 		histoman->getHisto3D(name)->GetXaxis()->CenterTitle();
 		histoman->getHisto3D(name)->GetYaxis()->CenterTitle();
 		histoman->getHisto3D(name)->GetZaxis()->CenterTitle();
+	}
+
+	histonames = {
+		"h_SABRETheta_vs_kinTheta",
+		"h_SABREPhi_vs_kinPhi",
+		"h_SABRERingE_vs_kinE",
+		"h_SABREWedgeE_vs_kinE"
+	};
+
+	for(const auto& name : histonames){
+		histoman->getHisto2D(name)->GetXaxis()->SetTitle("Kin2mc");
+		histoman->getHisto2D(name)->GetYaxis()->SetTitle("SABREsim");
+		histoman->getHisto2D(name)->GetXaxis()->CenterTitle();
+		histoman->getHisto2D(name)->GetYaxis()->CenterTitle();
 	}
 
 	histonames = {

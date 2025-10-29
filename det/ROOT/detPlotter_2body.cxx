@@ -28,7 +28,7 @@ Float_t DEGRAD=0.017453293;
 
 
 struct PHYSDATA {double e, theta, phi;};
-struct SABREDATA {int detectorIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
+struct SABREDATA {int detectorIndex=-666, particleIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
 
 // struct DetectorHit {
 // 	int ring, wedge;
@@ -160,6 +160,9 @@ bool parsePhysData(const std::string& line, PHYSDATA& pd1, PHYSDATA& pd2){
 	std::istringstream iss(line);
 	double thetacm;
 	(iss >> pd1.e >> pd1.theta >> pd1.phi >> thetacm >> pd2.e >> pd2.theta >> pd2.phi);
+	//make sure that phi is 0->360 instead of -180->180
+	if(pd1.phi < 0) pd1.phi += 360.;
+	if(pd2.phi < 0) pd2.phi += 360.;
 	return true;
 }
 bool parseSABREData(const std::string& line, SABREDATA& sd){
@@ -169,6 +172,7 @@ bool parseSABREData(const std::string& line, SABREDATA& sd){
 	iss >> index >> ring >> wedge >> ringe >> wedgee >> x >> y;
 	// (iss >> sd.detectorIndex >> sd.ring >> sd.wedge >> sd.ringEnergy >> sd.wedgeEnergy >> sd.localx >> sd.localy);
 	sd.detectorIndex = index%100;
+	sd.particleIndex = index-sd.detectorIndex;
 	sd.ringEnergy = ringe;
 	sd.wedgeEnergy = wedgee;
 	sd.localx = x;
@@ -211,6 +215,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			//rings vs wedges histogram:
 			int zeroToFortyWedge = sabredata1.detectorIndex*numwedges + sabredata1.wedge;//0-7 for SABRE0, 8-15 for SABRE1, etc.
 			histoman->getHisto2D("hSABRE_RingsVSWedges")->Fill(zeroToFortyWedge,sabredata1.ring);
+
+			//SABRE vs kin2mc
+			histoman->getHisto2D("h_SABRETheta_vs_kinTheta")->Fill(physdata1.theta,sabredata1.theta);
+			histoman->getHisto2D("h_SABREPhi_vs_kinPhi")->Fill(physdata1.phi,sabredata1.phi);
+			histoman->getHisto2D("h_SABRERingE_vs_kinE")->Fill(physdata1.e,sabredata1.ringEnergy);
+			histoman->getHisto2D("h_SABREWedgeE_vs_kinE")->Fill(physdata1.e,sabredata1.wedgeEnergy);
 
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata1.detectorIndex == 0){
@@ -474,29 +484,62 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 				parseSABREData(eventLines[1],sd1);
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
 				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//likewise^
+				//std::cout << "sd1.phi = " << sd1.phi << std::endl;
+				//std::cout << "pd1.phi = " <<pd1.phi << std::endl;
 				fillKinHistos(histoman,pd1,pd2);
-				fillSABREHistos(histoman,sd1,pd1);
+
+				//std::cout << "sd1.particleindex = " << sd1.particleIndex << std::endl;
+
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+					//std::cout << "sd1.phi = " << sd1.phi << "\tpd1.phi = " << pd1.phi << std::endl;
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+					//std::cout << "sd1.phi = " << sd1.phi << "\tpd2.phi = " << pd2.phi << std::endl;
+				}
+
 				//cout << Form("%d\t%d\t%d\t%f\t%f\t%f\t%f",sd1.detectorIndex,sd1.ring,sd1.wedge,sd1.theta,sd1.phi,sd1.wedgeEnergy,sd1.ringEnergy) << endl;
 				//cout << "test" << endl;
 				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 				histoman->getHisto1D("hSABRE_SabreRingE")->Fill(sd1.ringEnergy);
 				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
-				if(sd1.ring == 7){ }
-				if(sd1.ring == 8){ }
-				if(sd1.ring == 9){ }
+				// if(sd1.ring == 7){ }
+				// if(sd1.ring == 8){ }
+				// if(sd1.ring == 9){ }
 			} else if(eventLines.size()==3){
 				//kinematics1, particle 1 and particle 2
 				parsePhysData(eventLines[0],pd1,pd2);
 				parseSABREData(eventLines[1],sd1);
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
 				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//likewise^
+				//if(sd1.phi < 0.) std::cout << "sd1.theta = " << sd1.theta << "\tsd1.phi = " << sd1.phi << std::endl;
+				//std::cout << "sd1.phi = " << sd1.phi << std::endl;
+				//std::cout << "pd1.phi = " <<pd1.phi << std::endl;
 				parseSABREData(eventLines[2],sd2);
 				sd2.theta = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}].first;//wow this is ugly but it works
 				sd2.phi = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}].second;//likewise^
+				//if(sd2.phi < 0.) std::cout << "sd2.theta = " << sd2.theta << "\tsd2.phi = " << sd2.phi << std::endl;
+				//std::cout << "sd2.phi = " << sd2.phi << std::endl;
+				//std::cout << "pd2.phi = " <<pd2.phi << std::endl;
 				fillKinHistos(histoman,pd1,pd2);
-				fillSABREHistos(histoman,sd1,pd1);
-				fillSABREHistos(histoman,sd2,pd2);
+				// fillSABREHistos(histoman,sd1,pd1);
+				// fillSABREHistos(histoman,sd2,pd2);
+
+				//std::cout << "sd1.particleindex = " << sd1.particleIndex << "\tsd2.particleindex = " << sd2.particleIndex << std::endl;
+
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+					fillSABREHistos(histoman, sd2, pd2);
+					// std::cout << "sd1.phi = " << sd1.phi << "\tpd1.phi = " << pd1.phi << std::endl;
+					// std::cout << "sd2.phi = " << sd2.phi << "\tpd2.phi = " << pd2.phi << std::endl;
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+					fillSABREHistos(histoman, sd2, pd1);
+					// std::cout << "sd1.phi = " << sd1.phi << "\tpd2.phi = " << pd2.phi << std::endl;
+					// std::cout << "sd2.phi = " << sd2.phi << "\tpd1.phi = " << pd1.phi << std::endl;
+				}
+
 				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 				histoman->getHisto2D("hSABRE_SabreRingEVsLi6ExE")->Fill(exe,sd2.ringEnergy);
@@ -633,7 +676,7 @@ void UpdateHistoAxes(HistoManager* histoman){
 		"hSABRE1_wedgePhiVSkinPhi",
 		"hSABRE2_wedgePhiVSkinPhi",
 		"hSABRE3_wedgePhiVSkinPhi",
-		"hSABRE4_wedgePhiVSkinPhi"
+		"hSABRE4_wedgePhiVSkinPhi",
 	};
 
 	for(const auto& name : histonames){
@@ -643,6 +686,20 @@ void UpdateHistoAxes(HistoManager* histoman){
 		histoman->getHisto2D(name)->GetYaxis()->CenterTitle();
 
 		//histoman->getHisto2D(name)->SetOption("SQUARE");
+	}
+
+	histonames = {
+		"h_SABRETheta_vs_kinTheta",
+		"h_SABREPhi_vs_kinPhi",
+		"h_SABRERingE_vs_kinE",
+		"h_SABREWedgeE_vs_kinE"
+	};
+
+	for(const auto& name : histonames){
+		histoman->getHisto2D(name)->GetXaxis()->SetTitle("Kin2mc");
+		histoman->getHisto2D(name)->GetYaxis()->SetTitle("SABREsim");
+		histoman->getHisto2D(name)->GetXaxis()->CenterTitle();
+		histoman->getHisto2D(name)->GetYaxis()->CenterTitle();
 	}
 
 	histonames = {

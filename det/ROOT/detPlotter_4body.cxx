@@ -132,6 +132,10 @@ void DeterminePolygons(HistoManager *histoman);
 bool parsePhysData(const std::string& line, PHYSDATA& pd1, PHYSDATA& pd2, PHYSDATA& pd3, PHYSDATA& pd4){
 	std::istringstream iss(line);
 	(iss >> pd1.e >> pd1.theta >> pd1.phi >> pd2.e >> pd2.theta >> pd2.phi >> pd3.e >> pd3.theta >> pd3.phi >> pd4.e >> pd4.theta >> pd4.phi);
+	if(pd1.phi < 0) pd1.phi += 360.;
+	if(pd2.phi < 0) pd2.phi += 360.;
+	if(pd3.phi < 0) pd3.phi += 360.;
+	if(pd4.phi < 0) pd4.phi += 360.;
 	return true;
 }
 
@@ -142,6 +146,7 @@ bool parseSABREData(const std::string& line, SABREDATA& sd){
 	iss >> index >> ring >> wedge >> ringe >> wedgee >> x >> y;
 	// (iss >> sd.detectorIndex >> sd.ring >> sd.wedge >> sd.ringEnergy >> sd.wedgeEnergy >> sd.localx >> sd.localy);
 	sd.detectorIndex = index%100;
+	sd.particleIndex = index-sd.detectorIndex;
 	sd.ringEnergy = ringe;
 	sd.wedgeEnergy = wedgee;
 	sd.localx = x;
@@ -199,6 +204,12 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 			//pixel histo:
 			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary", sabredata1.detectorIndex, globalring, globalwedge);
 			histoman->getHisto1D(pixelhistoname)->Fill(sabredata1.ringEnergy);
+
+			//SABRE vs kin2mc
+			histoman->getHisto2D("h_SABRETheta_vs_kinTheta")->Fill(sabredata1.theta,physdata1.theta);
+			histoman->getHisto2D("h_SABREPhi_vs_kinPhi")->Fill(sabredata1.phi,physdata1.phi);
+			histoman->getHisto2D("h_SABRERingE_vs_kinE")->Fill(sabredata1.ringEnergy,physdata1.e);
+			histoman->getHisto2D("h_SABREWedgeE_vs_kinE")->Fill(sabredata1.wedgeEnergy,physdata1.e);
 
 			//SABRE ring/wedge hit summary histograms:
 			if(sabredata1.detectorIndex == 0){
@@ -554,7 +565,17 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				sd1.theta = anglepair.first;
 				sd1.phi = anglepair.second;
 
-				fillSABREHistos(histoman,sd1,pd1);
+				//fillSABREHistos(histoman,sd1,pd1);
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+				} else if(sd1.particleIndex == 300){
+					fillSABREHistos(histoman, sd1, pd3);
+				} else if(sd1.particleIndex == 400){
+					fillSABREHistos(histoman, sd1, pd4);
+				}
+
 
 				Double_t exe = calculateSPS_ExE(pd1.e, pd1.theta, pd1.phi, fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsB9ExE")->Fill(exe, sd1.ringEnergy);
@@ -575,14 +596,34 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				sd1.theta = anglepair.first;
 				sd1.phi = anglepair.second;
 
-				fillSABREHistos(histoman,sd1,pd1);
+				//fillSABREHistos(histoman,sd1,pd1);
 
 				parseSABREData(eventLines[2],sd2);
 				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
 				sd2.theta = anglepair.first;
 				sd2.phi = anglepair.second;
 
-				fillSABREHistos(histoman,sd2,pd2);
+				//fillSABREHistos(histoman,sd2,pd2);
+
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+				} else if(sd1.particleIndex == 300){
+					fillSABREHistos(histoman, sd1, pd3);
+				} else if(sd1.particleIndex == 400){
+					fillSABREHistos(histoman, sd1, pd4);
+				}
+
+				if(sd2.particleIndex == 100){
+					fillSABREHistos(histoman, sd2, pd1);
+				} else if(sd2.particleIndex == 200){
+					fillSABREHistos(histoman, sd2, pd2);
+				} else if(sd2.particleIndex == 300){
+					fillSABREHistos(histoman, sd2, pd3);
+				} else if(sd2.particleIndex == 400){
+					fillSABREHistos(histoman, sd2, pd4);
+				}
 
 				Double_t exe = calculateSPS_ExE(pd1.e, pd1.theta, pd1.phi, fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsB9ExE")->Fill(exe, sd1.ringEnergy+sd2.ringEnergy);
@@ -612,21 +653,51 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 				sd1.theta = anglepair.first;
 				sd1.phi = anglepair.second;
 
-				fillSABREHistos(histoman,sd1,pd1);
+				//fillSABREHistos(histoman,sd1,pd1);
 
 				parseSABREData(eventLines[2],sd2);
 				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
 				sd2.theta = anglepair.first;
 				sd2.phi = anglepair.second;
 
-				fillSABREHistos(histoman,sd2,pd2);
+				//fillSABREHistos(histoman,sd2,pd2);
 
 				parseSABREData(eventLines[3],sd3);
 				anglepair = sabre_thetaphimap[{sd3.ring+offsets[sd3.detectorIndex].first, sd3.wedge+offsets[sd3.detectorIndex].second}];
 				sd3.theta = anglepair.first;
 				sd3.phi = anglepair.second;
 
-				fillSABREHistos(histoman,sd3,pd3);
+				//fillSABREHistos(histoman,sd3,pd3);
+
+				if(sd1.particleIndex == 100){
+					fillSABREHistos(histoman, sd1, pd1);
+				} else if(sd1.particleIndex == 200){
+					fillSABREHistos(histoman, sd1, pd2);
+				} else if(sd1.particleIndex == 300){
+					fillSABREHistos(histoman, sd1, pd3);
+				} else if(sd1.particleIndex == 400){
+					fillSABREHistos(histoman, sd1, pd4);
+				}
+
+				if(sd2.particleIndex == 100){
+					fillSABREHistos(histoman, sd2, pd1);
+				} else if(sd2.particleIndex == 200){
+					fillSABREHistos(histoman, sd2, pd2);
+				} else if(sd2.particleIndex == 300){
+					fillSABREHistos(histoman, sd2, pd3);
+				} else if(sd2.particleIndex == 400){
+					fillSABREHistos(histoman, sd2, pd4);
+				}
+
+				if(sd3.particleIndex == 100){
+					fillSABREHistos(histoman, sd3, pd1);
+				} else if(sd3.particleIndex == 200){
+					fillSABREHistos(histoman, sd3, pd2);
+				} else if(sd3.particleIndex == 300){
+					fillSABREHistos(histoman, sd3, pd3);
+				} else if(sd3.particleIndex == 400){
+					fillSABREHistos(histoman, sd3, pd4);
+				}
 
 				Double_t exe = calculateSPS_ExE(pd1.e, pd1.theta, pd1.phi, fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsB9ExE")->Fill(exe, sd1.ringEnergy+sd2.ringEnergy+sd3.ringEnergy);
@@ -829,6 +900,20 @@ void UpdateHistoAxes(HistoManager* histoman){
 		histoman->getHisto3D(name)->GetXaxis()->CenterTitle();
 		histoman->getHisto3D(name)->GetYaxis()->CenterTitle();
 		histoman->getHisto3D(name)->GetZaxis()->CenterTitle();
+	}
+
+	histonames = {
+		"h_SABRETheta_vs_kinTheta",
+		"h_SABREPhi_vs_kinPhi",
+		"h_SABRERingE_vs_kinE",
+		"h_SABREWedgeE_vs_kinE"
+	};
+
+	for(const auto& name : histonames){
+		histoman->getHisto2D(name)->GetXaxis()->SetTitle("Kin2mc");
+		histoman->getHisto2D(name)->GetYaxis()->SetTitle("SABREsim");
+		histoman->getHisto2D(name)->GetXaxis()->CenterTitle();
+		histoman->getHisto2D(name)->GetYaxis()->CenterTitle();
 	}
 
 	histonames = {
