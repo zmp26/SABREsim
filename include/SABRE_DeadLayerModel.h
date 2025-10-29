@@ -9,7 +9,8 @@
 class SABRE_DeadLayerModel{
 public:
 	SABRE_DeadLayerModel(const std::string& funcStr,
-						 const std::vector<double>& params);
+						 const std::vector<double>& params,
+						 const std::string& tostringmsg);
 
 	~SABRE_DeadLayerModel();
 
@@ -26,11 +27,14 @@ public:
 
 	static SABRE_DeadLayerModel* LoadFromConfigFile(const std::string& filename);
 
+	std::string ToString() const { return ToStringMessage; }
+
 private:
 	TF1* lossFunction;
 	const double materialDensity = 2.33;		// g/cm^3
 	const double linearThickness = 5e-6;		// cm			(50nm deadlayer = 5e-6 cm)
 	const double arealDensity = materialDensity*linearThickness;					// g/cm^2
+	std::string ToStringMessage;
 };
 
 

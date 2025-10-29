@@ -11,11 +11,13 @@
 #include <cctype>
 
 SABRE_DeadLayerModel::SABRE_DeadLayerModel(const std::string& funcStr,
-										   const std::vector<double>& params) {
+										   const std::vector<double>& params,
+										   const std::string& tostringmsg) {
 	lossFunction = new TF1("DeadLayerEnergyLossFunction", funcStr.c_str(), 0, 10000);
 	for(size_t i=0; i<params.size(); i++){
 		lossFunction->SetParameter(i,params[i]);
 	}
+	ToStringMessage = tostringmsg;
 }
 
 SABRE_DeadLayerModel::~SABRE_DeadLayerModel(){
@@ -39,6 +41,7 @@ SABRE_DeadLayerModel* SABRE_DeadLayerModel::LoadFromConfigFile(const std::string
 	std::vector<double> params;
 
 	std::string line;
+	std::string tostring;
 	while(std::getline(file,line)){
 		line = trim(line);
 		if(line.empty() || line[0]=='#') continue;
@@ -61,6 +64,11 @@ SABRE_DeadLayerModel* SABRE_DeadLayerModel::LoadFromConfigFile(const std::string
 			while(iss >> val){
 				params.push_back(val);
 			}
+		} else if(key=="ToString"){
+			if(!value.empty() && value.front() == '"' && value.back() == '"'){
+				value = value.substr(1,value.size()-2);
+			}
+			tostring = value;
 		} else {
 			std::cerr << "Warning: unknown key '" << key << "' in config file\n";
 		}
@@ -72,11 +80,11 @@ SABRE_DeadLayerModel* SABRE_DeadLayerModel::LoadFromConfigFile(const std::string
 	}
 
 	if(params.empty()){
-		ConsoleColorizer::PrintRed("Error: funcStr not specified in config file\n");
+		ConsoleColorizer::PrintRed("Error: params not specified in config file\n");
 		return nullptr;
 	}
 
-	return new SABRE_DeadLayerModel(funcStr,params);
+	return new SABRE_DeadLayerModel(funcStr,params,tostring);
 }
 
 double SABRE_DeadLayerModel::GetPathLength(double theta_deg) const {
