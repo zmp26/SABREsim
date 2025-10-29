@@ -10,7 +10,8 @@ public:
 	TargetEnergyLoss(const std::string& funcStr,
 					 const std::vector<double>& params,
 					 double arealDensity,					//in ug/cm^2
-					 double materialDensity);				//in g/cm^3
+					 double materialDensity,				//in g/cm^3
+					 const std::string& tostringmsg);
 
 	~TargetEnergyLoss();
 
@@ -27,11 +28,14 @@ public:
 
 	static TargetEnergyLoss* LoadFromConfigFile(const std::string& filename);
 
+	std::string ToString() const { return ToStringMessage; }
+
 private:
 	TF1* lossFunction;										//ROOT function to describe energy loss (keV) per unit areal density at initial energy E
 	double arealDensity;									//in ug/cm^2
 	double materialDensity;									//in g/cm^3
 	double linearThickness;									//cm, computed from arealDensity / material Density
+	std::string ToStringMessage;
 };
 
 #endif

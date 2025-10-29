@@ -11,8 +11,9 @@
 TargetEnergyLoss::TargetEnergyLoss(const std::string& funcStr,
 								   const std::vector<double>& params,
 								   double arealDensity_,
-								   double materialDensity_)
-	: arealDensity(arealDensity_), materialDensity(materialDensity_) {
+								   double materialDensity_,
+								   const std::string& tostringmsg)
+	: arealDensity(arealDensity_), materialDensity(materialDensity_), ToStringMessage(tostringmsg) {
 	if(materialDensity <= 0) throw std::invalid_argument("Material density must be > 0");
 	if(arealDensity <=0) throw std::invalid_argument("Areal density must be > 0");
 
@@ -48,6 +49,7 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 	double materialDensity_=-1;
 
 	std::string line;
+	std::string tostringmsg;
 	while(std::getline(file,line)){
 		line = trim(line);
 		if(line.empty() || line[0]=='#') continue;
@@ -84,6 +86,11 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 				std::cerr << "Error parsing materialDensity\n";
 				return nullptr;
 			}
+		} else if(key == "ToString"){
+			if(!value.empty() && value.front() == '"' && value.back() == '"'){
+				value = value.substr(1,value.size()-2);
+			}
+			tostringmsg = value;
 		} else {
 			std::cerr << "Warning: unknown key '" << key << "' in config file\n";
 		}
@@ -109,7 +116,7 @@ TargetEnergyLoss* TargetEnergyLoss::LoadFromConfigFile(const std::string& filena
 		return nullptr;
 	}
 
-	return new TargetEnergyLoss(funcStr, params, arealDensity_, materialDensity_);
+	return new TargetEnergyLoss(funcStr, params, arealDensity_, materialDensity_, tostringmsg);
 }
 
 double TargetEnergyLoss::GetPathLength(double theta_deg) const {
