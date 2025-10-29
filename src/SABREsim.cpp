@@ -162,8 +162,8 @@ bool SABREsim::InitializeModels(){
 
 	//SET CURRENT TARGETLOSS AND DEADLAYERLOSS HERE:
 	//EVENTUALLY, THIS SHOULD BE DETERMINED BY A FILE READ IN TO AVOID HAVING TO REMAKE EVERY TIME
-	targetLoss_ = targetLoss_6Li_in_LiF_;
-	deadLayerLoss_ = deadLayerLoss_6Li_;
+	// targetLoss_ = targetLoss_6Li_in_LiF_;
+	// deadLayerLoss_ = deadLayerLoss_6Li_;
 
 	return true;
 }
@@ -171,8 +171,8 @@ bool SABREsim::InitializeModels(){
 void SABREsim::InitializeBeamspot(){
 	//eventually interface with file read in so no need to remake when changing!
 
-	profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.002m = 2mm
-	//profile_ = new FixedPointProfile();
+	//profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.002m = 2mm
+	profile_ = new FixedPointProfile();
 
 	beamspot_ = new Beamspot();
 	beamspot_->SetProfile(profile_);
@@ -297,7 +297,32 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
+	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
+	
+	//										7Li(3He,4He)6Li
+	targetLoss_par1_ = targetLoss_alpha_in_LiF_; //can be set to none, but ejectile is an alpha
+	targetLoss_par2_ = targetLoss_6Li_in_LiF_;
+	targetLoss_par3_ = targetLoss_none_;
+	targetLoss_par4_ = targetLoss_none_;
+
+	deadLayerLoss_par1_ = deadLayerLoss_alpha_; //can be set to none, but ejectile is an alpha
+	deadLayerLoss_par2_ = deadLayerLoss_6Li_;
+	deadLayerLoss_par3_ = deadLayerLoss_none_;
+	deadLayerLoss_par4_ = deadLayerLoss_none_;
+	//------------------------------------------------------------------------------------------------
+
+	det2mc det2mcProcessor(SABRE_Array_,
+						   SABREARRAY_EnergyResolutionModels_,
+						   targetLoss_par1_, targetLoss_par2_,
+						   deadLayerLoss_par1_, deadLayerLoss_par2_,
+						   beamspot_);
+
+	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",det2mcProcessor.GetToString_TargetLoss1().data(),det2mcProcessor.GetToString_TargetLoss2().data(),det2mcProcessor.GetToString_DeadLayerLoss1().data(),det2mcProcessor.GetToString_DeadLayerLoss2().data());
+	ConsoleColorizer::PrintGreen(outline.Data());
+
+
+	//det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
+
 
 	det2mcProcessor.Run(infile,outfile);
 
@@ -323,7 +348,30 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	det3mc det3mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
+	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
+
+	//							7Li(3He,4He)6Li (3+)	6Li-> 4He + d
+	targetLoss_par1_ = targetLoss_alpha_in_LiF_; 	//can be set to none, but ejectile is an alpha
+	targetLoss_par2_ = targetLoss_alpha_in_LiF_; 	//breakup1 is alpha
+	targetLoss_par3_ = targetLoss_deuteron_in_LiF_; //breakup2 is deuteron
+	targetLoss_par4_ = targetLoss_none_; 			//no particle 4
+
+	deadLayerLoss_par1_ = deadLayerLoss_alpha_; 		//can be set to none, but ejectile is an alpha
+	deadLayerLoss_par2_ = deadLayerLoss_alpha_;		//breakup1 is alpha
+	deadLayerLoss_par3_ = deadLayerLoss_deuteron_;		//breakup2 is deuteron
+	deadLayerLoss_par4_ = deadLayerLoss_none_;			//no particle 4
+	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+	det3mc det3mcProcessor(SABRE_Array_,
+						   SABREARRAY_EnergyResolutionModels_,
+						   targetLoss_par1_, targetLoss_par2_, targetLoss_par3_, targetLoss_par4_,
+						   deadLayerLoss_par1_, deadLayerLoss_par2_, deadLayerLoss_par3_, deadLayerLoss_par4_,
+						   beamspot_);
+
+	//det3mc det3mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
+	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det3mcProcessor.GetToString_TargetLoss1().data(),det3mcProcessor.GetToString_TargetLoss2().data(),det3mcProcessor.GetToString_TargetLoss3().data(),det3mcProcessor.GetToString_TargetLoss4().data(),det3mcProcessor.GetToString_DeadLayerLoss1().data(),det3mcProcessor.GetToString_DeadLayerLoss2().data(),det3mcProcessor.GetToString_DeadLayerLoss3().data(),det3mcProcessor.GetToString_DeadLayerLoss4().data());
+	ConsoleColorizer::PrintGreen(outline.Data());
 
 	det3mcProcessor.Run(infile, outfile);
 
@@ -352,7 +400,40 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	det4mc det4mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, targetLoss_, targetLoss_, targetLoss_, deadLayerLoss_, deadLayerLoss_, deadLayerLoss_, deadLayerLoss_, beamspot_);
+	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
+
+	//							10B(3He,4He)9B		9B -> p + 8Be,	8Be -> 4He + 4He
+	targetLoss_par1_ = targetLoss_alpha_in_10B_; 		//can be set to none, but ejectile is an alpha
+	targetLoss_par2_ = targetLoss_proton_in_10B_; 		//breakup1 is proton
+	targetLoss_par3_ = targetLoss_alpha_in_10B_; 		//breakup2 is alpha
+	targetLoss_par4_ = targetLoss_alpha_in_10B_;		//breakup3/final daughter is alpha
+
+	deadLayerLoss_par1_ = deadLayerLoss_alpha_; 			//can be set to none, but ejectile is an alpha
+	deadLayerLoss_par2_ = deadLayerLoss_proton_;			//breakup1 is proton
+	deadLayerLoss_par3_ = deadLayerLoss_alpha_;			//breakup2 is alpha
+	deadLayerLoss_par4_ = deadLayerLoss_alpha_;			//breakup3/final daughter is alpha
+	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	//							10B(3He,4He)9B		9B -> 4He + 5Li,	5Li -> p + 4He
+	// targetLoss_par1_ = targetLoss_alpha_in_10B_; 	//can be set to none, but ejectile is an alpha
+	// targetLoss_par2_ = targetLoss_alpha_in_10B_; 	//breakup1 is alpha
+	// targetLoss_par3_ = targetLoss_proton_in_10B_; 	//breakup2 is proton
+	// targetLoss_par4_ = targetLoss_alpha_in_10B_; 	//breakup3/final daughter is alpha
+
+	// targetLoss_par1_ = deadLayerLoss_alpha_; 		//can be set to none, but ejectile is an alpha
+	// targetLoss_par2_ = deadLayerLoss_proton_;		//breakup1 is alpha
+	// targetLoss_par3_ = deadLayerLoss_alpha_;			//breakup2 is proton
+	// targetLoss_par4_ = deadLayerLoss_alpha_;			//breakup3/final daughter is alpha
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	det4mc det4mcProcessor(SABRE_Array_,
+						   SABREARRAY_EnergyResolutionModels_,
+						   targetLoss_par1_, targetLoss_par2_, targetLoss_par3_, targetLoss_par4_,
+						   deadLayerLoss_par1_, deadLayerLoss_par2_, deadLayerLoss_par3_, deadLayerLoss_par4_,
+						   beamspot_);
+
+	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det4mcProcessor.GetToString_TargetLoss1().data(),det4mcProcessor.GetToString_TargetLoss2().data(),det4mcProcessor.GetToString_TargetLoss3().data(),det4mcProcessor.GetToString_TargetLoss4().data(),det4mcProcessor.GetToString_DeadLayerLoss1().data(),det4mcProcessor.GetToString_DeadLayerLoss2().data(),det4mcProcessor.GetToString_DeadLayerLoss3().data(),det4mcProcessor.GetToString_DeadLayerLoss4().data());
+	ConsoleColorizer::PrintGreen(outline.Data());
 
 	det4mcProcessor.Run(infile,outfile);
 

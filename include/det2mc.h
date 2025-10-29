@@ -20,8 +20,10 @@ public:
 
 	det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
-		   TargetEnergyLoss* targetLoss,
-		   SABRE_DeadLayerModel* deadLayerLoss,
+		   TargetEnergyLoss* targetLoss_par1,
+		   TargetEnergyLoss* targetLoss_par2,
+		   SABRE_DeadLayerModel* deadLayerLoss_par1,
+		   SABRE_DeadLayerModel* deadLayerLoss_par2,
 		   Beamspot* beamspot);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile);
@@ -35,11 +37,24 @@ public:
 	long GetHit2Only() const;
 	const std::vector<long>& GetDetectorHits() const;
 
+	std::string GetToString_TargetLoss1() { return targetLoss_par1_->ToString(); }
+	std::string GetToString_TargetLoss2() { return targetLoss_par2_->ToString(); }
+
+	std::string GetToString_DeadLayerLoss1() { return deadLayerLoss_par1_->ToString(); }
+	std::string GetToString_DeadLayerLoss2() { return deadLayerLoss_par2_->ToString(); }
+
 private:
 	std::vector<SABRE_Detector*>& SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
-	TargetEnergyLoss* targetLoss_;
-	SABRE_DeadLayerModel* deadLayerLoss_;
+	//TargetEnergyLoss* targetLoss_;
+	//SABRE_DeadLayerModel* deadLayerLoss_;
+
+	//	For 2-body reaction:		A(a,b)B
+	TargetEnergyLoss* targetLoss_par1_;//ejectile from kin2mc (b)
+	TargetEnergyLoss* targetLoss_par2_;//recoil from kin2mc	  (B)
+
+	SABRE_DeadLayerModel* deadLayerLoss_par1_;//ejectile from kin2mc (b)
+	SABRE_DeadLayerModel* deadLayerLoss_par2_;//recoil from kin2mc	  (B)
 
 	//counters for statistics
 	long nevents_;

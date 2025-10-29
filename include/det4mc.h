@@ -20,8 +20,14 @@ public:
 
 	det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
-		   TargetEnergyLoss* targetLossEj, TargetEnergyLoss* targetLoss1, TargetEnergyLoss* targetLoss2, TargetEnergyLoss* targetLoss3,
-		   SABRE_DeadLayerModel* deadLayerLossEj, SABRE_DeadLayerModel* deadLayerLoss1, SABRE_DeadLayerModel* deadLayerLoss2, SABRE_DeadLayerModel* deadLayerLoss3,
+		   TargetEnergyLoss* targetLoss_par1,
+		   TargetEnergyLoss* targetLoss_par2,
+		   TargetEnergyLoss* targetLoss_par3,
+		   TargetEnergyLoss* targetLoss_par4,
+		   SABRE_DeadLayerModel* deadLayerLoss_par1,
+		   SABRE_DeadLayerModel* deadLayerLoss_par2,
+		   SABRE_DeadLayerModel* deadLayerLoss_par3,
+		   SABRE_DeadLayerModel* deadLayerLoss_par4,
 		   Beamspot* beamspot);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile);
@@ -55,17 +61,31 @@ public:
 	long GetFourPartHits() const;							//total events w/ 4 particles
 	const std::vector<long>& GetDetectorHits() const;		//SABRE array total hits/det
 
+	std::string GetToString_TargetLoss1() { return targetLoss_par1_->ToString(); }
+	std::string GetToString_TargetLoss2() { return targetLoss_par2_->ToString(); }
+	std::string GetToString_TargetLoss3() { return targetLoss_par3_->ToString(); }
+	std::string GetToString_TargetLoss4() { return targetLoss_par4_->ToString(); }
+
+	std::string GetToString_DeadLayerLoss1() { return deadLayerLoss_par1_->ToString(); }
+	std::string GetToString_DeadLayerLoss2() { return deadLayerLoss_par2_->ToString(); }
+	std::string GetToString_DeadLayerLoss3() { return deadLayerLoss_par3_->ToString(); }
+	std::string GetToString_DeadLayerLoss4() { return deadLayerLoss_par4_->ToString(); }
+
 private:
 	std::vector<SABRE_Detector*> SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
-	TargetEnergyLoss* targetLossEj_;
-	TargetEnergyLoss* targetLoss1_;
-	TargetEnergyLoss* targetLoss2_;
-	TargetEnergyLoss* targetLoss3_;
-	SABRE_DeadLayerModel* deadLayerLossEj_;
-	SABRE_DeadLayerModel* deadLayerLoss1_;
-	SABRE_DeadLayerModel* deadLayerLoss2_;
-	SABRE_DeadLayerModel* deadLayerLoss3_;
+
+
+	//For 4-body final state3		A(a,b)B, B->D+c, D->d+e   (end w/ b, c, d, e in final state)
+	TargetEnergyLoss* targetLoss_par1_;	//ejectile from kin4mc (b)
+	TargetEnergyLoss* targetLoss_par2_; //breakup1 from kin4mc (c)
+	TargetEnergyLoss* targetLoss_par3_; //breakup2 from kin4mc (d)
+	TargetEnergyLoss* targetLoss_par4_; //breakup3/final daughter from kin4mc (e)
+
+	SABRE_DeadLayerModel* deadLayerLoss_par1_; //ejectile from kin4mc (b)
+	SABRE_DeadLayerModel* deadLayerLoss_par2_; //breakup1 from kin4mc (c)
+	SABRE_DeadLayerModel* deadLayerLoss_par3_; //breakup2 from kin4mc (d)
+	SABRE_DeadLayerModel* deadLayerLoss_par4_; //breakup3/final daughter from kin4mc (e)
 
 	//counters for statistics:
 	long nevents_;

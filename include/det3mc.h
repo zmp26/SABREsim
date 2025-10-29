@@ -20,8 +20,14 @@ public:
 
 	det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
-		   TargetEnergyLoss* targetLoss,
-		   SABRE_DeadLayerModel* deadLayerLoss,
+		   TargetEnergyLoss* targetLoss_par1,
+		   TargetEnergyLoss* targetLoss_par2,
+		   TargetEnergyLoss* targetLoss_par3,
+		   TargetEnergyLoss* targetLoss_par4,
+		   SABRE_DeadLayerModel* deadLayerLoss_par1,
+		   SABRE_DeadLayerModel* deadLayerLoss_par2,
+		   SABRE_DeadLayerModel* deadLayerLoss_par3,
+		   SABRE_DeadLayerModel* deadLayerLoss_par4,
 		   Beamspot* beamspot);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile);
@@ -39,11 +45,32 @@ public:
 	long GetThreePartHits() const;
 	const std::vector<long>& GetDetectorHits() const;
 
+	std::string GetToString_TargetLoss1() { return targetLoss_par1_->ToString(); }
+	std::string GetToString_TargetLoss2() { return targetLoss_par2_->ToString(); }
+	std::string GetToString_TargetLoss3() { return targetLoss_par3_->ToString(); }
+	std::string GetToString_TargetLoss4() { return targetLoss_par4_->ToString(); }
+
+	std::string GetToString_DeadLayerLoss1() { return deadLayerLoss_par1_->ToString(); }
+	std::string GetToString_DeadLayerLoss2() { return deadLayerLoss_par2_->ToString(); }
+	std::string GetToString_DeadLayerLoss3() { return deadLayerLoss_par3_->ToString(); }
+	std::string GetToString_DeadLayerLoss4() { return deadLayerLoss_par4_->ToString(); }
+
 private:
 	std::vector<SABRE_Detector*> SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
-	TargetEnergyLoss* targetLoss_;
-	SABRE_DeadLayerModel* deadLayerLoss_;
+	// TargetEnergyLoss* targetLoss_;
+	// SABRE_DeadLayerModel* deadLayerLoss_;
+
+	//	For 3-body final state:		A(a,b)B, B->c+d
+	TargetEnergyLoss* targetLoss_par1_;//ejectile from kin3mc (b)
+	TargetEnergyLoss* targetLoss_par2_;//recoil from kin3mc (B) - not detected!
+	TargetEnergyLoss* targetLoss_par3_;//breakup from kin3mc (c)
+	TargetEnergyLoss* targetLoss_par4_;//final daughter from kin3mc (d)
+
+	SABRE_DeadLayerModel* deadLayerLoss_par1_;//ejectile from kin3mc (b)
+	SABRE_DeadLayerModel* deadLayerLoss_par2_;//recoil from kin3mc (B) - not detected!
+	SABRE_DeadLayerModel* deadLayerLoss_par3_;//breakup from kin3mc (c)
+	SABRE_DeadLayerModel* deadLayerLoss_par4_;//final daughter from kin3mc (d)
 
 	//counters for statistics:
 	long nevents_;

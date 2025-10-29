@@ -6,13 +6,13 @@ static const int eoev = -1;//end of event value (eoev), printed between events i
 
 det4mc::det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
-			   TargetEnergyLoss* targetLossEj, TargetEnergyLoss* targetLoss1, TargetEnergyLoss* targetLoss2, TargetEnergyLoss* targetLoss3,
-			   SABRE_DeadLayerModel* deadLayerLossEj, SABRE_DeadLayerModel* deadLayerLoss1, SABRE_DeadLayerModel* deadLayerLoss2, SABRE_DeadLayerModel* deadLayerLoss3,
+			   TargetEnergyLoss* targetLoss_par1, TargetEnergyLoss* targetLoss_par2, TargetEnergyLoss* targetLoss_par3, TargetEnergyLoss* targetLoss_par4,
+			   SABRE_DeadLayerModel* deadLayerLoss_par1, SABRE_DeadLayerModel* deadLayerLoss_par2, SABRE_DeadLayerModel* deadLayerLoss_par3, SABRE_DeadLayerModel* deadLayerLoss_par4,
 			   Beamspot* beamspot)
 	: SABRE_Array_(SABRE_Array),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
-	  targetLossEj_(targetLossEj), targetLoss1_(targetLoss1), targetLoss2_(targetLoss2), targetLoss3_(targetLoss3),
-	  deadLayerLossEj_(deadLayerLossEj), deadLayerLoss1_(deadLayerLoss1), deadLayerLoss2_(deadLayerLoss2), deadLayerLoss3_(deadLayerLoss3),
+	  targetLoss_par1_(targetLoss_par1), targetLoss_par2_(targetLoss_par2), targetLoss_par3_(targetLoss_par3), targetLoss_par4_(targetLoss_par4),
+	  deadLayerLoss_par1_(deadLayerLoss_par1), deadLayerLoss_par2_(deadLayerLoss_par2), deadLayerLoss_par3_(deadLayerLoss_par3), deadLayerLoss_par4_(deadLayerLoss_par4),
 	  nevents_(0),
 	  hitej_(0), hit1_(0), hit2_(0), hit3_(0),
 	  hitBoth23_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
@@ -64,14 +64,14 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detectedEj){
 				//std::cout << "here1" << std::endl;
 				//apply target energy loss to e1:
-				double e1_aftertarget = targetLossEj_->ApplyEnergyLoss(e1, theta1);
+				double e1_aftertarget = targetLoss_par1_->ApplyEnergyLoss(e1, theta1);
 
 				//apply dead layer energy loss to e1_aftertarget:
 				Vec3 trajectory;
 				trajectory.SetVectorSpherical(1,theta1*DEG2RAD,phi1*DEG2RAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal*(1/normal.Mag());
-				double e1_afterDeadLayer = deadLayerLossEj_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
+				double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
 
 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first, e1_afterDeadLayer, smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second, e1_afterDeadLayer, smearedEWedge)){
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
@@ -94,14 +94,14 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected1){
 				//std::cout << "here2" << std::endl;
 				//apply energy loss to e1:
-				double e2_aftertarget = targetLoss1_->ApplyEnergyLoss(e2, theta2);
+				double e2_aftertarget = targetLoss_par2_->ApplyEnergyLoss(e2, theta2);
 
 				//apply dead layer energy loss to e2_aftertarget
 				Vec3 trajectory;
 				trajectory.SetVectorSpherical(1,theta2*DEG2RAD,phi2*DEG2RAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal*(1/normal.Mag());
-				double e2_afterDeadLayer = deadLayerLoss1_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
+				double e2_afterDeadLayer = deadLayerLoss_par2_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
 
 				//std::cout << "here2 again" << std::endl;
 
@@ -128,14 +128,14 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected2){
 				//std::cout << "here3" << std::endl;
 				//apply energy loss to e3:
-				double e3_aftertarget = targetLoss2_->ApplyEnergyLoss(e3, theta3);
+				double e3_aftertarget = targetLoss_par3_->ApplyEnergyLoss(e3, theta3);
 
 				//apply dead layer energy loss to e3_aftertarget:
 				Vec3 trajectory;
 				trajectory.SetVectorSpherical(1,theta3*DEG2RAD,phi3*DEG2RAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal * (1/normal.Mag());
-				double e3_afterDeadLayer = deadLayerLoss2_->ApplyEnergyLoss(e3_aftertarget, trajectory, normal);
+				double e3_afterDeadLayer = deadLayerLoss_par3_->ApplyEnergyLoss(e3_aftertarget, trajectory, normal);
 
 				//std::cout << "here3 again" << std::endl;
 
@@ -168,14 +168,14 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile){
 			if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected3){
 				//std::cout << "here4" << std::endl;
 				//apply energy loss to e4:
-				double e4_aftertarget = targetLoss3_->ApplyEnergyLoss(e4, theta4);
+				double e4_aftertarget = targetLoss_par4_->ApplyEnergyLoss(e4, theta4);
 
 				//apply dead layer energy loss to e3_aftertarget
 				Vec3 trajectory;
 				trajectory.SetVectorSpherical(1,theta4*DEG2RAD,phi4*DEG2RAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal * (1/normal.Mag());
-				double e4_afterDeadLayer = deadLayerLoss3_->ApplyEnergyLoss(e4_aftertarget, trajectory, normal);
+				double e4_afterDeadLayer = deadLayerLoss_par4_->ApplyEnergyLoss(e4_aftertarget, trajectory, normal);
 
 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit4_rw.first,e4_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit4_rw.second,e4_afterDeadLayer,smearedEWedge)){
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
