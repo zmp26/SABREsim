@@ -27,34 +27,35 @@
 #include <iostream>
 #include <fstream>
 #include <TString.h>
+#include <TPaveText.h>
 
-void Lithium6_1plus(int ring){
+void Lithium6_1plus(int ring, TString beamstring){
 	//uncomment below for surface laptop
-	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
+	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
 
-	TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1622.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+	// TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1622.root";
+	// TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
 
-	TString anglestring = "1622";
+	//uncomment below for DESKTOP
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
+
+	TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1822_%s.root",beamstring.Data());
+	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//for our sps acceptances, rings 7 and 8 on SABRE3 illuminate
-	if(ring != 7 && ring != 8) {
-		std::cout << "ring not found, try 7 or 8" << std::endl;
-		return;
-	}
+	// if(ring != 7 && ring != 8) {
+	// 	std::cout << "ring not found, try 7 or 8" << std::endl;
+	// 	return;
+	// }
 
 	//prep output file name using ring:
 	TString outfile_root_name;
 	//outfile_root_name = Form("Lithium6_1plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
-	outfile_root_name = Form("Lithium6_1plus_sim%sVSdata_ring%d.root",anglestring.Data(),ring);
+	outfile_root_name = Form("Lithium6_1plus_simVSdata_%s_ring%d.root", beamstring.Data(), ring);
 
-	//uncomment below for DESKTOP
-	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	// TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
 
-	// TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1721_gaus.root";
-	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
 
@@ -156,6 +157,8 @@ void Lithium6_1plus(int ring){
 	hData->SetTitle(title);
 	std::cout << "fitting data with gaussian:" << std::endl;
 	TH1D* hData_rebin = dynamic_cast<TH1D*>(hData->Rebin(rebinfactor));
+	hData_rebin->GetXaxis()->SetRangeUser(2,4);
+	hData_rebin->GetYaxis()->SetRangeUser(0,1100);
 	hData_rebin->Draw("HIST");
 	hData_rebin->Fit("gaus", "R SAME");
 
@@ -164,6 +167,8 @@ void Lithium6_1plus(int ring){
 	hSim->SetLineColor(kOrange);
 	hSim->SetLineWidth(2);
 	TH1D* hSim_rebin = dynamic_cast<TH1D*>(hSim->Rebin(rebinfactor));
+	hSim_rebin->GetXaxis()->SetRangeUser(2,4);
+	hSim_rebin->GetYaxis()->SetRangeUser(0,1100);
 	hSim_rebin->Draw("HIST SAME");
 	hSim_rebin->Fit("gaus", "R SAME");
 
@@ -173,6 +178,13 @@ void Lithium6_1plus(int ring){
 	TString simlabel = Form("Sim (scaled x %.3f)",scaleFactor);
 	legend->AddEntry(hSim,simlabel,"l");
 	legend->Draw();
+
+	//add text box to differentiate pngs!
+	TPaveText *pt = new TPaveText(0.65, 0.63, 0.88, 0.74, "NDC");
+	pt->AddText(beamstring);
+	pt->SetFillColorAlpha(kWhite, 0.5);
+	pt->SetTextAlign(12);
+	pt->Draw();
 
 	c1->Update();
 
@@ -187,10 +199,130 @@ void Lithium6_1plus(int ring){
 	hData->Write("hData_original");
 	hSim->Write("hSim_scaled");
 	c1->Write("overlay_canvas");
+	c1->SaveAs(Form("Lithium6_1plus_simVSdata_%s_ring%d.png", beamstring.Data(), ring));
 	outfile_root->Close();
 
 	std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
 	std::cout << "Scale factors saved to Lithium6_1plus_scales.txt" << std::endl;
+}
+
+void Lithium6_1plus_auto(){
+	std::vector<int> rings = {7,8,9};
+	std::vector<TString> beamstrings = {"fixedpoint","gaus001","gaus002","gaus003"};
+
+	for(size_t r=0; r<rings.size(); r++){
+		for(size_t b=0; b<beamstrings.size(); b++){
+			Lithium6_1plus(rings[r],beamstrings[b]);
+		}
+	}
+}
+
+void Lithium6_1plus_sabrehits(TString beamstring){
+	//uncomment below for DESKTOP
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1822_%s.root",beamstring.Data());
+	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+
+	//prep output file name
+	TString outfile_root_name = Form("Lithium6_1plus_simVSdata_sabrehits_%s.root",beamstring.Data());
+
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		return;
+	}
+
+	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
+	if(!hData){
+		std::cerr << "Error retrieving data histogram" << std::endl;
+		datafile->Close();
+		return;
+	}
+	hData->SetDirectory(0);
+	datafile->Close();
+
+
+
+	TFile *simfile = new TFile(simFilePath,"READ");
+	if(!simfile || simfile->IsZombie()){
+		std::cerr << "Error opening sim file" << std::endl;
+		return;
+	}
+
+	TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
+	if(!hSim){
+		std::cerr << "Error retrieving sim histogram" << std::endl;
+		simfile->Close();
+		return;
+	}
+	hSim->SetDirectory(0);
+	simfile->Close();
+
+
+
+	if((hData->GetNbinsX() != hSim->GetNbinsX()) || (hData->GetNbinsY() != hSim->GetNbinsY())){
+		std::cerr << "Histogram bin counts do not match on at least one axis!" << std::endl;
+		return;
+	}
+
+
+
+	double dataIntegral = hData->Integral();
+	double simIntegral = hSim->Integral();
+
+	double scaleFactor = 0.;
+
+	if(simIntegral > 0){
+		scaleFactor = dataIntegral/simIntegral;
+		hSim->Scale(scaleFactor);
+		std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
+	} else {
+		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
+		return;
+	}
+
+
+	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
+	gStyle->SetOptStat(0);
+
+
+
+	hSim->Draw();
+
+	TPaveText *pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
+	pt->AddText(Form("%s (scale factor = %.3f)", beamstring.Data(), scaleFactor));
+	pt->SetFillColorAlpha(kWhite,0.5);
+	pt->SetTextAlign(12);
+	pt->Draw();
+
+	c1->Update();
+
+	TFile* outfile_root = new TFile(outfile_root_name,"RECREATE");
+	if(!outfile_root || outfile_root->IsZombie()){
+		std::cerr << "Error creating output file" << std::endl;
+		return;
+	}
+
+	hData->Write("hData_original");
+	hSim->Write("hSim_scaled");
+	c1->SaveAs(Form("Lithium6_1plus_simVSdata_sabrehits_%s.png",beamstring.Data()));
+	outfile_root->Close();
+
+	std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
+
+}
+
+void Lithium6_1plus_sabrehits_auto(){
+	std::vector<TString> beamstrings = {"fixedpoint","gaus001","gaus002","gaus003"};
+
+	for(size_t b=0; b<beamstrings.size(); b++){
+		Lithium6_1plus_sabrehits(beamstrings[b]);
+	}
+
 }
 
 void Lithium6_0plus(int ring){
