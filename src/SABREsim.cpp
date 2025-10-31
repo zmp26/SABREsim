@@ -179,7 +179,9 @@ void SABREsim::InitializeBeamspot(){
 	//profile_ = new GaussianProfile(0.001, 0.001);//meters, 0.001m = 1mm
 	//profile_ = new GaussianProfile(0.002, 0.002);//meters, 0.002m = 2mm
 	//profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.003m = 3mm
-	profile_ = new FixedPointProfile();
+	//profile_ = new GaussianProfile(0.004, 0.004);
+	profile_ = new GaussianProfile(0.005, 0.005);
+	//profile_ = new FixedPointProfile();
 
 	beamspot_ = new Beamspot();
 	beamspot_->SetProfile(profile_);

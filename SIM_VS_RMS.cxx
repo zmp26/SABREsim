@@ -30,12 +30,16 @@
 #include <TPaveText.h>
 
 void Lithium6_1plus(int ring, TString beamstring){
+
+	TString anglestring = "1226";// +/- 4deg from 20
+	//TString anglestring = "1426";// +/- 6deg from 20
+
 	//uncomment below for surface laptop
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = "1par/1plus/hSABRE_SABRE3_Ring8ESummary_1plus";
+	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
 
-	TString simFilePath = "/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1622.root";
-	TString simHistLocalPath = "SABRE/SABRE3/Summary/hSABRE3_Ring8Summary";
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s.root", anglestring.Data(), beamstring.Data());
+	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//uncomment below for DESKTOP
 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
@@ -53,7 +57,7 @@ void Lithium6_1plus(int ring, TString beamstring){
 	//prep output file name using ring:
 	TString outfile_root_name;
 	//outfile_root_name = Form("Lithium6_1plus_simVSdata_ring%d.root",ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
-	outfile_root_name = Form("Lithium6_1plus_simVSdata_%s_ring%d.root", beamstring.Data(), ring);
+	outfile_root_name = Form("Lithium6_1plus_simVSdata_%s_theta%s_ring%d.root", beamstring.Data(), anglestring.Data(), ring);
 
 
 
@@ -181,7 +185,7 @@ void Lithium6_1plus(int ring, TString beamstring){
 
 	//add text box to differentiate pngs!
 	TPaveText *pt = new TPaveText(0.65, 0.63, 0.88, 0.74, "NDC");
-	pt->AddText(beamstring);
+	pt->AddText(Form("%s SPSTheta%s", beamstring.Data(), anglestring.Data()));
 	pt->SetFillColorAlpha(kWhite, 0.5);
 	pt->SetTextAlign(12);
 	pt->Draw();
@@ -190,25 +194,25 @@ void Lithium6_1plus(int ring, TString beamstring){
 
 	//save to new root file:
 	//TString outfile_root_name = "Lithium6_1plus_simVSdata_ELoss2.root";
-	TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
-	if(!outfile_root || outfile_root->IsZombie()){
-		std::cerr << "Error creating output file" << std::endl;
-		return;
-	}
+	// TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
+	// if(!outfile_root || outfile_root->IsZombie()){
+	// 	std::cerr << "Error creating output file" << std::endl;
+	// 	return;
+	// }
 
-	hData->Write("hData_original");
-	hSim->Write("hSim_scaled");
-	c1->Write("overlay_canvas");
-	c1->SaveAs(Form("Lithium6_1plus_simVSdata_%s_ring%d.png", beamstring.Data(), ring));
-	outfile_root->Close();
+	//hData->Write("hData_original");
+	//hSim->Write("hSim_scaled");
+	//c1->Write("overlay_canvas");
+	c1->SaveAs(Form("Lithium6_1plus_simVSdata_%s_theta%s_ring%d.png", beamstring.Data(), anglestring.Data(), ring));
+	//outfile_root->Close();
 
-	std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
-	std::cout << "Scale factors saved to Lithium6_1plus_scales.txt" << std::endl;
+	//std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
+	//std::cout << "Scale factors saved to Lithium6_1plus_scales.txt" << std::endl;
 }
 
 void Lithium6_1plus_auto(){
 	std::vector<int> rings = {7,8,9};
-	std::vector<TString> beamstrings = {"fixedpoint","gaus001","gaus002","gaus003"};
+	std::vector<TString> beamstrings = {"fixedpoint","gaus001","gaus002","gaus003","gaus004","gaus005"};
 
 	for(size_t r=0; r<rings.size(); r++){
 		for(size_t b=0; b<beamstrings.size(); b++){
