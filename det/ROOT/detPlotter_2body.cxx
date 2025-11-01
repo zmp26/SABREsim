@@ -579,6 +579,39 @@ void analyze2BodyDetectorStepOutput(const char* input_filename, const char* outp
 	cout << "ROOT file saved to " << output_rootfilename << endl << endl;
 }
 
+//temp:
+void analyze2BodyDetectorStepOutput_auto(){
+
+	std::vector<TString> states = {"gs","3563"};
+
+	TString anglestring = "1025";
+
+	for(const auto& statestring : states){
+
+		std::vector<TString> filenames = {
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_fixedpoint.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus001.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus002.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus003.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus004.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus005.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus006.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus007.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus008.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus009.", statestring.Data(), anglestring.Data()),
+			Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li%s_7500keV_theta%s_gaus010.", statestring.Data(), anglestring.Data())
+		};
+
+		for(const auto& fn : filenames){
+			TString infilename = fn + "det";
+			TString outfilename = fn + "root";
+			analyze2BodyDetectorStepOutput(infilename.Data(), outfilename.Data());
+		}
+
+	}
+
+}
+
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map){
 
 	if(detectorIndex < 0 || detectorIndex >= 5){
