@@ -26,6 +26,7 @@ RootWriter::RootWriter(const std::string& filename){
 	ResetEvent();
 
 	//default metadata values:
+	inputfile_ = "";
 	detmcVersion_ = 0;
 	reaction_ = "";
 	beamEnergyMeV_ = -666.;
@@ -112,6 +113,7 @@ void RootWriter::WriteMetaData(){
 
 	file_->cd();
 
+	TParameter<std::string>("inputFile",inputfile_).Write();
 	TParameter<int>("detmcVersion",detmcVersion_).Write();
 	TParameter<std::string>("reaction",reaction_).Write();
 	TParameter<double>("beamEnergyMeV",beamEnergyMeV_).Write();

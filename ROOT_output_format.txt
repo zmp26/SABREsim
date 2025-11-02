@@ -1,0 +1,104 @@
+det2mc [ A(a,b)B ]:
+	kin2mc output (e1 theta1 phi1 thetacm e2 theta2 phi2)
+	
+	P0D	ring	wedge	eRing	eWedge	localx	localy		(repeat for each particle in SABRE (max=2))
+
+
+
+det3mc [ A(a,b)B,  B->c+d ]:
+	kin3mc output (e1 theta1 phi1 e2 theta2 phi2 e3 theta3 phi3 e4 theta4 phi4)
+
+	P0D	ring	wedge	eRing	eWedge	localx	localy		(repeat for each particle in SABRE (max=3))
+
+
+
+
+det4mc [ A(a,b)B,  B->c+D,  D->d+e]:
+	kin4mc output (e1 theta1 phi1 e2 theta2 phi2 e3 theta3 phi3 e4 theta4 phi4)
+
+	P0D	ring	wedge	eRing	eWedge	localx	localy		(repeat for each particle in SABRE (max=4))
+
+
+
+
+
+--------------------------------------------------------------------------------------------------
+
+TTree structure:
+
+double kin_e[4]					->		kin2/3/4mc particle E
+double kin_theta[4]				->		kin2/3/4mc particle Theta
+double kin_phi[4]				->		kin2/3/4mc particle Phi
+
+double reactionOrigin[3]			->		where did the reaction occur
+int numHits					->		how many hits in SABRE
+int particleID[4]				->		which particle from kin2/3/4mc detected
+int detectorID[4]				->		which detector in array was particle detected in
+int ringChannel[4]				->		which global ring channel fired
+int wedgeChannel[4]				->		which global wedge channel fired
+int localRing[4]				->		which local ring channel fired
+int localWedge[4]				->		which local wedge channel fired
+double ringEnergy[4]				->		what energy was detected in the ring
+double wedgeEnergy[4]				->		what energy was detected in the wedge
+double localx[4]				->		what x coord to use for SABRE hitmap
+double localy[4]				->		what y coord to use for SABRE hitmap
+
+--------------------------------------------------------------------------------------------------
+
+In the kinematics part, indices 0-3 are dependent on whether used for det2/3/4mc
+
+det2mc:
+	kin[0] = ejectile
+	kin[1] = recoil
+	kin[2] = N/A (set to -666 or something obvious)
+	kin[3] = N/A except for kin_theta[3] which stores thetacm from kin2mc output
+
+det3mc:
+	kin[0] = ejectile
+	kin[1] = recoil (not detected)
+	kin[2] = break up
+	kin[3] = daughter
+
+det4mc:
+	kin[0] = ejectile
+	kin[1] = break up 1
+	kin[2] = break up 2
+	kin[3] = final daughter
+
+
+In the SABRE detection part, indices 0-3 represent detected particles 
+(exception: reactionOrigin[3] where [0] = x, [1] = y, [2] = z)
+
+det2mc:
+	[0] = first particle detected (if applicable)
+	[1] = second particle detected (if applicable)
+	[2] = N/A, set to -666 or something
+	[3] = N/A, set to -666 or something
+
+det3mc:
+	[0] = first particle detected (if applicable)
+	[1] = second particle detected (if applicable)
+	[2] = third particle detected (if applicable)
+	[3] = N/A, set to -666 or something
+
+det4mc:
+	[0] = first particle detected (if applicable)
+	[1] = second particle detected (if applicable)
+	[2] = third particle detected (if applicable)
+	[3] = fourth particle detected (if applicable)
+
+--------------------------------------------------------------------------------------------------
+
+TParameters to write to file outside of TTree:
+
+	input file name
+
+	detmc version (2/3/4)
+
+	reaction
+	beam energy
+
+	beam spot profile
+	beam spot parameters [x,y]
+
+

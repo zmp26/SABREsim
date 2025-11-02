@@ -72,6 +72,7 @@ private:
 	double localy_[4];
 
 	//metadata:
+	std::string inputfile_;
 	int detmcVersion_;
 	std::string reaction_;
 	double beamEnergyMeV_;
