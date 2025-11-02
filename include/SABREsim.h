@@ -12,6 +12,7 @@
 #include "det2mc.h"
 #include "det3mc.h"
 #include "det4mc.h"
+#include "RootWriter.h"
 
 class SABREsim {
 public:
@@ -131,6 +132,8 @@ private:
 
 	BeamProfile* profile_;
 	Beamspot* beamspot_;
+
+	RootWriter* RootWriter_;
 
 	long nevents_;
 	std::vector<long> detectorHits_;

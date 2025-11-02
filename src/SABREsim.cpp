@@ -37,6 +37,7 @@ SABREsim::SABREsim(int kinX,
 	  deadLayerLoss_deuteron_(nullptr),
 	  deadLayerLoss_proton_(nullptr),
 	  deadLayerLoss_none_(nullptr),
+	  RootWriter_(nullptr),
 	  nevents_(0),
 	  detectorHits_(5,0),
 	  hit1_(0), hit2_(0), hit3_(0), hit4_(0),
@@ -192,6 +193,7 @@ void SABREsim::InitializeBeamspot(){
 	beamspot_->SetProfile(profile_);
 	beamspot_->SetBeamAxisOffset(0.,0.);//aligned along z axis (no lateral offset)
 }
+
 
 void SABREsim::Run(){
 	std::ifstream infile(kinInputFilename_);
