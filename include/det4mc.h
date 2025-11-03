@@ -12,6 +12,7 @@
 #include "TH1.h"
 #include <cmath>
 #include "Beamspot.h"
+#include "RootWriter.h"
 
 class det4mc{
 public:
@@ -30,7 +31,7 @@ public:
 		   SABRE_DeadLayerModel* deadLayerLoss_par4,
 		   Beamspot* beamspot);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter);
 
 	/*
 		A(a,b)B
@@ -110,6 +111,8 @@ private:
 	std::vector<long> detectorHits_;
 
 	Beamspot* beamspot_;
+
+	static const std::pair<int, int> offsets[];
 
 };
 

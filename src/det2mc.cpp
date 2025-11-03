@@ -6,6 +6,14 @@
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
+const std::pair<int,int> det2mc::offsets[] = {
+		{112,40},	//detector0 {ringOffset,wedgeOffset}
+		{96,32},	//detector1 {ringOffset,wedgeOffset}
+		{80,16},	//detector2 {ringOffset,wedgeOffset}
+		{64,24},	//detector3 {ringOffset,wedgeOffset}
+		{48,0}		//detector4 {ringOffset,wedgeOffset}
+	};
+
 det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 			   TargetEnergyLoss* targetLoss_par1,
@@ -29,7 +37,7 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  }
 
 
-void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
+void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter){
 	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
@@ -47,6 +55,13 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << std::endl;
 		if(nevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
+
+		RootWriter->SetKinematics(0, e1, theta1, phi1);
+		RootWriter->SetKinematics(1, e2, theta2, phi2);
+		RootWriter->SetKinematics(2, -666., -666., -666.);
+		RootWriter->SetKinematics(3, -666., thetacm, -666.);
+
+		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 				/*///////////////////////////////////////////////
@@ -83,6 +98,20 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 						detected1 = true;
 						hit1_+=1;
 						detectorHits_[i] += 1;
+
+						RootWriter->AddHit(0,					//hit index, 0 for first particle
+										   1,					//particleID
+										   i,					//detector id
+										   offsets[i].first + hit1_rw.first,		//ring channel
+										   offsets[i].second + hit1_rw.second,		//wedge channel
+										   hit1_rw.first,		//local ring
+										   hit1_rw.second,		//local wedge
+										   smearedERing,
+										   smearedEWedge,
+										   localCoords.GetX(),
+										   localCoords.GetY()
+										   );
+
 					}
 				}
 
@@ -119,6 +148,19 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 						detected2 = true;
 						hit2_+=1;
 						detectorHits_[i] += 1;
+
+						RootWriter->AddHit(1,					//hit index, 0 for first particle
+										   2,					//particleID
+										   i,					//detector id
+										   offsets[i].first + hit2_rw.first,		//ring channel
+										   offsets[i].second + hit2_rw.second,		//wedge channel
+										   hit2_rw.first,		//local ring
+										   hit2_rw.second,		//local wedge
+										   smearedERing,
+										   smearedEWedge,
+										   localCoords.GetX(),
+										   localCoords.GetY()
+										   );
 					}
 				}
 		}
@@ -130,6 +172,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		if(!detected1&&detected2) hit2Only_ += 1;
 
 		outfile << eoev << std::endl;
+
+		RootWriter->FillEvent();
 	}
 
 	// TFile *tempfile = new TFile("EnergyLossHisto.root","RECREATE");
@@ -137,6 +181,9 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile){
 	// hDeadLayerELoss->Write();
 	// tempfile->Close();
 	//std::cout << "here" << std::endl;
+
+	// RootWriter->Set_detmc(2);
+	// RootWriter->SetReaction();
 
 	TFile *tempfile = new TFile("BeamSpotHisto_det2mc.root","RECREATE");
 	hBeamSpot->Write();

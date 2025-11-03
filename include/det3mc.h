@@ -12,6 +12,7 @@
 #include "TH1.h"
 #include <cmath>
 #include "Beamspot.h"
+#include "RootWriter.h"
 
 class det3mc{
 public:
@@ -30,7 +31,7 @@ public:
 		   SABRE_DeadLayerModel* deadLayerLoss_par4,
 		   Beamspot* beamspot);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter);
 
 	//after Run(), these functions can be called to query for statistics:
 	long GetNumEvents() const;
@@ -87,6 +88,8 @@ private:
 	std::vector<long> detectorHits_;
 
 	Beamspot* beamspot_;
+
+	static const std::pair<int, int> offsets[];
 };
 
 #endif //DET3MC_H

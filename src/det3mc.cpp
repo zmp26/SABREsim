@@ -6,6 +6,14 @@
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
+const std::pair<int,int> det3mc::offsets[] = {
+		{112,40},	//detector0 {ringOffset,wedgeOffset}
+		{96,32},	//detector1 {ringOffset,wedgeOffset}
+		{80,16},	//detector2 {ringOffset,wedgeOffset}
+		{64,24},	//detector3 {ringOffset,wedgeOffset}
+		{48,0}		//detector4 {ringOffset,wedgeOffset}
+	};
+
 det3mc::det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 			   TargetEnergyLoss* targetLoss_par1,
@@ -37,7 +45,7 @@ det3mc::det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 
 	}
 
-void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
+void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter){
 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
 	TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
@@ -53,6 +61,13 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
 
 		if(nevents_%50000==0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n"); //std::cout << "Processed " << nevents_ << " events..." << std::endl;
+
+		RootWriter->SetKinematics(0,e1,theta1,phi1);
+		RootWriter->SetKinematics(1,e2,theta2,phi2);
+		RootWriter->SetKinematics(2,e3,theta3,phi3);
+		RootWriter->SetKinematics(3,e4,theta4,phi4);
+
+		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 			/*///////////////////////////////////////////////
@@ -82,6 +97,20 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 					detected1=true;
 					hit1_+=1;
 					detectorHits_[i] += 1;
+
+					RootWriter->AddHit(0,
+									   1,
+									   i,
+									   offsets[i].first + hit1_rw.first,
+									   offsets[i].second + hit1_rw.second,
+									   hit1_rw.first,
+									   hit1_rw.second,
+									   smearedERing,
+									   smearedEWedge,
+									   localCoords.GetX(),
+									   localCoords.GetY()
+									   );
+
 				}
 			}
 			/*//////////////////////////////////////////
@@ -112,6 +141,20 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 					detected3 = true;
 					hit3_ += 1;
 					detectorHits_[i] += 1;
+
+					RootWriter->AddHit(2,
+									   3,
+									   i,
+									   offsets[i].first + hit3_rw.first,
+									   offsets[i].second + hit3_rw.second,
+									   hit3_rw.first,
+									   hit3_rw.second,
+									   smearedERing,
+									   smearedEWedge,
+									   localCoords.GetX(),
+									   localCoords.GetY()
+									   );
+
 				}
 			}
 
@@ -144,12 +187,27 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile){
 					detected4 = true;
 					hit4_ += 1;
 					detectorHits_[i] += 1;
+
+					RootWriter->AddHit(3,
+									   4,
+									   i,
+									   offsets[i].first + hit4_rw.first,
+									   offsets[i].second + hit4_rw.second,
+									   hit4_rw.first,
+									   hit4_rw.second,
+									   smearedERing,
+									   smearedEWedge,
+									   localCoords.GetX(),
+									   localCoords.GetY()
+									   );
 				}
 			}
 
 		}
 
 		outfile << eoev << std::endl;
+
+		RootWriter->FillEvent();
 
 		if(detected3 && detected4){
 			hitBoth34_ += 1;
