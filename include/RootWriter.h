@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TParameter.h"
+#include "TNamed.h"
 
 
 class RootWriter {
@@ -40,11 +41,12 @@ public:
 	void WriteAndClose();
 
 	//metadata:
-	void Set_detmc(int version); //2,3,4
-	void SetReaction(const std::string& reaction);
-	void SetBeamEnergyMeV(double energy);
-	void SetBeamSpotProfile(const std::string& profile);
-	void SetBeamSpotParameters(double x, double y);
+	void Set_detmc(int version) { detmcVersion_ = version; }; //2,3,4
+	void SetInputFile(const std::string& inputfile) { inputfile_ = inputfile; };
+	void SetReaction(const std::string& reaction) { reaction_ = reaction; };
+	void SetBeamEnergyMeV(double energy) { beamEnergyMeV_ = energy; };
+	void SetBeamSpotProfile(const std::string& profile) { beamSpotProfile_ = profile; };
+	void SetBeamSpotParameters(double x, double y) { beamSpotParX_ = x; beamSpotParY_ = y; };
 
 private:
 	TFile *file_;

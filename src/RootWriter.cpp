@@ -1,5 +1,6 @@
 #include "RootWriter.h"
 #include <cstring>
+#include "TObject.h"
 
 RootWriter::RootWriter(const std::string& filename){
 	file_ = new TFile(filename.c_str(),"RECREATE");
@@ -113,11 +114,11 @@ void RootWriter::WriteMetaData(){
 
 	file_->cd();
 
-	TParameter<std::string>("inputFile",inputfile_).Write();
+	TNamed ("inputFile",inputfile_.c_str()).Write();
 	TParameter<int>("detmcVersion",detmcVersion_).Write();
-	TParameter<std::string>("reaction",reaction_).Write();
+	TNamed ("reaction",reaction_.c_str()).Write();
 	TParameter<double>("beamEnergyMeV",beamEnergyMeV_).Write();
-	TParameter<std::string>("beamSpotProfile",beamSpotProfile_).Write();
+	TNamed ("beamSpotProfile",beamSpotProfile_.c_str()).Write();
 	TParameter<double>("beamSpotParX",beamSpotParX_).Write();
 	TParameter<double>("beamSpotParY",beamSpotParY_).Write();
 }
@@ -126,7 +127,7 @@ void RootWriter::WriteAndClose(){
 	if(file_ && file_->IsOpen()){
 		file_->cd();
 		WriteMetaData();
-		tree_->Write();
+		tree_->Write("", TObject::kOverwrite);
 		file_->Close();
 		delete file_;
 		file_ = nullptr;
