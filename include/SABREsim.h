@@ -13,24 +13,38 @@
 #include "det3mc.h"
 #include "det4mc.h"
 #include "RootWriter.h"
+#include "SimConfig.h"
 
 class SABREsim {
 public:
-	SABREsim(int kinX,
-			 const std::string& kinInputFilename,
-			 const std::string& detOutputFilename);
+	// SABREsim(int kinX,
+	// 		 const std::string& kinInputFilename,s
+	// 		 const std::string& detOutputFilename);
+
+	SABREsim(const std::string& configFilename);
 
 	~SABREsim();
 
 	void Run();
 
+	bool GetFailState() { return failState_; }
+	int GetKinX() { return kinX_; }
+	std::string GetKinInputFilename() { return kinInputFilename_; }
+	std::string GetDetOutputFilename() { return detOutputFilename_; }
+	std::string GetTreeFilename() { return treeFilename_; }
+	std::string GetHistoFilename() { return histoFilename_; }
+
 private:
 	static constexpr double DEG2RAD = M_PI / 180.0;
 	static constexpr double RAD2DEG = 180.0 / M_PI;
 
+	SimConfig *config_;
+
 	int kinX_;
 	std::string kinInputFilename_;
 	std::string detOutputFilename_;
+	std::string treeFilename_;
+	std::string histoFilename_;
 
 	std::vector<SABRE_Detector*> SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels_;
@@ -135,6 +149,8 @@ private:
 
 	RootWriter* RootWriter_;
 
+	bool failState_; //true means failure, false means ok
+
 	long nevents_;
 	std::vector<long> detectorHits_;
 	long hit1_, hit2_, hit3_, hit4_, hit23_, hitej_;
@@ -146,6 +162,9 @@ private:
 	bool InitializeModels();
 	void InitializeBeamspot();
 	void CleanUp();
+
+	TargetEnergyLoss* GetTargetEnergyLoss(const std::string targetloss);
+	SABRE_DeadLayerModel* GetDeadLayerLoss(const std::string deadlayerloss);
 
 	void Simulate2body(std::ifstream& infile, std::ofstream& outfile);
 	void Simulate3body(std::ifstream& infile, std::ofstream& outfile);

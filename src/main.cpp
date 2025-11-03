@@ -7,6 +7,7 @@ using namespace std;
 #include <string>
 #include "ConsoleColorizer.h"
 #include "SABREsim.h"
+#include <TString.h>
 
 static const std::pair<int, int> offsets[] = {
 	{112,40},	//detector0
@@ -19,64 +20,72 @@ static const std::pair<int, int> offsets[] = {
 int main(int argc, char * argv[]){
 
 	if(argc == 2 && (std::string(argv[1]) == "help" || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")){
+		// ConsoleColorizer::PrintWhite("Usage:\n\t");
+		// ConsoleColorizer::PrintYellow("bin/SABREsim X path/to/kinXmcFile.out path/to/detOutputFile.det\n\n");
+		// ConsoleColorizer::PrintWhite("Where ");
+		// ConsoleColorizer::PrintYellow("X = 2,3,4 ");
+		// ConsoleColorizer::PrintWhite("for kin2mc, kin3mc, kin4mc input  files\nAnd ");
+		// ConsoleColorizer::PrintYellow("kinInputFile.out ");
+		// ConsoleColorizer::PrintWhite("is the filename (or path to) the kinXmc output file\nAnd ");
+		// ConsoleColorizer::PrintYellow("detOutputFile.det ");
+		// ConsoleColorizer::PrintWhite("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
+		// ConsoleColorizer::PrintYellow("\tbin/SABREsim 2 kinmc/TEST.out det/TEST.det\n\n");
+		// return 1;
+
 		ConsoleColorizer::PrintWhite("Usage:\n\t");
-		ConsoleColorizer::PrintYellow("bin/SABREsim X path/to/kinXmcFile.out path/to/detOutputFile.det\n\n");
+		ConsoleColorizer::PrintYellow("bin/SABREsim /path/to/config/file.conf\n\n");
 		ConsoleColorizer::PrintWhite("Where ");
-		ConsoleColorizer::PrintYellow("X = 2,3,4 ");
-		ConsoleColorizer::PrintWhite("for kin2mc, kin3mc, kin4mc input  files\nAnd ");
-		ConsoleColorizer::PrintYellow("kinInputFile.out ");
-		ConsoleColorizer::PrintWhite("is the filename (or path to) the kinXmc output file\nAnd ");
-		ConsoleColorizer::PrintYellow("detOutputFile.det ");
-		ConsoleColorizer::PrintWhite("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
-		ConsoleColorizer::PrintYellow("\tbin/SABREsim 2 kinmc/TEST.out det/TEST.det\n\n");
+		ConsoleColorizer::PrintYellow("/path/to/config/file.conf ");
+		ConsoleColorizer::PrintWhite("is the filename (or path to) the appropriate config file\n\n");
 		return 1;
 	}
 
-	if(argc!=4){
-		ConsoleColorizer::PrintRed("\nError! Please provide input as command line arguments!\nExpected arguments in order of: ");
-		ConsoleColorizer::PrintYellow("X kinXmcFile.out detOutputFile.det\n");
+	if(argc!=2){
+		ConsoleColorizer::PrintRed("\nError! Please provide input as command line arguments!\nExpected command of form: ");
+		ConsoleColorizer::PrintYellow("bin/SABREsim /path/to/config/file.conf\n");
 		ConsoleColorizer::PrintRed("Where ");
-		ConsoleColorizer::PrintYellow("X = 2,3,4 ");
-		ConsoleColorizer::PrintRed("for kin2mc, kin3mc, kin4mc input  files\nAnd ");
-		ConsoleColorizer::PrintYellow("kinInputFile.out ");
-		ConsoleColorizer::PrintRed("is the filename (or path to) the kinXmc output file\nAnd ");
-		ConsoleColorizer::PrintYellow("detOutputFile.det ");
-		ConsoleColorizer::PrintRed("is the filename (or path to) the detection output file (what this code writes to)\n\nExample command:\n");
-		ConsoleColorizer::PrintYellow("\tbin/SABREsim 2 kinmc/TEST.out det/TEST.det\n\n");
+		ConsoleColorizer::PrintYellow("/path/to/config/file.conf ");
+		ConsoleColorizer::PrintRed("is the filename (or path to) the appropriate config file\n\n");
 		return 1;
 	}
 
-	int kinX = std::stoi(argv[1]);
-	//if(kinX != 2 && kinX !=3 && kinX !=4){//uncomment this to exclude debugging kinX == 0 option
-	if(kinX != 0 && kinX != 2 && kinX != 3 && kinX != 4){
-		ConsoleColorizer::PrintRed("Error: Invalid kinematics type. Use 2 for 2-body, 3 for 3-body, 4 for 4-body!");
-		return 1;
-	}
 
-std::cout << "\n\n";
-ConsoleColorizer::PrintPurple("███████╗ █████╗ ██████╗ ██████╗ ███████╗███████╗██╗███╗   ███╗\n");
-ConsoleColorizer::PrintPurple("██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██║████╗ ████║\n");
-ConsoleColorizer::PrintPurple("███████╗███████║██████╔╝██████╔╝█████╗  ███████╗██║██╔████╔██║\n");
-ConsoleColorizer::PrintPurple("╚════██║██╔══██║██╔══██╗██╔══██╗██╔══╝  ╚════██║██║██║╚██╔╝██║\n");
-ConsoleColorizer::PrintPurple("███████║██║  ██║██████╔╝██║  ██║███████╗███████║██║██║ ╚═╝ ██║\n");
-ConsoleColorizer::PrintPurple("╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚═╝\n");
+	SABREsim sim(argv[1]);
+
+
+	std::cout << "\n\n";
+	ConsoleColorizer::PrintPurple("███████╗ █████╗ ██████╗ ██████╗ ███████╗███████╗██╗███╗   ███╗\n");
+	ConsoleColorizer::PrintPurple("██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██║████╗ ████║\n");
+	ConsoleColorizer::PrintPurple("███████╗███████║██████╔╝██████╔╝█████╗  ███████╗██║██╔████╔██║\n");
+	ConsoleColorizer::PrintPurple("╚════██║██╔══██║██╔══██╗██╔══██╗██╔══╝  ╚════██║██║██║╚██╔╝██║\n");
+	ConsoleColorizer::PrintPurple("███████║██║  ██║██████╔╝██║  ██║███████╗███████║██║██║ ╚═╝ ██║\n");
+	ConsoleColorizer::PrintPurple("╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚═╝\n");
                                                               
 
 	std::cout << std::endl;
-	TString msg = Form("Kin%dmc selected!\n",kinX);
+	TString msg = Form("Kin%dmc selected!\n\n",sim.GetKinX());
 	ConsoleColorizer::PrintGreen(msg.Data());
 
-	msg = Form("Processing physics data file %s\n", argv[2]);
+	msg = Form("phys file:\t%s\n\n", sim.GetKinInputFilename().c_str());
 	ConsoleColorizer::PrintGreen(msg.Data());
 
-	msg = Form("Writing to output file %s\n", argv[3]);
+	msg = Form("det file:\t%s\n", sim.GetDetOutputFilename().c_str());
+	ConsoleColorizer::PrintGreen(msg.Data());
+
+	msg = Form("tree file:\t%s\n", sim.GetTreeFilename().c_str());
+	ConsoleColorizer::PrintGreen(msg.Data());
+
+	msg = Form("histo file:\t%s\n\n", sim.GetHistoFilename().c_str());
 	ConsoleColorizer::PrintGreen(msg.Data());
 
 	try{
-
-		SABREsim sim(kinX, argv[2], argv[3]);
-		sim.Run();
-		return 0;
+		if(!sim.GetFailState()){
+			sim.Run();
+			return 0;
+		} else {
+			ConsoleColorizer::PrintRed("SABREsim fail state set to true! Double check kinX selection in config file and make sure it is 2, 3, or 4!\n\n");
+			return 1;
+		}
 
 	} catch(const std::exception& e){
 		ConsoleColorizer::PrintRed(Form("Exception: %s\n",e.what()));

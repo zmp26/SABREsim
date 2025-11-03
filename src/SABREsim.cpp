@@ -20,12 +20,39 @@ static const std::pair<int,int> offsets[] = {
 	{112,40}, {96,32}, {80,16}, {64,24}, {48,0}
 };
 
-SABREsim::SABREsim(int kinX,
-				   const std::string& kinInputFilename,
-				   const std::string& detOutputFilename)
-	: kinX_(kinX),
-	  kinInputFilename_(kinInputFilename),
-	  detOutputFilename_(detOutputFilename),
+// SABREsim::SABREsim(int kinX,
+// 				   const std::string& kinInputFilename,
+// 				   const std::string& detOutputFilename)
+// 	: kinX_(kinX),
+// 	  kinInputFilename_(kinInputFilename),
+// 	  detOutputFilename_(detOutputFilename),
+// 	  targetLoss_6Li_in_LiF_(nullptr),
+// 	  targetLoss_alpha_in_LiF_(nullptr),
+// 	  targetLoss_deuteron_in_LiF_(nullptr),
+// 	  targetLoss_none_(nullptr),
+// 	  targetLoss_alpha_in_10B_(nullptr),
+// 	  targetLoss_proton_in_10B_(nullptr),
+// 	  deadLayerLoss_6Li_(nullptr),
+// 	  deadLayerLoss_alpha_(nullptr),
+// 	  deadLayerLoss_deuteron_(nullptr),
+// 	  deadLayerLoss_proton_(nullptr),
+// 	  deadLayerLoss_none_(nullptr),
+// 	  RootWriter_(nullptr),
+// 	  nevents_(0),
+// 	  detectorHits_(5,0),
+// 	  hit1_(0), hit2_(0), hit3_(0), hit4_(0),
+//       hit34_(0), hitOnly3_(0), hitOnly4_(0),
+//       hit1Only_(0), hit2Only_(0), hitBoth_(0),
+//       onePartHits_(0), twoPartHits_(0), threePartHits_(0), fourPartHits_(0)
+// {
+// 	srand(static_cast<unsigned>(time(nullptr)));
+
+// }
+
+SABREsim::SABREsim(const std::string& configFilename)
+	: kinX_(0),
+	  kinInputFilename_(""),
+	  detOutputFilename_(""),
 	  targetLoss_6Li_in_LiF_(nullptr),
 	  targetLoss_alpha_in_LiF_(nullptr),
 	  targetLoss_deuteron_in_LiF_(nullptr),
@@ -38,6 +65,7 @@ SABREsim::SABREsim(int kinX,
 	  deadLayerLoss_proton_(nullptr),
 	  deadLayerLoss_none_(nullptr),
 	  RootWriter_(nullptr),
+	  failState_(false),
 	  nevents_(0),
 	  detectorHits_(5,0),
 	  hit1_(0), hit2_(0), hit3_(0), hit4_(0),
@@ -45,7 +73,33 @@ SABREsim::SABREsim(int kinX,
       hit1Only_(0), hit2Only_(0), hitBoth_(0),
       onePartHits_(0), twoPartHits_(0), threePartHits_(0), fourPartHits_(0)
 {
+
 	srand(static_cast<unsigned>(time(nullptr)));
+
+	config_ = new SimConfig(configFilename);
+	if(!config_->Parse()){
+		throw std::runtime_error("failed to read sabre config file");
+	}
+
+	kinX_ = config_->GetDetMCVersion();
+	if(kinX_ != 2 && kinX_ != 3 && kinX_ != 4){
+		ConsoleColorizer::PrintRed("Error: Invalid kinematics type. Use 2 for 2-body, 3 for 3-body, 4 for 4-body!\n");
+		ConsoleColorizer::PrintRed(Form("(got kinX_ = %d)", kinX_));
+		failState_ = true;
+	}
+	kinInputFilename_ = config_->GetInFile();
+	detOutputFilename_ = config_->GetDetFile();
+	treeFilename_ = config_->GetTreeFile();
+	histoFilename_ = config_->GetHistoFile();
+
+	RootWriter_ = new RootWriter(treeFilename_);
+	RootWriter_->SetReaction(config_->GetReaction());
+	RootWriter_->Set_detmc(kinX_);
+	RootWriter_->SetInputFile(config_->GetInFile());
+	RootWriter_->SetBeamEnergyMeV(config_->GetBeamEnergy());
+	RootWriter_->SetBeamSpotProfile(config_->GetBeamProfile());
+	RootWriter_->SetBeamSpotParameters(config_->GetBeamParX(), config_->GetBeamParY());
+
 }
 
 SABREsim::~SABREsim(){
@@ -69,6 +123,26 @@ void SABREsim::CleanUp(){
 
 }
 
+TargetEnergyLoss* SABREsim::GetTargetEnergyLoss(const std::string targetloss){
+	if(targetloss == "6Li_in_LiF") return targetLoss_6Li_in_LiF_;
+	else if(targetloss == "alpha_in_LiF") return targetLoss_alpha_in_LiF_;
+	else if(targetloss == "deuteron_in_LiF") return targetLoss_deuteron_in_LiF_;
+	else if(targetloss == "none") return targetLoss_none_;
+
+	ConsoleColorizer::PrintRed("\nError! Specified target energy loss not found!\nReturning targetLoss_none_ instead!\n\n");
+	return targetLoss_none_;
+}
+
+SABRE_DeadLayerModel* SABREsim::GetDeadLayerLoss(const std::string deadlayerloss){
+	if(deadlayerloss == "6Li_in_Si") return deadLayerLoss_6Li_;
+	else if(deadlayerloss == "alpha_in_Si") return deadLayerLoss_alpha_;
+	else if(deadlayerloss == "deuteron_in_Si") return deadLayerLoss_deuteron_;
+	else if(deadlayerloss == "none") return deadLayerLoss_none_;
+
+	ConsoleColorizer::PrintRed("\nError! Specified dead layer energy loss not found!\nReturning deadLayerLoss_none_ instead!\n\n");
+	return deadLayerLoss_none_;
+}
+
 void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 	double INNER_R = 0.0326;
 	double OUTER_R = 0.1351;
@@ -85,8 +159,8 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 		//           << ", " << det->GetNormTilted().GetY()
 		//           << ", " << det->GetNormTilted().GetZ() << ")\n";
 		Vec3 normtilted = det->GetNormTilted();
-		TString outline = Form("Created SABRE_Detector[%zu] at phi = %f norm = (%f, %f, %f)\n",i,PHI[i],normtilted.GetX(),normtilted.GetY(),normtilted.GetZ());
-		ConsoleColorizer::PrintGreen(outline.Data());
+		//TString outline = Form("Created SABRE_Detector[%zu] at phi = %f norm = (%f, %f, %f)\n",i,PHI[i],normtilted.GetX(),normtilted.GetY(),normtilted.GetZ());
+		//ConsoleColorizer::PrintGreen(outline.Data());
 
 		if(WriteCornersToFile){
 
@@ -109,7 +183,7 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 }
 
 bool SABREsim::InitializeModels(){
-	//energy resolution models
+	//energy resolution models (eventually, config_ should have the ability to set the resolution and cut off below dynamically)
 	for(size_t i=0; i<SABRE_Array_.size(); i++){
 		SABRE_EnergyResolutionModel* m = new SABRE_EnergyResolutionModel(0.050, 0.100);
 		SABREARRAY_EnergyResolutionModels_.push_back(m);
@@ -167,9 +241,17 @@ bool SABREsim::InitializeModels(){
 	}
 
 	//SET CURRENT TARGETLOSS AND DEADLAYERLOSS HERE:
-	//EVENTUALLY, THIS SHOULD BE DETERMINED BY A FILE READ IN TO AVOID HAVING TO REMAKE EVERY TIME
-	// targetLoss_ = targetLoss_6Li_in_LiF_;
-	// deadLayerLoss_ = deadLayerLoss_6Li_;
+	
+	targetLoss_par1_ = GetTargetEnergyLoss(config_->GetTargetLoss(1));
+	targetLoss_par2_ = GetTargetEnergyLoss(config_->GetTargetLoss(2));
+	targetLoss_par3_ = GetTargetEnergyLoss(config_->GetTargetLoss(3));
+	targetLoss_par4_ = GetTargetEnergyLoss(config_->GetTargetLoss(4));
+
+	deadLayerLoss_par1_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(1));
+	deadLayerLoss_par2_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(2));
+	deadLayerLoss_par3_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(3));
+	deadLayerLoss_par4_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(4));
+
 
 	return true;
 }
@@ -187,11 +269,20 @@ void SABREsim::InitializeBeamspot(){
 	//profile_ = new GaussianProfile(0.008,0.008);
 	//profile_ = new GaussianProfile(0.009,0.009);
 	//profile_ = new GaussianProfile(0.010,0.010);
-	profile_ = new FixedPointProfile();
+	//profile_ = new FixedPointProfile();
+
+	if(config_->GetBeamProfile() == "gaussian" || config_->GetBeamProfile() == "gaus"){
+		profile_ = new GaussianProfile(config_->GetBeamParX(),config_->GetBeamParY());
+	} else if(config_->GetBeamProfile() == "fixedPoint" || config_->GetBeamProfile() == "fixedpoint"){
+		profile_ = new FixedPointProfile();
+	} else {
+		profile_ = new FixedPointProfile();
+		ConsoleColorizer::PrintRed("\nError! Beam profile in config file not found, defaulting to fixed point!\n\n");
+	}
 
 	beamspot_ = new Beamspot();
 	beamspot_->SetProfile(profile_);
-	beamspot_->SetBeamAxisOffset(0.,0.);//aligned along z axis (no lateral offset)
+	beamspot_->SetBeamAxisOffset(config_->GetBeamOffsetX(), config_->GetBeamOffsetY());
 }
 
 
@@ -296,6 +387,8 @@ void SABREsim::Run(){
 	infile.close();
 	outfile.close();
 
+	RootWriter_->WriteAndClose();
+
 	PrintSummary();
 }
 
@@ -340,7 +433,7 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 	//det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
 
 
-	det2mcProcessor.Run(infile,outfile);
+	det2mcProcessor.Run(infile,outfile,RootWriter_);
 
 	nevents_ = det2mcProcessor.GetNumEvents();
 	detectorHits_ = det2mcProcessor.GetDetectorHits();
@@ -389,7 +482,7 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det3mcProcessor.GetToString_TargetLoss1().data(),det3mcProcessor.GetToString_TargetLoss2().data(),det3mcProcessor.GetToString_TargetLoss3().data(),det3mcProcessor.GetToString_TargetLoss4().data(),det3mcProcessor.GetToString_DeadLayerLoss1().data(),det3mcProcessor.GetToString_DeadLayerLoss2().data(),det3mcProcessor.GetToString_DeadLayerLoss3().data(),det3mcProcessor.GetToString_DeadLayerLoss4().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
 
-	det3mcProcessor.Run(infile, outfile);
+	det3mcProcessor.Run(infile, outfile, RootWriter_);
 
 	nevents_ = det3mcProcessor.GetNumEvents();
 	detectorHits_ = det3mcProcessor.GetDetectorHits();
@@ -451,7 +544,7 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det4mcProcessor.GetToString_TargetLoss1().data(),det4mcProcessor.GetToString_TargetLoss2().data(),det4mcProcessor.GetToString_TargetLoss3().data(),det4mcProcessor.GetToString_TargetLoss4().data(),det4mcProcessor.GetToString_DeadLayerLoss1().data(),det4mcProcessor.GetToString_DeadLayerLoss2().data(),det4mcProcessor.GetToString_DeadLayerLoss3().data(),det4mcProcessor.GetToString_DeadLayerLoss4().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
 
-	det4mcProcessor.Run(infile,outfile);
+	det4mcProcessor.Run(infile,outfile,RootWriter_);
 
 	nevents_ = det4mcProcessor.GetNumEvents();
 	detectorHits_ = det4mcProcessor.GetDetectorHits();
