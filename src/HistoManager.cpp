@@ -68,23 +68,23 @@ HistoManager::~HistoManager(){
 }
 
 bool HistoManager::loadHistoConfig(const TString& configFilePath){
-	ifstream configFile(configFilePath.Data());
+	std::ifstream configFile(configFilePath.Data());
 	if(!configFile.is_open()){
-		cerr << "Error: Could not open config file: " << configFilePath << endl;
+		std::cerr << "Error: Could not open config file: " << configFilePath << std::endl;
 		return false;
 	}
 
-	string line;
+	std::string line;
 	while(getline(configFile,line)){
 		if(line.empty() || line[0] == '#'){
 			continue;
 		}
 
-		istringstream iss(line);
-		string directory;
-		string type;
+		std::istringstream iss(line);
+		std::string directory;
+		std::string type;
 		if(!(iss >> directory >> type)){
-			cerr << "Error: Could not read histogram type from line: " << line << endl;
+			std::cerr << "Error: Could not read histogram type from line: " << line << std::endl;
 			continue;
 		}
 
@@ -95,7 +95,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			if(iss >> config.name >> config.title >> config.nbinsx >> config.xmin >> config.xmax){
 				addHisto1D(config);
 			} else {
-				cerr << "Error: Invalid 1D Histogram configuration: " << line << endl;
+				std::cerr << "Error: Invalid 1D Histogram configuration: " << line << std::endl;
 			}
 		} else if(type == "TH2F" || type == "TH2D" || type == "TH1I" || type == "TProfile2D"){
 			HistoConfig2D config;
@@ -104,7 +104,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			if(iss >> config.name >> config.title >> config.nbinsx >> config.xmin >> config.xmax >> config.nbinsy >> config.ymin >> config.ymax){
 				addHisto2D(config);
 			} else {
-				cerr << "Error: Invalid 2D Histogram configuration: " << line << endl;
+				std::cerr << "Error: Invalid 2D Histogram configuration: " << line << std::endl;
 			}
 		} else if(type == "TH3F" || type == "TH3D" || type == "TH3I"){
 			HistoConfig3D config;
@@ -113,7 +113,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			if(iss >> config.name >> config.title >> config.nbinsx >> config.xmin >> config.xmax >> config.nbinsy >> config.ymin >> config.ymax >> config.nbinsz >> config.zmin >> config.zmax){
 				addHisto3D(config);
 			} else {
-				cerr << "Error: Invalid 3D Histogram configuration: " << line << endl;
+				std::cerr << "Error: Invalid 3D Histogram configuration: " << line << std::endl;
 			}
 		} else if(type == "TH2Poly"){
 			HistoConfig2DPoly config;
@@ -123,10 +123,10 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 				addHisto2DPoly(config);
 				//can parse polygons here in the future
 			} else {
-				cerr << "Error: Invalid TH2Poly Histogram configuration: " << line << endl;
+				std::cerr << "Error: Invalid TH2Poly Histogram configuration: " << line << std::endl;
 			}
 		} else {
-			cerr << "Error: Unknown histogram type: " << type << " in line: " << line << endl;
+			std::cerr << "Error: Unknown histogram type: " << type << " in line: " << line << std::endl;
 		}
 	}
 
@@ -148,7 +148,7 @@ void HistoManager::addHisto1D(const TString& name, const TString& title, Int_t n
 
 void HistoManager::addHisto1D(const HistoConfig1D& config){
 	if(getHisto1D(config.name)){
-		cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << endl;
+		std::cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
 	TH1* h = createHisto1D(config);
@@ -182,7 +182,7 @@ void HistoManager::addHisto2D(const TString& name, const TString& title, Int_t n
 
 void HistoManager::addHisto2D(const HistoConfig2D& config){
 	if(getHisto2D(config.name)){
-		cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << endl;
+		std::cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
 	TH2* h = createHisto2D(config);
@@ -210,7 +210,7 @@ void HistoManager::addHisto2DPoly(const TString& name, const TString& title, con
 
 void HistoManager::addHisto2DPoly(const HistoConfig2DPoly& config){
 	if(getHisto2DPoly(config.name)){
-		cerr << "Warning: TH2Poly " << config.name << " already exists. Skipping." << endl;
+		std::cerr << "Warning: TH2Poly " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
 
@@ -242,7 +242,7 @@ void HistoManager::addHisto3D(const TString& name, const TString& title, Int_t n
 
 void HistoManager::addHisto3D(const HistoConfig3D& config){
 	if(getHisto3D(config.name)){
-		cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << endl;
+		std::cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
 	TH3* h = createHisto3D(config);
@@ -337,13 +337,13 @@ TH2Poly* HistoManager::getHisto2DPoly(const TString& name) const {
 
 // 		if(writeFileToDiskAutomatically) m_outputFile->Write();
 // 	} else {
-// 		cerr << "Warning: Output file not set. Histograms will not be written to disk." << endl;
+// 		std::cerr << "Warning: Output file not set. Histograms will not be written to disk." << std::endl;
 // 	}
 // }
 
 void HistoManager::WriteAll(bool writeFileToDiskAutomatically){
 	if(!m_outputFile){
-		cerr << "Warning: output file not set. Histograms will not be written to disk." << endl;
+		std::cerr << "Warning: output file not set. Histograms will not be written to disk." << std::endl;
 		return;
 	}
 
@@ -395,7 +395,7 @@ void HistoManager::WriteAll(bool writeFileToDiskAutomatically){
 		}
 	}
 
-	if(writeFileToDiskAutomatically){ m_outputFile->Write("",TObject::kOverwrite); } else { cout << "Histos written to file in memory but file not written to disk yet!" << endl; }
+	if(writeFileToDiskAutomatically){ m_outputFile->Write("",TObject::kOverwrite); } else { std::cout << "Histos written to file in memory but file not written to disk yet!" << std::endl; }
 }
 
 void HistoManager::Write(const TString& name){
@@ -403,7 +403,7 @@ void HistoManager::Write(const TString& name){
 		m_outputFile->cd();
 		Write(name,m_outputFile);
 	} else {
-		cerr << "Warning: Output file not set. Histogram " << name << " will not be written to disk." << endl;
+		std::cerr << "Warning: Output file not set. Histogram " << name << " will not be written to disk." << std::endl;
 	}
 }
 
@@ -452,7 +452,7 @@ void HistoManager::Write(const TString& name, TDirectory *tdir){
 		return;
 	}
 
-	cerr << "Error: Histogram " << name << " not found." << endl;
+	std::cerr << "Error: Histogram " << name << " not found." << std::endl;
 }
 
 TH1* HistoManager::createHisto1D(const HistoConfig1D& config){
@@ -466,8 +466,8 @@ TH1* HistoManager::createHisto1D(const HistoConfig1D& config){
 	} else if(config.type == "TProfile"){
 		histo = new TProfile(config.name, config.title, config.nbinsx, config.xmin, config.xmax);
 	} else {
-		cerr << "Error: Unknown 1D histogram type: " << config.type.Data() << endl;
-		cerr << "Did you forget to add functionality for " << config.type.Data() << " in HistoManager class?" << endl;
+		std::cerr << "Error: Unknown 1D histogram type: " << config.type.Data() << std::endl;
+		std::cerr << "Did you forget to add functionality for " << config.type.Data() << " in HistoManager class?" << std::endl;
 	}
 	return histo;
 }
@@ -483,8 +483,8 @@ TH2* HistoManager::createHisto2D(const HistoConfig2D& config){
 	} else if(config.type == "TProfile2D"){
 		histo = new TProfile2D(config.name, config.title, config.nbinsx, config.xmin, config.xmax, config.nbinsy, config.ymin, config.ymax);
 	} else {
-		cerr << "Error: Unknown 2D histogram type: " << config.type.Data() << endl;
-		cerr << "Did you forget to add functionality for " << config.type.Data() << " in HistoManager class?" << endl;
+		std::cerr << "Error: Unknown 2D histogram type: " << config.type.Data() << std::endl;
+		std::cerr << "Did you forget to add functionality for " << config.type.Data() << " in HistoManager class?" << std::endl;
 	}
 	return histo;
 }
@@ -498,15 +498,15 @@ TH3* HistoManager::createHisto3D(const HistoConfig3D& config){
 	} else if(config.type == "TH3I"){
 		histo = new TH3I(config.name, config.title, config.nbinsx, config.xmin, config.xmax, config.nbinsy, config.ymin, config.ymax, config.nbinsz, config.zmin, config.zmax);
 	} else {
-		cerr << "Error: Unknown 3D histogram type: " << config.type.Data() << endl;
-		cerr << "Did you forget to add functionality for " << config.type.Data() << " in HistoManager class?" << endl;
+		std::cerr << "Error: Unknown 3D histogram type: " << config.type.Data() << std::endl;
+		std::cerr << "Did you forget to add functionality for " << config.type.Data() << " in HistoManager class?" << std::endl;
 	}
 	return histo;
 }
 
 TDirectory* HistoManager::getOrCreateDirectory(const TString& path){
 	if(!m_outputFile){
-		cerr << "Warning: Output file not set. Cannot create directory." << endl;
+		std::cerr << "Warning: Output file not set. Cannot create directory." << std::endl;
 		return gDirectory;
 	}
 
@@ -526,7 +526,7 @@ TDirectory* HistoManager::getOrCreateDirectory(const TString& path){
 		if(!subdir){
 			subdir = currentDir->mkdir(part);
 			if(!subdir){
-				cerr << "Error creating directory: " << path << ". Defaulting to current directory." << endl;
+				std::cerr << "Error creating directory: " << path << ". Defaulting to current directory." << std::endl;
 				delete parts;
 				return gDirectory;
 			}
