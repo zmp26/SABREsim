@@ -30,16 +30,16 @@ double kin_e[4]					->		kin2/3/4mc particle E
 double kin_theta[4]				->		kin2/3/4mc particle Theta
 double kin_phi[4]				->		kin2/3/4mc particle Phi
 
-double reactionOrigin[3]			->		where did the reaction occur
-int numHits					->		how many hits in SABRE
+double reactionOrigin[3]		->		where did the reaction occur
+int numHits						->		how many hits in SABRE
 int particleID[4]				->		which particle from kin2/3/4mc detected
 int detectorID[4]				->		which detector in array was particle detected in
 int ringChannel[4]				->		which global ring channel fired
 int wedgeChannel[4]				->		which global wedge channel fired
 int localRing[4]				->		which local ring channel fired
 int localWedge[4]				->		which local wedge channel fired
-double ringEnergy[4]				->		what energy was detected in the ring
-double wedgeEnergy[4]				->		what energy was detected in the wedge
+double ringEnergy[4]			->		what energy was detected in the ring
+double wedgeEnergy[4]			->		what energy was detected in the wedge
 double localx[4]				->		what x coord to use for SABRE hitmap
 double localy[4]				->		what y coord to use for SABRE hitmap
 
