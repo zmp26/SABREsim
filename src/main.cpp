@@ -9,14 +9,6 @@ using namespace std;
 #include "SABREsim.h"
 #include <TString.h>
 
-static const std::pair<int, int> offsets[] = {
-	{112,40},	//detector0
-	{96,32},	//detector1
-	{80,16},	//detector2
-	{64,24},	//detector3
-	{48,0}		//detector4
-};
-
 int main(int argc, char * argv[]){
 
 	if(argc == 2 && (std::string(argv[1]) == "help" || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")){

@@ -37,7 +37,7 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  }
 
 
-void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter){
+void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter){
 	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
@@ -53,8 +53,11 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		hBeamSpot->Fill(reactionOrigin.GetX(),reactionOrigin.GetY());
 		//Vec3 reactionOrigin = {0.,0.,0.};
 
-		outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << std::endl;
+		std::ostringstream ss;
+		//outfile << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\n";
+		ss << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\n";
 		if(nevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
+		//outfile << ss.str();
 
 		RootWriter->SetKinematics(0, e1, theta1, phi1);
 		RootWriter->SetKinematics(1, e2, theta2, phi2);
@@ -94,7 +97,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second,e1_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
-						outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+						//outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
+						ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						detected1 = true;
 						hit1_+=1;
 						detectorHits_[i] += 1;
@@ -111,6 +115,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 										   localCoords.GetX(),
 										   localCoords.GetY()
 										   );
+
+
 
 					}
 				}
@@ -144,7 +150,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
 						Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
-						outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+						//outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
+						ss << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						detected2 = true;
 						hit2_+=1;
 						detectorHits_[i] += 1;
@@ -171,7 +178,12 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 		if(!detected1&&detected2) hit2Only_ += 1;
 
-		outfile << eoev << std::endl;
+		ss << eoev;
+
+		outfile << ss.str() << "\n";
+
+		//std::cout << "ss.str() = " << ss.str() << "\n";
+		RootPlotter->ProcessTXTOutput(ss.str());
 
 		RootWriter->FillEvent();
 	}

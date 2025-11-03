@@ -15,10 +15,7 @@
 #include "UniformProfile.h"
 #include "GaussianProfile.h"
 #include "FixedPointProfile.h"
-
-static const std::pair<int,int> offsets[] = {
-	{112,40}, {96,32}, {80,16}, {64,24}, {48,0}
-};
+#include "plot2mc.h"
 
 // SABREsim::SABREsim(int kinX,
 // 				   const std::string& kinInputFilename,
@@ -432,8 +429,9 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 
 	//det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
 
+	plot2mc *RootPlotter = new plot2mc(config_->GetHistoFile());
 
-	det2mcProcessor.Run(infile,outfile,RootWriter_);
+	det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter);
 
 	nevents_ = det2mcProcessor.GetNumEvents();
 	detectorHits_ = det2mcProcessor.GetDetectorHits();
@@ -442,6 +440,8 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 	hitBoth_ = det2mcProcessor.GetHitBoth();
 	hit1Only_ = det2mcProcessor.GetHit1Only();
 	hit2Only_ = det2mcProcessor.GetHit2Only();
+
+	RootPlotter->SaveAndWrite();
 }
 
 void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){

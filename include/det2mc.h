@@ -13,6 +13,7 @@
 #include <cmath>
 #include "Beamspot.h"
 #include "RootWriter.h"
+#include "plot2mc.h"
 
 class det2mc {
 public:
@@ -27,7 +28,7 @@ public:
 		   SABRE_DeadLayerModel* deadLayerLoss_par2,
 		   Beamspot* beamspot);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter);
 
 	//after Run(), these functions may be called to query for statistics:
 	long GetNumEvents() const;
