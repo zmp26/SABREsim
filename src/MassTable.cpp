@@ -1,4 +1,4 @@
-#include "masstable.h"
+#include "MassTable.h"
 
 void MassTable::Init(const char* file)
 {
