@@ -31,23 +31,23 @@
 
 void Lithium6_1plus(int ring, TString beamstring){
 
-	TString anglestring = "1224";
+	TString anglestring = "17282228";
 
 	//uncomment below for surface laptop
-	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
+	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s.root", anglestring.Data(), beamstring.Data());
-	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
+	// TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root", anglestring.Data(), beamstring.Data());
+	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//std::cout << simFilePath << std::endl;
 
 	//uncomment below for DESKTOP
-	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	// TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = Form("1par/1plus/hSABRE_SABRE3_Ring%dESummary_1plus",ring);
 
-	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1822_%s.root",beamstring.Data());
-	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
+	TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root", anglestring.Data(), beamstring.Data());
+	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//for our sps acceptances, rings 7 and 8 on SABRE3 illuminate
 	// if(ring != 7 && ring != 8) {
@@ -225,12 +225,12 @@ void Lithium6_1plus_auto(){
 										"gaus002",
 										"gaus003",
 										"gaus004",
-										"gaus005",
-										"gaus006",
-										"gaus007",
-										"gaus008",
-										"gaus009",
-										"gaus010"
+										"gaus005"
+										// "gaus006",
+										// "gaus007",
+										// "gaus008",
+										// "gaus009",
+										// "gaus010"
 									};
 
 	for(size_t r=0; r<rings.size(); r++){
@@ -241,21 +241,22 @@ void Lithium6_1plus_auto(){
 }
 
 void Lithium6_1plus_sabrehits(TString beamstring){
+
+	TString anglestring = "17282228";
+
 	//uncomment below for DESKTOP
-	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1822_%s.root",beamstring.Data());
-	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-	TString anglestring = "1224";
-
-	//uncomment below for LAPTOP
-	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	//uncomment below for LAPTOP
+	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	// TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
+	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
 
 
@@ -367,12 +368,12 @@ void Lithium6_1plus_sabrehits_auto(){
 										"gaus002",
 										"gaus003",
 										"gaus004",
-										"gaus005",
-										"gaus006",
-										"gaus007",
-										"gaus008",
-										"gaus009",
-										"gaus010"
+										"gaus005"
+										// "gaus006",
+										// "gaus007",
+										// "gaus008",
+										// "gaus009",
+										// "gaus010"
 									};
 
 	for(size_t b=0; b<beamstrings.size(); b++){
@@ -383,23 +384,25 @@ void Lithium6_1plus_sabrehits_auto(){
 
 void Lithium6_1plus_sabre3summaries(TString beamstring){
 
-	TString anglestring = "1224";
+	TString anglestring = "17282228";
 
 	//uncomment below for DESKTOP
-	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta1822_%s.root",beamstring.Data());
-	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-	//uncomment below for LAPTOP
-	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
 	TString dataHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	TString simHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
 	TString simHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
+
+	//uncomment below for LAPTOP
+	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
+	// TString dataHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
+
+	// TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
+	// TString simHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
+	// TString simHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
 
 	//prep output file name:
 	//TString outfile_root_name = Form("Lithium6_1plus_simVSdata_sabre3summaries_%s.root",beamstring.Data());
@@ -583,11 +586,11 @@ void Lithium6_1plus_sabre3summaries_auto(){
 										"gaus003",
 										"gaus004",
 										"gaus005",
-										"gaus006",
-										"gaus007",
-										"gaus008",
-										"gaus009",
-										"gaus010"
+										// "gaus006",
+										// "gaus007",
+										// "gaus008",
+										// "gaus009",
+										// "gaus010"
 									};
 
 	for(const auto& bs : beamstrings){
@@ -599,13 +602,13 @@ void Lithium6_1plus_sabre3summaries_auto(){
 
 void Lithium6_0plus(int ring, TString beamstring){
 
-	TString anglestring = "1224";
+	TString anglestring = "17282228";
 
 	//uncomment below for surface laptop
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
 	TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	// if(ring != 8 && ring != 9){
@@ -620,7 +623,7 @@ void Lithium6_0plus(int ring, TString beamstring){
 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
 	// TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
 
-	// TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1721.root";
+	// TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1721_histos.root";
 	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
 
 	//open data file and retrieve histo
@@ -783,16 +786,16 @@ void Lithium6_0plus_sabrehits(TString beamstring){
 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
 	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString anglestring = "1224";
+	TString anglestring = "17282228";
 
 	//uncomment below for LAPTOP
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
 	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
 
@@ -901,13 +904,13 @@ void Lithium6_0plus_sabrehits_auto(){
 }
 
 void Lithium6_0plus_sabre3summaries(TString beamstring){
-	TString anglestring = "1224";
+	TString anglestring = "17282228";
 
 	//uncomment below for DESKTOP
 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
 	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
 	//uncomment below for LAPTOP
@@ -915,7 +918,7 @@ void Lithium6_0plus_sabre3summaries(TString beamstring){
 	TString dataHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
 	TString dataHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s.root",anglestring.Data(),beamstring.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	TString simHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
 	TString simHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
 
