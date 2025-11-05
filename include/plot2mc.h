@@ -13,6 +13,7 @@
 #include "HistoManager.h"
 #include "MassTable.h"
 #include "TRandom3.h"
+#include "Vec3.h"
 
 struct PHYSDATA {double e, theta, phi;};
 struct SABREDATA {int detectorIndex=-666, particleIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
@@ -78,6 +79,8 @@ public:
 
 	void ProcessTXTOutput(std::vector<std::string> eventLines);
 	void ProcessTXTOutput(const std::string& outputLines);
+
+	void FillBeamSpotHisto(Vec3& reactionOrigin);
 
 	void SaveAndWrite();
 

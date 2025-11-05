@@ -41,7 +41,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
-	TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
+	//TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
 
 	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
 		nevents_ += 1;
@@ -50,7 +50,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 		//get reaction origin based on beamspot
 		Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
-		hBeamSpot->Fill(reactionOrigin.GetX(),reactionOrigin.GetY());
+		//hBeamSpot->Fill(reactionOrigin.GetX(),reactionOrigin.GetY());
+
 		//Vec3 reactionOrigin = {0.,0.,0.};
 
 		std::ostringstream ss;
@@ -65,6 +66,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		RootWriter->SetKinematics(3, -666., thetacm, -666.);
 
 		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
+
+		RootPlotter->FillBeamSpotHisto(reactionOrigin);
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 				/*///////////////////////////////////////////////
@@ -198,7 +201,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// RootWriter->SetReaction();
 
 	TFile *tempfile = new TFile("BeamSpotHisto_det2mc.root","RECREATE");
-	hBeamSpot->Write();
+	//hBeamSpot->Write();
 	tempfile->Close();
 
 }

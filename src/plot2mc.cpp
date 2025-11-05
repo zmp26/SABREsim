@@ -1,6 +1,7 @@
 #include "plot2mc.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
+#include "Vec3.h"
 
 plot2mc::plot2mc(const std::string& outname){
 
@@ -36,6 +37,10 @@ void plot2mc::FillKinematicsHistos(PHYSDATA& pd1, PHYSDATA& pd2){
 	histoman->getHisto2D("hELabPhiLab_2")->Fill(pd2.phi,pd2.e);
 	histoman->getHisto2D("hThetaLabPhiLab_1")->Fill(pd1.theta,pd1.phi);
 	histoman->getHisto2D("hThetaLabPhiLab_2")->Fill(pd2.theta,pd2.phi);
+}
+
+void plot2mc::FillBeamSpotHisto(Vec3& reactionOrigin){
+	histoman->getHisto2D("hBeamSpot")->Fill(reactionOrigin.GetX(),reactionOrigin.GetY());
 }
 
 void plot2mc::FillSABREHistos(SABREDATA& sd1, PHYSDATA& pd1){
