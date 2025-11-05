@@ -235,7 +235,7 @@ bool SABREsim::InitializeModels(){
 
 	deadLayerLoss_none_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_none.conf");
 	if(!deadLayerLoss_none_){
-		ConsoleColorizer::PrintRed("Failed to load none dead layer config\n");
+		ConsoleColorizer::PrintRed("Failed to load none dead layer config\n"); 
 		return false;
 	}
 
