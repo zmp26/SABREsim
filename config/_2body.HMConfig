@@ -112,7 +112,8 @@ SABRE/SABRE3/Summary TH3D hSABRE3_ESummaryPixels SABRE3_ESummaryPixels 8 -0.5 7.
 SABRE/SABRE4/Summary TH3D hSABRE4_ESummaryPixels SABRE4_ESummaryPixels 8 -0.5 7.5 16 -0.5 15.5 400 0 20
 #
 #
-#
+# Beamspot histogram:
+. TH2D hBeamSpot BeamSpot 200 -0.05 0.05 200 -0.05 0.05
 #
 #
 # SABRE detector EDif histos
