@@ -510,7 +510,7 @@ TDirectory* HistoManager::getOrCreateDirectory(const TString& path){
 		return gDirectory;
 	}
 
-	if(path.IsNull() || path.IsWhitespace()){
+	if(path.IsNull() || path.IsWhitespace() || path == "." || path == "/" || path == "./"){
 		return m_outputFile;
 	}
 
