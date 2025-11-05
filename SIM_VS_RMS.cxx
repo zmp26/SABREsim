@@ -778,8 +778,8 @@ void Lithium6_1plus_fourpixelchisquared(){
 											"gaus005"
 										};
 
-	TH2I *hGridSearchChi2 = new TH2I("hGridSearchChi2", "GridSearchChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
-	TH2I *hGridSearchReducedChi2 = new TH2I("hGridSearchReducedChi2", "GridSearchReducedChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
 
 	//---------------------------------------------------
 	//				Establish data values
@@ -1003,17 +1003,29 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 
 	TString anglestring = "17282228";
 
-	std::vector<TString> beamstrings = {
-											"fixed",
-											"gaus001",
-											"gaus002",
+	std::vector<TString> beamstringsx = {
+											"gaus0025",
 											"gaus003",
+											"gaus0035",
 											"gaus004",
+											"gaus0045",
 											"gaus005"
 										};
 
-	TH2I *hGridSearchChi2 = new TH2I("hGridSearchChi2", "GridSearchChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
-	TH2I *hGridSearchReducedChi2 = new TH2I("hGridSearchReducedChi2", "GridSearchReducedChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+	std::vector<TString> beamstringsy = {
+											"gaus0005",
+											"gaus001",
+											"gaus0015",
+											"gaus002",
+											"gaus0025",
+											"gaus003"
+										};										
+
+	double xEdges[7] = {0.00225, 0.00275, 0.00325, 0.00375, 0.00425, 0.00475, 0.00525};
+	double yEdges[7] = {0.00025, 0.00075, 0.00125, 0.00175, 0.00225, 0.00275, 0.00325};										
+
+	TH2D *hGridSearchChi2_2 = new TH2D("hGridSearchChi2_2", "GridSearchChi2_2", 6, xEdges, 6, yEdges);
+	TH2D *hGridSearchReducedChi2_2 = new TH2D("hGridSearchReducedChi2_2", "GridSearchReducedChi2_2", 6, xEdges, 6, yEdges);
 
 	//---------------------------------------------------
 	//				Establish data values
@@ -1070,8 +1082,8 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 	// std::vector<double> fourpix_relcounts = {counts_pix_r71_w29/fourpixsum, counts_pix_r72_w29/fourpixsum, counts_pix_r72_w30/fourpixsum, counts_pix_r71_w30/fourpixsum};
 
 	//for(const auto& fn : filenames){
-	for(const auto& bsx : beamstrings){
-		for(const auto& bsy : beamstrings){
+	for(const auto& bsx : beamstringsx){
+		for(const auto& bsy : beamstringsy){
 
 			TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root", anglestring.Data(), bsx.Data(), bsy.Data());
 
@@ -1197,37 +1209,27 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 
 			double reducedchi2 = chi2/ndf;
 
-
 			//fill chi2 histogram from grid search:
-			int xbin = 0;
-			int ybin = 0;
 
-			if(bsx == "fixed") xbin = 0;
-			else if(bsx == "gaus001") xbin = 1;
-			else if(bsx == "gaus002") xbin = 2;
-			else if(bsx == "gaus003") xbin = 3;
-			else if(bsx == "gaus004") xbin = 4;
-			else if(bsx == "gaus005") xbin = 5;
+			std::map<TString,double> beamXmap = {{"gaus0025",0.0025},{"gaus003",0.003},{"gaus0035",0.0035},{"gaus004",0.004},{"gaus0045",0.0045},{"gaus005",0.005}};
 
-			if(bsy == "fixed") ybin = 0;
-			else if(bsy == "gaus001") ybin = 1;
-			else if(bsy == "gaus002") ybin = 2;
-			else if(bsy == "gaus003") ybin = 3;
-			else if(bsy == "gaus004") ybin = 4;
-			else if(bsy == "gaus005") ybin = 5;
+			std::map<TString,double> beamYmap = {{"gaus0005",0.0005},{"gaus001",0.001},{"gaus0015",0.0015},{"gaus002",0.002},{"gaus0025",0.0025},{"gaus003",0.003}};
 
-			hGridSearchChi2->Fill(xbin,ybin,chi2);
-			hGridSearchReducedChi2->Fill(xbin,ybin,reducedchi2);
+			double xbin = beamXmap[bsx];
+			double ybin = beamYmap[bsy];
+
+			hGridSearchChi2_2->Fill(xbin,ybin,chi2);
+			hGridSearchReducedChi2_2->Fill(xbin,ybin,reducedchi2);
 		}
 	}
 
-	TFile *outfile = new TFile("GridSearch.root","RECREATE");
+	TFile *outfile = new TFile("GridSearch2.root","RECREATE");
 
 	outfile->cd();
 	//hData->Write();
 	//hSim->Write();
-	hGridSearchChi2->Write();
-	hGridSearchReducedChi2->Write();
+	hGridSearchChi2_2->Write();
+	hGridSearchReducedChi2_2->Write();
 
 	outfile->Close();//needs to be converted for tighter beamspot varying
 
