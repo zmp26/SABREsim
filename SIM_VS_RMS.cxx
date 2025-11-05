@@ -28,6 +28,7 @@
 #include <fstream>
 #include <TString.h>
 #include <TPaveText.h>
+#include <cmath>
 
 void Lithium6_1plus(int ring, TString beamstring){
 
@@ -764,7 +765,149 @@ void Lithium6_1plus_pixelhistos_auto(){
 	}
 }
 
+void Lithium6_1plus_fourpixelchisquared(){
 
+	TString anglestring = "17282228";
+
+	std::vector<TString> beamstrings = {
+											"fixed",
+											"gaus001",
+											"gaus002",
+											"gaus003",
+											"gaus004",
+											"gaus005"
+										};
+
+	std::vector<TString> filenames;
+
+	for(const auto& bsx : beamstrings){
+		
+		for(const auto& bsy : beamstrings){
+			
+			TString filename = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root", anglestring.Data(), bsx.Data(), bsy.Data());
+			filenames.push_back(filename);
+
+		}
+
+	}
+
+	//---------------------------------------------------
+	//				Establish data values
+	//---------------------------------------------------
+
+	//uncomment for DESKTOP:
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+
+	TString path_pix_r71_w29 = "SABRE/SABRE3/Pixels/hSABRE3_pixel_r71_w29";
+	TString path_pix_r72_w29 = "SABRE/SABRE3/Pixels/hSABRE3_pixel_r72_w29";
+	TString path_pix_r72_w30 = "SABRE/SABRE3/Pixels/hSABRE3_pixel_r72_w30";
+	TString path_pix_r71_w30 = "SABRE/SABRE3/Pixels/hSABRE3_pixel_r71_w30";
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		return;
+	}
+
+	TH1 *hpix_r71_w29 = dynamic_cast<TH1*>(datafile->Get(path_pix_r71_w29));
+	TH1 *hpix_r72_w29 = dynamic_cast<TH1*>(datafile->Get(path_pix_r72_w29));
+	TH1 *hpix_r72_w30 = dynamic_cast<TH1*>(datafile->Get(path_pix_r72_w30));
+	TH1 *hpix_r71_w30 = dynamic_cast<TH1*>(datafile->Get(path_pix_r71_w30));
+	if(!hpix_r71_w29 || !hpix_r72_w29 || !hpix_r72_w30 || !hpix_r71_w30){
+		std::cerr << "Error retrieving at least one data histogram!" << std::endl;
+		return;
+	}
+
+	// hpix_r71_w29->SetDirectory(0);
+	// hpix_r72_w29->SetDirectory(0);
+	// hpix_r72_w30->SetDirectory(0);
+	// hpix_r71_w30->SetDirectory(0);
+	datafile->Close();
+
+	double counts_pix_r71_w29 = hpix_r71_w29->GetEntries();
+	double counts_pix_r72_w29 = hpix_r72_w29->GetEntries();
+	double counts_pix_r72_w30 = hpix_r72_w30->GetEntries();
+	double counts_pix_r71_w30 = hpix_r71_w30->GetEntries();
+
+	double fourpixsum = counts_pix_r71_w29 + counts_pix_r72_w29 + counts_pix_r72_w30 + counts_pix_r71_w30;
+
+	std::vector<double> fourpix_relcounts = {counts_pix_r71_w29/fourpixsum, counts_pix_r72_w29/fourpixsum, counts_pix_r72_w30/fourpixsum, counts_pix_r71_w30/fourpixsum};
+
+	for(const auto& fn : filenames){
+
+		//establish sim values:
+		TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
+
+		TFile *simfile = new TFile(simFilePath,"READ");
+		if(!simfile || simfile->IsZombie()){
+			std::cerr << "Error opening sim file " << simFilePath << "\n\n";
+			continue;
+		}
+
+		TH1 *hpix_r71_w29_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r71_w29));
+		TH1 *hpix_r72_w29_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r72_w29));
+		TH1 *hpix_r72_w30_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r72_w30));
+		TH1 *hpix_r71_w30_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r71_w30));
+		if(!hpix_r71_w29_sim || !hpix_r72_w29_sim || !hpix_r72_w30_sim || !hpix_r71_w30_sim){
+			std::cerr << "Error retrieving at least one sim histogram!" << std::endl;
+			continue;
+		}
+
+		// hpix_r71_w29_sim->SetDirectory(0);
+		// hpix_r72_w29_sim->SetDirectory(0);
+		// hpix_r72_w30_sim->SetDirectory(0);
+		// hpix_r71_w30_sim->SetDirectory(0);
+		simfile->Close();
+
+		if( (hpix_r71_w29->GetNbinsX() != hpix_r71_w29_sim->GetNbinsX()) || (hpix_r72_w29->GetNbinsX() != hpix_r72_w29_sim->GetNbinsX()) || (hpix_r72_w30->GetNbinsX() != hpix_r72_w30_sim->GetNbinsX()) || (hpix_r71_w30->GetNbinsX() != hpix_r71_w30_sim->GetNbinsX())){
+			std::cerr << "Histogram binning does not match for at least one data/sim histogram pair\n";
+			continue;
+		}
+
+		double simIntegral_r71_w29 = hpix_r71_w29_sim->Integral();
+		double simIntegral_r72_w29 = hpix_r72_w29_sim->Integral();
+		double simIntegral_r72_w30 = hpix_r72_w30_sim->Integral();
+		double simIntegral_r71_w30 = hpix_r71_w30_sim->Integral();
+
+		double scaleFactor_r71_w29;// = counts_pix_r71_w29/simIntegral_r71_w29;
+		double scaleFactor_r72_w29;// = counts_pix_r72_w29/simIntegral_r72_w29;
+		double scaleFactor_r72_w30;// = counts_pix_r72_w30/simIntegral_r72_w30;
+		double scaleFactor_r71_w30;// = counts_pix_r71_w30/simIntegral_r71_w30;
+
+		if(simIntegral_r71_w29!=0 && simIntegral_r72_w29!=0 && simIntegral_r72_w30!=0 && simIntegral_r71_w30!=0){
+
+			scaleFactor_r71_w29 = counts_pix_r71_w29/simIntegral_r71_w29;
+			scaleFactor_r72_w29 = counts_pix_r72_w29/simIntegral_r72_w29;
+			scaleFactor_r72_w30 = counts_pix_r72_w30/simIntegral_r72_w30;
+			scaleFactor_r71_w30 = counts_pix_r71_w30/simIntegral_r71_w30;
+
+			hpix_r71_w29_sim->Scale(scaleFactor_r71_w29);
+			hpix_r72_w29_sim->Scale(scaleFactor_r72_w29);
+			hpix_r72_w30_sim->Scale(scaleFactor_r72_w30);
+			hpix_r71_w30_sim->Scale(scaleFactor_r71_w30);
+
+		} else {
+			std::cerr << "sim histogram has zero integral, cannot be scaled...continuing...\n";
+			continue;
+		}
+
+
+		double counts_sim_pix_r71_w29 = hpix_r71_w29_sim->Integral();
+		double counts_sim_pix_r72_w29 = hpix_r72_w29_sim->Integral();
+		double counts_sim_pix_r72_w30 = hpix_r72_w30_sim->Integral();
+		double counts_sim_pix_r71_w30 = hpix_r71_w30_sim->Integral();
+
+		double fourpixsum_sim = counts_sim_pix_r71_w29 + counts_sim_pix_r72_w29 + counts_sim_pix_r72_w30 + counts_sim_pix_r71_w30;
+
+		std::vector<double> fourpix_relcounts_sim = {counts_sim_pix_r71_w29/fourpixsum_sim, counts_sim_pix_r72_w29/fourpixsum_sim, counts_sim_pix_r72_w30/fourpixsum_sim, counts_sim_pix_r71_w30/fourpixsum_sim};
+
+		//calculate the chi squared for this sim file:
+
+		double chi2 = (std::pow((counts_pix_r71_w29-counts_sim_pix_r71_w29),2)/std::pow((),2)) + (std::pow((),2)/) + (std::pow((),2)/) + (std::pow((),2)/);
+
+	}
+
+}
 
 void Lithium6_0plus(int ring, TString beamstring){
 
