@@ -15,6 +15,8 @@
 #include "UniformProfile.h"
 #include "GaussianProfile.h"
 #include "FixedPointProfile.h"
+#include "GaussianProfileX_FixedPointY.h"
+#include "GaussianProfileY_FixedPointX.h"
 #include "plot2mc.h"
 
 // SABREsim::SABREsim(int kinX,
@@ -272,6 +274,10 @@ void SABREsim::InitializeBeamspot(){
 		profile_ = new GaussianProfile(config_->GetBeamParX(),config_->GetBeamParY());
 	} else if(config_->GetBeamProfile() == "fixedPoint" || config_->GetBeamProfile() == "fixedpoint"){
 		profile_ = new FixedPointProfile();
+	} else if(config_->GetBeamProfile() == "gausxfixedy") {
+		profile_ = new GaussianProfileX_FixedPointY(config_->GetBeamParX());
+	} else if(config_->GetBeamProfile() == "gausyfixedx") {
+		profile_ = new GaussianProfileY_FixedPointX(config_->GetBeamParY());
 	} else {
 		profile_ = new FixedPointProfile();
 		ConsoleColorizer::PrintRed("\nError! Beam profile in config file not found, defaulting to fixed point!\n\n");
