@@ -1032,11 +1032,11 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 	//---------------------------------------------------
 
 	//uncomment for DESKTOP:
-	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	// TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
-	//uncomment for LAPTOP:
-	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+	//uncomment for LAPTOP:
+	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
 
 	// TString path_pix_r71_w29 = "SABRE/SABRE3/Pixels/hSABRE3_pixel_r71_w29";
@@ -1089,11 +1089,11 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 
 			//establish sim values:
 			//uncomment for DESKTOP
-			// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
-			// TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
-			//uncomment for LAPTOP:
-			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+			TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
 			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+			//uncomment for LAPTOP:
+			// TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+			// TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
 
 			TFile *simfile = new TFile(simFilePath,"READ");
@@ -1233,6 +1233,40 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 
 	outfile->Close();//needs to be converted for tighter beamspot varying
 
+}
+
+void refineAroundMin(){
+	TH2D *h = (TH2D*)gDirectory->Get("hGridSearchChi2_2");
+	if(!h){
+		std::cerr << "Error, histogram not found" << std::endl;
+		return;
+	}
+
+	Int_t ixmin, iymin, dummy;
+	h->GetMinimumBin(ixmin,iymin,dummy);
+
+	double val_min = h->GetBinContent(ixmin,iymin);
+	double xcenter_orig = h->GetXaxis()->GetBinCenter(ixmin);
+	double ycenter_orig = h->GetYaxis()->GetBinCenter(iymin);
+
+	double xlow = h->GetXaxis()->GetBinLowEdge(ixmin);
+	double xhigh = h->GetXaxis()->GetBinUpEdge(ixmin);
+	double ylow = h->GetYaxis()->GetBinLowEdge(iymin);
+	double yhigh = h->GetYaxis()->GetBinUpEdge(iymin);
+
+	int nsub = 3;
+	double dx = (xhigh - xlow)/nsub;
+	double dy = (yhigh - ylow)/nsub;
+
+	for(int j = 0; j<nsub; j++){
+		for(int i=0; i<nsub; i++){
+			double xcenter = xlow + (j + 0.5) * dx;
+			double ycenter = ylow + (i + 0.5) * dy;
+			printf("  (%d,%d):  x = %.6f,  y = %.6f%s\n",
+				   j, i, xcenter, ycenter,
+				   (i == 1 && j == 1) ? "   <-- original bin center" : "");
+		}
+	}
 }
 
 void Lithium6_0plus(int ring, TString beamstring){
