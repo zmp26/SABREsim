@@ -9,4 +9,4 @@ SABREsim
 *.jpg
 *.gif
 config/corners/*
-log/*
+logs/*
