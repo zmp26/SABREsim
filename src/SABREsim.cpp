@@ -274,9 +274,9 @@ void SABREsim::InitializeBeamspot(){
 		profile_ = new GaussianProfile(config_->GetBeamParX(),config_->GetBeamParY());
 	} else if(config_->GetBeamProfile() == "fixedPoint" || config_->GetBeamProfile() == "fixedpoint"){
 		profile_ = new FixedPointProfile();
-	} else if(config_->GetBeamProfile() == "gausxfixedy") {
+	} else if(config_->GetBeamProfile() == "gausxfixedy" || config_->GetBeamProfile() == "fixedygausx") {
 		profile_ = new GaussianProfileX_FixedPointY(config_->GetBeamParX());
-	} else if(config_->GetBeamProfile() == "gausyfixedx") {
+	} else if(config_->GetBeamProfile() == "gausyfixedx" || config_->GetBeamProfile() == "fixedxgausy") {
 		profile_ = new GaussianProfileY_FixedPointX(config_->GetBeamParY());
 	} else {
 		profile_ = new FixedPointProfile();
