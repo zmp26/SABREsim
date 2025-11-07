@@ -10,3 +10,4 @@ SABREsim
 *.gif
 config/corners/*
 logs/*
+config/SABREsim_laptop_COPY.conf
