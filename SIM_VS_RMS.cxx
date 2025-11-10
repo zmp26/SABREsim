@@ -20,6 +20,7 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TH1D.h>
+#include <TH2I.h>
 #include <TH2.h>
 #include <TCanvas.h>
 #include <TLegend.h>
@@ -32,7 +33,7 @@
 
 void Lithium6_1plus(int ring, TString beamstringx, TString beamstringy){
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for surface laptop
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
@@ -246,23 +247,23 @@ void Lithium6_1plus_auto(){
 	}
 }
 
-void Lithium6_1plus_sabrehits(TString beamstring){
+void Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy){
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for DESKTOP
-	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-	TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-	//uncomment below for LAPTOP
-	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	// TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
+	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),beamstringx.Data(),beamstringy.Data());
 	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	//uncomment below for LAPTOP
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),beamstringx.Data(),beamstringy.Data());
+	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
 
 
@@ -337,7 +338,7 @@ void Lithium6_1plus_sabrehits(TString beamstring){
 	hSim->Draw();
 
 	TPaveText *pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
-	pt->AddText(Form("%s (scale factor = %.3f)", beamstring.Data(), scaleFactor));
+	pt->AddText(Form("%sx %sy (scale factor = %.3f)", beamstringx.Data(), beamstringy.Data(), scaleFactor));
 	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2));
 	pt->SetFillColorAlpha(kWhite,0.5);
 	pt->SetTextAlign(12);
@@ -353,7 +354,7 @@ void Lithium6_1plus_sabrehits(TString beamstring){
 
 	//hData->Write("hData_original");
 	//hSim->Write("hSim_scaled");
-	c1->SaveAs(Form("Lithium6_1plus_simVSdata_sabrehits_%s.png",beamstring.Data()));
+	c1->SaveAs(Form("Lithium6_1plus_simVSdata_sabrehits_%sx_%sy.png",beamstringx.Data(), beamstringy.Data()));
 	c1->Clear();
 	hData->Draw();
 	pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
@@ -369,7 +370,7 @@ void Lithium6_1plus_sabrehits(TString beamstring){
 void Lithium6_1plus_sabrehits_auto(){
 
 	std::vector<TString> beamstrings = {
-										"fixedpoint",
+										"fixed",
 										"gaus001",
 										"gaus002",
 										"gaus003",
@@ -382,15 +383,31 @@ void Lithium6_1plus_sabrehits_auto(){
 										// "gaus010"
 									};
 
-	for(size_t b=0; b<beamstrings.size(); b++){
-		Lithium6_1plus_sabrehits(beamstrings[b]);
+	std::vector<TString> beamstringsx = {
+											"fixed",
+											"gaus00025",
+											"gaus0005",
+											"gaus00075"
+										};
+
+	std::vector<TString> beamstringsy = {
+											"fixed",
+											"gaus00025",
+											"gaus0005",
+											"gaus00075"											
+										};
+
+	for(const auto& bsx : beamstringsx){
+		for(const auto& bsy : beamstringsy){
+			Lithium6_1plus_sabrehits(bsx, bsy);
+		}
 	}
 
 }
 
 void Lithium6_1plus_sabre3summaries(TString beamstring){
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for DESKTOP
 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
@@ -609,7 +626,7 @@ void Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx
 	int SABRE_ID = 3;
 
 	TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary",SABRE_ID,ringChan,wedgeChan);
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for DESKTOP:
 	//TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
@@ -750,8 +767,11 @@ void Lithium6_1plus_pixelhistos_auto(){
 	// 									// "gaus010"
 	// 								};
 
-	TString beamx = "gaus004";
-	TString beamy = "gaus0015";
+	TString beamx = "gaus0005";
+	TString beamy = "gaus00025";
+
+	// x: fixed 			gaus0005
+	// y: fixed 			gaus00025
 
 	std::vector<int> ringChans = {
 									71,
@@ -781,7 +801,7 @@ void Lithium6_1plus_pixelhistos_auto(){
 
 void Lithium6_1plus_fourpixelchisquared(){
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	std::vector<TString> beamstrings = {
 											"fixed",
@@ -827,7 +847,7 @@ void Lithium6_1plus_fourpixelchisquared(){
 	// 	return;
 	// }
 
-	TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
+	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
 	if(!hData){
 		std::cerr << "Error retrieving data histogram!" << std::endl;
 		return;
@@ -879,7 +899,7 @@ void Lithium6_1plus_fourpixelchisquared(){
 			// 	continue;
 			// }
 
-			TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
+			TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
 			if(!hSim){
 				std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
 				continue;
@@ -1009,13 +1029,31 @@ void Lithium6_1plus_fourpixelchisquared(){
 	hGridSearchChi2->Write();
 	hGridSearchReducedChi2->Write();
 
+	//set up square TCanvas here:
+	TCanvas *c1 = new TCanvas("c1","Grid Search Reduced Chi2",800,800);
+	c1->SetRightMargin(0.15);
+	c1->SetLeftMargin(0.12);
+	c1->SetBottomMargin(0.12);
+	c1->SetTopMargin(0.08);
+
+	hGridSearchReducedChi2->Draw("COLZ");
+	hGridSearchReducedChi2->GetXaxis()->SetTitle("Beam Sigma X (m)");
+	hGridSearchReducedChi2->GetYaxis()->SetTitle("Beam Sigma Y (m)");
+	hGridSearchReducedChi2->SetStats(0);
+
+	//force equal scaling on both x and y axis w/ gpad:
+	gPad->SetFixedAspectRatio();
+	outfile->cd();
+	c1->Write("cGridSearchReducedChi2");
+	c1->SaveAs("Lithium6_1plus_fourpixelchisquared.png");
+
 	outfile->Close();
 
 }
 
 void Lithium6_1plus_fourpixelchisquared_2(){
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	std::vector<TString> beamstringsx = {
 											"gaus0025",
@@ -1046,11 +1084,11 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 	//---------------------------------------------------
 
 	//uncomment for DESKTOP:
-	TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-	TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
-	//uncomment for LAPTOP:
-	// TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
 	// TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+	//uncomment for LAPTOP:
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
 
 	// TString path_pix_r71_w29 = "SABRE/SABRE3/Pixels/hSABRE3_pixel_r71_w29";
@@ -1073,7 +1111,7 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 	// 	return;
 	// }
 
-	TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
+	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
 	if(!hData){
 		std::cerr << "Error retrieving data histogram!" << std::endl;
 		return;
@@ -1103,11 +1141,11 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 
 			//establish sim values:
 			//uncomment for DESKTOP
-			TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
-			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
-			//uncomment for LAPTOP:
-			// TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+			// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
 			// TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+			//uncomment for LAPTOP:
+			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
 
 			TFile *simfile = new TFile(simFilePath,"READ");
@@ -1125,7 +1163,7 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 			// 	continue;
 			// }
 
-			TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
+			TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
 			if(!hSim){
 				std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
 				continue;
@@ -1245,8 +1283,377 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 	hGridSearchChi2_2->Write();
 	hGridSearchReducedChi2_2->Write();
 
+	//set up square TCanvas here:
+	TCanvas *c1 = new TCanvas("c1","Grid Search Reduced Chi2",800,800);
+	c1->SetRightMargin(0.15);
+	c1->SetLeftMargin(0.12);
+	c1->SetBottomMargin(0.12);
+	c1->SetTopMargin(0.08);
+
+	hGridSearchReducedChi2_2->Draw("COLZ");
+	hGridSearchReducedChi2_2->GetXaxis()->SetTitle("Beam Sigma X (m)");
+	hGridSearchReducedChi2_2->GetYaxis()->SetTitle("Beam Sigma Y (m)");
+	hGridSearchReducedChi2_2->SetStats(0);
+
+	//force equal scaling on both x and y axis w/ gpad:
+	gPad->SetFixedAspectRatio();
+	outfile->cd();
+	c1->Write("cGridSearchReducedChi2_2");
+	c1->SaveAs("Lithium6_1plus_fourpixelchisquared_2.png");
+
 	outfile->Close();//needs to be converted for tighter beamspot varying
 
+}
+
+void Lithium6_1plus_sixteenpixelchisquared(){
+
+	TString anglestring = "16282328";
+
+	std::vector<TString> beamstrings = {
+											"fixed",
+											"gaus001",
+											"gaus002",
+											"gaus003",
+											"gaus004",
+											"gaus005"
+										};
+
+	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+
+	//---------------------------------------------------
+	//				Establish data values
+	//---------------------------------------------------
+
+	//uncomment for DESKTOP:
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+	//uncomment for LAPTOP:
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		return;
+	}
+
+	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
+	if(!hData){
+		std::cerr << "Error retrieving data histogram!" << std::endl;
+		return;
+	}
+
+	hData->SetDirectory(0);
+	datafile->Close();
+
+	int x_minbin = 29;
+	int x_maxbin = 32;
+	int y_minbin = 7;
+	int y_maxbin = 10;
+	double dataIntegral = hData->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
+
+	for(const auto& bsx : beamstrings){
+		for(const auto& bsy : beamstrings){
+
+			TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),bsx.Data(),bsy.Data());
+
+			//uncomment for DESKTOP:
+			//TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
+			//TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+
+			//uncomment for LAPTOP:
+			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+
+			TFile *simfile = new TFile(simFilePath,"READ");
+			if(!simfile || simfile->IsZombie()){
+				std::cerr << "Error opening sim file " << simFilePath << "\n\n";
+				continue;
+			}
+
+			TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
+			if(!hSim){
+				std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
+				continue;
+			}
+
+			double simIntegral = hSim->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
+
+			hSim->SetDirectory(0);
+			simfile->Close();
+
+			if(hSim->GetNbinsX() != hData->GetNbinsX()){
+				std::cerr << "Histogram binning does not match for data/sim histogram pair\n\n";
+				continue;
+			}
+
+			double scaleFactor;
+			if(simIntegral > 0){
+				scaleFactor = dataIntegral/simIntegral;
+				hSim->Scale(scaleFactor);
+			} else {
+				std::cerr << "sim histo from " << fn.Data() << " has zero integral and thus cannot be scaled!\n\n";
+				continue;
+			}
+
+			double chi2 = 0.;
+			double reducedchi2 = 0.;
+			int ndf = -666;
+
+			for(int x=x_minbin; x<=x_maxbin; x++){
+				ndf = 16 - 1;//16 pixels minus 1 DOF (scale factor only DOF on a per-run basis)
+				for(int y=y_minbin; y<=y_maxbin; y++){
+
+					double datavalue = hData->GetBinContent(hData->GetBin(x,y));
+					double simvalue = hSim->GetBinContent(hSim->GetBin(x,y));
+
+					if(datavalue == 0 && simvalue == 0){
+						ndf -= 1;
+						std::cout << "passing for x = " << x << " and y = " << y << "\n";
+						continue;
+					}
+					
+					double dataerror = hData->GetBinError(hData->GetBin(x,y));
+					double simerror = hSim->GetBinError(hSim->GetBin(x,y));
+
+					double numerator = std::pow((datavalue - simvalue) , 2);
+					double denominator = std::pow(dataerror, 2) + std::pow(simerror, 2);
+					chi2 += (numerator/denominator);
+
+				}
+			}
+
+			reducedchi2 = chi2/ndf;
+
+			int xbin = 0;
+			int ybin = 0;
+
+			if(bsx == "fixed") xbin = 0;
+			else if(bsx == "gaus001") xbin = 1;
+			else if(bsx == "gaus002") xbin = 2;
+			else if(bsx == "gaus003") xbin = 3;
+			else if(bsx == "gaus004") xbin = 4;
+			else if(bsx == "gaus005") xbin = 5;
+
+			if(bsy == "fixed") ybin = 0;
+			else if(bsy == "gaus001") ybin = 1;
+			else if(bsy == "gaus002") ybin = 2;
+			else if(bsy == "gaus003") ybin = 3;
+			else if(bsy == "gaus004") ybin = 4;
+			else if(bsy == "gaus005") ybin = 5;
+
+			hGridSearchChi2->Fill(xbin,ybin,chi2);
+			hGridSearchReducedChi2->Fill(xbin,ybin,reducedchi2);
+		}
+	}
+
+	TFile *outfile = new TFile("GridSearch_16pix.root","RECREATE");
+	outfile->cd();
+	hGridSearchChi2->Write();
+	hGridSearchReducedChi2->Write();
+
+	TCanvas *c1 = new TCanvas("c1","Grid Seach Reduced Chi2",800,800);
+	c1->SetRightMargin(0.15);
+	c1->SetLeftMargin(0.12);
+	c1->SetBottomMargin(0.12);
+	c1->SetTopMargin(0.08);
+
+	hGridSearchReducedChi2->Draw("COLZ");
+	hGridSearchReducedChi2->GetXaxis()->SetTitle("Beam Sigma X (m)");
+	hGridSearchReducedChi2->GetYaxis()->SetTitle("Beam Sigma Y (m)");
+	hGridSearchReducedChi2->SetStats(0);
+
+	gPad->SetFixedAspectRatio();
+	outfile->cd();
+	c1->Write("cGridSearchReducedChi2");
+	c1->SaveAs("Lithium6_1plus_sixteenpixelchisquared.png");
+
+	outfile->Close();
+}
+
+void Lithium6_1plus_sixteenpixelchisquared_2(){
+
+	TString anglestring = "16282328";
+
+	std::vector<TString> beamstringsx = {
+											"fixed",
+											"gaus0005",
+											"gaus001",
+											"gaus0015",
+											"gaus002",
+											"gaus0025"
+										};
+
+	std::vector<TString> beamstringsy = {
+											"fixed",
+											"gaus0005",
+											"gaus001",
+											"gaus0015"										
+										};
+
+	//double xEdges[7] = {0.00225, 0.00275, 0.00325, 0.00375, 0.00425, 0.00475, 0.00525};
+	//double yEdges[7] = {0.00025, 0.00075, 0.00125, 0.00175, 0.00225, 0.00275, 0.00325};
+
+	// double xEdges[6] = {-0.00025, 0.00025, 0.00075, 0.00125, 0.00175, 0.00225};
+	// double yEdges[6] = {-0.00025, 0.00025, 0.00075, 0.00125, 0.00175, 0.00225};
+
+	// double xEdges[5] = {-0.000125, 0.000125, 0.000375, 0.000625, 0.000875};
+	// double yEdges[5] = {-0.000125, 0.000125, 0.000375, 0.000625, 0.000875};
+
+	double xEdges[7] = {-0.00025, 0.00025, 0.00075, 0.00125, 0.00175, 0.00225, 0.00275};
+	double yEdges[5] = {-0.00025, 0.00025, 0.00075, 0.00125, 0.00175};
+
+	TH2D *hGridSearchChi2_2 = new TH2D("hGridSearchChi2_2", "GridSearchChi2_2", 6, xEdges, 4, yEdges);
+	TH2D *hGridSearchReducedChi2_2 = new TH2D("hGridSearchReducedChi2_2", "GridSearchReducedChi2_2", 6, xEdges, 4, yEdges);
+
+	//---------------------------------------------------
+	//				Establish data values
+	//---------------------------------------------------
+
+	//uncomment for DESKTOP:
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+	//uncomment for LAPTOP:
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+	TString dataHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		return;
+	}
+
+	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
+	if(!hData){
+		std::cerr << "Error retrieving data histogram!" << std::endl;
+		return;
+	}
+
+	hData->SetDirectory(0);
+	datafile->Close();
+
+	int x_minbin = 29;
+	int x_maxbin = 32;
+	int y_minbin = 7;
+	int y_maxbin = 10;
+	double dataIntegral = hData->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
+
+	for(const auto& bsx : beamstringsx){
+		for(const auto& bsy : beamstringsy){
+
+			TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),bsx.Data(),bsy.Data());
+
+			//uncomment for DESKTOP:
+			//TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
+			//TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+
+			//uncomment for LAPTOP:
+			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+
+			TFile *simfile = new TFile(simFilePath,"READ");
+			if(!simfile || simfile->IsZombie()){
+				std::cerr << "Error opening sim file " << simFilePath << "\n\n";
+				continue;
+			}
+
+			TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
+			if(!hSim){
+				std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
+				continue;
+			}
+
+			double simIntegral = hSim->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
+
+			hSim->SetDirectory(0);
+			simfile->Close();
+
+			if(hSim->GetNbinsX() != hData->GetNbinsX()){
+				std::cerr << "Histogram binning does not match for data/sim histogram pair\n\n";
+				continue;
+			}
+
+			double scaleFactor;
+			if(simIntegral > 0){
+				scaleFactor = dataIntegral/simIntegral;
+				hSim->Scale(scaleFactor);
+			} else {
+				std::cerr << "sim histo from " << fn.Data() << " has zero integral and thus cannot be scaled!\n\n";
+				continue;
+			}
+
+			double chi2 = 0.;
+			double reducedchi2 = 0.;
+			int ndf = -666;
+
+			for(int x=x_minbin; x<=x_maxbin; x++){
+				ndf = 16 - 1;
+				for(int y=y_minbin; y<=y_maxbin; y++){
+
+					double datavalue = hData->GetBinContent(hData->GetBin(x,y));
+					double simvalue = hSim->GetBinContent(hSim->GetBin(x,y));
+
+					if(datavalue == 0 && simvalue == 0){
+						ndf -= 1;
+						std::cout << "passing for x = " << x << " and y = " << y << "\n";
+						continue;
+					}
+
+					double dataerror = hData->GetBinError(hData->GetBin(x,y));
+					double simerror = hSim->GetBinError(hSim->GetBin(x,y));
+
+					double numerator = std::pow((datavalue - simvalue), 2);
+					double denominator = std::pow(dataerror, 2) + std::pow(simerror, 2);
+					chi2 += (numerator/denominator);
+
+				}
+			}
+
+			reducedchi2 = chi2/ndf;
+
+			double xbin = -1;
+			double ybin = -1;
+
+			if(bsx == "fixed") xbin = 0;
+			else if(bsx == "gaus0005") xbin = 0.0005;
+			else if(bsx == "gaus001") xbin = 0.001;
+			else if(bsx == "gaus0015") xbin = 0.0015;
+			else if(bsx == "gaus002") xbin = 0.002;
+			else if(bsx == "gaus0025") xbin = 0.0025;
+
+			if(bsy == "fixed") ybin = 0;
+			else if(bsy == "gaus0005") ybin = 0.0005;
+			else if(bsy == "gaus001") ybin = 0.001;
+			else if(bsy == "gaus0015") ybin = 0.0015;
+
+			hGridSearchChi2_2->Fill(xbin, ybin, chi2);
+			hGridSearchReducedChi2_2->Fill(xbin, ybin, reducedchi2);
+		}
+	}
+
+	TFile *outfile = new TFile("GridSearch_16pix_2.root","RECREATE");
+	outfile->cd();
+	hGridSearchChi2_2->Write();
+	hGridSearchReducedChi2_2->Write();
+
+	TCanvas *c1 = new TCanvas("c1","Grid Seach Reduced Chi2",800,800);
+	c1->SetRightMargin(0.15);
+	c1->SetLeftMargin(0.12);
+	c1->SetBottomMargin(0.12);
+	c1->SetTopMargin(0.08);
+
+	hGridSearchReducedChi2_2->Draw("COLZ");
+	hGridSearchReducedChi2_2->GetXaxis()->SetTitle("Beam Sigma X (m)");
+	hGridSearchReducedChi2_2->GetYaxis()->SetTitle("Beam Sigma Y (m)");
+	hGridSearchReducedChi2_2->SetStats(0);
+
+	gPad->SetFixedAspectRatio();
+	outfile->cd();
+	c1->Write("cGridSearchReducedChi2_2");
+	c1->SaveAs("Lithium6_1plus_sixteenpixelchisquared_2.png");
+
+	outfile->Close();
 }
 
 void refineAroundMin(){
@@ -1285,7 +1692,7 @@ void refineAroundMin(){
 
 void Lithium6_0plus(int ring, TString beamstring){
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for surface laptop
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
@@ -1472,7 +1879,7 @@ void Lithium6_0plus_sabrehits(TString beamstring){
 	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
 	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for LAPTOP
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
@@ -1587,7 +1994,7 @@ void Lithium6_0plus_sabrehits_auto(){
 }
 
 void Lithium6_0plus_sabre3summaries(TString beamstring){
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for DESKTOP
 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
@@ -1796,7 +2203,7 @@ void Lithium6_0plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx
 	int SABRE_ID = 3;
 
 	TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary",SABRE_ID,ringChan,wedgeChan);
-	TString anglestring = "17282228";
+	TString anglestring = "16282328";
 
 	//uncomment below for DESKTOP:
 	//TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
