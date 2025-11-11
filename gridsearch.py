@@ -76,7 +76,7 @@ for profx in x_opts:
 					   ]
 
 		config_file = CONFIG_DIR / f"SABREsim_gridsearch_{profx}_{profy}.conf"
-		with tempfile.NamedTemporaryFile(mode="w",suffix=".conf",delete=False) as tmp:
+		with tempfile.NamedTemporaryFile(mode="w",suffix=".conf") as tmp:
 			tmp.write("\n".join(outputlines))
 			tmp.flush()
 			tmp_path = tmp.name
