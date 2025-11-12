@@ -30,6 +30,7 @@
 #include <TString.h>
 #include <TPaveText.h>
 #include <cmath>
+#include <TMath.h>
 
 void Lithium6_1plus(int ring, TString beamstringx, TString beamstringy){
 
@@ -339,7 +340,7 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 
 	TPaveText *pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
 	pt->AddText(Form("%sx %sy (scale factor = %.3f)", beamstringx.Data(), beamstringy.Data(), scaleFactor));
-	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2));
+	pt->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
 	pt->SetFillColorAlpha(kWhite,0.5);
 	pt->SetTextAlign(12);
 	pt->Draw();
@@ -352,6 +353,7 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 	else if(anglestring == "158238") temp = "19.8#circ #pm 4#circ";
 	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
 	ptangle->AddText(Form("%s",temp.Data()));
+	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
 	ptangle->SetFillColorAlpha(kWhite,0.5);
 	ptangle->Draw();
 
@@ -775,12 +777,25 @@ TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	legend->Draw();
 
 	TPaveText *pt = new TPaveText(0.65, 0.63, 0.88, 0.74, "NDC");
-	pt->AddText(Form("%s",anglestring.Data()));
-	pt->AddText(Form("%sx %sy (scale factor = %.3f)", beamstringx.Data(), beamstringy.Data(), scaleFactor));
-	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2));
+	//pt->AddText(Form("%s",anglestring.Data()));
+	pt->AddText(Form("%sx %sy", beamstringx.Data(), beamstringy.Data()));
+	pt->AddText(Form("(scale factor = %.3f)", scaleFactor));
+	pt->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
 	pt->SetFillColorAlpha(kWhite,0.5);
 	pt->SetTextAlign(12);
 	pt->Draw();
+
+	TPaveText *ptangle = new TPaveText(0.12, 0.7, 0.27, 0.9, "NDC");
+	TString temp;
+	if(anglestring == "188208") temp = "19.8#circ #pm 1#circ";
+	else if(anglestring == "178218") temp = "19.8#circ #pm 2#circ";
+	else if(anglestring == "168228") temp = "19.8#circ #pm 3#circ";
+	else if(anglestring == "158238") temp = "19.8#circ #pm 4#circ";
+	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
+	ptangle->AddText(Form("%s",temp.Data()));
+	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
+	ptangle->SetFillColorAlpha(kWhite,0.5);
+	ptangle->Draw();
 
 	c1->Update();
 
@@ -881,6 +896,7 @@ void Lithium6_1plus_pixelhistos_auto(){
 	}
 
 }
+
 
 void Lithium6_1plus_fourpixelchisquared(){
 
@@ -1739,39 +1755,318 @@ void Lithium6_1plus_sixteenpixelchisquared_2(){
 	outfile->Close();
 }
 
-void refineAroundMin(){
-	TH2D *h = (TH2D*)gDirectory->Get("hGridSearchChi2_2");
-	if(!h){
-		std::cerr << "Error, histogram not found" << std::endl;
-		return;
+double ComputeChi2BinByBin(TH1* hData, TH1* hSim, double &ndf){
+
+	if(!hData || !hSim){
+		std::cerr << "Error: null histo pointer for hData or hSim" << std::endl;
+		ndf = 0;
+		return -1;
 	}
 
-	Int_t ixmin, iymin, dummy;
-	h->GetMinimumBin(ixmin,iymin,dummy);
+	if(hData->GetNbinsX() != hSim->GetNbinsX()){
+		std::cerr << "Histograms have inequal binning!" << std::endl;
+		ndf = 0;
+		return -1;
+	}
 
-	double val_min = h->GetBinContent(ixmin,iymin);
-	double xcenter_orig = h->GetXaxis()->GetBinCenter(ixmin);
-	double ycenter_orig = h->GetYaxis()->GetBinCenter(iymin);
+	double chi2 = 0.;
+	ndf = 0.;
 
-	double xlow = h->GetXaxis()->GetBinLowEdge(ixmin);
-	double xhigh = h->GetXaxis()->GetBinUpEdge(ixmin);
-	double ylow = h->GetYaxis()->GetBinLowEdge(iymin);
-	double yhigh = h->GetYaxis()->GetBinUpEdge(iymin);
+	int nbins = hData->GetNbinsX();
+	for(int i=1; i<=nbins; i++){
+		double dataval = hData->GetBinContent(i);
+		double simval = hSim->GetBinContent(i);
 
-	int nsub = 3;
-	double dx = (xhigh - xlow)/nsub;
-	double dy = (yhigh - ylow)/nsub;
+		double datasigma2 = (dataval > 0) ? dataval : 1.;//avoids dividing by 0 error for 0 count bins -> assumes poisson statistics
+		double simsigma2 = (simval > 0) ? simval : 1.;//avoids dividing by 0 error, assumes poisson stats
 
-	for(int j = 0; j<nsub; j++){
-		for(int i=0; i<nsub; i++){
-			double xcenter = xlow + (j + 0.5) * dx;
-			double ycenter = ylow + (i + 0.5) * dy;
-			printf("  (%d,%d):  x = %.6f,  y = %.6f%s\n",
-				   j, i, xcenter, ycenter,
-				   (i == 1 && j == 1) ? "   <-- original bin center" : "");
+		double numerator = std::pow((dataval - simval), 2);
+		double denominator = datasigma2 + simsigma2;
+		double tempchi2 = (numerator/denominator);
+
+		if(dataval != 0 || simval != 0){
+			ndf += 1.;
+			chi2 += tempchi2;
 		}
+
 	}
+
+	return chi2;
+
 }
+
+void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
+	//this function calculates a cumulative chi^2 for comparing simulation data with experimental data
+	//The simulation data is scaled to match experimental data by using total events
+	//This scaled simulation data is then passed to the experimental data for the ROOT TH1::Chi2Test()
+	//This is done for the four main pixels illuminated by the reaction: 
+	//								(71,29), (72,29), (72,30), (71,30)
+
+	const int rebinfactor = 4;
+
+	std::vector<std::pair<int,int>> ringwedgepairs = {{71,29}, {72,29}, {72,30}, {71,30}};//};
+
+	std::vector<TString> anglestrings = {
+											"188208",
+											"178218",
+											"168228",
+											"158238",
+											"148248"
+										};
+
+	std::vector<std::pair<TString, int>> anglestrings_binnums = {
+																	{"188208",1},
+																	{"178218",2},
+																	{"168228",3},
+																	{"158238",4},
+																	{"148248",5}
+																 };
+
+	// std::vector<TString> beamstringsx = {
+	// 										"fixed"
+	// 									};
+
+	// std::vector<TString> beamstringsy = {
+	// 										"fixed"
+	// 									};
+
+	TString beamstringx = "fixed";
+	TString beamstringy = "fixed";	
+
+	int SABRE_ID = 3;
+
+	TFile *outfile = new TFile("EjectileAngleScan.root","RECREATE");		
+
+
+	TH1D *hChi2 = new TH1D("hChi2","Chi2", 5, 0.5, 5.5);
+	TH1D *hReducedChi2 = new TH1D("hReducedChi2","ReducedChi2", 5, 0.5, 5.5);
+
+	//loop through the angle strings, as each angle string is an entry in the chi2 histogram:
+	for(const auto& angstr_bn : anglestrings_binnums){
+
+		//establish data holders for chi2, p, and ndf of each pixel:
+		std::vector<std::array<double,3>> chi2_results;
+
+		for(const auto& rwpair : ringwedgepairs){
+
+			int ring = rwpair.first;
+			int wedge = rwpair.second;
+
+			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary",SABRE_ID,ring,wedge);
+
+			//---------------------------------------------------
+			//				Establish data values
+			//---------------------------------------------------
+
+			//uncomment below for DESKTOP:
+			// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+			// TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
+			// dataHistLocalPath = dataHistLocalPath + pixelhistoname;
+
+			//uncomment below for LAPTOP:
+			TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+			TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
+			dataHistLocalPath = dataHistLocalPath + pixelhistoname;
+
+			TFile *datafile = new TFile(dataFilePath,"READ");
+			if(!datafile || datafile->IsZombie()){
+				std::cerr << "Error opening data file" << std::endl;
+				std::cerr << "dataFilePath = " << dataFilePath << "\n\n";
+				return;// "ERROR";
+			}
+
+			TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
+			if(!hData){
+				std::cerr << "Error retrieving data histogram" << std::endl;
+				std::cerr << "dataFilePath = " << dataFilePath << "\n";
+				std::cerr << "dataHistLocalPath = " << dataHistLocalPath << "\n\n";
+				datafile->Close();
+				return;// "ERROR";
+			}
+
+			hData->SetDirectory(0);
+			datafile->Close();
+
+			//---------------------------------------------------
+			//				Establish sim values
+			//---------------------------------------------------
+
+			//uncomment below for DESKTOP:
+			// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",angstr_bn.first.Data(),beamstringx.Data(),beamstringy.Data());
+			// TString simHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
+			// simHistLocalPath = simHistLocalPath + pixelhistoname;
+
+			//uncomment below for LAPTOP:
+			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",angstr_bn.first.Data(),beamstringx.Data(),beamstringy.Data());
+			TString simHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
+			simHistLocalPath = simHistLocalPath + pixelhistoname;
+
+			TFile *simfile = new TFile(simFilePath,"READ");
+			if(!simfile || simfile->IsZombie()){
+				std::cerr << "Error opening sim file" << std::endl;
+				return;// "ERROR";
+			}
+
+			TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
+			if(!hSim){
+				std::cerr << "Error retrieving sim histogram" << std::endl;
+				simfile->Close();
+				return;// "ERROR";
+			}
+			hSim->SetDirectory(0);
+			simfile->Close();
+
+
+			//---------------------------------------------------
+			//					 Check Binning
+			//---------------------------------------------------
+
+			if((hData->GetNbinsX() != hSim->GetNbinsX()) || (hData->GetNbinsY() != hSim->GetNbinsY())){
+				std::cerr << "Histogram bin counts do not match on at least one axis!" << std::endl;
+				return;// "ERROR";
+			}
+
+			//---------------------------------------------------
+			//				Determine Scale Factor
+			//					  (and scale)
+			//---------------------------------------------------
+
+				double dataIntegral = hData->Integral();
+				double simIntegral = hSim->Integral();
+
+				double scaleFactor = 0.;
+
+				if(simIntegral > 0){
+					scaleFactor = dataIntegral/simIntegral;
+					hSim->Scale(scaleFactor);
+					std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
+				} else {
+					std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
+					return;// "ERROR";
+				}
+
+			//---------------------------------------------------
+			//			   Rebin Sim and Data Histos
+			//---------------------------------------------------
+				//rebinfactor defined at top of function, typically = 4
+
+				//std::cout << "Rebinning..." << std::endl;
+				hSim->Rebin(rebinfactor);
+				hData->Rebin(rebinfactor);
+				// hSim->Delete();
+				// hData->Delete();
+				//std::cout << "Done!" << std::endl;
+
+
+			//---------------------------------------------------
+			//			  Calculate and Store Chi^2
+			//---------------------------------------------------
+
+				// std::cout << "calculating chi2..." << std::endl;
+				// double results[3];
+				// //std::array<double,3> results;
+				// std::cout << "results declared..." << std::endl;
+				// //hData_rebin->Chi2Test(hSim_rebin, "CHI2 UW", results);
+				// double chi2 = hData->Chi2Test(hSim, "UW CHI2");
+				// double ndf = hData->Chi2Test(hSim, "UW NDF");
+				// double pval = hData->Chi2Test(hSim, "UW p");
+				// results[0] = chi2;
+				// results[1] = ndf;
+				// results[2] = pval;
+				// std::cout << "results now holds chi2 results!" << std::endl;
+				// //results[0] = chi2
+				// //results[1] = ndf
+				// //results[2] = pval
+
+				// chi2_results.push_back({ results[0], results[1], results[2] });
+				// std::cout << "done!" << std::endl;
+
+				//we can't trust whatever is going on int Chi2Test, so let's just write our own helper function elsewhere
+				double ndf;
+				double chi2 = ComputeChi2BinByBin(hData, hSim, ndf);
+				double pval = TMath::Prob(chi2,ndf);
+
+				std::array<double,3> results = {chi2, ndf, pval};
+				chi2_results.push_back(results);
+
+			//---------------------------------------------------
+			//			  		Delete Histograms
+			//---------------------------------------------------
+
+				std::cout << "deleting..." << std::endl;
+				outfile->cd();
+				// hSim->Write();
+				// hData->Write();
+				delete hSim;
+				delete hData;
+				// delete hSim_rebin;
+				// delete hData_rebin;
+				std::cout << "deleted!" << std::endl;
+
+		}
+
+		//at this point, we have all (ring,wedge) pairs done for a given angstr
+		//and the results for each pixel are appended in the chi2_results vector!
+		//recall that:
+		//	results[0] = chi2
+		//	results[1] = ndf
+		//	results[2] = pval
+
+		//we know that the cumulative chi^2 is just the sum of all the chi^2:
+		double totalchi2 = 0;
+		double totalndf = 0;
+		for(const auto& res : chi2_results){
+			totalchi2 += res[0];
+			totalndf += res[1];
+		}
+		double totalreducedchi2 = totalchi2/totalndf;
+
+		//fill histograms for this angstr bin:
+		int bin = angstr_bn.second;
+
+		// hChi2->Fill(bin, totalchi2);
+		// hReducedChi2->Fill(bin, totalreducedchi2);
+
+		hChi2->SetBinContent(bin, totalchi2);
+		hReducedChi2->SetBinContent(bin, totalreducedchi2);
+
+	}
+
+	std::vector<TString> labels = {"19.8#circ #pm 1#circ",
+								   "19.8#circ #pm 2#circ",
+								   "19.8#circ #pm 3#circ",
+								   "19.8#circ #pm 4#circ",
+								   "19.8#circ #pm 5#circ"};
+
+	for(size_t i = 0; i < labels.size(); i++){
+		hChi2->GetXaxis()->SetBinLabel(i+1, labels[i]);
+		//hChi2->LabelsOption("v");
+
+		hReducedChi2->GetXaxis()->SetBinLabel(i+1, labels[i]);
+		hReducedChi2->GetYaxis()->SetRangeUser(0,100);
+		//hReducedChi2->LabelsOption("v");
+	}
+
+
+	//now we just need to save the histograms to a root file:
+	outfile->cd();
+	hChi2->Write();
+	hReducedChi2->Write();
+
+
+	//also just draw the reduced chi2 to screen for quick testing:
+	// hReducedChi2->SetDirectory(0);
+	// hReducedChi2->Draw();
+
+
+	outfile->Close();
+}
+
+/*
+---------------------------------------------------------------------------------------------------------
+---------------								0 plus below 								  ---------------
+---------------------------------------------------------------------------------------------------------
+*/
 
 void Lithium6_0plus(int ring, TString beamstring){
 
@@ -2455,6 +2750,12 @@ void Lithium6_0plus_pixelhistos_auto(){
 		}
 	}
 }
+
+/*
+---------------------------------------------------------------------------------------------------------
+---------------								3 plus below 								  ---------------
+---------------------------------------------------------------------------------------------------------
+*/
 
 void Lithium6_3plus_1par(){
 
