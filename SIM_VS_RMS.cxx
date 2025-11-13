@@ -398,11 +398,11 @@ void Lithium6_1plus_sabrehits_auto(){
 	// 								};
 
 	std::vector<TString> beamstringsx = {
-											"fixed"
+											"gaus001"
 										};
 
 	std::vector<TString> beamstringsy = {
-											"fixed"									
+											"gaus001"									
 										};
 
 	std::vector<TString> anglestrings = {
@@ -1795,6 +1795,54 @@ double ComputeChi2BinByBin(TH1* hData, TH1* hSim, double &ndf){
 
 }
 
+double ComputeChi2BinByBin(TH1* hData, TH1* hSim_unscaled, double scaleFactor, double &ndf){
+	//same function as ComputeChi2BinByBin but allows for passing the unscaled sim histogram and thus the better relative sigmas when scaled!
+
+	if(!hData || !hSim_unscaled){
+		std::cerr << "Error: null histo pointer for hData or hSim_unscaled" << std::endl;
+		ndf = 0;
+		return -1;
+	}
+
+	if(hData->GetNbinsX() != hSim_unscaled->GetNbinsX()){
+		std::cerr << "Histograms have inequal binning!" << std::endl;
+		ndf = 0;
+		return -1;
+	}
+
+	double chi2 = 0.;
+	ndf = 0.;
+
+	//scale hSim_unscaled by scalefactor:
+	hSim_unscaled->Scale(scaleFactor);
+
+	//now iterate through bins:
+	int nbins = hData->GetNbinsX();
+	for(int i = 1; i <= nbins; i++){
+		double dataval = hData->GetBinContent(i);
+		double dataerror = hData->GetBinError(i);//sigma
+
+		double simval = hSim_unscaled->GetBinContent(i);
+		double simerror = hSim_unscaled->GetBinError(i);//sigma
+
+		double sigma2 = dataerror*dataerror + simerror*simerror;//add in quadrature!
+
+		double numerator = std::pow((dataval - simval), 2);
+		double denominator = sigma2;
+
+		double tempchi2 = (numerator/denominator);
+
+		if(dataval != 0 || simval != 0){
+			ndf += 1.;
+			chi2 += tempchi2;
+		} 
+
+	}
+
+	return chi2;
+
+}
+
 void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 	//this function calculates a cumulative chi^2 for comparing simulation data with experimental data
 	//The simulation data is scaled to match experimental data by using total events
@@ -1804,15 +1852,15 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 
 	const int rebinfactor = 4;
 
-	std::vector<std::pair<int,int>> ringwedgepairs = {{71,29}, {72,29}, {72,30}, {71,30}};//};
+	std::vector<std::pair<int,int>> ringwedgepairs = {{71,29}};//, {72,29}, {72,30}, {71,30}};
 
-	std::vector<TString> anglestrings = {
-											"188208",
-											"178218",
-											"168228",
-											"158238",
-											"148248"
-										};
+	// std::vector<TString> anglestrings = {
+	// 										"188208",
+	// 										"178218",
+	// 										"168228",
+	// 										"158238",
+	// 										"148248"
+	// 									};
 
 	std::vector<std::pair<TString, int>> anglestrings_binnums = {
 																	{"188208",1},
@@ -1830,8 +1878,8 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 	// 										"fixed"
 	// 									};
 
-	TString beamstringx = "fixed";
-	TString beamstringy = "fixed";	
+	TString beamstringx = "gaus001";
+	TString beamstringy = "gaus001";
 
 	int SABRE_ID = 3;
 
@@ -1840,6 +1888,26 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 
 	TH1D *hChi2 = new TH1D("hChi2","Chi2", 5, 0.5, 5.5);
 	TH1D *hReducedChi2 = new TH1D("hReducedChi2","ReducedChi2", 5, 0.5, 5.5);
+
+	//uncomment below for DESKTOP:
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
+	// TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
+	// dataHistLocalPath = dataHistLocalPath + pixelhistoname;
+
+	//---------------------------------------------------
+	//				Establish data file
+	//---------------------------------------------------
+
+	//uncomment below for LAPTOP:
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		std::cerr << "dataFilePath = " << dataFilePath << "\n\n";
+		return;// "ERROR";
+	}
+
 
 	//loop through the angle strings, as each angle string is an entry in the chi2 histogram:
 	for(const auto& angstr_bn : anglestrings_binnums){
@@ -1852,40 +1920,20 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 			int ring = rwpair.first;
 			int wedge = rwpair.second;
 
-			TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary",SABRE_ID,ring,wedge);
+			TString pixelhistoname = Form("SABRE/SABRE%d/Pixels/hSABRE%d_pixel_r%dw%d_ESummary",SABRE_ID,SABRE_ID,ring,wedge);
 
 			//---------------------------------------------------
-			//				Establish data values
+			//				Retrieve Data Histogram
 			//---------------------------------------------------
-
-			//uncomment below for DESKTOP:
-			// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-			// TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
-			// dataHistLocalPath = dataHistLocalPath + pixelhistoname;
-
-			//uncomment below for LAPTOP:
-			TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
-			TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
-			dataHistLocalPath = dataHistLocalPath + pixelhistoname;
-
-			TFile *datafile = new TFile(dataFilePath,"READ");
-			if(!datafile || datafile->IsZombie()){
-				std::cerr << "Error opening data file" << std::endl;
-				std::cerr << "dataFilePath = " << dataFilePath << "\n\n";
-				return;// "ERROR";
-			}
-
-			TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
-			if(!hData){
-				std::cerr << "Error retrieving data histogram" << std::endl;
-				std::cerr << "dataFilePath = " << dataFilePath << "\n";
-				std::cerr << "dataHistLocalPath = " << dataHistLocalPath << "\n\n";
-				datafile->Close();
-				return;// "ERROR";
-			}
-
-			hData->SetDirectory(0);
-			datafile->Close();
+				TH1 *hData = dynamic_cast<TH1*>(datafile->Get(pixelhistoname));
+				if(!hData){
+					std::cerr << "Error retrieving data histogram" << std::endl;
+					std::cerr << "dataFilePath = " << dataFilePath << "\n";
+					//std::cerr << "dataHistLocalPath = " << dataHistLocalPath << "\n\n";
+					datafile->Close();
+					return;// "ERROR";
+				}
+				hData->SetDirectory(0);
 
 			//---------------------------------------------------
 			//				Establish sim values
@@ -1898,8 +1946,6 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 
 			//uncomment below for LAPTOP:
 			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",angstr_bn.first.Data(),beamstringx.Data(),beamstringy.Data());
-			TString simHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
-			simHistLocalPath = simHistLocalPath + pixelhistoname;
 
 			TFile *simfile = new TFile(simFilePath,"READ");
 			if(!simfile || simfile->IsZombie()){
@@ -1907,7 +1953,7 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 				return;// "ERROR";
 			}
 
-			TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
+			TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(pixelhistoname));
 			if(!hSim){
 				std::cerr << "Error retrieving sim histogram" << std::endl;
 				simfile->Close();
@@ -1938,8 +1984,8 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 
 				if(simIntegral > 0){
 					scaleFactor = dataIntegral/simIntegral;
-					hSim->Scale(scaleFactor);
-					std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
+					//hSim->Scale(scaleFactor); //scaling hsim in chi2 function now
+					//std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
 				} else {
 					std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
 					return;// "ERROR";
@@ -1983,7 +2029,8 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 
 				//we can't trust whatever is going on int Chi2Test, so let's just write our own helper function elsewhere
 				double ndf;
-				double chi2 = ComputeChi2BinByBin(hData, hSim, ndf);
+				//double chi2 = ComputeChi2BinByBin(hData, hSim, ndf);
+				double chi2 = ComputeChi2BinByBin(hData, hSim, scaleFactor, ndf);
 				double pval = TMath::Prob(chi2,ndf);
 
 				std::array<double,3> results = {chi2, ndf, pval};
@@ -2031,6 +2078,8 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 		hReducedChi2->SetBinContent(bin, totalreducedchi2);
 
 	}
+
+	datafile->Close();
 
 	std::vector<TString> labels = {"19.8#circ #pm 1#circ",
 								   "19.8#circ #pm 2#circ",
