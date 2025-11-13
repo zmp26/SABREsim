@@ -23,8 +23,8 @@ def extract_gaus_value(s):
 	value = float("0."+digits)
 	return value
 
-x_opts = ["fixed"]
-y_opts = ["fixed"]
+x_opts = ["gaus001"]
+y_opts = ["gaus001"]
 
 anglestrings = ["188208", "178218", "168228", "158238", "148248"]
 #	19.8deg		+/- 1deg  +/- 2deg  +/- 3deg  +/- 4deg  +/- 5deg
@@ -47,6 +47,7 @@ for profx in x_opts:
 			profile_str = "gaussian"
 
 		for angstr in anglestrings:
+			infilename = f"/mnt/e/SABREsim/kinmc/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}.out"
 			detfilename = f"/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_{profx}x_{profy}y.det"
 			treefilename = f"/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_{profx}x_{profy}y_tree.root"
 			histofilename = f"/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_{profx}x_{profy}y_histos.root"
@@ -55,13 +56,13 @@ for profx in x_opts:
 			treepath = Path(treefilename)
 			histopath = Path(histofilename)
 
-			if detpath.exists() and treepath.exists() and histopath.exists():
-				print(f"Files detected for profx = {profx}, profy = {profy}, angstr = {angstr}...skipping!\n")
-				continue
+			# if detpath.exists() and treepath.exists() and histopath.exists():
+			# 	print(f"Files detected for profx = {profx}, profy = {profy}, angstr = {angstr}...skipping!\n")
+			# 	continue
 
 			outputlines = [
 					   "#Default SABREsim config file\n\n[General]\ndetmc_version = 2",
-					   "infile = /mnt/e/SABREsim/kinmc/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta16282328.out",
+					   f"infile = {infilename}",
 					   f"detfile = {detfilename}",
 					   f"treefile = {treefilename}",
 					   f"histofile = {histofilename}",
