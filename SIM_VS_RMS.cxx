@@ -32,6 +32,94 @@
 #include <cmath>
 #include <TMath.h>
 
+double ComputeChi2BinByBin(TH1* hData, TH1* hSim, double &ndf){
+
+	if(!hData || !hSim){
+		std::cerr << "Error: null histo pointer for hData or hSim" << std::endl;
+		ndf = 0;
+		return -1;
+	}
+
+	if(hData->GetNbinsX() != hSim->GetNbinsX()){
+		std::cerr << "Histograms have inequal binning!" << std::endl;
+		ndf = 0;
+		return -1;
+	}
+
+	double chi2 = 0.;
+	ndf = 0.;
+
+	int nbins = hData->GetNbinsX();
+	for(int i=1; i<=nbins; i++){
+		double dataval = hData->GetBinContent(i);
+		double simval = hSim->GetBinContent(i);
+
+		double datasigma2 = (dataval > 0) ? dataval : 1.;//avoids dividing by 0 error for 0 count bins -> assumes poisson statistics
+		double simsigma2 = (simval > 0) ? simval : 1.;//avoids dividing by 0 error, assumes poisson stats
+
+		double numerator = std::pow((dataval - simval), 2);
+		double denominator = datasigma2 + simsigma2;
+		double tempchi2 = (numerator/denominator);
+
+		if(dataval != 0 || simval != 0){
+			ndf += 1.;
+			chi2 += tempchi2;
+		}
+
+	}
+
+	return chi2;
+
+}
+
+double ComputeChi2BinByBin(TH1* hData, TH1* hSim_unscaled, double scaleFactor, double &ndf){
+	//same function as ComputeChi2BinByBin but allows for passing the unscaled sim histogram and thus the better relative sigmas when scaled!
+
+	if(!hData || !hSim_unscaled){
+		std::cerr << "Error: null histo pointer for hData or hSim_unscaled" << std::endl;
+		ndf = 0;
+		return -1;
+	}
+
+	if(hData->GetNbinsX() != hSim_unscaled->GetNbinsX()){
+		std::cerr << "Histograms have inequal binning!" << std::endl;
+		ndf = 0;
+		return -1;
+	}
+
+	double chi2 = 0.;
+	ndf = 0.;
+
+	//scale hSim_unscaled by scalefactor:
+	hSim_unscaled->Scale(scaleFactor);
+
+	//now iterate through bins:
+	int nbins = hData->GetNbinsX();
+	for(int i = 1; i <= nbins; i++){
+		double dataval = hData->GetBinContent(i);
+		double dataerror = hData->GetBinError(i);//sigma
+
+		double simval = hSim_unscaled->GetBinContent(i);
+		double simerror = hSim_unscaled->GetBinError(i);//sigma
+
+		double sigma2 = dataerror*dataerror + simerror*simerror;//add in quadrature!
+
+		double numerator = std::pow((dataval - simval), 2);
+		double denominator = sigma2;
+
+		double tempchi2 = (numerator/denominator);
+
+		if(dataval != 0 || simval != 0){
+			ndf += 1.;
+			chi2 += tempchi2;
+		} 
+
+	}
+
+	return chi2;
+
+}
+
 void Lithium6_1plus(int ring, TString beamstringx, TString beamstringy){
 
 	TString anglestring = "16782278";
@@ -248,7 +336,7 @@ void Lithium6_1plus_auto(){
 	}
 }
 
-TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TString anglestring){
+TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TString anglestring, TString phistring){
 
 	//TString anglestring = "16782278";
 
@@ -263,9 +351,10 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),beamstringx.Data(),beamstringy.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(),beamstringy.Data());
 	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
+	TString pngoutname = Form("Lithium6_1plus_simVSdata_sabrehits_theta%s_phi_%s_%sx_%sy.png",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data());
 
 
 	//prep output file name
@@ -353,6 +442,7 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 	else if(anglestring == "158238") temp = "19.8#circ #pm 4#circ";
 	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
 	ptangle->AddText(Form("%s",temp.Data()));
+	ptangle->AddText(Form("phi %s", phistring.Data()));
 	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
 	ptangle->SetFillColorAlpha(kWhite,0.5);
 	ptangle->Draw();
@@ -367,7 +457,6 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 
 	//hData->Write("hData_original");
 	//hSim->Write("hSim_scaled");
-	TString pngoutname = Form("Lithium6_1plus_simVSdata_sabrehits_theta%s_%sx_%sy.png",anglestring.Data(),beamstringx.Data(), beamstringy.Data());
 	c1->SaveAs(pngoutname);
 	c1->Clear();
 	hData->Draw();
@@ -398,27 +487,41 @@ void Lithium6_1plus_sabrehits_auto(){
 	// 								};
 
 	std::vector<TString> beamstringsx = {
-											"gaus001"
+											"fixed"
 										};
 
 	std::vector<TString> beamstringsy = {
-											"gaus001"									
+											"fixed"									
 										};
 
 	std::vector<TString> anglestrings = {
-											"188208",			// 19.8 +/- 1
-											"178218",			// 19.8 +/- 2
-											"168228",			// 19.8 +/- 3
-											"158238",			// 19.8 +/- 4
-											"148248"			// 19.8 +/- 5
+											//"193203",			// 19.8 +/- 0.5
+											//"188208",			// 19.8 +/- 1.0
+											"178218"			// 19.8 +/- 2.0
+											//"168228",			// 19.8 +/- 3.0
+											//"158238",			// 19.8 +/- 4.0
+											//"148248"			// 19.8 +/- 5.0
 										};
+
+	std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	std::vector<TString> phistrings;
+	for(const auto& philow : phis){
+		for(const auto& phiup : phis){
+			TString phistr = Form("%.1f_%.1f", -philow, phiup);
+			phistrings.push_back(phistr);
+		}
+	}
+
+
 
 	for(const auto& bsx : beamstringsx){
 		for(const auto& bsy : beamstringsy){
 			std::vector<TString> pngs;
 			for(const auto& angstr : anglestrings){
-				TString pngoutname = Lithium6_1plus_sabrehits(bsx, bsy, angstr);
-				pngs.push_back(pngoutname);
+				for(const auto& phistr : phistrings){
+					TString pngoutname = Lithium6_1plus_sabrehits(bsx, bsy, angstr, phistr);
+					pngs.push_back(pngoutname);
+				}
 			}
 
 			//for all anglestring sabre hit patterns for this given bsx, bsy combo let's make into a gif:
@@ -441,7 +544,7 @@ void Lithium6_1plus_sabrehits_auto(){
 				cmd += " ";
 			}
 
-			gSystem->Exec(cmd);
+			// gSystem->Exec(cmd);
 		}
 	}
 
@@ -734,7 +837,7 @@ TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 
 	if(simIntegral > 0){
 		scaleFactor = dataIntegral/simIntegral;
-		hSim->Scale(scaleFactor);
+		//hSim->Scale(scaleFactor);
 		std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
 	} else {
 		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
@@ -749,7 +852,9 @@ TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	double ymax = std::max(maxdata,maxsim);
 
 	//calculate chi2:
-	double chi2 = hData->Chi2Test(hSim, "CHI2/NDF UW");
+	//double chi2 = hData->Chi2Test(hSim, "CHI2/NDF UW");
+	double ndf;
+	double chi2 = ComputeChi2BinByBin(hData, hSim, scaleFactor, ndf);//ComputeChi2BinByBin(TH1* hData, TH1* hSim_unscaled, double scaleFactor, double &ndf)
 
 
 	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
@@ -780,14 +885,15 @@ TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	//pt->AddText(Form("%s",anglestring.Data()));
 	pt->AddText(Form("%sx %sy", beamstringx.Data(), beamstringy.Data()));
 	pt->AddText(Form("(scale factor = %.3f)", scaleFactor));
-	pt->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
+	pt->AddText(Form("#chi^{2}/NDF = %.1f",chi2/ndf));
 	pt->SetFillColorAlpha(kWhite,0.5);
 	pt->SetTextAlign(12);
 	pt->Draw();
 
 	TPaveText *ptangle = new TPaveText(0.12, 0.7, 0.27, 0.9, "NDC");
 	TString temp;
-	if(anglestring == "188208") temp = "19.8#circ #pm 1#circ";
+	if(anglestring == "193203") temp = "19.8#circ #pm 0.5#circ";
+	else if(anglestring == "188208") temp = "19.8#circ #pm 1#circ";
 	else if(anglestring == "178218") temp = "19.8#circ #pm 2#circ";
 	else if(anglestring == "168228") temp = "19.8#circ #pm 3#circ";
 	else if(anglestring == "158238") temp = "19.8#circ #pm 4#circ";
@@ -830,11 +936,12 @@ void Lithium6_1plus_pixelhistos_auto(){
 	TString beamy = "fixed";
 
 	std::vector<TString> anglestrings = {
-											"188208",			// 19.8 +/- 1
-											"178218",			// 19.8 +/- 2
-											"168228",			// 19.8 +/- 3
-											"158238",			// 19.8 +/- 4
-											"148248"			// 19.8 +/- 5
+											"193203",			// 19.8 +/- 0.5
+											"188208",			// 19.8 +/- 1.0
+											"178218",			// 19.8 +/- 2.0
+											"168228",			// 19.8 +/- 3.0
+											"158238",			// 19.8 +/- 4.0
+											"148248"			// 19.8 +/- 5.0
 										};
 
 	// x: fixed 			gaus0005
@@ -881,6 +988,7 @@ void Lithium6_1plus_pixelhistos_auto(){
 			cmd += gifname;
 
 			std::cout << "Creating gif for (r,w) = (" << ring << ", " << wedge << ")\n";
+			//std::cout << "\tcmd = " << cmd << "\n\n";
 			gSystem->Exec(cmd);
 			std::cout << "Saved " << gifname << std::endl;
 
@@ -897,22 +1005,47 @@ void Lithium6_1plus_pixelhistos_auto(){
 
 }
 
+std::pair<TString, TString> parsephistring(const TString& ts){
+	std::string s = ts.Data();
+	auto pos = s.find('_');
+	if(pos == std::string::npos) throw std::runtime_error("Invalid phi string: " + s);
+
+	TString low = s.substr(0,pos);
+	TString high = s.substr(pos+1);
+
+	return {low, high};
+}
 
 void Lithium6_1plus_fourpixelchisquared(){
 
-	TString anglestring = "16782278";
+	TString anglestring = "178218";
 
 	std::vector<TString> beamstrings = {
-											"fixed",
-											"gaus001",
-											"gaus002",
-											"gaus003",
-											"gaus004",
-											"gaus005"
+											"fixed"
+											// "gaus001",
+											// "gaus002",
+											// "gaus003",
+											// "gaus004",
+											// "gaus005"
 										};
 
-	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
-	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+	// TString bsx = "fixed";
+	// TString bsy = "fixed";
+
+
+	std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	std::vector<TString> phistrings;
+	for(const auto& philower : phis){
+		for(const auto& phiupper : phis){
+			phistrings.push_back(Form("%.1f_%.1f",-philower,phiupper));
+		}
+	}
+
+	double xedges[6] = {-2.75, -2.25, -1.75, -1.25, -0.75, -0.25};
+	double yedges[6] = {0.25, 0.75, 1.25, 1.75, 2.25, 2.75};
+
+	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 5, xedges, 5, yedges);
+	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 5, xedges, 5, yedges);
 
 	//---------------------------------------------------
 	//				Establish data values
@@ -966,157 +1099,130 @@ void Lithium6_1plus_fourpixelchisquared(){
 
 	double dataIntegral = (hData->GetBinContent(hData->GetBin(30,8))) + (hData->GetBinContent(hData->GetBin(30,9))) + (hData->GetBinContent(hData->GetBin(31,9))) + (hData->GetBinContent(hData->GetBin(31,8)));
 
-	// std::vector<double> fourpix_relcounts = {counts_pix_r71_w29/fourpixsum, counts_pix_r72_w29/fourpixsum, counts_pix_r72_w30/fourpixsum, counts_pix_r71_w30/fourpixsum};
+	//std::vector<double> fourpix_relcounts = {counts_pix_r71_w29/fourpixsum, counts_pix_r72_w29/fourpixsum, counts_pix_r72_w30/fourpixsum, counts_pix_r71_w30/fourpixsum};
 
 	//for(const auto& fn : filenames){
-	for(const auto& bsx : beamstrings){
-		for(const auto& bsy : beamstrings){
 
-			TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root", anglestring.Data(), bsx.Data(), bsy.Data());
+	for(const auto& ps : phistrings){
+		for(const auto& bsx : beamstrings){
+			for(const auto& bsy : beamstrings){
 
-			//establish sim values:
-			//uncomment for DESKTOP
-			// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
-			// TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
-			//uncomment for LAPTOP:
-			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
-			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+				TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_histos.root", anglestring.Data(), ps.Data(), bsx.Data(), bsy.Data());
+
+				//establish sim values:
+				//uncomment for DESKTOP
+				// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
+				// TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+				//uncomment for LAPTOP:
+				TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+				TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
 
-			TFile *simfile = new TFile(simFilePath,"READ");
-			if(!simfile || simfile->IsZombie()){
-				std::cerr << "Error opening sim file " << simFilePath << "\n\n";
-				continue;
+				TFile *simfile = new TFile(simFilePath,"READ");
+				if(!simfile || simfile->IsZombie()){
+					std::cerr << "Error opening sim file " << simFilePath << "\n\n";
+					continue;
+				}
+
+
+				TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
+				if(!hSim){
+					std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
+					continue;
+				}
+
+				double simIntegral = (hSim->GetBinContent(hSim->GetBin(30,8))) + (hSim->GetBinContent(hSim->GetBin(30,9))) + (hSim->GetBinContent(hSim->GetBin(31,9))) + (hSim->GetBinContent(hSim->GetBin(31,8)));
+
+
+				hSim->SetDirectory(0);
+				simfile->Close();
+
+				if( hSim->GetNbinsX() != hData->GetNbinsX() ){
+					std::cerr << "Histogram binning does not match for data/sim histogram pair\n";
+					continue;
+				}
+
+
+
+
+				double scaleFactor;
+				if(simIntegral > 0){
+					scaleFactor = dataIntegral/simIntegral;
+					hSim->Scale(scaleFactor);
+				} else {
+					std::cerr << "sim histogram from " << fn.Data() << " has zero integral and thus cannot be scaled! Continuing..." << std::endl;
+					continue;
+				}
+
+				//calculate the chi squared for this sim file:
+
+				double r71w29_data = (hData->GetBinContent(hData->GetBin(30,8)));
+				double r72w29_data = (hData->GetBinContent(hData->GetBin(30,9)));
+				double r72w30_data = (hData->GetBinContent(hData->GetBin(31,9)));
+				double r71w30_data = (hData->GetBinContent(hData->GetBin(31,8)));
+
+				double r71w29_data_error = (hData->GetBinError(hData->GetBin(30,8)));
+				double r72w29_data_error = (hData->GetBinError(hData->GetBin(30,9)));
+				double r72w30_data_error = (hData->GetBinError(hData->GetBin(31,9)));
+				double r71w30_data_error = (hData->GetBinError(hData->GetBin(31,8)));
+
+				double r71w29_sim = (hSim->GetBinContent(hSim->GetBin(30,8)));
+				double r72w29_sim = (hSim->GetBinContent(hSim->GetBin(30,9)));
+				double r72w30_sim = (hSim->GetBinContent(hSim->GetBin(31,9)));
+				double r71w30_sim = (hSim->GetBinContent(hSim->GetBin(31,8)));
+
+				double r71w29_sim_error = (hSim->GetBinError(hSim->GetBin(30,8)));
+				double r72w29_sim_error = (hSim->GetBinError(hSim->GetBin(30,9)));
+				double r72w30_sim_error = (hSim->GetBinError(hSim->GetBin(31,9)));
+				double r71w30_sim_error = (hSim->GetBinError(hSim->GetBin(31,8)));
+
+				double chi2 = ( std::pow((r71w29_data - r71w29_sim),2) / ( std::pow(r71w29_data_error,2) + std::pow(r71w29_sim_error,2)) ) + 
+							  ( std::pow((r72w29_data - r72w29_sim),2) / ( std::pow(r72w29_data_error,2) + std::pow(r72w29_sim_error,2)) ) +
+							  ( std::pow((r72w30_data - r72w30_sim),2) / ( std::pow(r72w30_data_error,2) + std::pow(r72w30_sim_error,2)) ) +
+							  ( std::pow((r71w30_data - r71w30_sim),2) / ( std::pow(r71w30_data_error,2) + std::pow(r71w30_sim_error,2)) );
+
+				Int_t ndf = 4 - 1;//4 pixels minus the 1 DOF (the scale factor is only fitted parameter here)
+
+				double reducedchi2 = chi2/ndf;
+
+
+				//fill chi2 histogram from grid search:
+				int xbin = 0;
+				int ybin = 0;
+
+				// if(bsx == "fixed") xbin = 0;
+				// else if(bsx == "gaus001") xbin = 1;
+				// else if(bsx == "gaus002") xbin = 2;
+				// else if(bsx == "gaus003") xbin = 3;
+				// else if(bsx == "gaus004") xbin = 4;
+				// else if(bsx == "gaus005") xbin = 5;
+
+				// if(bsy == "fixed") ybin = 0;
+				// else if(bsy == "gaus001") ybin = 1;
+				// else if(bsy == "gaus002") ybin = 2;
+				// else if(bsy == "gaus003") ybin = 3;
+				// else if(bsy == "gaus004") ybin = 4;
+				// else if(bsy == "gaus005") ybin = 5;
+
+				std::pair<TString,TString> philowhigh = parsephistring(ps);
+				TString philow = philowhigh.first;
+				TString phihigh = philowhigh.second;
+
+				// if(philow == "-2.5") xbin = 5;
+				// else if(philow == "-2.0") xbin = 4;
+				// else if(philow == "-1.5") xbin = 3;
+				// else if(philow == "-1.0") xbin = 2;
+				// else if(philow == "-0.5") xbin = 1;
+
+				// if(phihigh == "2.5") ybin = 5;
+				// else if(phihigh == "2.0") ybin = 4;
+				// else if(phihigh == "1.5") ybin = 3;
+				// else if(phihigh == "1.0") ybin = 2;
+				// else if(phihigh == "0.5") ybin = 1;
+
+				hGridSearchChi2->Fill(philow.Atof(),phihigh.Atof(),chi2);
+				hGridSearchReducedChi2->Fill(philow.Atof(),phihigh.Atof(),reducedchi2);
 			}
-
-			// TH1 *hpix_r71_w29_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r71_w29));
-			// TH1 *hpix_r72_w29_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r72_w29));
-			// TH1 *hpix_r72_w30_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r72_w30));
-			// TH1 *hpix_r71_w30_sim = dynamic_cast<TH1*>(simfile->GetPath(path_pix_r71_w30));
-			// if(!hpix_r71_w29_sim || !hpix_r72_w29_sim || !hpix_r72_w30_sim || !hpix_r71_w30_sim){
-			// 	std::cerr << "Error retrieving at least one sim histogram!" << std::endl;
-			// 	continue;
-			// }
-
-			TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
-			if(!hSim){
-				std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
-				continue;
-			}
-
-			double simIntegral = (hSim->GetBinContent(hSim->GetBin(30,8))) + (hSim->GetBinContent(hSim->GetBin(30,9))) + (hSim->GetBinContent(hSim->GetBin(31,9))) + (hSim->GetBinContent(hSim->GetBin(31,8)));
-
-			// hpix_r71_w29_sim->SetDirectory(0);
-			// hpix_r72_w29_sim->SetDirectory(0);
-			// hpix_r72_w30_sim->SetDirectory(0);
-			// hpix_r71_w30_sim->SetDirectory(0);
-			hSim->SetDirectory(0);
-			simfile->Close();
-
-			if( hSim->GetNbinsX() != hData->GetNbinsX() ){
-				std::cerr << "Histogram binning does not match for data/sim histogram pair\n";
-				continue;
-			}
-
-			// double simIntegral_r71_w29 = hpix_r71_w29_sim->Integral();
-			// double simIntegral_r72_w29 = hpix_r72_w29_sim->Integral();
-			// double simIntegral_r72_w30 = hpix_r72_w30_sim->Integral();
-			// double simIntegral_r71_w30 = hpix_r71_w30_sim->Integral();
-
-			// double scaleFactor_r71_w29;// = counts_pix_r71_w29/simIntegral_r71_w29;
-			// double scaleFactor_r72_w29;// = counts_pix_r72_w29/simIntegral_r72_w29;
-			// double scaleFactor_r72_w30;// = counts_pix_r72_w30/simIntegral_r72_w30;
-			// double scaleFactor_r71_w30;// = counts_pix_r71_w30/simIntegral_r71_w30;
-
-			// if(simIntegral_r71_w29!=0 && simIntegral_r72_w29!=0 && simIntegral_r72_w30!=0 && simIntegral_r71_w30!=0){
-
-			// 	scaleFactor_r71_w29 = counts_pix_r71_w29/simIntegral_r71_w29;
-			// 	scaleFactor_r72_w29 = counts_pix_r72_w29/simIntegral_r72_w29;
-			// 	scaleFactor_r72_w30 = counts_pix_r72_w30/simIntegral_r72_w30;
-			// 	scaleFactor_r71_w30 = counts_pix_r71_w30/simIntegral_r71_w30;
-
-			// 	hpix_r71_w29_sim->Scale(scaleFactor_r71_w29);
-			// 	hpix_r72_w29_sim->Scale(scaleFactor_r72_w29);
-			// 	hpix_r72_w30_sim->Scale(scaleFactor_r72_w30);
-			// 	hpix_r71_w30_sim->Scale(scaleFactor_r71_w30);
-
-			// } else {
-			// 	std::cerr << "sim histogram has zero integral, cannot be scaled...continuing...\n";
-			// 	continue;
-			// }
-
-
-
-			double scaleFactor;
-			if(simIntegral > 0){
-				scaleFactor = dataIntegral/simIntegral;
-				hSim->Scale(scaleFactor);
-			} else {
-				std::cerr << "sim histogram from " << fn.Data() << " has zero integral and thus cannot be scaled! Continuing..." << std::endl;
-				continue;
-			}
-
-			// double counts_sim_pix_r71_w29 = hpix_r71_w29_sim->Integral();
-			// double counts_sim_pix_r72_w29 = hpix_r72_w29_sim->Integral();
-			// double counts_sim_pix_r72_w30 = hpix_r72_w30_sim->Integral();
-			// double counts_sim_pix_r71_w30 = hpix_r71_w30_sim->Integral();
-
-			// double fourpixsum_sim = counts_sim_pix_r71_w29 + counts_sim_pix_r72_w29 + counts_sim_pix_r72_w30 + counts_sim_pix_r71_w30;
-
-			//std::vector<double> fourpix_relcounts_sim = {counts_sim_pix_r71_w29/fourpixsum_sim, counts_sim_pix_r72_w29/fourpixsum_sim, counts_sim_pix_r72_w30/fourpixsum_sim, counts_sim_pix_r71_w30/fourpixsum_sim};
-
-			//calculate the chi squared for this sim file:
-
-			double r71w29_data = (hData->GetBinContent(hData->GetBin(30,8)));
-			double r72w29_data = (hData->GetBinContent(hData->GetBin(30,9)));
-			double r72w30_data = (hData->GetBinContent(hData->GetBin(31,9)));
-			double r71w30_data = (hData->GetBinContent(hData->GetBin(31,8)));
-
-			double r71w29_data_error = (hData->GetBinError(hData->GetBin(30,8)));
-			double r72w29_data_error = (hData->GetBinError(hData->GetBin(30,9)));
-			double r72w30_data_error = (hData->GetBinError(hData->GetBin(31,9)));
-			double r71w30_data_error = (hData->GetBinError(hData->GetBin(31,8)));
-
-			double r71w29_sim = (hSim->GetBinContent(hSim->GetBin(30,8)));
-			double r72w29_sim = (hSim->GetBinContent(hSim->GetBin(30,9)));
-			double r72w30_sim = (hSim->GetBinContent(hSim->GetBin(31,9)));
-			double r71w30_sim = (hSim->GetBinContent(hSim->GetBin(31,8)));
-
-			double r71w29_sim_error = (hSim->GetBinError(hSim->GetBin(30,8)));
-			double r72w29_sim_error = (hSim->GetBinError(hSim->GetBin(30,9)));
-			double r72w30_sim_error = (hSim->GetBinError(hSim->GetBin(31,9)));
-			double r71w30_sim_error = (hSim->GetBinError(hSim->GetBin(31,8)));
-
-			double chi2 = ( std::pow((r71w29_data - r71w29_sim),2) / ( std::pow(r71w29_data_error,2) + std::pow(r71w29_sim_error,2)) ) + 
-						  ( std::pow((r72w29_data - r72w29_sim),2) / ( std::pow(r72w29_data_error,2) + std::pow(r72w29_sim_error,2)) ) +
-						  ( std::pow((r72w30_data - r72w30_sim),2) / ( std::pow(r72w30_data_error,2) + std::pow(r72w30_sim_error,2)) ) +
-						  ( std::pow((r71w30_data - r71w30_sim),2) / ( std::pow(r71w30_data_error,2) + std::pow(r71w30_sim_error,2)) );
-
-			Int_t ndf = 4 - 1;//4 pixels minus the 1 DOF (the scale factor is only fitted parameter here)
-
-			double reducedchi2 = chi2/ndf;
-
-
-			//fill chi2 histogram from grid search:
-			int xbin = 0;
-			int ybin = 0;
-
-			if(bsx == "fixed") xbin = 0;
-			else if(bsx == "gaus001") xbin = 1;
-			else if(bsx == "gaus002") xbin = 2;
-			else if(bsx == "gaus003") xbin = 3;
-			else if(bsx == "gaus004") xbin = 4;
-			else if(bsx == "gaus005") xbin = 5;
-
-			if(bsy == "fixed") ybin = 0;
-			else if(bsy == "gaus001") ybin = 1;
-			else if(bsy == "gaus002") ybin = 2;
-			else if(bsy == "gaus003") ybin = 3;
-			else if(bsy == "gaus004") ybin = 4;
-			else if(bsy == "gaus005") ybin = 5;
-
-			hGridSearchChi2->Fill(xbin,ybin,chi2);
-			hGridSearchReducedChi2->Fill(xbin,ybin,reducedchi2);
 		}
 	}
 
@@ -1136,8 +1242,8 @@ void Lithium6_1plus_fourpixelchisquared(){
 	c1->SetTopMargin(0.08);
 
 	hGridSearchReducedChi2->Draw("COLZ");
-	hGridSearchReducedChi2->GetXaxis()->SetTitle("Beam Sigma X (m)");
-	hGridSearchReducedChi2->GetYaxis()->SetTitle("Beam Sigma Y (m)");
+	hGridSearchReducedChi2->GetXaxis()->SetTitle("#phi_{low} (#circ)");
+	hGridSearchReducedChi2->GetYaxis()->SetTitle("#phi_{high} (#circ)");
 	hGridSearchReducedChi2->SetStats(0);
 
 	//force equal scaling on both x and y axis w/ gpad:
@@ -1406,19 +1512,30 @@ void Lithium6_1plus_fourpixelchisquared_2(){
 
 void Lithium6_1plus_sixteenpixelchisquared(){
 
-	TString anglestring = "16782278";
+	TString anglestring = "178218";
 
 	std::vector<TString> beamstrings = {
-											"fixed",
-											"gaus001",
-											"gaus002",
-											"gaus003",
-											"gaus004",
-											"gaus005"
+											"fixed"
+											// "gaus001",
+											// "gaus002",
+											// "gaus003",
+											// "gaus004",
+											// "gaus005"
 										};
 
-	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
-	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 6, -0.5, 5.5, 6, -0.5, 5.5);
+	double xedges[6] = {-2.75, -2.25, -1.75, -1.25, -0.75, -0.25};
+	double yedges[6] = {0.25, 0.75, 1.25, 1.75, 2.25, 2.75};
+
+	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 5, xedges, 5, yedges);
+	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 5, xedges, 5, yedges);
+
+	std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	std::vector<TString> phistrings;
+	for(const auto& philower : phis){
+		for(const auto& phiupper : phis){
+			phistrings.push_back(Form("%.1f_%.1f",-philower,phiupper));
+		}
+	}
 
 	//---------------------------------------------------
 	//				Establish data values
@@ -1452,98 +1569,104 @@ void Lithium6_1plus_sixteenpixelchisquared(){
 	int y_maxbin = 10;
 	double dataIntegral = hData->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
 
-	for(const auto& bsx : beamstrings){
-		for(const auto& bsy : beamstrings){
+	for(const auto& ps : phistrings){
+		for(const auto& bsx : beamstrings){
+			for(const auto& bsy : beamstrings){
 
-			TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),bsx.Data(),bsy.Data());
+				TString fn = Form("kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_histos.root", anglestring.Data(), ps.Data(), bsx.Data(), bsy.Data());
 
-			//uncomment for DESKTOP:
-			//TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
-			//TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+				//uncomment for DESKTOP:
+				//TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/%s",fn.Data());
+				//TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
-			//uncomment for LAPTOP:
-			TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
-			TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
+				//uncomment for LAPTOP:
+				TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/%s",fn.Data());
+				TString simHistLocalPath = "SABRE/hSABRE_RingsVSWedges";
 
-			TFile *simfile = new TFile(simFilePath,"READ");
-			if(!simfile || simfile->IsZombie()){
-				std::cerr << "Error opening sim file " << simFilePath << "\n\n";
-				continue;
-			}
-
-			TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
-			if(!hSim){
-				std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
-				continue;
-			}
-
-			double simIntegral = hSim->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
-
-			hSim->SetDirectory(0);
-			simfile->Close();
-
-			if(hSim->GetNbinsX() != hData->GetNbinsX()){
-				std::cerr << "Histogram binning does not match for data/sim histogram pair\n\n";
-				continue;
-			}
-
-			double scaleFactor;
-			if(simIntegral > 0){
-				scaleFactor = dataIntegral/simIntegral;
-				hSim->Scale(scaleFactor);
-			} else {
-				std::cerr << "sim histo from " << fn.Data() << " has zero integral and thus cannot be scaled!\n\n";
-				continue;
-			}
-
-			double chi2 = 0.;
-			double reducedchi2 = 0.;
-			int ndf = -666;
-
-			for(int x=x_minbin; x<=x_maxbin; x++){
-				ndf = 16 - 1;//16 pixels minus 1 DOF (scale factor only DOF on a per-run basis)
-				for(int y=y_minbin; y<=y_maxbin; y++){
-
-					double datavalue = hData->GetBinContent(hData->GetBin(x,y));
-					double simvalue = hSim->GetBinContent(hSim->GetBin(x,y));
-
-					if(datavalue == 0 && simvalue == 0){
-						ndf -= 1;
-						std::cout << "passing for x = " << x << " and y = " << y << "\n";
-						continue;
-					}
-					
-					double dataerror = hData->GetBinError(hData->GetBin(x,y));
-					double simerror = hSim->GetBinError(hSim->GetBin(x,y));
-
-					double numerator = std::pow((datavalue - simvalue) , 2);
-					double denominator = std::pow(dataerror, 2) + std::pow(simerror, 2);
-					chi2 += (numerator/denominator);
-
+				TFile *simfile = new TFile(simFilePath,"READ");
+				if(!simfile || simfile->IsZombie()){
+					std::cerr << "Error opening sim file " << simFilePath << "\n\n";
+					continue;
 				}
+
+				TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
+				if(!hSim){
+					std::cerr << "Error retrieving sim histo from " << simFilePath << "\n\n";
+					continue;
+				}
+
+				double simIntegral = hSim->Integral(x_minbin, x_maxbin, y_minbin, y_maxbin);
+
+				hSim->SetDirectory(0);
+				simfile->Close();
+
+				if(hSim->GetNbinsX() != hData->GetNbinsX()){
+					std::cerr << "Histogram binning does not match for data/sim histogram pair\n\n";
+					continue;
+				}
+
+				double scaleFactor;
+				if(simIntegral > 0){
+					scaleFactor = dataIntegral/simIntegral;
+					hSim->Scale(scaleFactor);
+				} else {
+					std::cerr << "sim histo from " << fn.Data() << " has zero integral and thus cannot be scaled!\n\n";
+					continue;
+				}
+
+				double chi2 = 0.;
+				double reducedchi2 = 0.;
+				int ndf = 16 - 1;//16 pixels minus 1 DOF (scale factor only DOF on a per-run basis)
+
+				for(int x=x_minbin; x<=x_maxbin; x++){
+					
+					for(int y=y_minbin; y<=y_maxbin; y++){
+
+						double datavalue = hData->GetBinContent(hData->GetBin(x,y));
+						double simvalue = hSim->GetBinContent(hSim->GetBin(x,y));
+
+						if(datavalue == 0 && simvalue == 0){
+							ndf -= 1;
+							std::cout << "passing for x = " << x << " and y = " << y << "\n";
+							continue;
+						}
+						
+						double dataerror = hData->GetBinError(hData->GetBin(x,y));
+						double simerror = hSim->GetBinError(hSim->GetBin(x,y));
+
+						double numerator = std::pow((datavalue - simvalue) , 2);
+						double denominator = std::pow(dataerror, 2) + std::pow(simerror, 2);
+						chi2 += (numerator/denominator);
+
+					}
+				}
+
+				reducedchi2 = chi2/ndf;
+
+				int xbin = 0;
+				int ybin = 0;
+
+				// if(bsx == "fixed") xbin = 0;
+				// else if(bsx == "gaus001") xbin = 1;
+				// else if(bsx == "gaus002") xbin = 2;
+				// else if(bsx == "gaus003") xbin = 3;
+				// else if(bsx == "gaus004") xbin = 4;
+				// else if(bsx == "gaus005") xbin = 5;
+
+				// if(bsy == "fixed") ybin = 0;
+				// else if(bsy == "gaus001") ybin = 1;
+				// else if(bsy == "gaus002") ybin = 2;
+				// else if(bsy == "gaus003") ybin = 3;
+				// else if(bsy == "gaus004") ybin = 4;
+				// else if(bsy == "gaus005") ybin = 5;
+
+				std::pair<TString,TString> philowhigh = parsephistring(ps);
+				TString philow = philowhigh.first;
+				TString phihigh = philowhigh.second;
+
+				hGridSearchChi2->Fill(philow.Atof(),phihigh.Atof(),chi2);
+				hGridSearchReducedChi2->Fill(philow.Atof(),phihigh.Atof(),reducedchi2);
 			}
-
-			reducedchi2 = chi2/ndf;
-
-			int xbin = 0;
-			int ybin = 0;
-
-			if(bsx == "fixed") xbin = 0;
-			else if(bsx == "gaus001") xbin = 1;
-			else if(bsx == "gaus002") xbin = 2;
-			else if(bsx == "gaus003") xbin = 3;
-			else if(bsx == "gaus004") xbin = 4;
-			else if(bsx == "gaus005") xbin = 5;
-
-			if(bsy == "fixed") ybin = 0;
-			else if(bsy == "gaus001") ybin = 1;
-			else if(bsy == "gaus002") ybin = 2;
-			else if(bsy == "gaus003") ybin = 3;
-			else if(bsy == "gaus004") ybin = 4;
-			else if(bsy == "gaus005") ybin = 5;
-
-			hGridSearchChi2->Fill(xbin,ybin,chi2);
-			hGridSearchReducedChi2->Fill(xbin,ybin,reducedchi2);
 		}
 	}
 
@@ -1559,8 +1682,8 @@ void Lithium6_1plus_sixteenpixelchisquared(){
 	c1->SetTopMargin(0.08);
 
 	hGridSearchReducedChi2->Draw("COLZ");
-	hGridSearchReducedChi2->GetXaxis()->SetTitle("Beam Sigma X (m)");
-	hGridSearchReducedChi2->GetYaxis()->SetTitle("Beam Sigma Y (m)");
+	hGridSearchReducedChi2->GetXaxis()->SetTitle("#phi_{low} (#circ)");
+	hGridSearchReducedChi2->GetYaxis()->SetTitle("#phi_{high} (#circ)");
 	hGridSearchReducedChi2->SetStats(0);
 
 	gPad->SetFixedAspectRatio();
@@ -1755,93 +1878,7 @@ void Lithium6_1plus_sixteenpixelchisquared_2(){
 	outfile->Close();
 }
 
-double ComputeChi2BinByBin(TH1* hData, TH1* hSim, double &ndf){
 
-	if(!hData || !hSim){
-		std::cerr << "Error: null histo pointer for hData or hSim" << std::endl;
-		ndf = 0;
-		return -1;
-	}
-
-	if(hData->GetNbinsX() != hSim->GetNbinsX()){
-		std::cerr << "Histograms have inequal binning!" << std::endl;
-		ndf = 0;
-		return -1;
-	}
-
-	double chi2 = 0.;
-	ndf = 0.;
-
-	int nbins = hData->GetNbinsX();
-	for(int i=1; i<=nbins; i++){
-		double dataval = hData->GetBinContent(i);
-		double simval = hSim->GetBinContent(i);
-
-		double datasigma2 = (dataval > 0) ? dataval : 1.;//avoids dividing by 0 error for 0 count bins -> assumes poisson statistics
-		double simsigma2 = (simval > 0) ? simval : 1.;//avoids dividing by 0 error, assumes poisson stats
-
-		double numerator = std::pow((dataval - simval), 2);
-		double denominator = datasigma2 + simsigma2;
-		double tempchi2 = (numerator/denominator);
-
-		if(dataval != 0 || simval != 0){
-			ndf += 1.;
-			chi2 += tempchi2;
-		}
-
-	}
-
-	return chi2;
-
-}
-
-double ComputeChi2BinByBin(TH1* hData, TH1* hSim_unscaled, double scaleFactor, double &ndf){
-	//same function as ComputeChi2BinByBin but allows for passing the unscaled sim histogram and thus the better relative sigmas when scaled!
-
-	if(!hData || !hSim_unscaled){
-		std::cerr << "Error: null histo pointer for hData or hSim_unscaled" << std::endl;
-		ndf = 0;
-		return -1;
-	}
-
-	if(hData->GetNbinsX() != hSim_unscaled->GetNbinsX()){
-		std::cerr << "Histograms have inequal binning!" << std::endl;
-		ndf = 0;
-		return -1;
-	}
-
-	double chi2 = 0.;
-	ndf = 0.;
-
-	//scale hSim_unscaled by scalefactor:
-	hSim_unscaled->Scale(scaleFactor);
-
-	//now iterate through bins:
-	int nbins = hData->GetNbinsX();
-	for(int i = 1; i <= nbins; i++){
-		double dataval = hData->GetBinContent(i);
-		double dataerror = hData->GetBinError(i);//sigma
-
-		double simval = hSim_unscaled->GetBinContent(i);
-		double simerror = hSim_unscaled->GetBinError(i);//sigma
-
-		double sigma2 = dataerror*dataerror + simerror*simerror;//add in quadrature!
-
-		double numerator = std::pow((dataval - simval), 2);
-		double denominator = sigma2;
-
-		double tempchi2 = (numerator/denominator);
-
-		if(dataval != 0 || simval != 0){
-			ndf += 1.;
-			chi2 += tempchi2;
-		} 
-
-	}
-
-	return chi2;
-
-}
 
 void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 	//this function calculates a cumulative chi^2 for comparing simulation data with experimental data
@@ -1852,7 +1889,7 @@ void Lithium6_1plus_chiSquaredFromFourPixelsEnergySpectra(){
 
 	const int rebinfactor = 4;
 
-	std::vector<std::pair<int,int>> ringwedgepairs = {{71,29}};//, {72,29}, {72,30}, {71,30}};
+	std::vector<std::pair<int,int>> ringwedgepairs = {{71,29}, {72,29}, {72,30}, {71,30}};
 
 	// std::vector<TString> anglestrings = {
 	// 										"188208",
