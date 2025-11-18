@@ -31,6 +31,22 @@
 #include <TPaveText.h>
 #include <cmath>
 #include <TMath.h>
+#include <string>
+
+int neededPrecision(double x){
+	double frac = std::fabs(x - std::round(x));
+	if(frac == 0.0) return 1;
+	if(std::fmod(frac*10,1.0) == 0.) return 1;
+	if(std::fmod(frac*100,1.0) == 0.) return 2;
+	return 2;
+}
+
+std::string smartFormat(double x){
+	int prec = neededPrecision(x);
+	std::ostringstream ss;
+	ss << std::fixed << std::setprecision(prec) << x;
+	return ss.str();
+}
 
 double ComputeChi2BinByBin(TH1* hData, TH1* hSim, double &ndf){
 
@@ -487,11 +503,11 @@ void Lithium6_1plus_sabrehits_auto(){
 	// 								};
 
 	std::vector<TString> beamstringsx = {
-											"fixed"
+											"gaus001"
 										};
 
 	std::vector<TString> beamstringsy = {
-											"fixed"									
+											"gaus001"									
 										};
 
 	std::vector<TString> anglestrings = {
@@ -503,12 +519,14 @@ void Lithium6_1plus_sabrehits_auto(){
 											//"148248"			// 19.8 +/- 5.0
 										};
 
-	std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	//std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	std::vector<double> phis = {1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
 	std::vector<TString> phistrings;
-	for(const auto& philow : phis){
-		for(const auto& phiup : phis){
-			TString phistr = Form("%.1f_%.1f", -philow, phiup);
-			phistrings.push_back(phistr);
+	for(const auto& philower : phis){
+		for(const auto& phiupper : phis){
+			//phistrings.push_back(Form("%f_%f",-philower,phiupper));
+			TString s = TString::Format("%s_%s", smartFormat(-philower).c_str(), smartFormat(phiupper).c_str());
+			phistrings.push_back(s);
 		}
 	}
 
@@ -1021,8 +1039,8 @@ void Lithium6_1plus_fourpixelchisquared(){
 	TString anglestring = "178218";
 
 	std::vector<TString> beamstrings = {
-											"fixed"
-											// "gaus001",
+											//"fixed"
+											"gaus001"
 											// "gaus002",
 											// "gaus003",
 											// "gaus004",
@@ -1033,16 +1051,18 @@ void Lithium6_1plus_fourpixelchisquared(){
 	// TString bsy = "fixed";
 
 
-	std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	std::vector<double> phis = {1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
 	std::vector<TString> phistrings;
 	for(const auto& philower : phis){
 		for(const auto& phiupper : phis){
-			phistrings.push_back(Form("%.1f_%.1f",-philower,phiupper));
+			//phistrings.push_back(Form("%f_%f",-philower,phiupper));
+			TString s = TString::Format("%s_%s", smartFormat(-philower).c_str(), smartFormat(phiupper).c_str());
+			phistrings.push_back(s);
 		}
 	}
 
-	double xedges[6] = {-2.75, -2.25, -1.75, -1.25, -0.75, -0.25};
-	double yedges[6] = {0.25, 0.75, 1.25, 1.75, 2.25, 2.75};
+	double xedges[8] = {-3.125, -2.875, -2.625, -2.375, -2.125, -1.875, -1.625, -1.375};
+	double yedges[8] = {1.375, 1.625, 1.875, 2.125, 2.375, 2.625, 2.875, 3.125};
 
 	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 5, xedges, 5, yedges);
 	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 5, xedges, 5, yedges);
@@ -1515,27 +1535,30 @@ void Lithium6_1plus_sixteenpixelchisquared(){
 	TString anglestring = "178218";
 
 	std::vector<TString> beamstrings = {
-											"fixed"
-											// "gaus001",
+											//"fixed"
+											"gaus001"
 											// "gaus002",
 											// "gaus003",
 											// "gaus004",
 											// "gaus005"
 										};
 
-	double xedges[6] = {-2.75, -2.25, -1.75, -1.25, -0.75, -0.25};
-	double yedges[6] = {0.25, 0.75, 1.25, 1.75, 2.25, 2.75};
+	std::vector<double> phis = {1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
+	std::vector<TString> phistrings;
+	for(const auto& philower : phis){
+		for(const auto& phiupper : phis){
+			//phistrings.push_back(Form("%f_%f",-philower,phiupper));
+			TString s = TString::Format("%s_%s", smartFormat(-philower).c_str(), smartFormat(phiupper).c_str());
+			phistrings.push_back(s);
+		}
+	}
+
+	double xedges[8] = {-3.125, -2.875, -2.625, -2.375, -2.125, -1.875, -1.625, -1.375};
+	double yedges[8] = {1.375, 1.625, 1.875, 2.125, 2.375, 2.625, 2.875, 3.125};
 
 	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 5, xedges, 5, yedges);
 	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 5, xedges, 5, yedges);
 
-	std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
-	std::vector<TString> phistrings;
-	for(const auto& philower : phis){
-		for(const auto& phiupper : phis){
-			phistrings.push_back(Form("%.1f_%.1f",-philower,phiupper));
-		}
-	}
 
 	//---------------------------------------------------
 	//				Establish data values
