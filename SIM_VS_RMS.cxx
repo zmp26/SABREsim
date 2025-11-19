@@ -1064,8 +1064,8 @@ void Lithium6_1plus_fourpixelchisquared(){
 	double xedges[8] = {-3.125, -2.875, -2.625, -2.375, -2.125, -1.875, -1.625, -1.375};
 	double yedges[8] = {1.375, 1.625, 1.875, 2.125, 2.375, 2.625, 2.875, 3.125};
 
-	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 5, xedges, 5, yedges);
-	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 5, xedges, 5, yedges);
+	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 7, xedges, 7, yedges);
+	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 7, xedges, 7, yedges);
 
 	//---------------------------------------------------
 	//				Establish data values
@@ -1246,6 +1246,37 @@ void Lithium6_1plus_fourpixelchisquared(){
 		}
 	}
 
+	//add labels showing value and relative rank on each bin:
+	int nx = hGridSearchReducedChi2->GetNbinsX();
+	int ny = hGridSearchReducedChi2->GetNbinsY();
+
+	//store (value, global_bin) for ranking
+	std::vector<std::pair<double,int>> values;
+	values.reserve(nx*ny);
+
+	for(int ix=1; ix<=nx; ix++){
+		for(int iy=1; iy<=ny; iy++){
+			double val = hGridSearchReducedChi2->GetBinContent(ix,iy);
+			int globalbin = hGridSearchReducedChi2->GetBin(ix,iy);
+
+			if(val > 0) values.push_back({val,globalbin});
+		}
+	}
+
+	//sort by reduced chi2 value:
+	std::sort(values.begin(), values.end(),
+		      [](auto&a, auto&b){ return a.first < b.first; });
+
+	std::map<int,int> rankmap;
+	for(size_t i=0; i<values.size(); i++){
+		rankmap[values[i].second] = i+1;
+	}
+
+	TLatex latex;
+	latex.SetTextAlign(22);
+	latex.SetTextSize(0.018);
+	latex.SetTextColor(kBlack);
+
 	TFile *outfile = new TFile("GridSearch.root","RECREATE");
 
 	outfile->cd();
@@ -1265,6 +1296,30 @@ void Lithium6_1plus_fourpixelchisquared(){
 	hGridSearchReducedChi2->GetXaxis()->SetTitle("#phi_{low} (#circ)");
 	hGridSearchReducedChi2->GetYaxis()->SetTitle("#phi_{high} (#circ)");
 	hGridSearchReducedChi2->SetStats(0);
+
+	//draw labels on each bin
+	for(int ix=1; ix<=nx; ix++){
+		for(int iy=1; iy<=ny; iy++){
+
+			double val = hGridSearchReducedChi2->GetBinContent(ix,iy);
+			if(val <= 0) continue;
+
+			int globalbin = hGridSearchReducedChi2->GetBin(ix,iy);
+			int rank = rankmap[globalbin];
+
+			double x = hGridSearchReducedChi2->GetXaxis()->GetBinCenter(ix);
+			double y = hGridSearchReducedChi2->GetYaxis()->GetBinCenter(iy);
+
+			double dy = 0.07*(hGridSearchReducedChi2->GetYaxis()->GetBinWidth(iy));
+
+			TString text = Form("#%d",rank);
+			latex.DrawLatex(x,y+dy,text);
+
+			text = Form("%.2f",val);
+			latex.DrawLatex(x,y-dy,text);
+
+		}
+	}
 
 	//force equal scaling on both x and y axis w/ gpad:
 	gPad->SetFixedAspectRatio();
@@ -1556,8 +1611,8 @@ void Lithium6_1plus_sixteenpixelchisquared(){
 	double xedges[8] = {-3.125, -2.875, -2.625, -2.375, -2.125, -1.875, -1.625, -1.375};
 	double yedges[8] = {1.375, 1.625, 1.875, 2.125, 2.375, 2.625, 2.875, 3.125};
 
-	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 5, xedges, 5, yedges);
-	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 5, xedges, 5, yedges);
+	TH2D *hGridSearchChi2 = new TH2D("hGridSearchChi2", "GridSearchChi2", 7, xedges, 7, yedges);
+	TH2D *hGridSearchReducedChi2 = new TH2D("hGridSearchReducedChi2", "GridSearchReducedChi2", 7, xedges, 7, yedges);
 
 
 	//---------------------------------------------------
