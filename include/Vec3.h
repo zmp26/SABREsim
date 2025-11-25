@@ -29,11 +29,14 @@ public:
 		return phi;
 	};
 
+	inline Vec3 Unit() const { return {m_data[0]/Mag(), m_data[1]/Mag(), m_data[2]/Mag()}; };
+
 	inline const double operator[](int index) const { return index>2 || index<0 ? 0.0 : m_data[index]; };
 	inline Vec3& operator=(const Vec3& rhs) { SetVectorCartesian(rhs.GetX(), rhs.GetY(), rhs.GetZ()); return *this; };
 	inline Vec3 operator+(const Vec3& rhs) const { return Vec3(this->GetX()+rhs.GetX(), this->GetY()+rhs.GetY(), this->GetZ()+rhs.GetZ()); };
 	inline Vec3 operator-(const Vec3& rhs) const { return Vec3(this->GetX()-rhs.GetX(), this->GetY()-rhs.GetY(), this->GetZ()-rhs.GetZ()); };
 	inline Vec3 operator*(const int& rhs) const { return Vec3(GetX()*rhs,GetY()*rhs,GetZ()*rhs);};
+	inline Vec3 operator*(const double& rhs) const { return Vec3(GetX()*rhs,GetY()*rhs,GetZ()*rhs);};
 
 
 	double Dot(const Vec3& rhs) const;
@@ -58,6 +61,7 @@ private:
 
 };
 
-inline Vec3 operator*(const int& lhs, const Vec3& rhs);
+inline Vec3 operator*(const int& lhs, const Vec3& rhs) { return Vec3(lhs*rhs.GetX(), lhs*rhs.GetY(), lhs*rhs.GetZ()); };
+inline Vec3 operator*(const double& lhs, const Vec3& rhs) { return Vec3(lhs*rhs.GetX(), lhs*rhs.GetY(), lhs*rhs.GetZ()); };
 
 #endif

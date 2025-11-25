@@ -42,5 +42,3 @@ Vec3 Vec3::Cross(const Vec3& rhs) const {
 	double z = GetX()*rhs.GetY() - GetY()*rhs.GetX();
 	return Vec3(x,y,z);
 }
-
-inline Vec3 operator*(const int& lhs, const Vec3& rhs) { return Vec3(rhs.GetX()*lhs, rhs.GetY()*lhs, rhs.GetZ()*lhs); };
