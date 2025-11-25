@@ -25,8 +25,8 @@ def extract_gaus_value(s):
 	value = float("0."+digits)
 	return value
 
-x_opts = ["gaus001"]
-y_opts = ["gaus001"]
+x_opts = ["gaus0005", "gaus001", "gaus0015", "gaus002", "gaus0025"]
+y_opts = ["gaus0005", "gaus001", "gaus0015", "gaus002", "gaus0025"]
 
 #anglestrings = ["188208", "178218", "168228", "158238", "148248"]
 #	19.8deg		+/- 1deg  +/- 2deg  +/- 3deg  +/- 4deg  +/- 5deg
@@ -43,15 +43,19 @@ anglestrings = [
 				#"148248"	# 19.8deg +/- 5.0 deg
 				]
 
+phistrings = ["-2.125_2.125"]
+
 #kin2mc_7Li3He4He6Ligs_7500keV_theta178218_phi_-0.5_0.5.out
-phis = [1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
+#phis = [1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
 #phis = [0.5, 1.0, 1.5, 2.0, 2.5]
-phistrings = []
-for philow in phis:
-	for phiup in phis:
-		phistr = f"{-philow}_{phiup}"
-		phistrings.append(phistr)
-		#print(f"kin2mc_7Li3He4He6Ligs_7500keV_theta178218_phi_{phistr}.out")
+# phis = [2+i*0.125 for i in range(0,13)]
+# phistrings = []
+# for philow in phis:
+# 	for phiup in phis:
+# 		phistr = f"{-philow}_{phiup}"
+# 		#print(phistr)
+# 		phistrings.append(phistr)
+# 		#print(f"kin2mc_7Li3He4He6Ligs_7500keV_theta178218_phi_{phistr}.out")
 
 #generate the tasks list:
 tasks = []
@@ -106,10 +110,10 @@ def run_simulation(args):
 		tmp_path = tmp.name
 
 	t = datetime.now().strftime("%Y%m%d_%H%M%S")
-	log_file = LOG_DIR/f"SABREsim_theta{angstr}_phi_{phistr}.log"
+	log_file = LOG_DIR/f"SABREsim_theta{angstr}_phi_{phistr}_{profx}x_{profy}y.log"
 
 	with open(log_file, "w") as logf:
-		print(f"running phistring = {phistr}")
+		print(f"running profx = {profx}\tprofy = {profy}")
 		subprocess.run([str(SABRESIM_EXE), tmp_path], stdout=logf, stderr=subprocess.STDOUT)
 
 	Path(tmp_path).unlink(missing_ok=True)
@@ -122,7 +126,7 @@ if __name__ == "__main__":
 
 	start = datetime.now()
 
-	with ProcessPoolExecutor(max_workers=12) as exe:
+	with ProcessPoolExecutor(max_workers=4) as exe:
 		exe.map(run_simulation, tasks)
 
 	end = datetime.now()
