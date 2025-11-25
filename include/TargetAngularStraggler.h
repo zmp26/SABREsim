@@ -31,7 +31,7 @@ private:
 	std::unique_ptr<Distribution> distribution;
 
 	std::mt19937_64 phi_rng_;
-	std::uniform_real_distribution<double> phi_dist_{-180., 180.};
+	std::uniform_real_distribution<double> phi_dist_{0., 360.};
 
 };
 
