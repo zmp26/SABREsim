@@ -61,6 +61,11 @@ bool SimConfig::Parse(){
 				if(idx >= 1 && idx <= 4) targetLoss_par_[idx-1] = val;
 			}
 		}
+		else if(section == "TargetAngularStraggling"){
+			if(key == "straggleMu") straggleMu_ = std::stod(val);
+			else if(key == "straggleSigma") straggleSigma_ = std::stod(val);
+			else if(key == "straggleLambda") straggleLambda_ = std::stod(val);
+		}
 		else if(section == "DeadLayerLosses"){
 			if(key.rfind("deadLayerLoss_par",0) == 0){
 				int idx = key.back() - '0';

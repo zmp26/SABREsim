@@ -29,6 +29,10 @@ public:
 	double GetBeamEnergy() const { return beam_energy_; }
 	double GetRecoilExcitationEnergy() const { return recoil_excitation_energy_; }
 
+	double GetStraggleMu() const { return straggleMu_; }
+	double GetStraggleSigma() const { return straggleSigma_; }
+	double GetStraggleLambda() const { return straggleLambda_; }
+
 
 private:
 	std::string filename_;
@@ -37,6 +41,7 @@ private:
 	std::string infile_, detfile_, treefile_, histofile_;
 
 	std::vector<std::string> targetLoss_par_;
+	double straggleMu_, straggleSigma_, straggleLambda_;
 	std::vector<std::string> deadLayerLoss_par_;
 
 	std::string beam_profile_;
