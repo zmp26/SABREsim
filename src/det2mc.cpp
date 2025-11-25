@@ -20,7 +20,8 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   TargetEnergyLoss* targetLoss_par2,
 			   SABRE_DeadLayerModel* deadLayerLoss_par1,
 			   SABRE_DeadLayerModel* deadLayerLoss_par2,
-			   Beamspot* beamspot)
+			   Beamspot* beamspot,
+			   TargetAngularStraggler* straggler)
 	: SABRE_Array_(SABRE_Array),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_par1_(targetLoss_par1),
@@ -31,7 +32,8 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  hit1_(0), hit2_(0), hitBoth_(0),
 	  hit1Only_(0), hit2Only_(0),
 	  detectorHits_(SABRE_Array.size(),0),
-	  beamspot_(beamspot)
+	  beamspot_(beamspot),
+	  straggler_(straggler)
 	  {
 
 	  }
@@ -42,6 +44,9 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
 	//TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
+	TH1D *hTargetAngularStraggler = new TH1D("hTargetAngularStraggler", "TargetAngularStraggler", 60, 0, 3);
+	TH1D *hTargetAngularStraggler_phi = new TH1D("hTargetAngularStraggler_phi", "TargetAngularStraggler_phi", 360, -180, 180);
+
 
 	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
 		nevents_ += 1;
@@ -68,6 +73,12 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
 
 		RootPlotter->FillBeamSpotHisto(reactionOrigin);
+
+		//test the angle straggling sampling here:
+		hTargetAngularStraggler->Fill(straggler_->Sample());
+		double tempphi = straggler_->SamplePhi();
+		hTargetAngularStraggler_phi->Fill(tempphi);
+		//std::cout << "tempphi = " << tempphi << std::endl;
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 				/*///////////////////////////////////////////////
@@ -200,8 +211,9 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// RootWriter->Set_detmc(2);
 	// RootWriter->SetReaction();
 
-	TFile *tempfile = new TFile("BeamSpotHisto_det2mc.root","RECREATE");
-	//hBeamSpot->Write();
+	TFile *tempfile = new TFile("temp_det2mc.root","RECREATE");
+	hTargetAngularStraggler->Write();
+	hTargetAngularStraggler_phi->Write();
 	tempfile->Close();
 
 }

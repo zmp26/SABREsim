@@ -64,6 +64,7 @@ SABREsim::SABREsim(const std::string& configFilename)
 	  deadLayerLoss_proton_(nullptr),
 	  deadLayerLoss_none_(nullptr),
 	  RootWriter_(nullptr),
+	  straggler_(nullptr),
 	  failState_(false),
 	  nevents_(0),
 	  detectorHits_(5,0),
@@ -119,6 +120,8 @@ void SABREsim::CleanUp(){
 	delete deadLayerLoss_6Li_;
 	delete deadLayerLoss_alpha_;
 	delete deadLayerLoss_deuteron_;
+
+	delete straggler_;
 
 }
 
@@ -252,6 +255,12 @@ bool SABREsim::InitializeModels(){
 	deadLayerLoss_par4_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(4));
 
 
+	//set angular straggling parameters here:
+	double mu = config_->GetStraggleMu();
+	double sigma = config_->GetStraggleSigma();
+	double lambda = config_->GetStraggleLambda();
+	straggler_ = new TargetAngularStraggler(std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda));
+
 	return true;
 }
 
@@ -312,6 +321,8 @@ void SABREsim::Run(){
 	if(kinX_ == 2){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot profile xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
 		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
@@ -319,12 +330,16 @@ void SABREsim::Run(){
 	} else if(kinX_ == 3){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
 		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate3body(infile,outfile);
 	} else if(kinX_ == 4){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -412,22 +427,23 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
 	
 	//										7Li(3He,4He)6Li
-	targetLoss_par1_ = targetLoss_alpha_in_LiF_; //can be set to none, but ejectile is an alpha
-	targetLoss_par2_ = targetLoss_6Li_in_LiF_;
-	targetLoss_par3_ = targetLoss_none_;
-	targetLoss_par4_ = targetLoss_none_;
+	// targetLoss_par1_ = targetLoss_alpha_in_LiF_; //can be set to none, but ejectile is an alpha
+	// targetLoss_par2_ = targetLoss_6Li_in_LiF_;
+	// targetLoss_par3_ = targetLoss_none_;
+	// targetLoss_par4_ = targetLoss_none_;
 
-	deadLayerLoss_par1_ = deadLayerLoss_alpha_; //can be set to none, but ejectile is an alpha
-	deadLayerLoss_par2_ = deadLayerLoss_6Li_;
-	deadLayerLoss_par3_ = deadLayerLoss_none_;
-	deadLayerLoss_par4_ = deadLayerLoss_none_;
+	// deadLayerLoss_par1_ = deadLayerLoss_alpha_; //can be set to none, but ejectile is an alpha
+	// deadLayerLoss_par2_ = deadLayerLoss_6Li_;
+	// deadLayerLoss_par3_ = deadLayerLoss_none_;
+	// deadLayerLoss_par4_ = deadLayerLoss_none_;
 	//------------------------------------------------------------------------------------------------
 
 	det2mc det2mcProcessor(SABRE_Array_,
 						   SABREARRAY_EnergyResolutionModels_,
 						   targetLoss_par1_, targetLoss_par2_,
 						   deadLayerLoss_par1_, deadLayerLoss_par2_,
-						   beamspot_);
+						   beamspot_,
+						   straggler_);
 
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",det2mcProcessor.GetToString_TargetLoss1().data(),det2mcProcessor.GetToString_TargetLoss2().data(),det2mcProcessor.GetToString_DeadLayerLoss1().data(),det2mcProcessor.GetToString_DeadLayerLoss2().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
@@ -466,15 +482,15 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
 
 	//							7Li(3He,4He)6Li (3+)	6Li-> 4He + d
-	targetLoss_par1_ = targetLoss_alpha_in_LiF_; 	//can be set to none, but ejectile is an alpha
-	targetLoss_par2_ = targetLoss_alpha_in_LiF_; 	//breakup1 is alpha
-	targetLoss_par3_ = targetLoss_deuteron_in_LiF_; //breakup2 is deuteron
-	targetLoss_par4_ = targetLoss_none_; 			//no particle 4
+	// targetLoss_par1_ = targetLoss_alpha_in_LiF_; 	//can be set to none, but ejectile is an alpha
+	// targetLoss_par2_ = targetLoss_alpha_in_LiF_; 	//breakup1 is alpha
+	// targetLoss_par3_ = targetLoss_deuteron_in_LiF_; //breakup2 is deuteron
+	// targetLoss_par4_ = targetLoss_none_; 			//no particle 4
 
-	deadLayerLoss_par1_ = deadLayerLoss_alpha_; 		//can be set to none, but ejectile is an alpha
-	deadLayerLoss_par2_ = deadLayerLoss_alpha_;		//breakup1 is alpha
-	deadLayerLoss_par3_ = deadLayerLoss_deuteron_;		//breakup2 is deuteron
-	deadLayerLoss_par4_ = deadLayerLoss_none_;			//no particle 4
+	// deadLayerLoss_par1_ = deadLayerLoss_alpha_; 		//can be set to none, but ejectile is an alpha
+	// deadLayerLoss_par2_ = deadLayerLoss_alpha_;		//breakup1 is alpha
+	// deadLayerLoss_par3_ = deadLayerLoss_deuteron_;		//breakup2 is deuteron
+	// deadLayerLoss_par4_ = deadLayerLoss_none_;			//no particle 4
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -518,15 +534,15 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
 
 	//							10B(3He,4He)9B		9B -> p + 8Be,	8Be -> 4He + 4He
-	targetLoss_par1_ = targetLoss_alpha_in_10B_; 		//can be set to none, but ejectile is an alpha
-	targetLoss_par2_ = targetLoss_proton_in_10B_; 		//breakup1 is proton
-	targetLoss_par3_ = targetLoss_alpha_in_10B_; 		//breakup2 is alpha
-	targetLoss_par4_ = targetLoss_alpha_in_10B_;		//breakup3/final daughter is alpha
+	// targetLoss_par1_ = targetLoss_alpha_in_10B_; 		//can be set to none, but ejectile is an alpha
+	// targetLoss_par2_ = targetLoss_proton_in_10B_; 		//breakup1 is proton
+	// targetLoss_par3_ = targetLoss_alpha_in_10B_; 		//breakup2 is alpha
+	// targetLoss_par4_ = targetLoss_alpha_in_10B_;		//breakup3/final daughter is alpha
 
-	deadLayerLoss_par1_ = deadLayerLoss_alpha_; 			//can be set to none, but ejectile is an alpha
-	deadLayerLoss_par2_ = deadLayerLoss_proton_;			//breakup1 is proton
-	deadLayerLoss_par3_ = deadLayerLoss_alpha_;			//breakup2 is alpha
-	deadLayerLoss_par4_ = deadLayerLoss_alpha_;			//breakup3/final daughter is alpha
+	// deadLayerLoss_par1_ = deadLayerLoss_alpha_; 			//can be set to none, but ejectile is an alpha
+	// deadLayerLoss_par2_ = deadLayerLoss_proton_;			//breakup1 is proton
+	// deadLayerLoss_par3_ = deadLayerLoss_alpha_;			//breakup2 is alpha
+	// deadLayerLoss_par4_ = deadLayerLoss_alpha_;			//breakup3/final daughter is alpha
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	//							10B(3He,4He)9B		9B -> 4He + 5Li,	5Li -> p + 4He

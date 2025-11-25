@@ -14,6 +14,7 @@
 #include "det4mc.h"
 #include "RootWriter.h"
 #include "SimConfig.h"
+#include "TargetAngularStraggler.h"
 
 class SABREsim {
 public:
@@ -148,6 +149,8 @@ private:
 	Beamspot* beamspot_;
 
 	RootWriter* RootWriter_;
+
+	TargetAngularStraggler* straggler_;
 
 	bool failState_; //true means failure, false means ok
 

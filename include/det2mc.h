@@ -14,6 +14,7 @@
 #include "Beamspot.h"
 #include "RootWriter.h"
 #include "plot2mc.h"
+#include "TargetAngularStraggler.h"
 
 class det2mc {
 public:
@@ -26,7 +27,8 @@ public:
 		   TargetEnergyLoss* targetLoss_par2,
 		   SABRE_DeadLayerModel* deadLayerLoss_par1,
 		   SABRE_DeadLayerModel* deadLayerLoss_par2,
-		   Beamspot* beamspot);
+		   Beamspot* beamspot,
+		   TargetAngularStraggler* straggler);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter);
 
@@ -68,6 +70,8 @@ private:
 	std::vector<long> detectorHits_;
 
 	Beamspot* beamspot_;
+
+	TargetAngularStraggler* straggler_;
 
 	static const std::pair<int, int> offsets[];
 
