@@ -158,6 +158,11 @@ void plot2mc::FillSABREHistos(SABREDATA& sd1, PHYSDATA& pd1){
 	
 }
 
+void plot2mc::FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi){
+	histoman->getHisto2D("hNewTheta_vs_OldTheta")->Fill(oldTheta, newTheta);
+	histoman->getHisto2D("hNewPhi_vs_OldPhi")->Fill(oldPhi, newPhi);
+}
+
 bool plot2mc::ParsePhysData(const std::string& line, PHYSDATA& pd1, PHYSDATA& pd2){
 	std::istringstream iss(line);
 	double thetacm;

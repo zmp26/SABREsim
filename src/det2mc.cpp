@@ -44,8 +44,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
 	//TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
-	TH1D *hTargetAngularStraggler = new TH1D("hTargetAngularStraggler", "TargetAngularStraggler", 60, 0, 3);
-	TH1D *hTargetAngularStraggler_phi = new TH1D("hTargetAngularStraggler_phi", "TargetAngularStraggler_phi", 360, -180, 180);
+	//TH1D *hTargetAngularStraggler = new TH1D("hTargetAngularStraggler", "TargetAngularStraggler", 60, 0, 3);
+	//TH1D *hTargetAngularStraggler_phi = new TH1D("hTargetAngularStraggler_phi", "TargetAngularStraggler_phi", 360, -180, 180);
 
 
 	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
@@ -75,9 +75,9 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		RootPlotter->FillBeamSpotHisto(reactionOrigin);
 
 		//test the angle straggling sampling here:
-		hTargetAngularStraggler->Fill(straggler_->Sample());
-		double tempphi = straggler_->SamplePhi();
-		hTargetAngularStraggler_phi->Fill(tempphi);
+		// hTargetAngularStraggler->Fill(straggler_->Sample());
+		// double tempphi = straggler_->SamplePhi();
+		// hTargetAngularStraggler_phi->Fill(tempphi);
 		//std::cout << "tempphi = " << tempphi << std::endl;
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
@@ -88,18 +88,41 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				//prep variables to hold "smeared" ring and wedge energy after applying resolution
 				double smearedERing = 0., smearedEWedge = 0.;
 
+				//sample a (dtheta, dphi) to apply to kin2mc trajectory
+				double dtheta1 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dphi1 = straggler_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+
+				//we now define the original kinematical trajectory as:
+				Vec3 originalTrajectory1;
+				originalTrajectory1.SetVectorSpherical(1, theta1*DEG2RAD, phi1*DEG2RAD);
+
+				//define new basis vectors
+				Vec3 etheta1, ephi1;
+				etheta1.SetVectorCartesian(std::cos(theta1*DEG2RAD)*std::cos(phi1*DEG2RAD), std::cos(theta1*DEG2RAD)*std::sin(phi1*DEG2RAD), -std::sin(theta1*DEG2RAD));
+				ephi1.SetVectorCartesian(-std::sin(phi1*DEG2RAD), std::cos(phi1*DEG2RAD), 0.);
+
+				//adjusted trajectory:
+				Vec3 adjustedTrajectory1;
+				adjustedTrajectory1 = std::cos(dtheta1*DEG2RAD)*originalTrajectory1 + std::sin(dtheta1*DEG2RAD)*(std::cos(dphi1*DEG2RAD)*etheta1 + std::sin(dphi1*DEG2RAD)*ephi1);
+				adjustedTrajectory1 = adjustedTrajectory1.Unit();
+
+				//now convert back:
+				double theta1_prime = std::acos(adjustedTrajectory1.GetZ())*RAD2DEG;
+				double phi1_prime = std::atan2(adjustedTrajectory1.GetY(), adjustedTrajectory1.GetX())*RAD2DEG;
+
+				RootPlotter->FillStraggleHistos(theta1, theta1_prime, phi1, phi1_prime);
+
 				//get <ring,wedge> pair based on theta,phi
-				//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
-				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD, phi1*DEG2RAD, reactionOrigin);
+				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
 				//pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
 					//apply target energy loss to e1:
-					double e1_aftertarget = targetLoss_par1_->ApplyEnergyLoss(e1, theta1);
+					double e1_aftertarget = targetLoss_par1_->ApplyEnergyLoss(e1, theta1_prime);
 
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
-					trajectory.SetVectorSpherical(1,theta1*DEG2RAD,phi1*DEG2RAD);
+					trajectory.SetVectorSpherical(1,theta1_prime*DEG2RAD,phi1_prime*DEG2RAD);
 					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
@@ -142,17 +165,42 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				smearedERing = 0.;
 				smearedEWedge = 0.;
+
+				//sample (dtheta, dphi) to apply to kin2mc trajectory:
+				double dtheta2 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dphi2 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+
+				//we now define the original kinematical trajectory as:
+				Vec3 originalTrajectory2;
+				originalTrajectory2.SetVectorSpherical(1, theta2*DEG2RAD, phi2*DEG2RAD);
+
+				//define new basis vectors
+				Vec3 etheta2, ephi2;
+				etheta2.SetVectorCartesian(std::cos(theta2*DEG2RAD)*std::cos(phi2*DEG2RAD), std::cos(theta2*DEG2RAD)*std::sin(phi2*DEG2RAD), -std::sin(theta2*DEG2RAD));
+				ephi2.SetVectorCartesian(-std::sin(phi2*DEG2RAD), std::cos(phi2*DEG2RAD), 0.);
+
+				//adjusted trajectory:
+				Vec3 adjustedTrajectory2;
+				adjustedTrajectory2 = std::cos(dtheta2*DEG2RAD)*originalTrajectory2 + std::sin(dtheta2*DEG2RAD)*(std::cos(dphi2*DEG2RAD)*etheta2 + std::sin(dphi2*DEG2RAD)*ephi2);
+				adjustedTrajectory2 = adjustedTrajectory2.Unit();
+
+				//now convert back
+				double theta2_prime = std::acos(adjustedTrajectory2.GetZ())*RAD2DEG;
+				double phi2_prime = std::atan2(adjustedTrajectory2.GetY(), adjustedTrajectory2.GetX())*RAD2DEG;
+
+				RootPlotter->FillStraggleHistos(theta2, theta2_prime, phi2, phi2_prime);
+
 				//std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
-				std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,reactionOrigin);
+				std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2_prime*DEG2RAD,phi2_prime*DEG2RAD,reactionOrigin);
 				//pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 
 					//apply target energy loss to e1:
-					double e2_aftertarget = targetLoss_par2_->ApplyEnergyLoss(e2, theta2);
+					double e2_aftertarget = targetLoss_par2_->ApplyEnergyLoss(e2, theta2_prime);
 
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
-					trajectory.SetVectorSpherical(1,theta2*DEG2RAD,phi2*DEG2RAD);
+					trajectory.SetVectorSpherical(1,theta2_prime*DEG2RAD,phi2_prime*DEG2RAD);
 					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e2_afterDeadLayer = deadLayerLoss_par2_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
@@ -211,10 +259,10 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// RootWriter->Set_detmc(2);
 	// RootWriter->SetReaction();
 
-	TFile *tempfile = new TFile("temp_det2mc.root","RECREATE");
-	hTargetAngularStraggler->Write();
-	hTargetAngularStraggler_phi->Write();
-	tempfile->Close();
+	//TFile *tempfile = new TFile("temp_det2mc.root","RECREATE");
+	//hTargetAngularStraggler->Write();
+	//hTargetAngularStraggler_phi->Write();
+	//tempfile->Close();
 
 }
 

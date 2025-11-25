@@ -71,6 +71,10 @@ SABRE_vs_kin TH2D h_SABREPhi_vs_kinPhi SABREPhi_vs_kinPhi 720 -0.5 359.5 720 -0.
 SABRE_vs_kin TH2D h_SABRERingE_vs_kinE SABRERingE_vs_kinE 400 0 20 400 0 20
 SABRE_vs_kin TH2D h_SABREWedgeE_vs_kinE SABREWedgeE_vs_kinE 400 0 20 400 0 20
 #
+# new theta/phi vs old theta/phi (straggle)
+TargetAngularStraggling TH2D hNewTheta_vs_OldTheta NewTheta_vs_OldTheta 360 0 180 360 0 180
+TargetAngularStraggling TH2D hNewPhi_vs_OldPhi NewPhi_vs_OldPhi 360 0 360 360 0 360
+#
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20
 SABRE/SABRE0/Summary TH1D hSABRE0_ERingSummary SABRE0_ERingSummary 400 0 20

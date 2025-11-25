@@ -82,6 +82,8 @@ public:
 
 	void FillBeamSpotHisto(Vec3& reactionOrigin);
 
+	void FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi);
+
 	void SaveAndWrite();
 
 private:
