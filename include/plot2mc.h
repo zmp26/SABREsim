@@ -84,8 +84,11 @@ public:
 
 	void FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi, double dtheta, double dphi);
 
-	void SaveAndWrite();
+	bool FillTH1D(const TString& histoname, double value);
+	bool FillTH2D(const TString& histoname, double valuex, double valuey);
+	bool FillTH3D(const TString& histoname, double valuex, double valuey, double valuez);
 
+	void SaveAndWrite();
 private:
 	void FillKinematicsHistos(PHYSDATA& pd1, PHYSDATA& pd2);
 

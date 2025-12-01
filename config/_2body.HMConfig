@@ -76,6 +76,7 @@ TargetAngularStraggling TH2D hNewTheta_vs_OldTheta NewTheta_vs_OldTheta 360 0 18
 TargetAngularStraggling TH2D hNewPhi_vs_OldPhi NewPhi_vs_OldPhi 360 0 360 360 0 360
 TargetAngularStraggling TH1D hdTheta dTheta 60 0 3
 TargetAngularStraggling TH1D hdPhi dPhi 360 0 360
+TargetAngularStraggling TH2D hNewELoss_vs_OldELoss NewELoss_vs_OldELoss 100 0 1 100 0 1
 #
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20

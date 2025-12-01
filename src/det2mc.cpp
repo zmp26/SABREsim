@@ -130,6 +130,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 					//apply target energy loss to e1:
 					double e1_aftertarget = targetLoss_par1_->ApplyEnergyLoss(e1, theta1_prime);
+					RootPlotter->FillTH2D("hNewELoss_vs_OldELoss",e1 - targetLoss_par1_->ApplyEnergyLoss(e1, theta1), e1 - e1_aftertarget);
 
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
@@ -216,6 +217,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 					//apply target energy loss to e1:
 					double e2_aftertarget = targetLoss_par2_->ApplyEnergyLoss(e2, theta2_prime);
+					RootPlotter->FillTH2D("hNewELoss_vs_OldELoss",e2 - targetLoss_par2_->ApplyEnergyLoss(e2, theta2), e2 - e2_aftertarget);
 
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;

@@ -165,6 +165,24 @@ void plot2mc::FillStraggleHistos(double oldTheta, double oldPhi, double newTheta
 	histoman->getHisto1D("hdPhi")->Fill(dphi);
 }
 
+bool plot2mc::FillTH1D(const TString& histoname, double value){
+	if(!histoman->getHisto1D(histoname)) return false;
+	histoman->getHisto1D(histoname)->Fill(value);
+	return true;
+}
+
+bool plot2mc::FillTH2D(const TString& histoname, double valuex, double valuey){
+	if(!histoman->getHisto2D(histoname)) return false;
+	histoman->getHisto2D(histoname)->Fill(valuex, valuey);
+	return true;
+}
+
+bool plot2mc::FillTH3D(const TString& histoname, double valuex, double valuey, double valuez){
+	if(!histoman->getHisto3D(histoname)) return false;
+	histoman->getHisto3D(histoname)->Fill(valuex, valuey, valuez);
+	return true;
+}
+
 bool plot2mc::ParsePhysData(const std::string& line, PHYSDATA& pd1, PHYSDATA& pd2){
 	std::istringstream iss(line);
 	double thetacm;
