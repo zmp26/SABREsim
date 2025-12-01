@@ -9,6 +9,7 @@
 SimConfig::SimConfig(const std::string& filename)
 	: filename_(filename),
 	  detmc_version_(0),
+	  enableStraggle_(false),
 	  beam_parX_(0.), beam_parY_(0.),
 	  beam_offsetX_(0.), beam_offsetY_(0.),
 	  beam_energy_(0.), recoil_excitation_energy_(0.)
@@ -62,7 +63,8 @@ bool SimConfig::Parse(){
 			}
 		}
 		else if(section == "TargetAngularStraggling"){
-			if(key == "straggleMu") straggleMu_ = std::stod(val);
+			if(key == "enableStraggle") std::istringstream(val) >> std::boolalpha >> enableStraggle_;
+			else if(key == "straggleMu") straggleMu_ = std::stod(val);
 			else if(key == "straggleSigma") straggleSigma_ = std::stod(val);
 			else if(key == "straggleLambda") straggleLambda_ = std::stod(val);
 		}

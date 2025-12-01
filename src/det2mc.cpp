@@ -39,7 +39,7 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  }
 
 
-void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter){
+void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle=true){
 	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
@@ -64,6 +64,10 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		ss << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\n";
 		if(nevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
 		//outfile << ss.str();
+
+		//wrap phi to 0->360
+		if(phi1 < 0) phi1 += 360.;
+		if(phi2 < 0) phi2 += 360.;
 
 		RootWriter->SetKinematics(0, e1, theta1, phi1);
 		RootWriter->SetKinematics(1, e2, theta2, phi2);
@@ -107,10 +111,17 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				adjustedTrajectory1 = adjustedTrajectory1.Unit();
 
 				//now convert back:
-				double theta1_prime = std::acos(adjustedTrajectory1.GetZ())*RAD2DEG;
-				double phi1_prime = std::atan2(adjustedTrajectory1.GetY(), adjustedTrajectory1.GetX())*RAD2DEG;
-
-				RootPlotter->FillStraggleHistos(theta1, theta1_prime, phi1, phi1_prime);
+				double theta1_prime, phi1_prime;
+				if(targetStraggle){
+					theta1_prime = adjustedTrajectory1.GetTheta()*RAD2DEG;//std::acos(adjustedTrajectory1.GetZ())*RAD2DEG;
+					phi1_prime = adjustedTrajectory1.GetPhi()*RAD2DEG;// std::atan2(adjustedTrajectory1.GetY(), adjustedTrajectory1.GetX())*RAD2DEG;
+					if(phi1_prime < 0) phi1_prime += 360.;
+					RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, dtheta1, dphi1);
+				} else {
+					theta1_prime = theta1;
+					phi1_prime = phi1;
+					RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, 0, 0);
+				}
 
 				//get <ring,wedge> pair based on theta,phi
 				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
@@ -168,7 +179,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//sample (dtheta, dphi) to apply to kin2mc trajectory:
 				double dtheta2 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
-				double dphi2 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dphi2 = straggler_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
 
 				//we now define the original kinematical trajectory as:
 				Vec3 originalTrajectory2;
@@ -185,10 +196,18 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				adjustedTrajectory2 = adjustedTrajectory2.Unit();
 
 				//now convert back
-				double theta2_prime = std::acos(adjustedTrajectory2.GetZ())*RAD2DEG;
-				double phi2_prime = std::atan2(adjustedTrajectory2.GetY(), adjustedTrajectory2.GetX())*RAD2DEG;
+				double theta2_prime, phi2_prime;
+				if(targetStraggle){
+					theta2_prime = adjustedTrajectory2.GetTheta()*RAD2DEG;//std::acos(adjustedTrajectory2.GetZ())*RAD2DEG;
+					phi2_prime = adjustedTrajectory2.GetPhi()*RAD2DEG;//std::atan2(adjustedTrajectory2.GetY(), adjustedTrajectory2.GetX())*RAD2DEG;
+					if(phi2_prime < 0) phi2_prime += 360.;
+					RootPlotter->FillStraggleHistos(theta2, phi2, theta2_prime, phi2_prime, dtheta2, dphi2);
+				} else {
+					theta2_prime = theta2;
+					phi2_prime = phi2;
+					RootPlotter->FillStraggleHistos(theta2, phi2, theta2_prime, phi2_prime, 0, 0);
+				}
 
-				RootPlotter->FillStraggleHistos(theta2, theta2_prime, phi2, phi2_prime);
 
 				//std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
 				std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2_prime*DEG2RAD,phi2_prime*DEG2RAD,reactionOrigin);

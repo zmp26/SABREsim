@@ -30,7 +30,7 @@ public:
 		   Beamspot* beamspot,
 		   TargetAngularStraggler* straggler);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle);
 
 	//after Run(), these functions may be called to query for statistics:
 	long GetNumEvents() const;

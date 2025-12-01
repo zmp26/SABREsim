@@ -321,7 +321,7 @@ void SABREsim::Run(){
 	if(kinX_ == 2){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleEnabled = %s\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleEnabled() ? "true" : "false", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot profile xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -330,7 +330,7 @@ void SABREsim::Run(){
 	} else if(kinX_ == 3){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleEnabled = %s\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleEnabled() ? "true" : "false", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -339,7 +339,7 @@ void SABREsim::Run(){
 	} else if(kinX_ == 4){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleEnabled = %s\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleEnabled() ? "true" : "false", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -453,7 +453,7 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 
 	plot2mc *RootPlotter = new plot2mc(config_->GetHistoFile());
 
-	det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter);
+	det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled());
 
 	nevents_ = det2mcProcessor.GetNumEvents();
 	detectorHits_ = det2mcProcessor.GetDetectorHits();
