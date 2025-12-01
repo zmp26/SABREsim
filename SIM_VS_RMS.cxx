@@ -363,7 +363,7 @@ void Lithium6_1plus_auto(){
 	}
 }
 
-TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TString anglestring, TString phistring){
+TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TString anglestring, TString phistring, TString stragglestring){
 
 	//TString anglestring = "16782278";
 
@@ -378,10 +378,10 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_1plus_output.root";
 	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(),beamstringy.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_%s_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(),beamstringy.Data(),stragglestring.Data());
 	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
 
-	TString pngoutname = Form("Lithium6_1plus_simVSdata_sabrehits_theta%s_phi_%s_%sx_%sy.png",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data());
+	TString pngoutname = Form("Lithium6_1plus_simVSdata_sabrehits_theta%s_phi_%s_%sx_%sy_%s.png",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data(), stragglestring.Data());
 
 
 	//prep output file name
@@ -470,6 +470,7 @@ TString Lithium6_1plus_sabrehits(TString beamstringx, TString beamstringy, TStri
 	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
 	ptangle->AddText(Form("%s",temp.Data()));
 	ptangle->AddText(Form("phi %s", phistring.Data()));
+	ptangle->AddText(stragglestring);
 	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
 	ptangle->SetFillColorAlpha(kWhite,0.5);
 	ptangle->Draw();
@@ -530,6 +531,8 @@ void Lithium6_1plus_sabrehits_auto(){
 											//"148248"			// 19.8 +/- 5.0
 										};
 
+	TString straggle = "straggleOn";
+
 	//std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
 	std::vector<double> phis = {1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
 	std::vector<TString> phistrings;
@@ -548,7 +551,7 @@ void Lithium6_1plus_sabrehits_auto(){
 			std::vector<TString> pngs;
 			for(const auto& angstr : anglestrings){
 				for(const auto& phistr : phistrings){
-					TString pngoutname = Lithium6_1plus_sabrehits(bsx, bsy, angstr, phistr);
+					TString pngoutname = Lithium6_1plus_sabrehits(bsx, bsy, angstr, phistr, straggle);
 					pngs.push_back(pngoutname);
 				}
 			}
@@ -795,7 +798,7 @@ void Lithium6_1plus_sabre3summaries_auto(){
 	}
 }
 
-TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx, TString beamstringy, TString anglestring, TString phistring){
+TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx, TString beamstringy, TString anglestring, TString phistring, TString stragglestring){
 
 	int SABRE_ID = 3;
 
@@ -811,7 +814,7 @@ TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
 	dataHistLocalPath = dataHistLocalPath + pixelhistoname;
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_phi_%s_%sx_%sy_%s_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data(), stragglestring.Data());
 	TString simHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
 	simHistLocalPath = simHistLocalPath + pixelhistoname;
 
@@ -928,13 +931,14 @@ TString Lithium6_1plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	else if(anglestring == "158238") temp = "19.8#circ #pm 4#circ";
 	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
 	ptangle->AddText(Form("%s",temp.Data()));
+	ptangle->AddText(stragglestring);
 	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
 	ptangle->SetFillColorAlpha(kWhite,0.5);
 	ptangle->Draw();
 
 	c1->Update();
 
-	TString pngoutname = Form("Lithium6_1plus_simVSdata_pixelhisto_r%dw%d_theta%s_%sx_%sy.png",ringChan,wedgeChan,anglestring.Data(),beamstringx.Data(), beamstringy.Data());
+	TString pngoutname = Form("Lithium6_1plus_simVSdata_pixelhisto_r%dw%d_theta%s_%sx_%sy_%s.png",ringChan,wedgeChan,anglestring.Data(),beamstringx.Data(), beamstringy.Data(), stragglestring.Data());
 	c1->SaveAs(pngoutname);
 
 	delete c1;
@@ -955,6 +959,8 @@ void Lithium6_1plus_pixelhistos_auto(){
 
 	TString phistring = "-2.125_2.125";
 
+	TString straggle = "straggleOff";
+
 	std::vector<int> ringChans = {
 									71,
 									72,
@@ -969,7 +975,7 @@ void Lithium6_1plus_pixelhistos_auto(){
 	for(const auto& ring : ringChans){
 		for(const auto& wedge : wedgeChans){
 
-			Lithium6_1plus_pixelhistos(ring, wedge, beamx, beamy, anglestring, phistring);
+			Lithium6_1plus_pixelhistos(ring, wedge, beamx, beamy, anglestring, phistring, straggle);
 
 		}
 	}
@@ -3008,690 +3014,226 @@ void Lithium6_1plus_BeamSpotSearch(){
 ---------------------------------------------------------------------------------------------------------
 */
 
-// void Lithium6_0plus(int ring, TString beamstring){
-
-// 	TString anglestring = "16782278";
-
-// 	//uncomment below for surface laptop
-// 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
-// 	TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
-
-// 	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-// 	TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
-
-// 	// if(ring != 8 && ring != 9){
-// 	// 	std::cout << "ring histo not there, try 8 or 9" << std::endl;
-// 	// 	return;
-// 	// }
-
-// 	//prep output file name using ring:
-// 	TString outfile_root_name = Form("Lithium6_0plus_sim%sVSdata_ring%d.root",anglestring.Data(),ring);//"Lithium6_0plus_simVSdata_ELoss2.root";
-
-// 	//uncomment below for DESKTOP
-// 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
-// 	// TString dataHistLocalPath = Form("1par/0plus/hSABRE_SABRE3_Ring%dESummary_0plus",ring);
-
-// 	// TString simFilePath = "/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3562_7500keV_theta1721_histos.root";
-// 	// TString simHistLocalPath = Form("SABRE/SABRE3/Summary/hSABRE3_Ring%dSummary",ring);
-
-// 	//open data file and retrieve histo
-
-// 	TFile *datafile = new TFile(dataFilePath,"READ");
-// 	if(!datafile || datafile->IsZombie()){
-// 		std::cerr << "Error opening data file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
-// 	if(!hData){
-// 		std::cerr << "Error retrieving data histogram" << std::endl;
-// 		datafile->Close();
-// 		return;
-// 	}
-// 	hData->SetDirectory(0);
-// 	datafile->Close();
-
-// 	//open sim file and retrieve histo
-
-// 	TFile *simfile = new TFile(simFilePath,"READ");
-// 	if(!simfile || simfile->IsZombie()){
-// 		std::cerr << "Error opening sim file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
-// 	if(!hSim){
-// 		std::cerr << "Error retrieving sim histogram" << std::endl;
-// 		simfile->Close();
-// 		return;
-// 	}
-// 	hSim->SetDirectory(0);
-// 	simfile->Close();
-
-// 	//check if binning matches
-// 	if(hData->GetNbinsX() != hSim->GetNbinsX()){
-// 		std::cerr << "Histogram bin counts do not match" << std::endl;
-// 		return;
-// 	}
-
-
-// 	//global scale factor to scale sim down to exp
-// 	double dataIntegral = hData->Integral();
-// 	double simIntegral = hSim->Integral();
-
-// 	double scaleFactor = 0.;
-
-// 	if(simIntegral > 0){
-// 		scaleFactor = dataIntegral/simIntegral;
-// 		hSim->Scale(scaleFactor);
-// 		std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
-// 	} else {
-// 		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
-// 		return;
-// 	}
-
-// 	//outfile.close();
-
-// 	//draw and overlay
-// 	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
-// 	gStyle->SetOptStat(0);
-
-// 	const int rebinfactor = 4;
-
-// 	double maxdata = hData->GetMaximum();
-// 	double maxsim = hSim->GetMaximum();
-
-// 	double ymax = std::max(maxdata,maxsim)*rebinfactor*1.1;
-// 	hData->SetMaximum(ymax);
-
-// 	hData->SetLineColor(kViolet);
-// 	hData->SetLineWidth(4);
-// 	hData->SetTitle(Form("^{6}Li (0^{+} E = 3.563 MeV) Data vs Sim (Ring %d);Energy (MeV);Counts",ring));
-// 	//std::cout << "fitting data with gaussian:" << std::endl;
-// 	TH1D* hData_rebin = dynamic_cast<TH1D*>(hData->Rebin(rebinfactor));
-// 	hData_rebin->GetXaxis()->SetRangeUser(0,4);
-// 	hData_rebin->GetYaxis()->SetRangeUser(0,250);
-// 	hData_rebin->Draw("HIST");
-// 	//hData_rebin->Fit("gaus", "R SAME");
-
-
-// 	//std::cout << "\n\nfitting sim with gaussian:" << std::endl;
-// 	hSim->SetLineColor(kOrange);
-// 	hSim->SetLineWidth(2);
-// 	TH1D* hSim_rebin = dynamic_cast<TH1D*>(hSim->Rebin(rebinfactor));
-// 	hSim_rebin->GetXaxis()->SetRangeUser(0,4);
-// 	hSim_rebin->GetYaxis()->SetRangeUser(0,250);
-// 	hSim_rebin->Draw("HIST SAME");
-// 	//hSim_rebin->Fit("gaus", "R SAME");
-
-
-// 	//calculate chi2:
-// 	double chi2 = hData->Chi2Test(hSim, "CHI2/NDF UW");
-// 	double chi2_rebin = hData_rebin->Chi2Test(hSim_rebin, "CHI2/NDF UW");
-
-// 	//add legend
-// 	TLegend* legend = new TLegend(0.65, 0.75, 0.88, 0.88);
-// 	legend->AddEntry(hData,"Data","l");
-// 	TString simlabel = Form("Sim (scaled x %.3f)",scaleFactor);
-// 	legend->AddEntry(hSim,simlabel,"l");
-// 	legend->Draw();
-
-// 	//add txt box:
-// 	TPaveText *pt = new TPaveText(0.65, 0.63, 0.88, 0.74, "NDC");
-// 	pt->AddText(Form("%s SPSTheta%s", beamstring.Data(), anglestring.Data()));
-// 	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2));
-// 	//pt->AddText(Form("#chi_{rebin}^{2}/NDF = %.3f",chi2_rebin));
-// 	pt->SetFillColorAlpha(kWhite,0.5);
-// 	pt->SetTextAlign(12);
-// 	pt->Draw();
-
-// 	c1->Update();
-
-// 	c1->SaveAs(Form("Lithium6_0plus_simVSdata_%s_theta%s_ring%d.png",beamstring.Data(),anglestring.Data(),ring));
-
-// 	//save to new root file:
-// 	//TString outfile_root_name = "Lithium6_0plus_simVSdata_ELoss2.root";
-// 	// TFile *outfile_root = new TFile(outfile_root_name,"RECREATE");
-// 	// if(!outfile_root || outfile_root->IsZombie()){
-// 	// 	std::cerr << "Error creating output file" << std::endl;
-// 	// 	return;
-// 	// }
-
-// 	// hData->Write("hData_original");
-// 	// hSim->Write("hSim_scaled");
-// 	// c1->Write("overlay_canvas");
-// 	//outfile_root->Close();
-
-// 	std::cout << "Finished " << beamstring << " " << ring << "!" << std::endl;
-// 	//std::cout << "Scale factors saved to Lithium6_0plus_scales.txt" << std::endl;
-// }
-
-// void Lithium6_0plus_auto(){
-// 	std::vector<int> rings = {7,8,9};
-// 	std::vector<TString> beamstrings = {
-// 										"fixedpoint",
-// 										"gaus001",
-// 										"gaus002",
-// 										"gaus003",
-// 										"gaus004",
-// 										"gaus005",
-// 										"gaus006",
-// 										"gaus007",
-// 										"gaus008",
-// 										"gaus009",
-// 										"gaus010"
-// 									};
-
-// 	for(const auto& ring : rings){
-// 		for(const auto& bs : beamstrings){
-// 			Lithium6_0plus(ring,bs);
-// 		}
-// 	}
-// }
-
-// void Lithium6_0plus_sabrehits(TString beamstring){
-// 	//uncomment below for DESKTOP
-// 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
-// 	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-// 	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-// 	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-// 	TString anglestring = "16782278";
-
-// 	//uncomment below for LAPTOP
-// 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
-// 	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-// 	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-// 	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-
-// 	TFile *datafile = new TFile(dataFilePath,"READ");
-// 	if(!datafile || datafile->IsZombie()){
-// 		std::cerr << "Error opening data file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
-// 	if(!hData){
-// 		std::cerr << "Error retrieving data histogram" << std::endl;
-// 		datafile->Close();
-// 		return;
-// 	}
-// 	hData->SetDirectory(0);
-// 	datafile->Close();
-
-
-// 	TFile *simfile = new TFile(simFilePath,"READ");
-// 	if(!simfile || simfile->IsZombie()){
-// 		std::cerr << "Error opening sim file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
-// 	if(!hSim){
-// 		std::cerr << "Error retrieving sim histogram" << std::endl;
-// 		simfile->Close();
-// 		return;
-// 	}
-// 	hSim->SetDirectory(0);
-// 	simfile->Close();
-
-
-// 	if((hData->GetNbinsX() != hSim->GetNbinsX()) || (hData->GetNbinsY() != hSim->GetNbinsY())){
-// 		std::cerr << "Histogram bin counts do not match on at least one axis!" << std::endl;
-// 		return;
-// 	}
-
-
-
-// 	double dataIntegral = hData->Integral();
-// 	double simIntegral = hSim->Integral();
-
-// 	double scaleFactor = 0.;
-
-// 	if(simIntegral > 0){
-// 		scaleFactor = dataIntegral/simIntegral;
-// 		hSim->Scale(scaleFactor);
-// 		std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
-// 	} else {
-// 		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
-// 		return;
-// 	}
-
-// 	//calculate chi2:
-// 	double chi2 = hData->Chi2Test(hSim, "CHI2/NDF UW");
-
-
-// 	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
-// 	gStyle->SetOptStat(0);
-
-
-
-
-// 	hSim->Draw();
-
-// 	TPaveText *pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
-// 	pt->AddText(Form("%s (scale factor = %.3f)", beamstring.Data(), scaleFactor));
-// 	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2));
-// 	pt->SetFillColorAlpha(kWhite,0.5);
-// 	pt->SetTextAlign(12);
-// 	pt->Draw();
-
-// 	c1->Update();
-
-// 	c1->SaveAs(Form("Lithium6_0plus_simVSdata_sabrehits_%s.png",beamstring.Data()));
-// 	c1->Clear();
-// 	hData->Draw();
-// 	pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
-// 	pt->AddText("LiFha exp 1par ^{6}Li 0^{+} DATA");
-// 	c1->Update();
-// 	c1->SaveAs(Form("Lithium6_0plus_simVSdata_sabrehits_%s.png","1PAREXPDATA"));
-
-// }
-
-// void Lithium6_0plus_sabrehits_auto(){
-// 	std::vector<TString> beamstrings = {
-// 										"fixedpoint",
-// 										"gaus001",
-// 										"gaus002",
-// 										"gaus003",
-// 										"gaus004",
-// 										"gaus005",
-// 										"gaus006",
-// 										"gaus007",
-// 										"gaus008",
-// 										"gaus009",
-// 										"gaus010"
-// 									};
-
-// 	for(size_t b=0; b<beamstrings.size(); b++){
-// 		Lithium6_0plus_sabrehits(beamstrings[b]);
-// 	}	
-// }
-
-// void Lithium6_0plus_sabre3summaries(TString beamstring){
-// 	TString anglestring = "16782278";
-
-// 	//uncomment below for DESKTOP
-// 	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
-// 	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-// 	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-// 	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
-
-// 	//uncomment below for LAPTOP
-// 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
-// 	TString dataHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
-// 	TString dataHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
-
-// 	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-// 	TString simHistLocalPath_rings = "SABRE/SABRE3/Summary/hSABRE3_ERingSummary";
-// 	TString simHistLocalPath_wedges = "SABRE/SABRE3/Summary/hSABRE3_EWedgeSummary";
-
-
-// 	TFile *datafile = new TFile(dataFilePath,"READ");
-// 	if(!datafile || datafile->IsZombie()){
-// 		std::cerr << "Error opening data file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH1* hDataRings = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath_rings));
-// 	TH1* hDataWedges = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath_wedges));
-// 	if(!hDataRings || !hDataWedges){
-// 		std::cerr << "Error retrieving data histograms!" << std::endl;
-// 		datafile->Close();
-// 		return;
-// 	}
-// 	hDataRings->SetDirectory(0);
-// 	hDataWedges->SetDirectory(0);
-// 	datafile->Close();
-
-
-// 	TFile *simfile = new TFile(simFilePath,"READ");
-// 	if(!simfile || simfile->IsZombie()){
-// 		std::cerr << "Error opening sim file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH1 *hSimRings = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath_rings));
-// 	TH1 *hSimWedges = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath_wedges));
-// 	if(!hSimRings || !hSimWedges){
-// 		std::cerr << "Error retrieving sim histograms!" << std::endl;
-// 		simfile->Close();
-// 		return;
-// 	}
-// 	hSimRings->SetDirectory(0);
-// 	hSimWedges->SetDirectory(0);
-// 	simfile->Close();
-
-
-// 	if( (hDataRings->GetNbinsX() != hSimRings->GetNbinsX()) || (hDataWedges->GetNbinsX() != hSimWedges->GetNbinsX()) ){
-// 		std::cerr << "Histogram binning does not match on rings and/or wedges!" << std::endl;
-// 		TString temp = Form("hDataRings = %d\thSimRings = %d\nhDataWedges = %d\thSimWedges = %d\n\n", hDataRings->GetNbinsX(), hSimRings->GetNbinsX(), hDataWedges->GetNbinsX(), hSimWedges->GetNbinsX());
-// 		std::cerr << temp.Data();
-// 		return;
-// 	}
-
-
-// 	double dataIntegralRings = hDataRings->Integral();
-// 	double dataIntegralWedges = hDataWedges->Integral();
-// 	double simIntegralRings = hSimRings->Integral();
-// 	double simIntegralWedges = hSimWedges->Integral();
-
-// 	double scaleFactorRings = 0.;
-// 	double scaleFactorWedges = 0.;
-
-// 	if(simIntegralRings > 0 && simIntegralWedges > 0){
-// 		scaleFactorRings = dataIntegralRings/simIntegralRings;
-// 		scaleFactorWedges = dataIntegralWedges/simIntegralWedges;
-// 		hSimRings->Scale(scaleFactorRings);
-// 		hSimWedges->Scale(scaleFactorWedges);
-// 		std::cout << "applied global scale factors\trings = " << scaleFactorRings << "\twedges = " << scaleFactorWedges << std::endl;
-// 	} else {
-// 		std::cerr << "sim histogram for rings and/or wedges has zero integral and thus cannot be scaled" << std::endl;
-// 		return;
-// 	}
-
-
-// 	const int rebinfactor = 4;
-
-// 	double maxdatarings = hDataRings->GetMaximum();
-// 	double maxdatawedges = hDataWedges->GetMaximum();
-
-// 	double maxsimrings = hSimRings->GetMaximum();
-// 	double maxsimwedges = hSimWedges->GetMaximum();
-
-// 	double ymaxrings = std::max(maxdatarings,maxsimrings)*1.1*rebinfactor;
-// 	double ymaxwedges = std::max(maxdatawedges,maxsimwedges)*1.1*rebinfactor;
-
-// 	hDataRings->SetMaximum(ymaxrings);
-// 	hDataWedges->SetMaximum(ymaxwedges);
-
-// 	//start drawing w/ canvas
-
-// 	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
-// 	gStyle->SetOptStat(0);
-
-// 	//calculate chi squareds here:
-// 	double chi2_rings = hDataRings->Chi2Test(hSimRings, "CHI2/NDF UW");
-// 	double chi2_wedges = hDataWedges->Chi2Test(hSimWedges, "CHI2/NDF UW");
-
-
-// 	hDataRings->SetLineColor(kViolet);
-// 	hDataRings->SetLineWidth(4);
-// 	TString title = "^{6}Li (0^{+}) Data vs Sim (SABRE3 Ring Summary);Energy (MeV)";
-// 	hDataRings->SetTitle(title);
-// 	TH1D* hDataRings_rebin = dynamic_cast<TH1D*>(hDataRings->Rebin(rebinfactor));
-// 	hDataRings_rebin->GetXaxis()->SetRangeUser(0,4);
-// 	hDataRings_rebin->GetYaxis()->SetRangeUser(0,200);
-// 	hDataRings_rebin->Draw("HIST");
-
-// 	hSimRings->SetLineColor(kOrange);
-// 	hSimRings->SetLineWidth(2);
-// 	TH1D* hSimRings_rebin = dynamic_cast<TH1D*>(hSimRings->Rebin(rebinfactor));
-// 	hSimRings_rebin->GetXaxis()->SetRangeUser(0,4);
-// 	hSimRings_rebin->GetYaxis()->SetRangeUser(0,200);
-// 	hSimRings_rebin->Draw("HIST SAME");
-
-// 	//add legend
-// 	TLegend* legend = new TLegend(0.65, 0.75, 0.88, 0.88);
-// 	legend->AddEntry(hDataRings,"Data","l");
-// 	TString simringlabel = Form("Sim (scaled x %.3f)",scaleFactorRings);
-// 	legend->AddEntry(hSimRings,simringlabel,"l");
-// 	legend->Draw();
-
-// 	//add text box to differentiate pngs!
-// 	TPaveText *pt = new TPaveText(0.65,0.63,0.88,0.74,"NDC");
-// 	pt->AddText(beamstring);
-// 	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2_rings));
-// 	pt->SetFillColorAlpha(kWhite,0.5);
-// 	pt->SetTextAlign(12);
-// 	pt->Draw();
-
-
-// 	c1->Update();
-// 	//save to png file:
-// 	c1->SaveAs(Form("Lithium6_0plus_simVSdata_SABRE3_RingSummary_%s.png",beamstring.Data()));
-
-
-// 	//clear canvas, do same thing but for wedges this time!
-// 	c1->Clear();
-
-// 	hDataWedges->SetLineColor(kViolet);
-// 	hDataWedges->SetLineWidth(4);
-// 	title = "^{6}Li (0^{+}) Data vs Sim (SABRE3 Wedge Summary);Energy (MeV)";
-// 	hDataWedges->SetTitle(title);
-// 	TH1D* hDataWedges_rebin = dynamic_cast<TH1D*>(hDataWedges->Rebin(rebinfactor));
-// 	hDataWedges_rebin->GetXaxis()->SetRangeUser(0,4);
-// 	hDataWedges_rebin->GetYaxis()->SetRangeUser(0,200);
-// 	hDataWedges_rebin->Draw("HIST");
-
-// 	hSimWedges->SetLineColor(kOrange);
-// 	hSimWedges->SetLineWidth(2);
-// 	TH1D* hSimWedges_rebin = dynamic_cast<TH1D*>(hSimWedges->Rebin(rebinfactor));
-// 	hSimWedges_rebin->GetXaxis()->SetRangeUser(0,4);
-// 	hSimWedges_rebin->GetYaxis()->SetRangeUser(0,200);
-// 	hSimWedges_rebin->Draw("HIST SAME");
-
-// 	//add legend:
-// 	legend = new TLegend(0.65, 0.75, 0.88, 0.88);
-// 	legend->AddEntry(hDataWedges,"Data","l");
-// 	simringlabel = Form("Sim (scaled x %.3f)",scaleFactorWedges);
-// 	legend->AddEntry(hSimWedges,simringlabel,"l");
-// 	legend->Draw();
-
-// 	//add text box to differentiate pngs!
-// 	pt = new TPaveText(0.65,0.63,0.88,0.74,"NDC");
-// 	pt->AddText(beamstring);
-// 	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2_wedges));
-// 	pt->SetFillColorAlpha(kWhite,0.5);
-// 	pt->SetTextAlign(12);
-// 	pt->Draw();
-
-// 	c1->Update();
-// 	//save to png file:
-// 	c1->SaveAs(Form("Lithium6_0plus_simVSdata_SABRE3_WedgeSummary_%s.png",beamstring.Data()));
-
-// }
-
-// void Lithium6_0plus_sabre3summaries_auto(){
-// 	std::vector<TString> beamstrings = {
-// 										"fixedpoint",
-// 										"gaus001",
-// 										"gaus002",
-// 										"gaus003",
-// 										"gaus004",
-// 										"gaus005",
-// 										"gaus006",
-// 										"gaus007",
-// 										"gaus008",
-// 										"gaus009",
-// 										"gaus010"
-// 									};
-
-// 	for(const auto& bs : beamstrings){
-// 		Lithium6_0plus_sabre3summaries(bs);
-// 	}
-// }
-
-// void Lithium6_0plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx, TString beamstringy){
-
-// 	int SABRE_ID = 3;
-
-// 	TString pixelhistoname = Form("hSABRE%d_pixel_r%dw%d_ESummary",SABRE_ID,ringChan,wedgeChan);
-// 	TString anglestring = "16782278";
-
-// 	//uncomment below for DESKTOP:
-// 	//TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_1plus_output.root";
-// 	//TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%s_histos.root",anglestring.Data(),beamstring.Data());
-
-// 	//uncomment below for LAPTOP:
-// 	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
-// 	TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
-// 	dataHistLocalPath = dataHistLocalPath + pixelhistoname;
-
-// 	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),beamstringx.Data(), beamstringy.Data());
-// 	TString simHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
-// 	simHistLocalPath = simHistLocalPath + pixelhistoname;
-
-
-// 	TFile *datafile = new TFile(dataFilePath,"READ");
-// 	if(!datafile || datafile->IsZombie()){
-// 		std::cerr << "Error opening data file" << std::endl;
-// 		std::cerr << "dataFilePath = " << dataFilePath << "\n\n";
-// 		return;
-// 	}
-
-// 	TH1 *hData = dynamic_cast<TH1*>(datafile->Get(dataHistLocalPath));
-// 	if(!hData){
-// 		std::cerr << "Error retrieving data histogram" << std::endl;
-// 		std::cerr << "dataFilePath = " << dataFilePath << "\n";
-// 		std::cerr << "dataHistLocalPath = " << dataHistLocalPath << "\n\n";
-// 		datafile->Close();
-// 		return;
-// 	}
-// 	hData->SetDirectory(0);
-// 	datafile->Close();
-
-
-
-// 	TFile *simfile = new TFile(simFilePath,"READ");
-// 	if(!simfile || simfile->IsZombie()){
-// 		std::cerr << "Error opening sim file" << std::endl;
-// 		return;
-// 	}
-
-// 	TH1 *hSim = dynamic_cast<TH1*>(simfile->Get(simHistLocalPath));
-// 	if(!hSim){
-// 		std::cerr << "Error retrieving sim histogram" << std::endl;
-// 		simfile->Close();
-// 		return;
-// 	}
-// 	hSim->SetDirectory(0);
-// 	simfile->Close();
-
-
-
-// 	if((hData->GetNbinsX() != hSim->GetNbinsX()) || (hData->GetNbinsY() != hSim->GetNbinsY())){
-// 		std::cerr << "Histogram bin counts do not match on at least one axis!" << std::endl;
-// 		return;
-// 	}
-
-
-// 	double dataIntegral = hData->Integral();
-// 	double simIntegral = hSim->Integral();
-
-// 	double scaleFactor = 0.;
-
-// 	if(simIntegral > 0){
-// 		scaleFactor = dataIntegral/simIntegral;
-// 		hSim->Scale(scaleFactor);
-// 		std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
-// 	} else {
-// 		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
-// 		return;
-// 	}
-
-// 	const int rebinfactor = 4;
-
-// 	double maxdata = hData->GetMaximum();
-// 	double maxsim = hSim->GetMaximum();
-
-// 	double ymax = std::max(maxdata,maxsim);
-
-// 	//calculate chi2:
-// 	double chi2 = hData->Chi2Test(hSim, "CHI2/NDF UW");
-
-
-// 	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
-// 	gStyle->SetOptStat(0);
-
-// 	hData->SetLineColor(kViolet);
-// 	hData->SetLineWidth(4);
-// 	hData->SetTitle(pixelhistoname);
-// 	TH1D *hDataRebin = dynamic_cast<TH1D*>(hData->Rebin(rebinfactor));
-// 	hDataRebin->GetXaxis()->SetRangeUser(0,3);
-// 	hDataRebin->GetYaxis()->SetRangeUser(0,500);
-// 	hDataRebin->Draw("HIST");
-
-// 	hSim->SetLineColor(kOrange);
-// 	hSim->SetLineWidth(2);
-// 	TH1D* hSimRebin = dynamic_cast<TH1D*>(hSim->Rebin(rebinfactor));
-// 	hSimRebin->GetXaxis()->SetRangeUser(0,3);
-// 	hSimRebin->GetYaxis()->SetRangeUser(0,500);
-// 	hSimRebin->Draw("HIST SAME");
-
-// 	TLegend* legend = new TLegend(0.65, 0.75, 0.88, 0.88);
-// 	legend->AddEntry(hDataRebin,"Data","l");
-// 	TString simlabel = Form("Sim (scaled x %.3f)",scaleFactor);
-// 	legend->AddEntry(hSimRebin,simlabel,"l");
-// 	legend->Draw();
-
-// 	TPaveText *pt = new TPaveText(0.65, 0.63, 0.88, 0.74, "NDC");
-// 	pt->AddText(Form("%sx %sy (scale factor = %.3f)", beamstringx.Data(), beamstringy.Data(), scaleFactor));
-// 	pt->AddText(Form("#chi^{2}/NDF = %.3f",chi2));
-// 	pt->SetFillColorAlpha(kWhite,0.5);
-// 	pt->SetTextAlign(12);
-// 	pt->Draw();
-
-// 	c1->Update();
-
-// 	c1->SaveAs(Form("Lithium6_0plus_simVSdata_pixelhisto_r%dw%d_theta%s_%sx_%sy.png",ringChan,wedgeChan,anglestring.Data(),beamstringx.Data(), beamstringy.Data()));
-
-// 	delete c1;
-// 	delete hData;
-// 	//delete hDataRebin;
-// 	delete hSim;
-// 	//delete hSimRebin;
-// }
-
-// void Lithium6_0plus_pixelhistos_auto(){
-// 	// std::vector<TString> beamstrings = {
-// 	// 									"fixedpoint",
-// 	// 									"gaus001",
-// 	// 									"gaus002",
-// 	// 									"gaus003",
-// 	// 									"gaus004",
-// 	// 									"gaus005",
-// 	// 									// "gaus006",
-// 	// 									// "gaus007",
-// 	// 									// "gaus008",
-// 	// 									// "gaus009",
-// 	// 									// "gaus010"
-// 	// 								};
-
-// 	TString beamx = "gaus004";
-// 	TString beamy = "gaus0015";
-
-// 	std::vector<int> ringChans = {
-// 									71,
-// 									72,
-// 									73	
-// 									};
-
-// 	std::vector<int> wedgeChans = {
-// 									29,
-// 									30
-// 									};
-
-// 	// for(const auto& bs : beamstrings){
-// 	// 	for(const auto& ring : ringChans){
-// 	// 		for(const auto& wedge : wedgeChans){
-// 	// 			Lithium6_1plus_pixelhistos(ring,wedge,bs);
-// 	// 		}
-// 	// 	}
-// 	// }
-
-// 	for(const auto& ring : ringChans){
-// 		for(const auto& wedge : wedgeChans){
-// 			Lithium6_0plus_pixelhistos(ring,wedge,beamx,beamy);
-// 		}
-// 	}
-// }
-
-TString Lithium6_0plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx, TString beamstringy, TString anglestring, TString phistring){
+TString Lithium6_0plus_sabrehits(TString beamstringx, TString beamstringy, TString anglestring, TString phistring, TString stragglestring){
+
+	//TString anglestring = "16782278";
+
+	//uncomment below for DESKTOP
+	// TString dataFilePath = "/home/zmpur/SABREsim/det/ROOT/LiFha_1par_exp_0plus_output.root";
+	// TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	// TString simFilePath = Form("/home/zmpur/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta%s_%sx_%sy_histos.root",anglestring.Data(),beamstringx.Data(),beamstringy.Data());
+	// TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	//uncomment below for LAPTOP
+	TString dataFilePath = "/mnt/e/RMSRecon/etc/zmpROOT/LiFha_1par_exp_0plus_output.root";
+	TString dataHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563keV_7500keV_theta%s_phi_%s_%sx_%sy_%s_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(),beamstringy.Data(),stragglestring.Data());
+	TString simHistLocalPath = "SABRE/GEOM/hSABREARRAY_hitsMapLocal";
+
+	TString pngoutname = Form("Lithium6_0plus_simVSdata_sabrehits_theta%s_phi_%s_%sx_%sy_%s.png",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data(), stragglestring.Data());
+
+
+	//prep output file name
+	//TString outfile_root_name = Form("Lithium6_0plus_simVSdata_sabrehits_%s.root",beamstring.Data());
+
+
+	TFile *datafile = new TFile(dataFilePath,"READ");
+	if(!datafile || datafile->IsZombie()){
+		std::cerr << "Error opening data file" << std::endl;
+		return "ERROR";
+	}
+
+	TH2 *hData = dynamic_cast<TH2*>(datafile->Get(dataHistLocalPath));
+	if(!hData){
+		std::cerr << "Error retrieving data histogram" << std::endl;
+		datafile->Close();
+		return "ERROR";
+	}
+	hData->SetDirectory(0);
+	datafile->Close();
+
+
+
+	TFile *simfile = new TFile(simFilePath,"READ");
+	if(!simfile || simfile->IsZombie()){
+		std::cerr << "Error opening sim file" << std::endl;
+		return "ERROR";
+	}
+
+	TH2 *hSim = dynamic_cast<TH2*>(simfile->Get(simHistLocalPath));
+	if(!hSim){
+		std::cerr << "Error retrieving sim histogram" << std::endl;
+		simfile->Close();
+		return "ERROR";
+	}
+	hSim->SetDirectory(0);
+	simfile->Close();
+
+
+
+	if((hData->GetNbinsX() != hSim->GetNbinsX()) || (hData->GetNbinsY() != hSim->GetNbinsY())){
+		std::cerr << "Histogram bin counts do not match on at least one axis!" << std::endl;
+		return "ERROR";
+	}
+
+
+
+	double dataIntegral = hData->Integral();
+	double simIntegral = hSim->Integral();
+
+	double scaleFactor = 0.;
+
+	if(simIntegral > 0){
+		scaleFactor = dataIntegral/simIntegral;
+		hSim->Scale(scaleFactor);
+		std::cout << "Applied global scale factor to sim: " << scaleFactor << std::endl;
+	} else {
+		std::cerr << "sim histogram has zero integral and thus cannot scale" << std::endl;
+		return "ERROR";
+	}
+
+	//calculate chi2:
+	double chi2 = hData->Chi2Test(hSim, "CHI2/NDF UW");
+
+
+	TCanvas *c1 = new TCanvas("c1","Data vs Sim", 800, 600);
+	gStyle->SetOptStat(0);
+
+
+
+	hSim->Draw();
+
+	TPaveText *pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
+	pt->AddText(Form("%sx %sy (scale factor = %.3f)", beamstringx.Data(), beamstringy.Data(), scaleFactor));
+	pt->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
+	pt->SetFillColorAlpha(kWhite,0.5);
+	pt->SetTextAlign(12);
+	pt->Draw();
+
+	TPaveText *ptangle = new TPaveText(0.12, 0.7, 0.27, 0.9, "NDC");
+	TString temp;
+	if(anglestring == "188208") temp = "19.8#circ #pm 1#circ";
+	else if(anglestring == "178218") temp = "19.8#circ #pm 2#circ";
+	else if(anglestring == "168228") temp = "19.8#circ #pm 3#circ";
+	else if(anglestring == "158238") temp = "19.8#circ #pm 4#circ";
+	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
+	ptangle->AddText(Form("%s",temp.Data()));
+	ptangle->AddText(Form("phi %s", phistring.Data()));
+	ptangle->AddText(stragglestring);
+	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
+	ptangle->SetFillColorAlpha(kWhite,0.5);
+	ptangle->Draw();
+
+	c1->Update();
+
+	// TFile* outfile_root = new TFile(outfile_root_name,"RECREATE");
+	// if(!outfile_root || outfile_root->IsZombie()){
+	// 	std::cerr << "Error creating output file" << std::endl;
+	// 	return;
+	// }
+
+	//hData->Write("hData_original");
+	//hSim->Write("hSim_scaled");
+	c1->SaveAs(pngoutname);
+	c1->Clear();
+	hData->Draw();
+	pt = new TPaveText(0.65, 0.75, 0.88, 0.88, "NDC");
+	pt->AddText("LiFha exp 1par ^{6}Li 1^{+} DATA");
+	c1->Update();
+	c1->SaveAs(Form("Lithium6_0plus_simVSdata_sabrehits_%s.png","1PAREXPDATA"));
+	//outfile_root->Close();
+	return pngoutname;
+	//std::cout << "Finished! Output written to: " << outfile_root_name << std::endl;
+
+}
+
+void Lithium6_0plus_sabrehits_auto(){
+
+	// std::vector<TString> beamstrings = {
+	// 									"fixed",
+	// 									"gaus001",
+	// 									"gaus002",
+	// 									"gaus003",
+	// 									"gaus004",
+	// 									"gaus005"
+	// 									// "gaus006",
+	// 									// "gaus007",
+	// 									// "gaus008",
+	// 									// "gaus009",
+	// 									// "gaus010"
+	// 								};
+
+	std::vector<TString> beamstringsx = {
+											"gaus001"
+										};
+
+	std::vector<TString> beamstringsy = {
+											"gaus001"									
+										};
+
+	std::vector<TString> anglestrings = {
+											//"193203",			// 19.8 +/- 0.5
+											//"188208",			// 19.8 +/- 1.0
+											"178218"			// 19.8 +/- 2.0
+											//"168228",			// 19.8 +/- 3.0
+											//"158238",			// 19.8 +/- 4.0
+											//"148248"			// 19.8 +/- 5.0
+										};
+
+	TString straggle = "straggleOn";
+
+	//std::vector<double> phis = {0.5, 1.0, 1.5, 2.0, 2.5};
+	std::vector<double> phis = {1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
+	std::vector<TString> phistrings;
+	for(const auto& philower : phis){
+		for(const auto& phiupper : phis){
+			//phistrings.push_back(Form("%f_%f",-philower,phiupper));
+			TString s = TString::Format("%s_%s", smartFormat(-philower).c_str(), smartFormat(phiupper).c_str());
+			phistrings.push_back(s);
+		}
+	}
+
+
+
+	for(const auto& bsx : beamstringsx){
+		for(const auto& bsy : beamstringsy){
+			std::vector<TString> pngs;
+			for(const auto& angstr : anglestrings){
+				for(const auto& phistr : phistrings){
+					TString pngoutname = Lithium6_0plus_sabrehits(bsx, bsy, angstr, phistr, straggle);
+					pngs.push_back(pngoutname);
+				}
+			}
+
+			//for all anglestring sabre hit patterns for this given bsx, bsy combo let's make into a gif:
+			TString gifname = Form("Lithium6_0plus_simVSdata_sabrehits_%sx_%sy.gif",bsx.Data(),bsy.Data());
+			TString cmd = "convert -delay 100 -loop 0 ";
+			for(const auto& fn : pngs){
+				cmd += fn;
+				cmd += " ";
+			}
+			cmd += gifname;
+
+			std::cout << "Creating gif for bsx = " << bsx << " and bsy = " << bsy << std::endl;
+			gSystem->Exec(cmd);
+			std::cout << "Saved " << gifname << std::endl;
+
+			//clean up pngs:
+			cmd = "rm ";
+			for(const auto& fn : pngs){
+				cmd += fn;
+				cmd += " ";
+			}
+
+			// gSystem->Exec(cmd);
+		}
+	}
+
+}
+
+TString Lithium6_0plus_pixelhistos(int ringChan, int wedgeChan, TString beamstringx, TString beamstringy, TString anglestring, TString phistring, TString stragglestring){
 
 	int SABRE_ID = 3;
 
@@ -3701,7 +3243,7 @@ TString Lithium6_0plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	TString dataHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
 	dataHistLocalPath = dataHistLocalPath + pixelhistoname;
 
-	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563keV_7500keV_theta%s_phi_%s_%sx_%sy_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data());
+	TString simFilePath = Form("/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Li3563keV_7500keV_theta%s_phi_%s_%sx_%sy_%s_histos.root",anglestring.Data(), phistring.Data(), beamstringx.Data(), beamstringy.Data(), stragglestring.Data());
 	TString simHistLocalPath = Form("SABRE/SABRE%d/Pixels/",SABRE_ID);
 	simHistLocalPath = simHistLocalPath + pixelhistoname;
 
@@ -3809,12 +3351,13 @@ TString Lithium6_0plus_pixelhistos(int ringChan, int wedgeChan, TString beamstri
 	else if(anglestring == "148248") temp = "19.8#circ #pm 5#circ";
 	ptangle->AddText(Form("%s",temp.Data()));
 	//ptangle->AddText(Form("#chi^{2}/NDF = %.1f",chi2));
+	ptangle->AddText(stragglestring);	
 	ptangle->SetFillColorAlpha(kWhite,0.5);
 	ptangle->Draw();
 
 	c1->Update();
 
-	TString pngoutname = Form("Lithium6_0plus_simVSdata_pixelhisto_r%dw%d_theta%s_%sx_%sy.png",ringChan,wedgeChan,anglestring.Data(),beamstringx.Data(), beamstringy.Data());
+	TString pngoutname = Form("Lithium6_0plus_simVSdata_pixelhisto_r%dw%d_theta%s_%sx_%sy_%s.png",ringChan,wedgeChan,anglestring.Data(),beamstringx.Data(), beamstringy.Data(), stragglestring.Data());
 	c1->SaveAs(pngoutname);
 
 	delete c1;
@@ -3836,6 +3379,8 @@ void Lithium6_0plus_pixelhistos_auto(){
 
 	TString phistring = "-2.125_2.125";
 
+	TString straggle = "straggleOff";
+
 	std::vector<int> ringChans = {
 									71,
 									72,
@@ -3850,7 +3395,7 @@ void Lithium6_0plus_pixelhistos_auto(){
 	for(const auto& ring : ringChans){
 		for(const auto& wedge : wedgeChans){
 
-			Lithium6_0plus_pixelhistos(ring, wedge, beamx, beamy, anglestring, phistring);
+			Lithium6_0plus_pixelhistos(ring, wedge, beamx, beamy, anglestring, phistring, straggle);
 
 		}
 	}
