@@ -63,8 +63,10 @@ SABREsim::SABREsim(const std::string& configFilename)
 	  deadLayerLoss_deuteron_(nullptr),
 	  deadLayerLoss_proton_(nullptr),
 	  deadLayerLoss_none_(nullptr),
+	  straggler_6Li_3061keV_LiF_(nullptr),
+	  straggler_6Li_2239keV_LiF_(nullptr),
+	  straggler_none_(nullptr),
 	  RootWriter_(nullptr),
-	  straggler_(nullptr),
 	  failState_(false),
 	  nevents_(0),
 	  detectorHits_(5,0),
@@ -121,7 +123,9 @@ void SABREsim::CleanUp(){
 	delete deadLayerLoss_alpha_;
 	delete deadLayerLoss_deuteron_;
 
-	delete straggler_;
+	delete straggler_6Li_2239keV_LiF_;
+	delete straggler_6Li_3061keV_LiF_;
+	delete straggler_none_;
 
 }
 
@@ -143,6 +147,15 @@ SABRE_DeadLayerModel* SABREsim::GetDeadLayerLoss(const std::string deadlayerloss
 
 	ConsoleColorizer::PrintRed("\nError! Specified dead layer energy loss not found!\nReturning deadLayerLoss_none_ instead!\n\n");
 	return deadLayerLoss_none_;
+}
+
+TargetAngularStraggler* SABREsim::GetTargetStraggler(const std::string targetstraggler){
+	if(targetstraggler == "6Li_3061keV_LiF") return straggler_6Li_3061keV_LiF_;
+	else if(targetstraggler == "6Li_2239keV_LiF") return straggler_6Li_2239keV_LiF_;
+	else if(targetstraggler == "none") return straggler_none_;
+
+	ConsoleColorizer::PrintRed("\nError! Specified target straggler not found!\nReturning straggler_none_ instead!\n\n");
+	return straggler_none_;
 }
 
 void SABREsim::InitializeDetectors(bool WriteCornersToFile){
@@ -242,6 +255,25 @@ bool SABREsim::InitializeModels(){
 		return false;
 	}
 
+	//load target stragglers
+	straggler_6Li_3061keV_LiF_ = TargetAngularStraggler::LoadFromConfigFile("config/straggler_6Li_3061keV_LiF.conf");
+	if(!straggler_6Li_3061keV_LiF_){
+		ConsoleColorizer::PrintRed("Failed to load 6Li 3061keV straggler from config file\n");
+		return false;
+	}
+	
+	straggler_6Li_2239keV_LiF_ = TargetAngularStraggler::LoadFromConfigFile("config/straggler_6Li_2239keV_LiF.conf");
+	if(!straggler_6Li_2239keV_LiF_){
+		ConsoleColorizer::PrintRed("Failed to load 6Li 2239keV straggler from config file\n");
+		return false;
+	}
+
+	straggler_none_ = TargetAngularStraggler::LoadFromConfigFile("config/straggler_none.conf");
+	if(!straggler_none_){
+		ConsoleColorizer::PrintRed("Failed to load none straggler from config file\n");
+		return false;
+	}
+
 	//SET CURRENT TARGETLOSS AND DEADLAYERLOSS HERE:
 	
 	targetLoss_par1_ = GetTargetEnergyLoss(config_->GetTargetLoss(1));
@@ -254,12 +286,17 @@ bool SABREsim::InitializeModels(){
 	deadLayerLoss_par3_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(3));
 	deadLayerLoss_par4_ = GetDeadLayerLoss(config_->GetDeadLayerLoss(4));
 
+	//SET CURRENT STRAGGLER HERE:
+	straggler_par1_ = GetTargetStraggler(config_->GetTargetStraggler(1));
+	straggler_par2_ = GetTargetStraggler(config_->GetTargetStraggler(2));
+	straggler_par3_ = GetTargetStraggler(config_->GetTargetStraggler(3));
+	straggler_par4_ = GetTargetStraggler(config_->GetTargetStraggler(4));
 
 	//set angular straggling parameters here:
-	double mu = config_->GetStraggleMu();
-	double sigma = config_->GetStraggleSigma();
-	double lambda = config_->GetStraggleLambda();
-	straggler_ = new TargetAngularStraggler(std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda));
+	// double mu = config_->GetStraggleMu();
+	// double sigma = config_->GetStraggleSigma();
+	// double lambda = config_->GetStraggleLambda();
+	// straggler_ = new TargetAngularStraggler(std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda));
 
 	return true;
 }
@@ -321,7 +358,9 @@ void SABREsim::Run(){
 	if(kinX_ == 2){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleEnabled = %s\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleEnabled() ? "true" : "false", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		outline = Form("\nTargetAngularStraggler 1 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(1) ? "true" : "false", config_->GetStraggle(1).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 2 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(2) ? "true" : "false", config_->GetStraggle(2).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot profile xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -330,7 +369,13 @@ void SABREsim::Run(){
 	} else if(kinX_ == 3){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleEnabled = %s\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleEnabled() ? "true" : "false", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		outline = Form("\nTargetAngularStraggler 1 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(1) ? "true" : "false", config_->GetStraggle(1).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 2 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(2) ? "true" : "false", config_->GetStraggle(2).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 3 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(3) ? "true" : "false", config_->GetStraggle(3).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 4 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(4) ? "true" : "false", config_->GetStraggle(4).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -339,7 +384,13 @@ void SABREsim::Run(){
 	} else if(kinX_ == 4){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		outline = Form("\nTargetAngularStraggler Details:\n\tstraggleEnabled = %s\n\tstraggleMu = %f\n\tstraggleSigma = %f\n\tstraggleLambda = %f\n", config_->GetStraggleEnabled() ? "true" : "false", config_->GetStraggleMu(), config_->GetStraggleSigma(), config_->GetStraggleLambda());
+		outline = Form("\nTargetAngularStraggler 1 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(1) ? "true" : "false", config_->GetStraggle(1).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 2 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(2) ? "true" : "false", config_->GetStraggle(2).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 3 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(3) ? "true" : "false", config_->GetStraggle(3).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nTargetAngularStraggler 4 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(4) ? "true" : "false", config_->GetStraggle(4).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
 		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
@@ -443,7 +494,7 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 						   targetLoss_par1_, targetLoss_par2_,
 						   deadLayerLoss_par1_, deadLayerLoss_par2_,
 						   beamspot_,
-						   straggler_);
+						   straggler_par1_, straggler_par2_);
 
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",det2mcProcessor.GetToString_TargetLoss1().data(),det2mcProcessor.GetToString_TargetLoss2().data(),det2mcProcessor.GetToString_DeadLayerLoss1().data(),det2mcProcessor.GetToString_DeadLayerLoss2().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
@@ -453,7 +504,7 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 
 	plot2mc *RootPlotter = new plot2mc(config_->GetHistoFile());
 
-	det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled());
+	det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2));
 
 	nevents_ = det2mcProcessor.GetNumEvents();
 	detectorHits_ = det2mcProcessor.GetDetectorHits();

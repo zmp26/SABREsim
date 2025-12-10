@@ -11,6 +11,10 @@ public:
 
 	//evaluate PDF for diagnostics
 	virtual double pdf(double x) const = 0;
+
+	virtual double GetMu() const = 0;
+	virtual double GetSigma() const = 0;
+	virtual double GetLambda() const = 0;
 };
 
 
@@ -35,6 +39,18 @@ public:
 		double z = (lambda * (mu + ls2 - x));
 		double arg = (x - mu - ls2) / (std::sqrt(2.0)*sigma);
 		return (lambda / 2.0) * std::exp(z + ls2/2.0) * std::erfc(arg);
+	}
+
+	double GetMu() const {
+		return mu;
+	}
+
+	double GetSigma() const {
+		return sigma;
+	}
+
+	double GetLambda() const {
+		return lambda;
 	}
 
 private:

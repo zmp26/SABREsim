@@ -58,6 +58,8 @@ private:
 
 			These are what the targetLoss_par1/2/3/4_ should be set to before being passed to det2/3/4mc classes
 
+			(If you add here remember to add handling for assigning them in cpp file including updating the Getter function)
+
 	*/
 
 	TargetEnergyLoss* targetLoss_6Li_in_LiF_;
@@ -107,6 +109,8 @@ private:
 
 			These are what the deadLayerLoss_par1/2/3/4_ should be set to before being passed to det2/3/4mc classes
 
+			(If you add here remember to add handling for assigning them in cpp file including updating the Getter function)
+
 	*/
 
 	SABRE_DeadLayerModel* deadLayerLoss_6Li_;
@@ -145,12 +149,54 @@ private:
 	SABRE_DeadLayerModel* deadLayerLoss_par3_;
 	SABRE_DeadLayerModel* deadLayerLoss_par4_;
 
+	//---------------------------TARGET ANGULAR STRAGGLING-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	/*
+			BELOW:
+			These hold the information for all possible target angular straggling fits we have made.
+
+			These are what the straggler_par1/2/3/4_ should be set to before being passed to det2/3/4mc classes
+
+			(If you add here remember to add handling for assigning them in cpp file including updating the Getter function)
+
+	*/
+
+	TargetAngularStraggler* straggler_6Li_3061keV_LiF_;
+	TargetAngularStraggler* straggler_6Li_2239keV_LiF_;
+	TargetAngularStraggler* straggler_none_;
+
+	/*
+			BELOW:
+			Current TargetAngularStraggler pointers -- these are the stragglers actually passed to det2/3/4mc
+
+			for det2mc:
+				straggler_par1_ = ejectile target straggling - set to none unless singles data, etc.
+				straggler_par2_ = recoil target straggling - set to appropriate value for recoil from kin2mc
+				straggler_par3_ = none, not used
+				straggler_par4_ = none, not used
+
+			for det3mc:
+				straggler_par1_ = ejectile target straggling - set to none unless singles data, etc.
+				straggler_par2_ = recoil target straggling - set to none since we do not measure recoil
+				straggler_par3_ = breakup1 target straggling  - set to appropriate value for breakup from kin3mc
+				straggler_par4_ = breakup2/deaughter target straggling - set to appropriate value for breakup2/daughter from kin3mc
+
+			for det4mc:
+				straggler_par1_ = ejectile target straggling - set to none unless singles data, etc.
+				straggler_par2_ = breakup1 target straggling - set to appropriate value for breakup1 from kin4mc
+				straggler_par3_ = breakup2 target straggling - set to appropraite value for breakup2 from kin4mc
+				straggler_par4_ = brekaup3/final daughter target straggling - set to appropriate value for breakup3/final daughter from kin4mc
+	*/	
+
+	TargetAngularStraggler* straggler_par1_;
+	TargetAngularStraggler* straggler_par2_;
+	TargetAngularStraggler* straggler_par3_;
+	TargetAngularStraggler* straggler_par4_;
+
 	BeamProfile* profile_;
 	Beamspot* beamspot_;
 
 	RootWriter* RootWriter_;
-
-	TargetAngularStraggler* straggler_;
 
 	bool failState_; //true means failure, false means ok
 
@@ -168,6 +214,7 @@ private:
 
 	TargetEnergyLoss* GetTargetEnergyLoss(const std::string targetloss);
 	SABRE_DeadLayerModel* GetDeadLayerLoss(const std::string deadlayerloss);
+	TargetAngularStraggler* GetTargetStraggler(const std::string targetstraggler);
 
 	void Simulate2body(std::ifstream& infile, std::ofstream& outfile);
 	void Simulate3body(std::ifstream& infile, std::ofstream& outfile);

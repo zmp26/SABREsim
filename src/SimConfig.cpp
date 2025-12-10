@@ -9,7 +9,6 @@
 SimConfig::SimConfig(const std::string& filename)
 	: filename_(filename),
 	  detmc_version_(0),
-	  enableStraggle_(false),
 	  beam_parX_(0.), beam_parY_(0.),
 	  beam_offsetX_(0.), beam_offsetY_(0.),
 	  beam_energy_(0.), recoil_excitation_energy_(0.)
@@ -17,6 +16,8 @@ SimConfig::SimConfig(const std::string& filename)
 
 	targetLoss_par_.resize(4, "none");
 	deadLayerLoss_par_.resize(4, "none");
+	enableStraggle_par_.resize(4,false);
+	targetStraggle_par_.resize(4,"none");
 
 }
 
@@ -63,10 +64,22 @@ bool SimConfig::Parse(){
 			}
 		}
 		else if(section == "TargetAngularStraggling"){
-			if(key == "enableStraggle") std::istringstream(val) >> std::boolalpha >> enableStraggle_;
-			else if(key == "straggleMu") straggleMu_ = std::stod(val);
-			else if(key == "straggleSigma") straggleSigma_ = std::stod(val);
-			else if(key == "straggleLambda") straggleLambda_ = std::stod(val);
+
+			if(key.rfind("enableStraggle", 0) == 0){
+				int idx = key.back() - '0';
+				if(idx >= 1 && idx <= 4){
+					bool tmp = false;
+					std::istringstream(val) >> std::boolalpha >> tmp;
+					enableStraggle_par_[idx-1] = tmp;
+				}
+
+
+			} else if(key.rfind("straggle",0) == 0){
+
+				int idx = key.back() - '0';
+				if(idx >= 1 && idx <= 4) targetStraggle_par_[idx-1] = val;
+
+			}
 		}
 		else if(section == "DeadLayerLosses"){
 			if(key.rfind("deadLayerLoss_par",0) == 0){

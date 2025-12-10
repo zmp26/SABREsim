@@ -18,6 +18,7 @@ public:
 
 	const std::string& GetTargetLoss(int i) const { return targetLoss_par_.at(i-1); }
 	const std::string& GetDeadLayerLoss(int i) const { return deadLayerLoss_par_.at(i-1); }
+	const std::string& GetTargetStraggler(int i) const { return targetStraggle_par_.at(i-1); }
 
 	const std::string& GetBeamProfile() const { return beam_profile_; }
 	double GetBeamParX() const { return beam_parX_; }
@@ -29,11 +30,8 @@ public:
 	double GetBeamEnergy() const { return beam_energy_; }
 	double GetRecoilExcitationEnergy() const { return recoil_excitation_energy_; }
 
-	bool GetStraggleEnabled() const { return enableStraggle_; }
-	double GetStraggleMu() const { return straggleMu_; }
-	double GetStraggleSigma() const { return straggleSigma_; }
-	double GetStraggleLambda() const { return straggleLambda_; }
-
+	bool GetStraggleEnabled(int i) const { return enableStraggle_par_.at(i-1); }
+	std::string GetStraggle(int i) const { return targetStraggle_par_.at(i-1); }
 
 private:
 	std::string filename_;
@@ -42,8 +40,11 @@ private:
 	std::string infile_, detfile_, treefile_, histofile_;
 
 	std::vector<std::string> targetLoss_par_;
-	double straggleMu_, straggleSigma_, straggleLambda_;
-	bool enableStraggle_;
+
+	//double straggleMu_, straggleSigma_, straggleLambda_;
+	std::vector<bool> enableStraggle_par_;
+	std::vector<std::string> targetStraggle_par_;
+
 	std::vector<std::string> deadLayerLoss_par_;
 
 	std::string beam_profile_;

@@ -21,25 +21,27 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   SABRE_DeadLayerModel* deadLayerLoss_par1,
 			   SABRE_DeadLayerModel* deadLayerLoss_par2,
 			   Beamspot* beamspot,
-			   TargetAngularStraggler* straggler)
+			   TargetAngularStraggler* straggler_par1,
+			   TargetAngularStraggler* straggler_par2)
 	: SABRE_Array_(SABRE_Array),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_par1_(targetLoss_par1),
 	  targetLoss_par2_(targetLoss_par2),
 	  deadLayerLoss_par1_(deadLayerLoss_par1),
 	  deadLayerLoss_par2_(deadLayerLoss_par2),
+	  straggler_par1_(straggler_par1),
+	  straggler_par2_(straggler_par2),
 	  nevents_(0),
 	  hit1_(0), hit2_(0), hitBoth_(0),
 	  hit1Only_(0), hit2Only_(0),
 	  detectorHits_(SABRE_Array.size(),0),
-	  beamspot_(beamspot),
-	  straggler_(straggler)
+	  beamspot_(beamspot)
 	  {
 
 	  }
 
 
-void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle=true){
+void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle1=true, bool targetStraggle2=true){
 	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
 
 	//TH1D *hDeadLayerELoss = new TH1D("hDeadLayerELoss","hDeadLayerELoss;Energy (keV)", 30, 25, 28);
@@ -93,8 +95,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				double smearedERing = 0., smearedEWedge = 0.;
 
 				//sample a (dtheta, dphi) to apply to kin2mc trajectory
-				double dtheta1 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
-				double dphi1 = straggler_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dtheta1 = straggler_par1_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dphi1 = straggler_par1_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
 
 				//we now define the original kinematical trajectory as:
 				Vec3 originalTrajectory1;
@@ -112,7 +114,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//now convert back:
 				double theta1_prime, phi1_prime;
-				if(targetStraggle){
+				if(targetStraggle1){
 					theta1_prime = adjustedTrajectory1.GetTheta()*RAD2DEG;//std::acos(adjustedTrajectory1.GetZ())*RAD2DEG;
 					phi1_prime = adjustedTrajectory1.GetPhi()*RAD2DEG;// std::atan2(adjustedTrajectory1.GetY(), adjustedTrajectory1.GetX())*RAD2DEG;
 					if(phi1_prime < 0) phi1_prime += 360.;
@@ -179,8 +181,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				smearedEWedge = 0.;
 
 				//sample (dtheta, dphi) to apply to kin2mc trajectory:
-				double dtheta2 = straggler_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
-				double dphi2 = straggler_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dtheta2 = straggler_par2_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dphi2 = straggler_par2_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
 
 				//we now define the original kinematical trajectory as:
 				Vec3 originalTrajectory2;
@@ -198,7 +200,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//now convert back
 				double theta2_prime, phi2_prime;
-				if(targetStraggle){
+				if(targetStraggle2){
 					theta2_prime = adjustedTrajectory2.GetTheta()*RAD2DEG;//std::acos(adjustedTrajectory2.GetZ())*RAD2DEG;
 					phi2_prime = adjustedTrajectory2.GetPhi()*RAD2DEG;//std::atan2(adjustedTrajectory2.GetY(), adjustedTrajectory2.GetX())*RAD2DEG;
 					if(phi2_prime < 0) phi2_prime += 360.;

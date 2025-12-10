@@ -28,9 +28,10 @@ public:
 		   SABRE_DeadLayerModel* deadLayerLoss_par1,
 		   SABRE_DeadLayerModel* deadLayerLoss_par2,
 		   Beamspot* beamspot,
-		   TargetAngularStraggler* straggler);
+		   TargetAngularStraggler* straggler_par1,
+		   TargetAngularStraggler* straggler_par2);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle1, bool targetStraggle2);
 
 	//after Run(), these functions may be called to query for statistics:
 	long GetNumEvents() const;
@@ -60,6 +61,9 @@ private:
 	SABRE_DeadLayerModel* deadLayerLoss_par1_;//ejectile from kin2mc (b)
 	SABRE_DeadLayerModel* deadLayerLoss_par2_;//recoil from kin2mc	  (B)
 
+	TargetAngularStraggler* straggler_par1_;//ejectile (b)
+	TargetAngularStraggler* straggler_par2_;//recoile (B)
+
 	//counters for statistics
 	long nevents_;
 	long hit1_;
@@ -70,8 +74,6 @@ private:
 	std::vector<long> detectorHits_;
 
 	Beamspot* beamspot_;
-
-	TargetAngularStraggler* straggler_;
 
 	static const std::pair<int, int> offsets[];
 
