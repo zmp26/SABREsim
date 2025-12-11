@@ -15,11 +15,10 @@
 #include "RootWriter.h"
 #include "plot3mc.h"
 #include "TargetAngularStraggler.h"
+#include "structs.h"
 
 class det3mc{
 public:
-	static constexpr double DEG2RAD = M_PI/180.;
-	static constexpr double RAD2DEG = 180./M_PI;
 
 	det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,

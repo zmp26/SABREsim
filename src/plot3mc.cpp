@@ -14,7 +14,7 @@ plot3mc::plot3mc(const std::string& outname){
 	histoman->loadHistoConfig("config/_3body.HMConfig");
 
 	masstable = new MassTable;
-	masstable->Init("config/masstable->dat");
+	masstable->Init("config/masstable.dat");
 
 }
 

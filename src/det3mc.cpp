@@ -92,24 +92,24 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//original kinematic trajectory
 			Vec3 originalTrajectory1;
-			originalTrajectory1.SetVectorSpherical(1, theta1*DEG2RAD, phi1*DEG2RAD);
+			originalTrajectory1.SetVectorSpherical(1, theta1*DEGRAD, phi1*DEGRAD);
 
 			//define new basis vectors
 			Vec3 etheta1, ephi1;
-			etheta1.SetVectorCartesian(std::cos(theta1*DEG2RAD)*std::cos(phi1*DEG2RAD), std::cos(theta1*DEG2RAD)*std::sin(phi1*DEG2RAD), -std::sin(theta1*DEG2RAD));
-			ephi1.SetVectorCartesian(-std::sin(phi1*DEG2RAD), std::cos(phi1*DEG2RAD), 0.);
+			etheta1.SetVectorCartesian(std::cos(theta1*DEGRAD)*std::cos(phi1*DEGRAD), std::cos(theta1*DEGRAD)*std::sin(phi1*DEGRAD), -std::sin(theta1*DEGRAD));
+			ephi1.SetVectorCartesian(-std::sin(phi1*DEGRAD), std::cos(phi1*DEGRAD), 0.);
 
 			//adjusted trajectory:
 			Vec3 adjustedTrajectory1;
-			adjustedTrajectory1 = std::cos(dtheta1*DEG2RAD)*originalTrajectory1 + std::sin(dtheta1*DEG2RAD)*(std::cos(dphi1*DEG2RAD)*etheta1 + std::sin(dphi1*DEG2RAD)*ephi1);
+			adjustedTrajectory1 = std::cos(dtheta1*DEGRAD)*originalTrajectory1 + std::sin(dtheta1*DEGRAD)*(std::cos(dphi1*DEGRAD)*etheta1 + std::sin(dphi1*DEGRAD)*ephi1);
 			adjustedTrajectory1 = adjustedTrajectory1.Unit();
 
 			//now convert back
 			double theta1_prime, phi1_prime;
 			if(targetStraggle1){
 
-				theta1_prime = adjustedTrajectory1.GetTheta()*RAD2DEG;
-				phi1_prime = adjustedTrajectory1.GetPhi()*RAD2DEG;
+				theta1_prime = adjustedTrajectory1.GetTheta()*RADDEG;
+				phi1_prime = adjustedTrajectory1.GetPhi()*RADDEG;
 				if(phi1_prime < 0) phi1_prime += 360.;
 				RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, dtheta1, dphi1);
 
@@ -121,8 +121,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			}
 
-			//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD);
-			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD,phi1_prime*DEG2RAD,reactionOrigin);
+			//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEGRAD,phi1*DEGRAD);
+			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEGRAD,phi1_prime*DEGRAD,reactionOrigin);
 
 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
@@ -131,7 +131,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//apply dead layer energy loss to e1_aftertarget:
 				Vec3 trajectory;
-				trajectory.SetVectorSpherical(1,theta1_prime*DEG2RAD,phi1_prime*DEG2RAD);
+				trajectory.SetVectorSpherical(1,theta1_prime*DEGRAD,phi1_prime*DEGRAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal*(1/normal.Mag());
 				double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
@@ -170,24 +170,24 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//define original kinematical trajectory
 			Vec3 originalTrajectory3;
-			originalTrajectory3.SetVectorSpherical(1, theta3*DEG2RAD, phi3*DEG2RAD);
+			originalTrajectory3.SetVectorSpherical(1, theta3*DEGRAD, phi3*DEGRAD);
 
 			//define new basis vectors
 			Vec3 etheta3, ephi3;
-			etheta3.SetVectorCartesian(std::cos(theta3*DEG2RAD)*std::cos(phi3*DEG2RAD), std::cos(theta3*DEG2RAD)*std::sin(phi3*DEG2RAD), -std::sin(theta3*DEG2RAD));
-			ephi3.SetVectorCartesian(-std::sin(phi3*DEG2RAD), std::cos(phi3*DEG2RAD), 0.);
+			etheta3.SetVectorCartesian(std::cos(theta3*DEGRAD)*std::cos(phi3*DEGRAD), std::cos(theta3*DEGRAD)*std::sin(phi3*DEGRAD), -std::sin(theta3*DEGRAD));
+			ephi3.SetVectorCartesian(-std::sin(phi3*DEGRAD), std::cos(phi3*DEGRAD), 0.);
 
 			//adjusted trajectory:
 			Vec3 adjustedTrajectory3;
-			adjustedTrajectory3 = std::cos(dtheta3*DEG2RAD)*originalTrajectory3 + std::sin(dtheta3*DEG2RAD)*(std::cos(dphi3*DEG2RAD)*etheta3 + std::sin(dphi3*DEG2RAD)*ephi3);
+			adjustedTrajectory3 = std::cos(dtheta3*DEGRAD)*originalTrajectory3 + std::sin(dtheta3*DEGRAD)*(std::cos(dphi3*DEGRAD)*etheta3 + std::sin(dphi3*DEGRAD)*ephi3);
 			adjustedTrajectory3 = adjustedTrajectory3.Unit();
 
 			//now convert back
 			double theta3_prime, phi3_prime;
 			if(targetStraggle3){
 
-				theta3_prime = adjustedTrajectory3.GetTheta()*RAD2DEG;
-				phi3_prime = adjustedTrajectory3.GetPhi()*RAD2DEG;
+				theta3_prime = adjustedTrajectory3.GetTheta()*RADDEG;
+				phi3_prime = adjustedTrajectory3.GetPhi()*RADDEG;
 				if(phi3_prime < 0) phi3_prime += 360.;
 				RootPlotter->FillStraggleHistos(theta3, phi3, theta3_prime, phi3_prime, dtheta3, dphi3);
 
@@ -199,8 +199,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			}
 
-			//std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta3*DEG2RAD,phi3*DEG2RAD);
-			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3_prime*DEG2RAD,phi3_prime*DEG2RAD,reactionOrigin);
+			//std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta3*DEGRAD,phi3*DEGRAD);
+			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3_prime*DEGRAD,phi3_prime*DEGRAD,reactionOrigin);
 
 			if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
 
@@ -209,7 +209,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//apply dead layer energy loss to e3_aftertarget:
 				Vec3 trajectory;
-				trajectory.SetVectorSpherical(1,theta3_prime*DEG2RAD,phi3_prime*DEG2RAD);
+				trajectory.SetVectorSpherical(1,theta3_prime*DEGRAD,phi3_prime*DEGRAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal*(1/normal.Mag());
 				double e3_afterDeadLayer = deadLayerLoss_par3_->ApplyEnergyLoss(e3_aftertarget, trajectory, normal);
@@ -250,24 +250,24 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//define original kinematical trajectory
 			Vec3 originalTrajectory4;
-			originalTrajectory4.SetVectorSpherical(1, theta4*DEG2RAD, phi4*DEG2RAD);
+			originalTrajectory4.SetVectorSpherical(1, theta4*DEGRAD, phi4*DEGRAD);
 
 			//define new basis vectors
 			Vec3 etheta4, ephi4;
-			etheta4.SetVectorCartesian(std::cos(theta4*DEG2RAD)*std::cos(phi4*DEG2RAD), std::cos(theta4*DEG2RAD)*std::sin(phi4*DEG2RAD), -std::sin(theta4*DEG2RAD));
-			ephi4.SetVectorCartesian(-std::sin(phi4*DEG2RAD), std::cos(phi4*DEG2RAD), 0.);
+			etheta4.SetVectorCartesian(std::cos(theta4*DEGRAD)*std::cos(phi4*DEGRAD), std::cos(theta4*DEGRAD)*std::sin(phi4*DEGRAD), -std::sin(theta4*DEGRAD));
+			ephi4.SetVectorCartesian(-std::sin(phi4*DEGRAD), std::cos(phi4*DEGRAD), 0.);
 
 			//adjusted trajectory:
 			Vec3 adjustedTrajectory4;
-			adjustedTrajectory4 = std::cos(dtheta4*DEG2RAD)*originalTrajectory4 + std::sin(dtheta4*DEG2RAD)*(std::cos(dphi4*DEG2RAD)*etheta4 + std::sin(dphi4*DEG2RAD)*ephi4);
+			adjustedTrajectory4 = std::cos(dtheta4*DEGRAD)*originalTrajectory4 + std::sin(dtheta4*DEGRAD)*(std::cos(dphi4*DEGRAD)*etheta4 + std::sin(dphi4*DEGRAD)*ephi4);
 			adjustedTrajectory4 = adjustedTrajectory4.Unit();
 
 			//now convert back
 			double theta4_prime, phi4_prime;
 			if(targetStraggle4){
 
-				theta4_prime = adjustedTrajectory4.GetTheta()*RAD2DEG;
-				phi4_prime = adjustedTrajectory4.GetPhi()*RAD2DEG;
+				theta4_prime = adjustedTrajectory4.GetTheta()*RADDEG;
+				phi4_prime = adjustedTrajectory4.GetPhi()*RADDEG;
 				if(phi4_prime < 0) phi4_prime += 360.;
 				RootPlotter->FillStraggleHistos(theta4, phi4, theta4_prime, phi4_prime, dtheta4, dphi4);
 
@@ -279,8 +279,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			}
 
-			//std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta4*DEG2RAD,phi4*DEG2RAD);
-			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4_prime*DEG2RAD,phi4_prime*DEG2RAD,reactionOrigin);
+			//std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta4*DEGRAD,phi4*DEGRAD);
+			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4_prime*DEGRAD,phi4_prime*DEGRAD,reactionOrigin);
 
 			if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
 
@@ -289,7 +289,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//apply dead layer energy loss to e4_aftertarget:
 				Vec3 trajectory;
-				trajectory.SetVectorSpherical(1,theta4_prime*DEG2RAD,phi4_prime*DEG2RAD);
+				trajectory.SetVectorSpherical(1,theta4_prime*DEGRAD,phi4_prime*DEGRAD);
 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
 				normal = normal*(1/normal.Mag());
 				double e4_afterDeadLayer = deadLayerLoss_par4_->ApplyEnergyLoss(e4_aftertarget, trajectory, normal);

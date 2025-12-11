@@ -1,10 +1,13 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+#include <cmath>
+
 static const int numwedges = 8;
 static const int numrings = 16;
 
-static const float DEGRAD=0.017453293;
+static constexpr double DEGRAD = M_PI/180.;
+static constexpr double RADDEG = 180./M_PI;
 
 static const std::pair<int,int> offsets[] = {
 	{112,40},	//detector0 {ringOffset,wedgeOffset}
