@@ -17,7 +17,6 @@
 #include "FixedPointProfile.h"
 #include "GaussianProfileX_FixedPointY.h"
 #include "GaussianProfileY_FixedPointX.h"
-#include "plot2mc.h"
 
 // SABREsim::SABREsim(int kinX,
 // 				   const std::string& kinInputFilename,
@@ -615,12 +614,15 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 						   SABREARRAY_EnergyResolutionModels_,
 						   targetLoss_par1_, targetLoss_par2_, targetLoss_par3_, targetLoss_par4_,
 						   deadLayerLoss_par1_, deadLayerLoss_par2_, deadLayerLoss_par3_, deadLayerLoss_par4_,
-						   beamspot_);
+						   beamspot_,
+						   straggler_par1_, straggler_par2_, straggler_par3_, straggler_par4_);
 
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det4mcProcessor.GetToString_TargetLoss1().data(),det4mcProcessor.GetToString_TargetLoss2().data(),det4mcProcessor.GetToString_TargetLoss3().data(),det4mcProcessor.GetToString_TargetLoss4().data(),det4mcProcessor.GetToString_DeadLayerLoss1().data(),det4mcProcessor.GetToString_DeadLayerLoss2().data(),det4mcProcessor.GetToString_DeadLayerLoss3().data(),det4mcProcessor.GetToString_DeadLayerLoss4().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
 
-	det4mcProcessor.Run(infile,outfile,RootWriter_);
+	plot4mc *RootPlotter = new plot4mc(config_->GetHistoFile());
+
+	det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2), config_->GetStraggleEnabled(3), config_->GetStraggleEnabled(4));
 
 	nevents_ = det4mcProcessor.GetNumEvents();
 	detectorHits_ = det4mcProcessor.GetDetectorHits();

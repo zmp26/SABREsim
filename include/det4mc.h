@@ -13,11 +13,12 @@
 #include <cmath>
 #include "Beamspot.h"
 #include "RootWriter.h"
+#include "structs.h"
+#include "TargetAngularStraggler.h"
+#include "plot4mc.h"
 
 class det4mc{
 public:
-	static constexpr double DEG2RAD = M_PI/180.;
-	static constexpr double RAD2DEG = 180./M_PI;
 
 	det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
@@ -29,9 +30,13 @@ public:
 		   SABRE_DeadLayerModel* deadLayerLoss_par2,
 		   SABRE_DeadLayerModel* deadLayerLoss_par3,
 		   SABRE_DeadLayerModel* deadLayerLoss_par4,
-		   Beamspot* beamspot);
+		   Beamspot* beamspot,
+		   TargetAngularStraggler* straggler_par1,
+		   TargetAngularStraggler* straggler_par2,
+		   TargetAngularStraggler* straggler_par3,
+		   TargetAngularStraggler* straggler_par4);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, bool targetStraggle1=true, bool targetStraggle2=true, bool targetStraggle3=true, bool targetStraggle4=true);
 
 	/*
 		A(a,b)B
@@ -87,6 +92,11 @@ private:
 	SABRE_DeadLayerModel* deadLayerLoss_par2_; //breakup1 from kin4mc (c)
 	SABRE_DeadLayerModel* deadLayerLoss_par3_; //breakup2 from kin4mc (d)
 	SABRE_DeadLayerModel* deadLayerLoss_par4_; //breakup3/final daughter from kin4mc (e)
+
+	TargetAngularStraggler* straggler_par1_;
+	TargetAngularStraggler* straggler_par2_;
+	TargetAngularStraggler* straggler_par3_;
+	TargetAngularStraggler* straggler_par4_;
 
 	//counters for statistics:
 	long nevents_;
