@@ -220,7 +220,12 @@ void plot2mc::ProcessTXTOutput(std::vector<std::string> txtoutput){
 			sd1.detectorIndex = -666;
 			sd2.detectorIndex = -666;
 
-			if(eventLines.size() == 2){
+			if(eventLines.size() == 1){
+
+				ParsePhysData(eventLines[0],pd1,pd2);
+				FillKinematicsHistos(pd1,pd2);
+
+			} else if(eventLines.size() == 2){
 
 				ParsePhysData(eventLines[0],pd1,pd2);
 				ParseSABREData(eventLines[1],sd1);
