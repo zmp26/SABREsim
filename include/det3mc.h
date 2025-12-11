@@ -13,6 +13,8 @@
 #include <cmath>
 #include "Beamspot.h"
 #include "RootWriter.h"
+#include "plot3mc.h"
+#include "TargetAngularStraggler.h"
 
 class det3mc{
 public:
@@ -29,9 +31,13 @@ public:
 		   SABRE_DeadLayerModel* deadLayerLoss_par2,
 		   SABRE_DeadLayerModel* deadLayerLoss_par3,
 		   SABRE_DeadLayerModel* deadLayerLoss_par4,
-		   Beamspot* beamspot);
+		   Beamspot* beamspot,
+		   TargetAngularStraggler* straggler_par1,
+		   TargetAngularStraggler* straggler_par2,
+		   TargetAngularStraggler* straggler_par3,
+		   TargetAngularStraggler* straggler_par4);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, bool targetStraggle1, bool targetStraggle2, bool targetStraggle3, bool targetStraggle4);
 
 	//after Run(), these functions can be called to query for statistics:
 	long GetNumEvents() const;
@@ -72,6 +78,11 @@ private:
 	SABRE_DeadLayerModel* deadLayerLoss_par2_;//recoil from kin3mc (B) - not detected!
 	SABRE_DeadLayerModel* deadLayerLoss_par3_;//breakup from kin3mc (c)
 	SABRE_DeadLayerModel* deadLayerLoss_par4_;//final daughter from kin3mc (d)
+
+	TargetAngularStraggler* straggler_par1_;
+	TargetAngularStraggler* straggler_par2_;
+	TargetAngularStraggler* straggler_par3_;
+	TargetAngularStraggler* straggler_par4_;
 
 	//counters for statistics:
 	long nevents_;
