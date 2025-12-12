@@ -16,19 +16,23 @@ TargetAngularStraggler::TargetAngularStraggler(std::unique_ptr<Distribution> dis
 
 //sample single value
 double TargetAngularStraggler::Sample(){
+	if(mu_ == 0 && sigma_ == 0 && lambda_ == 0) return 0.;//way to check if "none"
 	return distribution->Sample();
 }
 
 double TargetAngularStraggler::Sample(std::mt19937_64& rng){
+	if(mu_ == 0 && sigma_ == 0 && lambda_ == 0) return 0.;//way to check if "none"
 	return distribution->Sample(rng);
 }
 
 //sample phi
 double TargetAngularStraggler::SamplePhi(){
+	if(mu_ == 0 && sigma_ == 0 && lambda_ == 0) return 0.;//way to check if "none"
 	return phi_dist_(phi_rng_);
 }
 
 double TargetAngularStraggler::SamplePhi(std::mt19937_64& rng){
+	if(mu_ == 0 && sigma_ == 0 && lambda_ == 0) return 0.;//way to check if "none"
 	return phi_dist_(rng);
 }
 

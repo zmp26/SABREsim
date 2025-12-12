@@ -85,6 +85,12 @@ SABRE_vs_kin TH2D h_SABREPhi_vs_kinPhi SABREPhi_vs_kinPhi 360 -0.5 359.5 360 -0.
 SABRE_vs_kin TH2D h_SABRERingE_vs_kinE SABRERingE_vs_kinE 400 0 20 400 0 20
 SABRE_vs_kin TH2D h_SABREWedgeE_vs_kinE SABREWedgeE_vs_kinE 400 0 20 400 0 20
 #
+# new theta/phi vs old theta/phi (straggle)
+TargetAngularStraggling TH2D hNewTheta_vs_OldTheta NewTheta_vs_OldTheta 360 0 180 360 0 180
+TargetAngularStraggling TH2D hNewPhi_vs_OldPhi NewPhi_vs_OldPhi 360 0 360 360 0 360
+TargetAngularStraggling TH1D hdTheta dTheta 60 0 3
+TargetAngularStraggling TH1D hdPhi dPhi 360 0 360
+TargetAngularStraggling TH2D hNewELoss_vs_OldELoss NewELoss_vs_OldELoss 100 0 1 100 0 1
 # SABRE Summary
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryWedges SABRE0_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE0/Summary TH2D hSABRE0_ESummaryRings SABRE0_ESummaryRings 16 -0.5 15.5 400 0 20
@@ -109,6 +115,9 @@ SABRE/SABRE3/Summary TH2D hSABRE3_ESummaryRings SABRE3_ESummaryRings 16 -0.5 15.
 SABRE/SABRE3/Summary TH1D hSABRE3_ERingSummary SABRE3_ERingSummary 400 0 20
 SABRE/SABRE3/Summary TH1D hSABRE3_EWedgeSummary SABRE3_EWedgeSummary 400 0 20
 SABRE/SABRE3/Summary TH2D hSABRE3_ChannelESummary SABRE3_ChannelESummary 128 -0.5 127.5 2000 0 20
+SABRE/SABRE3/Summary TH1D hSABRE3_Ring7Summary SABRE3_Ring7Summary 2000 0 20
+SABRE/SABRE3/Summary TH1D hSABRE3_Ring8Summary SABRE3_Ring8Summary 2000 0 20
+SABRE/SABRE3/Summary TH1D hSABRE3_Ring9Summary SABRE3_Ring9Summary 2000 0 20
 #
 SABRE/SABRE4/Summary TH2D hSABRE4_ESummaryWedges SABRE4_ESummaryWedges 8 -0.5 7.5 400 0 20
 SABRE/SABRE4/Summary TH2D hSABRE4_ESummaryRings SABRE4_ESummaryRings 16 -0.5 15.5 400 0 20
@@ -141,29 +150,29 @@ SABRE/SABRE2/EDif TH3D hSABRE2_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.
 SABRE/SABRE3/EDif TH3D hSABRE3_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
 SABRE/SABRE4/EDif TH3D hSABRE4_PixelEDif SABRE0_PixelEDif 8 -0.5 7.5 16 -0.5 15.5 40 -1 1
 #sabre histograms for sabre angle, ringE, wedgeE vs kinmc angle, energy, energy
-#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_ringEVSkinE SABRE0_ringEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_ringEVSkinE SABRE1_ringEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_ringEVSkinE SABRE2_ringEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_ringEVSkinE SABRE3_ringEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_ringEVSkinE SABRE4_ringEVSkinE 400 0 20 400 0 20
+SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_ringEVSkinE SABRE0_ringEVSkinE 400 0 20 400 0 20
+SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_ringEVSkinE SABRE1_ringEVSkinE 400 0 20 400 0 20
+SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_ringEVSkinE SABRE2_ringEVSkinE 400 0 20 400 0 20
+SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_ringEVSkinE SABRE3_ringEVSkinE 400 0 20 400 0 20
+SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_ringEVSkinE SABRE4_ringEVSkinE 400 0 20 400 0 20
 #
-#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_wedgeEVSkinE SABRE0_wedgeEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_wedgeEVSkinE SABRE1_wedgeEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_wedgeEVSkinE SABRE2_wedgeEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_wedgeEVSkinE SABRE3_wedgeEVSkinE 400 0 20 400 0 20
-#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_wedgeEVSkinE SABRE4_wedgeEVSkinE 400 0 20 400 0 20
+SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_wedgeEVSkinE SABRE0_wedgeEVSkinE 400 0 20 400 0 20
+SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_wedgeEVSkinE SABRE1_wedgeEVSkinE 400 0 20 400 0 20
+SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_wedgeEVSkinE SABRE2_wedgeEVSkinE 400 0 20 400 0 20
+SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_wedgeEVSkinE SABRE3_wedgeEVSkinE 400 0 20 400 0 20
+SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_wedgeEVSkinE SABRE4_wedgeEVSkinE 400 0 20 400 0 20
 #
-#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_ringThetaVSkinTheta SABRE0_ringThetaVSkinTheta 90 0 180 90 0 180
-#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_ringThetaVSkinTheta SABRE1_ringThetaVSkinTheta 90 0 180 90 0 180
-#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_ringThetaVSkinTheta SABRE2_ringThetaVSkinTheta 90 0 180 90 0 180
-#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_ringThetaVSkinTheta SABRE3_ringThetaVSkinTheta 90 0 180 90 0 180
-#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_ringThetaVSkinTheta SABRE4_ringThetaVSkinTheta 90 0 180 90 0 180
+SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_ringThetaVSkinTheta SABRE0_ringThetaVSkinTheta 90 0 180 90 0 180
+SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_ringThetaVSkinTheta SABRE1_ringThetaVSkinTheta 90 0 180 90 0 180
+SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_ringThetaVSkinTheta SABRE2_ringThetaVSkinTheta 90 0 180 90 0 180
+SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_ringThetaVSkinTheta SABRE3_ringThetaVSkinTheta 90 0 180 90 0 180
+SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_ringThetaVSkinTheta SABRE4_ringThetaVSkinTheta 90 0 180 90 0 180
 #
-#SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_wedgePhiVSkinPhi SABRE0_wedgePhiVSkinPhi 180 0 360 180 0 360
-#SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_wedgePhiVSkinPhi SABRE1_wedgePhiVSkinPhi 180 0 360 180 0 360
-#SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_wedgePhiVSkinPhi SABRE2_wedgePhiVSkinPhi 180 0 360 180 0 360
-#SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_wedgePhiVSkinPhi SABRE3_wedgePhiVSkinPhi 180 0 360 180 0 360
-#SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_wedgePhiVSkinPhi SABRE4_wedgePhiVSkinPhi 180 0 360 180 0 360
+SABRE/SABRE0/Kin_vs_Sim TH2D hSABRE0_wedgePhiVSkinPhi SABRE0_wedgePhiVSkinPhi 180 0 360 180 0 360
+SABRE/SABRE1/Kin_vs_Sim TH2D hSABRE1_wedgePhiVSkinPhi SABRE1_wedgePhiVSkinPhi 180 0 360 180 0 360
+SABRE/SABRE2/Kin_vs_Sim TH2D hSABRE2_wedgePhiVSkinPhi SABRE2_wedgePhiVSkinPhi 180 0 360 180 0 360
+SABRE/SABRE3/Kin_vs_Sim TH2D hSABRE3_wedgePhiVSkinPhi SABRE3_wedgePhiVSkinPhi 180 0 360 180 0 360
+SABRE/SABRE4/Kin_vs_Sim TH2D hSABRE4_wedgePhiVSkinPhi SABRE4_wedgePhiVSkinPhi 180 0 360 180 0 360
 #
 #
 #
@@ -326,4 +335,660 @@ SABRE/MMM/Kin/Wrong TH1D hMMMWrong_PhiCM1 MMMWrong_PhiCM1 360 0 360
 SABRE/MMM/Kin/Wrong TH1D hMMMWrong_PhiCM2 MMMWrong_PhiCM2 360 0 360
 SABRE/MMM/Kin/Wrong TH1D hMMMWrong_ThetaCMSum MMMWrong_ThetaCMSum 180 90 270
 SABRE/MMM/Kin/Wrong TH1D hMMMWrong_PhiCMSep MMMWrong_PhiCMSep 180 90 270
+#
+#
+# SABRE Rings vs Wedges (16 rings by 40 wedges - map all rings to same "local ring" but keep wedges separate)
+SABRE TH2D hSABRE_RingsVSWedges SABRE_RingsVSWedges 40 -0.5 39.5 16 -0.5 15.5
+#
+# PIXEL HISTOGRAMS BELOW #
+#
+#SABRE0 pixel histos
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w40_ESummary SABRE0_pixel_r112w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w41_ESummary SABRE0_pixel_r112w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w42_ESummary SABRE0_pixel_r112w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w43_ESummary SABRE0_pixel_r112w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w44_ESummary SABRE0_pixel_r112w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w45_ESummary SABRE0_pixel_r112w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w46_ESummary SABRE0_pixel_r112w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r112w47_ESummary SABRE0_pixel_r112w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w40_ESummary SABRE0_pixel_r113w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w41_ESummary SABRE0_pixel_r113w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w42_ESummary SABRE0_pixel_r113w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w43_ESummary SABRE0_pixel_r113w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w44_ESummary SABRE0_pixel_r113w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w45_ESummary SABRE0_pixel_r113w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w46_ESummary SABRE0_pixel_r113w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r113w47_ESummary SABRE0_pixel_r113w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w40_ESummary SABRE0_pixel_r114w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w41_ESummary SABRE0_pixel_r114w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w42_ESummary SABRE0_pixel_r114w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w43_ESummary SABRE0_pixel_r114w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w44_ESummary SABRE0_pixel_r114w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w45_ESummary SABRE0_pixel_r114w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w46_ESummary SABRE0_pixel_r114w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r114w47_ESummary SABRE0_pixel_r114w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w40_ESummary SABRE0_pixel_r115w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w41_ESummary SABRE0_pixel_r115w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w42_ESummary SABRE0_pixel_r115w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w43_ESummary SABRE0_pixel_r115w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w44_ESummary SABRE0_pixel_r115w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w45_ESummary SABRE0_pixel_r115w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w46_ESummary SABRE0_pixel_r115w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r115w47_ESummary SABRE0_pixel_r115w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w40_ESummary SABRE0_pixel_r116w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w41_ESummary SABRE0_pixel_r116w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w42_ESummary SABRE0_pixel_r116w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w43_ESummary SABRE0_pixel_r116w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w44_ESummary SABRE0_pixel_r116w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w45_ESummary SABRE0_pixel_r116w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w46_ESummary SABRE0_pixel_r116w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r116w47_ESummary SABRE0_pixel_r116w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w40_ESummary SABRE0_pixel_r117w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w41_ESummary SABRE0_pixel_r117w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w42_ESummary SABRE0_pixel_r117w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w43_ESummary SABRE0_pixel_r117w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w44_ESummary SABRE0_pixel_r117w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w45_ESummary SABRE0_pixel_r117w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w46_ESummary SABRE0_pixel_r117w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r117w47_ESummary SABRE0_pixel_r117w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w40_ESummary SABRE0_pixel_r118w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w41_ESummary SABRE0_pixel_r118w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w42_ESummary SABRE0_pixel_r118w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w43_ESummary SABRE0_pixel_r118w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w44_ESummary SABRE0_pixel_r118w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w45_ESummary SABRE0_pixel_r118w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w46_ESummary SABRE0_pixel_r118w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r118w47_ESummary SABRE0_pixel_r118w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w40_ESummary SABRE0_pixel_r119w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w41_ESummary SABRE0_pixel_r119w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w42_ESummary SABRE0_pixel_r119w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w43_ESummary SABRE0_pixel_r119w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w44_ESummary SABRE0_pixel_r119w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w45_ESummary SABRE0_pixel_r119w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w46_ESummary SABRE0_pixel_r119w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r119w47_ESummary SABRE0_pixel_r119w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w40_ESummary SABRE0_pixel_r120w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w41_ESummary SABRE0_pixel_r120w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w42_ESummary SABRE0_pixel_r120w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w43_ESummary SABRE0_pixel_r120w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w44_ESummary SABRE0_pixel_r120w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w45_ESummary SABRE0_pixel_r120w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w46_ESummary SABRE0_pixel_r120w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r120w47_ESummary SABRE0_pixel_r120w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w40_ESummary SABRE0_pixel_r121w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w41_ESummary SABRE0_pixel_r121w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w42_ESummary SABRE0_pixel_r121w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w43_ESummary SABRE0_pixel_r121w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w44_ESummary SABRE0_pixel_r121w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w45_ESummary SABRE0_pixel_r121w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w46_ESummary SABRE0_pixel_r121w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r121w47_ESummary SABRE0_pixel_r121w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w40_ESummary SABRE0_pixel_r122w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w41_ESummary SABRE0_pixel_r122w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w42_ESummary SABRE0_pixel_r122w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w43_ESummary SABRE0_pixel_r122w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w44_ESummary SABRE0_pixel_r122w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w45_ESummary SABRE0_pixel_r122w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w46_ESummary SABRE0_pixel_r122w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r122w47_ESummary SABRE0_pixel_r122w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w40_ESummary SABRE0_pixel_r123w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w41_ESummary SABRE0_pixel_r123w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w42_ESummary SABRE0_pixel_r123w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w43_ESummary SABRE0_pixel_r123w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w44_ESummary SABRE0_pixel_r123w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w45_ESummary SABRE0_pixel_r123w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w46_ESummary SABRE0_pixel_r123w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r123w47_ESummary SABRE0_pixel_r123w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w40_ESummary SABRE0_pixel_r124w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w41_ESummary SABRE0_pixel_r124w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w42_ESummary SABRE0_pixel_r124w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w43_ESummary SABRE0_pixel_r124w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w44_ESummary SABRE0_pixel_r124w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w45_ESummary SABRE0_pixel_r124w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w46_ESummary SABRE0_pixel_r124w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r124w47_ESummary SABRE0_pixel_r124w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w40_ESummary SABRE0_pixel_r125w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w41_ESummary SABRE0_pixel_r125w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w42_ESummary SABRE0_pixel_r125w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w43_ESummary SABRE0_pixel_r125w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w44_ESummary SABRE0_pixel_r125w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w45_ESummary SABRE0_pixel_r125w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w46_ESummary SABRE0_pixel_r125w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r125w47_ESummary SABRE0_pixel_r125w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w40_ESummary SABRE0_pixel_r126w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w41_ESummary SABRE0_pixel_r126w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w42_ESummary SABRE0_pixel_r126w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w43_ESummary SABRE0_pixel_r126w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w44_ESummary SABRE0_pixel_r126w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w45_ESummary SABRE0_pixel_r126w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w46_ESummary SABRE0_pixel_r126w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r126w47_ESummary SABRE0_pixel_r126w47_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w40_ESummary SABRE0_pixel_r127w40_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w41_ESummary SABRE0_pixel_r127w41_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w42_ESummary SABRE0_pixel_r127w42_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w43_ESummary SABRE0_pixel_r127w43_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w44_ESummary SABRE0_pixel_r127w44_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w45_ESummary SABRE0_pixel_r127w45_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w46_ESummary SABRE0_pixel_r127w46_ESummary 2000 0 20
+SABRE/SABRE0/Pixels TH1D hSABRE0_pixel_r127w47_ESummary SABRE0_pixel_r127w47_ESummary 2000 0 20
+#
+#SABRE1 pixel histos
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w32_ESummary SABRE1_pixel_r96w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w33_ESummary SABRE1_pixel_r96w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w34_ESummary SABRE1_pixel_r96w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w35_ESummary SABRE1_pixel_r96w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w36_ESummary SABRE1_pixel_r96w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w37_ESummary SABRE1_pixel_r96w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w38_ESummary SABRE1_pixel_r96w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r96w39_ESummary SABRE1_pixel_r96w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w32_ESummary SABRE1_pixel_r97w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w33_ESummary SABRE1_pixel_r97w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w34_ESummary SABRE1_pixel_r97w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w35_ESummary SABRE1_pixel_r97w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w36_ESummary SABRE1_pixel_r97w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w37_ESummary SABRE1_pixel_r97w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w38_ESummary SABRE1_pixel_r97w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r97w39_ESummary SABRE1_pixel_r97w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w32_ESummary SABRE1_pixel_r98w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w33_ESummary SABRE1_pixel_r98w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w34_ESummary SABRE1_pixel_r98w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w35_ESummary SABRE1_pixel_r98w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w36_ESummary SABRE1_pixel_r98w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w37_ESummary SABRE1_pixel_r98w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w38_ESummary SABRE1_pixel_r98w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r98w39_ESummary SABRE1_pixel_r98w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w32_ESummary SABRE1_pixel_r99w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w33_ESummary SABRE1_pixel_r99w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w34_ESummary SABRE1_pixel_r99w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w35_ESummary SABRE1_pixel_r99w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w36_ESummary SABRE1_pixel_r99w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w37_ESummary SABRE1_pixel_r99w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w38_ESummary SABRE1_pixel_r99w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r99w39_ESummary SABRE1_pixel_r99w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w32_ESummary SABRE1_pixel_r100w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w33_ESummary SABRE1_pixel_r100w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w34_ESummary SABRE1_pixel_r100w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w35_ESummary SABRE1_pixel_r100w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w36_ESummary SABRE1_pixel_r100w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w37_ESummary SABRE1_pixel_r100w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w38_ESummary SABRE1_pixel_r100w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r100w39_ESummary SABRE1_pixel_r100w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w32_ESummary SABRE1_pixel_r101w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w33_ESummary SABRE1_pixel_r101w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w34_ESummary SABRE1_pixel_r101w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w35_ESummary SABRE1_pixel_r101w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w36_ESummary SABRE1_pixel_r101w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w37_ESummary SABRE1_pixel_r101w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w38_ESummary SABRE1_pixel_r101w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r101w39_ESummary SABRE1_pixel_r101w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w32_ESummary SABRE1_pixel_r102w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w33_ESummary SABRE1_pixel_r102w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w34_ESummary SABRE1_pixel_r102w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w35_ESummary SABRE1_pixel_r102w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w36_ESummary SABRE1_pixel_r102w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w37_ESummary SABRE1_pixel_r102w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w38_ESummary SABRE1_pixel_r102w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r102w39_ESummary SABRE1_pixel_r102w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w32_ESummary SABRE1_pixel_r103w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w33_ESummary SABRE1_pixel_r103w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w34_ESummary SABRE1_pixel_r103w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w35_ESummary SABRE1_pixel_r103w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w36_ESummary SABRE1_pixel_r103w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w37_ESummary SABRE1_pixel_r103w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w38_ESummary SABRE1_pixel_r103w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r103w39_ESummary SABRE1_pixel_r103w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w32_ESummary SABRE1_pixel_r104w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w33_ESummary SABRE1_pixel_r104w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w34_ESummary SABRE1_pixel_r104w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w35_ESummary SABRE1_pixel_r104w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w36_ESummary SABRE1_pixel_r104w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w37_ESummary SABRE1_pixel_r104w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w38_ESummary SABRE1_pixel_r104w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r104w39_ESummary SABRE1_pixel_r104w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w32_ESummary SABRE1_pixel_r105w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w33_ESummary SABRE1_pixel_r105w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w34_ESummary SABRE1_pixel_r105w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w35_ESummary SABRE1_pixel_r105w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w36_ESummary SABRE1_pixel_r105w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w37_ESummary SABRE1_pixel_r105w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w38_ESummary SABRE1_pixel_r105w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r105w39_ESummary SABRE1_pixel_r105w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w32_ESummary SABRE1_pixel_r106w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w33_ESummary SABRE1_pixel_r106w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w34_ESummary SABRE1_pixel_r106w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w35_ESummary SABRE1_pixel_r106w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w36_ESummary SABRE1_pixel_r106w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w37_ESummary SABRE1_pixel_r106w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w38_ESummary SABRE1_pixel_r106w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r106w39_ESummary SABRE1_pixel_r106w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w32_ESummary SABRE1_pixel_r107w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w33_ESummary SABRE1_pixel_r107w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w34_ESummary SABRE1_pixel_r107w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w35_ESummary SABRE1_pixel_r107w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w36_ESummary SABRE1_pixel_r107w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w37_ESummary SABRE1_pixel_r107w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w38_ESummary SABRE1_pixel_r107w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r107w39_ESummary SABRE1_pixel_r107w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w32_ESummary SABRE1_pixel_r108w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w33_ESummary SABRE1_pixel_r108w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w34_ESummary SABRE1_pixel_r108w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w35_ESummary SABRE1_pixel_r108w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w36_ESummary SABRE1_pixel_r108w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w37_ESummary SABRE1_pixel_r108w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w38_ESummary SABRE1_pixel_r108w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r108w39_ESummary SABRE1_pixel_r108w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w32_ESummary SABRE1_pixel_r109w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w33_ESummary SABRE1_pixel_r109w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w34_ESummary SABRE1_pixel_r109w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w35_ESummary SABRE1_pixel_r109w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w36_ESummary SABRE1_pixel_r109w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w37_ESummary SABRE1_pixel_r109w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w38_ESummary SABRE1_pixel_r109w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r109w39_ESummary SABRE1_pixel_r109w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w32_ESummary SABRE1_pixel_r110w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w33_ESummary SABRE1_pixel_r110w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w34_ESummary SABRE1_pixel_r110w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w35_ESummary SABRE1_pixel_r110w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w36_ESummary SABRE1_pixel_r110w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w37_ESummary SABRE1_pixel_r110w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w38_ESummary SABRE1_pixel_r110w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r110w39_ESummary SABRE1_pixel_r110w39_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w32_ESummary SABRE1_pixel_r111w32_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w33_ESummary SABRE1_pixel_r111w33_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w34_ESummary SABRE1_pixel_r111w34_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w35_ESummary SABRE1_pixel_r111w35_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w36_ESummary SABRE1_pixel_r111w36_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w37_ESummary SABRE1_pixel_r111w37_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w38_ESummary SABRE1_pixel_r111w38_ESummary 2000 0 20
+SABRE/SABRE1/Pixels TH1D hSABRE1_pixel_r111w39_ESummary SABRE1_pixel_r111w39_ESummary 2000 0 20
+#
+#SABRE2 pixel histos
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w16_ESummary SABRE2_pixel_r80w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w17_ESummary SABRE2_pixel_r80w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w18_ESummary SABRE2_pixel_r80w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w19_ESummary SABRE2_pixel_r80w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w20_ESummary SABRE2_pixel_r80w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w21_ESummary SABRE2_pixel_r80w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w22_ESummary SABRE2_pixel_r80w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r80w23_ESummary SABRE2_pixel_r80w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w16_ESummary SABRE2_pixel_r81w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w17_ESummary SABRE2_pixel_r81w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w18_ESummary SABRE2_pixel_r81w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w19_ESummary SABRE2_pixel_r81w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w20_ESummary SABRE2_pixel_r81w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w21_ESummary SABRE2_pixel_r81w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w22_ESummary SABRE2_pixel_r81w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r81w23_ESummary SABRE2_pixel_r81w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w16_ESummary SABRE2_pixel_r82w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w17_ESummary SABRE2_pixel_r82w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w18_ESummary SABRE2_pixel_r82w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w19_ESummary SABRE2_pixel_r82w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w20_ESummary SABRE2_pixel_r82w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w21_ESummary SABRE2_pixel_r82w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w22_ESummary SABRE2_pixel_r82w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r82w23_ESummary SABRE2_pixel_r82w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w16_ESummary SABRE2_pixel_r83w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w17_ESummary SABRE2_pixel_r83w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w18_ESummary SABRE2_pixel_r83w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w19_ESummary SABRE2_pixel_r83w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w20_ESummary SABRE2_pixel_r83w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w21_ESummary SABRE2_pixel_r83w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w22_ESummary SABRE2_pixel_r83w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r83w23_ESummary SABRE2_pixel_r83w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w16_ESummary SABRE2_pixel_r84w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w17_ESummary SABRE2_pixel_r84w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w18_ESummary SABRE2_pixel_r84w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w19_ESummary SABRE2_pixel_r84w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w20_ESummary SABRE2_pixel_r84w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w21_ESummary SABRE2_pixel_r84w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w22_ESummary SABRE2_pixel_r84w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r84w23_ESummary SABRE2_pixel_r84w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w16_ESummary SABRE2_pixel_r85w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w17_ESummary SABRE2_pixel_r85w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w18_ESummary SABRE2_pixel_r85w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w19_ESummary SABRE2_pixel_r85w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w20_ESummary SABRE2_pixel_r85w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w21_ESummary SABRE2_pixel_r85w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w22_ESummary SABRE2_pixel_r85w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r85w23_ESummary SABRE2_pixel_r85w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w16_ESummary SABRE2_pixel_r86w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w17_ESummary SABRE2_pixel_r86w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w18_ESummary SABRE2_pixel_r86w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w19_ESummary SABRE2_pixel_r86w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w20_ESummary SABRE2_pixel_r86w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w21_ESummary SABRE2_pixel_r86w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w22_ESummary SABRE2_pixel_r86w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r86w23_ESummary SABRE2_pixel_r86w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w16_ESummary SABRE2_pixel_r87w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w17_ESummary SABRE2_pixel_r87w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w18_ESummary SABRE2_pixel_r87w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w19_ESummary SABRE2_pixel_r87w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w20_ESummary SABRE2_pixel_r87w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w21_ESummary SABRE2_pixel_r87w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w22_ESummary SABRE2_pixel_r87w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r87w23_ESummary SABRE2_pixel_r87w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w16_ESummary SABRE2_pixel_r88w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w17_ESummary SABRE2_pixel_r88w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w18_ESummary SABRE2_pixel_r88w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w19_ESummary SABRE2_pixel_r88w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w20_ESummary SABRE2_pixel_r88w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w21_ESummary SABRE2_pixel_r88w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w22_ESummary SABRE2_pixel_r88w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r88w23_ESummary SABRE2_pixel_r88w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w16_ESummary SABRE2_pixel_r89w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w17_ESummary SABRE2_pixel_r89w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w18_ESummary SABRE2_pixel_r89w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w19_ESummary SABRE2_pixel_r89w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w20_ESummary SABRE2_pixel_r89w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w21_ESummary SABRE2_pixel_r89w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w22_ESummary SABRE2_pixel_r89w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r89w23_ESummary SABRE2_pixel_r89w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w16_ESummary SABRE2_pixel_r90w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w17_ESummary SABRE2_pixel_r90w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w18_ESummary SABRE2_pixel_r90w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w19_ESummary SABRE2_pixel_r90w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w20_ESummary SABRE2_pixel_r90w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w21_ESummary SABRE2_pixel_r90w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w22_ESummary SABRE2_pixel_r90w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r90w23_ESummary SABRE2_pixel_r90w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w16_ESummary SABRE2_pixel_r91w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w17_ESummary SABRE2_pixel_r91w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w18_ESummary SABRE2_pixel_r91w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w19_ESummary SABRE2_pixel_r91w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w20_ESummary SABRE2_pixel_r91w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w21_ESummary SABRE2_pixel_r91w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w22_ESummary SABRE2_pixel_r91w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r91w23_ESummary SABRE2_pixel_r91w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w16_ESummary SABRE2_pixel_r92w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w17_ESummary SABRE2_pixel_r92w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w18_ESummary SABRE2_pixel_r92w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w19_ESummary SABRE2_pixel_r92w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w20_ESummary SABRE2_pixel_r92w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w21_ESummary SABRE2_pixel_r92w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w22_ESummary SABRE2_pixel_r92w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r92w23_ESummary SABRE2_pixel_r92w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w16_ESummary SABRE2_pixel_r93w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w17_ESummary SABRE2_pixel_r93w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w18_ESummary SABRE2_pixel_r93w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w19_ESummary SABRE2_pixel_r93w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w20_ESummary SABRE2_pixel_r93w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w21_ESummary SABRE2_pixel_r93w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w22_ESummary SABRE2_pixel_r93w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r93w23_ESummary SABRE2_pixel_r93w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w16_ESummary SABRE2_pixel_r94w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w17_ESummary SABRE2_pixel_r94w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w18_ESummary SABRE2_pixel_r94w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w19_ESummary SABRE2_pixel_r94w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w20_ESummary SABRE2_pixel_r94w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w21_ESummary SABRE2_pixel_r94w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w22_ESummary SABRE2_pixel_r94w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r94w23_ESummary SABRE2_pixel_r94w23_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w16_ESummary SABRE2_pixel_r95w16_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w17_ESummary SABRE2_pixel_r95w17_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w18_ESummary SABRE2_pixel_r95w18_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w19_ESummary SABRE2_pixel_r95w19_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w20_ESummary SABRE2_pixel_r95w20_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w21_ESummary SABRE2_pixel_r95w21_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w22_ESummary SABRE2_pixel_r95w22_ESummary 2000 0 20
+SABRE/SABRE2/Pixels TH1D hSABRE2_pixel_r95w23_ESummary SABRE2_pixel_r95w23_ESummary 2000 0 20
+#
+#SABRE3 pixel histos
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w24_ESummary SABRE3_pixel_r64w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w25_ESummary SABRE3_pixel_r64w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w26_ESummary SABRE3_pixel_r64w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w27_ESummary SABRE3_pixel_r64w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w28_ESummary SABRE3_pixel_r64w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w29_ESummary SABRE3_pixel_r64w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w30_ESummary SABRE3_pixel_r64w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r64w31_ESummary SABRE3_pixel_r64w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w24_ESummary SABRE3_pixel_r65w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w25_ESummary SABRE3_pixel_r65w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w26_ESummary SABRE3_pixel_r65w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w27_ESummary SABRE3_pixel_r65w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w28_ESummary SABRE3_pixel_r65w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w29_ESummary SABRE3_pixel_r65w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w30_ESummary SABRE3_pixel_r65w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r65w31_ESummary SABRE3_pixel_r65w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w24_ESummary SABRE3_pixel_r66w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w25_ESummary SABRE3_pixel_r66w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w26_ESummary SABRE3_pixel_r66w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w27_ESummary SABRE3_pixel_r66w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w28_ESummary SABRE3_pixel_r66w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w29_ESummary SABRE3_pixel_r66w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w30_ESummary SABRE3_pixel_r66w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r66w31_ESummary SABRE3_pixel_r66w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w24_ESummary SABRE3_pixel_r67w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w25_ESummary SABRE3_pixel_r67w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w26_ESummary SABRE3_pixel_r67w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w27_ESummary SABRE3_pixel_r67w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w28_ESummary SABRE3_pixel_r67w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w29_ESummary SABRE3_pixel_r67w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w30_ESummary SABRE3_pixel_r67w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r67w31_ESummary SABRE3_pixel_r67w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w24_ESummary SABRE3_pixel_r68w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w25_ESummary SABRE3_pixel_r68w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w26_ESummary SABRE3_pixel_r68w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w27_ESummary SABRE3_pixel_r68w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w28_ESummary SABRE3_pixel_r68w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w29_ESummary SABRE3_pixel_r68w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w30_ESummary SABRE3_pixel_r68w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r68w31_ESummary SABRE3_pixel_r68w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w24_ESummary SABRE3_pixel_r69w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w25_ESummary SABRE3_pixel_r69w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w26_ESummary SABRE3_pixel_r69w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w27_ESummary SABRE3_pixel_r69w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w28_ESummary SABRE3_pixel_r69w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w29_ESummary SABRE3_pixel_r69w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w30_ESummary SABRE3_pixel_r69w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r69w31_ESummary SABRE3_pixel_r69w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w24_ESummary SABRE3_pixel_r70w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w25_ESummary SABRE3_pixel_r70w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w26_ESummary SABRE3_pixel_r70w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w27_ESummary SABRE3_pixel_r70w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w28_ESummary SABRE3_pixel_r70w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w29_ESummary SABRE3_pixel_r70w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w30_ESummary SABRE3_pixel_r70w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r70w31_ESummary SABRE3_pixel_r70w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w24_ESummary SABRE3_pixel_r71w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w25_ESummary SABRE3_pixel_r71w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w26_ESummary SABRE3_pixel_r71w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w27_ESummary SABRE3_pixel_r71w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w28_ESummary SABRE3_pixel_r71w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w29_ESummary SABRE3_pixel_r71w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w30_ESummary SABRE3_pixel_r71w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r71w31_ESummary SABRE3_pixel_r71w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w24_ESummary SABRE3_pixel_r72w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w25_ESummary SABRE3_pixel_r72w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w26_ESummary SABRE3_pixel_r72w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w27_ESummary SABRE3_pixel_r72w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w28_ESummary SABRE3_pixel_r72w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w29_ESummary SABRE3_pixel_r72w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w30_ESummary SABRE3_pixel_r72w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r72w31_ESummary SABRE3_pixel_r72w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w24_ESummary SABRE3_pixel_r73w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w25_ESummary SABRE3_pixel_r73w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w26_ESummary SABRE3_pixel_r73w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w27_ESummary SABRE3_pixel_r73w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w28_ESummary SABRE3_pixel_r73w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w29_ESummary SABRE3_pixel_r73w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w30_ESummary SABRE3_pixel_r73w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r73w31_ESummary SABRE3_pixel_r73w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w24_ESummary SABRE3_pixel_r74w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w25_ESummary SABRE3_pixel_r74w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w26_ESummary SABRE3_pixel_r74w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w27_ESummary SABRE3_pixel_r74w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w28_ESummary SABRE3_pixel_r74w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w29_ESummary SABRE3_pixel_r74w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w30_ESummary SABRE3_pixel_r74w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r74w31_ESummary SABRE3_pixel_r74w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w24_ESummary SABRE3_pixel_r75w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w25_ESummary SABRE3_pixel_r75w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w26_ESummary SABRE3_pixel_r75w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w27_ESummary SABRE3_pixel_r75w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w28_ESummary SABRE3_pixel_r75w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w29_ESummary SABRE3_pixel_r75w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w30_ESummary SABRE3_pixel_r75w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r75w31_ESummary SABRE3_pixel_r75w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w24_ESummary SABRE3_pixel_r76w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w25_ESummary SABRE3_pixel_r76w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w26_ESummary SABRE3_pixel_r76w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w27_ESummary SABRE3_pixel_r76w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w28_ESummary SABRE3_pixel_r76w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w29_ESummary SABRE3_pixel_r76w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w30_ESummary SABRE3_pixel_r76w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r76w31_ESummary SABRE3_pixel_r76w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w24_ESummary SABRE3_pixel_r77w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w25_ESummary SABRE3_pixel_r77w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w26_ESummary SABRE3_pixel_r77w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w27_ESummary SABRE3_pixel_r77w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w28_ESummary SABRE3_pixel_r77w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w29_ESummary SABRE3_pixel_r77w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w30_ESummary SABRE3_pixel_r77w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r77w31_ESummary SABRE3_pixel_r77w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w24_ESummary SABRE3_pixel_r78w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w25_ESummary SABRE3_pixel_r78w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w26_ESummary SABRE3_pixel_r78w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w27_ESummary SABRE3_pixel_r78w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w28_ESummary SABRE3_pixel_r78w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w29_ESummary SABRE3_pixel_r78w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w30_ESummary SABRE3_pixel_r78w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r78w31_ESummary SABRE3_pixel_r78w31_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w24_ESummary SABRE3_pixel_r79w24_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w25_ESummary SABRE3_pixel_r79w25_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w26_ESummary SABRE3_pixel_r79w26_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w27_ESummary SABRE3_pixel_r79w27_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w28_ESummary SABRE3_pixel_r79w28_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w29_ESummary SABRE3_pixel_r79w29_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w30_ESummary SABRE3_pixel_r79w30_ESummary 2000 0 20
+SABRE/SABRE3/Pixels TH1D hSABRE3_pixel_r79w31_ESummary SABRE3_pixel_r79w31_ESummary 2000 0 20
+#
+#SABRE4 pixel histos
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w0_ESummary SABRE4_pixel_r48w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w1_ESummary SABRE4_pixel_r48w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w2_ESummary SABRE4_pixel_r48w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w3_ESummary SABRE4_pixel_r48w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w4_ESummary SABRE4_pixel_r48w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w5_ESummary SABRE4_pixel_r48w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w6_ESummary SABRE4_pixel_r48w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r48w7_ESummary SABRE4_pixel_r48w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w0_ESummary SABRE4_pixel_r49w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w1_ESummary SABRE4_pixel_r49w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w2_ESummary SABRE4_pixel_r49w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w3_ESummary SABRE4_pixel_r49w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w4_ESummary SABRE4_pixel_r49w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w5_ESummary SABRE4_pixel_r49w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w6_ESummary SABRE4_pixel_r49w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r49w7_ESummary SABRE4_pixel_r49w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w0_ESummary SABRE4_pixel_r50w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w1_ESummary SABRE4_pixel_r50w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w2_ESummary SABRE4_pixel_r50w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w3_ESummary SABRE4_pixel_r50w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w4_ESummary SABRE4_pixel_r50w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w5_ESummary SABRE4_pixel_r50w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w6_ESummary SABRE4_pixel_r50w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r50w7_ESummary SABRE4_pixel_r50w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w0_ESummary SABRE4_pixel_r51w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w1_ESummary SABRE4_pixel_r51w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w2_ESummary SABRE4_pixel_r51w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w3_ESummary SABRE4_pixel_r51w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w4_ESummary SABRE4_pixel_r51w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w5_ESummary SABRE4_pixel_r51w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w6_ESummary SABRE4_pixel_r51w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r51w7_ESummary SABRE4_pixel_r51w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w0_ESummary SABRE4_pixel_r52w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w1_ESummary SABRE4_pixel_r52w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w2_ESummary SABRE4_pixel_r52w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w3_ESummary SABRE4_pixel_r52w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w4_ESummary SABRE4_pixel_r52w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w5_ESummary SABRE4_pixel_r52w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w6_ESummary SABRE4_pixel_r52w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r52w7_ESummary SABRE4_pixel_r52w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w0_ESummary SABRE4_pixel_r53w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w1_ESummary SABRE4_pixel_r53w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w2_ESummary SABRE4_pixel_r53w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w3_ESummary SABRE4_pixel_r53w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w4_ESummary SABRE4_pixel_r53w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w5_ESummary SABRE4_pixel_r53w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w6_ESummary SABRE4_pixel_r53w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r53w7_ESummary SABRE4_pixel_r53w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w0_ESummary SABRE4_pixel_r54w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w1_ESummary SABRE4_pixel_r54w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w2_ESummary SABRE4_pixel_r54w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w3_ESummary SABRE4_pixel_r54w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w4_ESummary SABRE4_pixel_r54w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w5_ESummary SABRE4_pixel_r54w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w6_ESummary SABRE4_pixel_r54w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r54w7_ESummary SABRE4_pixel_r54w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w0_ESummary SABRE4_pixel_r55w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w1_ESummary SABRE4_pixel_r55w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w2_ESummary SABRE4_pixel_r55w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w3_ESummary SABRE4_pixel_r55w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w4_ESummary SABRE4_pixel_r55w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w5_ESummary SABRE4_pixel_r55w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w6_ESummary SABRE4_pixel_r55w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r55w7_ESummary SABRE4_pixel_r55w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w0_ESummary SABRE4_pixel_r56w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w1_ESummary SABRE4_pixel_r56w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w2_ESummary SABRE4_pixel_r56w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w3_ESummary SABRE4_pixel_r56w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w4_ESummary SABRE4_pixel_r56w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w5_ESummary SABRE4_pixel_r56w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w6_ESummary SABRE4_pixel_r56w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r56w7_ESummary SABRE4_pixel_r56w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w0_ESummary SABRE4_pixel_r57w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w1_ESummary SABRE4_pixel_r57w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w2_ESummary SABRE4_pixel_r57w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w3_ESummary SABRE4_pixel_r57w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w4_ESummary SABRE4_pixel_r57w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w5_ESummary SABRE4_pixel_r57w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w6_ESummary SABRE4_pixel_r57w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r57w7_ESummary SABRE4_pixel_r57w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w0_ESummary SABRE4_pixel_r58w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w1_ESummary SABRE4_pixel_r58w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w2_ESummary SABRE4_pixel_r58w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w3_ESummary SABRE4_pixel_r58w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w4_ESummary SABRE4_pixel_r58w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w5_ESummary SABRE4_pixel_r58w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w6_ESummary SABRE4_pixel_r58w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r58w7_ESummary SABRE4_pixel_r58w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w0_ESummary SABRE4_pixel_r59w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w1_ESummary SABRE4_pixel_r59w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w2_ESummary SABRE4_pixel_r59w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w3_ESummary SABRE4_pixel_r59w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w4_ESummary SABRE4_pixel_r59w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w5_ESummary SABRE4_pixel_r59w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w6_ESummary SABRE4_pixel_r59w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r59w7_ESummary SABRE4_pixel_r59w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w0_ESummary SABRE4_pixel_r60w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w1_ESummary SABRE4_pixel_r60w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w2_ESummary SABRE4_pixel_r60w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w3_ESummary SABRE4_pixel_r60w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w4_ESummary SABRE4_pixel_r60w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w5_ESummary SABRE4_pixel_r60w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w6_ESummary SABRE4_pixel_r60w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r60w7_ESummary SABRE4_pixel_r60w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w0_ESummary SABRE4_pixel_r61w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w1_ESummary SABRE4_pixel_r61w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w2_ESummary SABRE4_pixel_r61w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w3_ESummary SABRE4_pixel_r61w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w4_ESummary SABRE4_pixel_r61w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w5_ESummary SABRE4_pixel_r61w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w6_ESummary SABRE4_pixel_r61w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r61w7_ESummary SABRE4_pixel_r61w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w0_ESummary SABRE4_pixel_r62w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w1_ESummary SABRE4_pixel_r62w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w2_ESummary SABRE4_pixel_r62w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w3_ESummary SABRE4_pixel_r62w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w4_ESummary SABRE4_pixel_r62w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w5_ESummary SABRE4_pixel_r62w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w6_ESummary SABRE4_pixel_r62w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r62w7_ESummary SABRE4_pixel_r62w7_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w0_ESummary SABRE4_pixel_r63w0_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w1_ESummary SABRE4_pixel_r63w1_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w2_ESummary SABRE4_pixel_r63w2_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w3_ESummary SABRE4_pixel_r63w3_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w4_ESummary SABRE4_pixel_r63w4_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w5_ESummary SABRE4_pixel_r63w5_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w6_ESummary SABRE4_pixel_r63w6_ESummary 2000 0 20
+SABRE/SABRE4/Pixels TH1D hSABRE4_pixel_r63w7_ESummary SABRE4_pixel_r63w7_ESummary 2000 0 20
 #

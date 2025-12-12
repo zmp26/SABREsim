@@ -80,12 +80,12 @@ public:
 	void addHisto3D(const TString& name, const TString& title, Int_t nbinsX, Double_t xmin, Double_t xmax, Int_t nbinsY, Double_t ymin, Double_t ymax, Int_t nbinsZ, Double_t zmin, Double_t zmax, const TString& type, const TString& directory);
 	void addHisto3D(const HistoConfig3D& config);
 
-	TH1* getHisto1D(const TString& name) const;
-	TH2* getHisto2D(const TString& name) const;
-	TH3* getHisto3D(const TString& name) const;
-	TProfile* getProfile1D(const TString& name) const;
-	TProfile2D* getProfile2D(const TString& name) const;
-	TH2Poly* getHisto2DPoly(const TString& name) const;
+	TH1* getHisto1D(const TString& name, bool verbose=true) const;
+	TH2* getHisto2D(const TString& name, bool verbose=true) const;
+	TH3* getHisto3D(const TString& name, bool verbose=true) const;
+	TProfile* getProfile1D(const TString& name, bool verbose=true) const;
+	TProfile2D* getProfile2D(const TString& name, bool verbose=true) const;
+	TH2Poly* getHisto2DPoly(const TString& name, bool verbose=true) const;
 
 	void WriteAll(bool writeFileToDiskAutomatically=true);
 	void Write(const TString& name);

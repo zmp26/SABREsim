@@ -73,13 +73,16 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		ss << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
 
 		if(nevents_%50000==0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n"); //std::cout << "Processed " << nevents_ << " events..." << std::endl;
+		
 
 		RootWriter->SetKinematics(0,e1,theta1,phi1);
 		RootWriter->SetKinematics(1,e2,theta2,phi2);
 		RootWriter->SetKinematics(2,e3,theta3,phi3);
 		RootWriter->SetKinematics(3,e4,theta4,phi4);
 
+
 		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
+
 
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 			/*///////////////////////////////////////////////
@@ -93,7 +96,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			//original kinematic trajectory
 			Vec3 originalTrajectory1;
 			originalTrajectory1.SetVectorSpherical(1, theta1*DEGRAD, phi1*DEGRAD);
-
+			
 			//define new basis vectors
 			Vec3 etheta1, ephi1;
 			etheta1.SetVectorCartesian(std::cos(theta1*DEGRAD)*std::cos(phi1*DEGRAD), std::cos(theta1*DEGRAD)*std::sin(phi1*DEGRAD), -std::sin(theta1*DEGRAD));

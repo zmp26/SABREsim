@@ -17,6 +17,8 @@
 #include "FixedPointProfile.h"
 #include "GaussianProfileX_FixedPointY.h"
 #include "GaussianProfileY_FixedPointX.h"
+#include "plot2mc.h"
+#include "plot3mc.h"
 
 // SABREsim::SABREsim(int kinX,
 // 				   const std::string& kinInputFilename,

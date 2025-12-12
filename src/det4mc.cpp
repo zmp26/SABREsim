@@ -73,7 +73,6 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
 
-
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 			/*///////////////////////////////////////////////
 			//  check if particle 1 (ejectile) is detected //

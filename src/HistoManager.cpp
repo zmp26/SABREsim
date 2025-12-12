@@ -21,6 +21,7 @@
 #include "TDirectory.h"
 #include "TObjString.h"
 #include "TObject.h"
+#include "ConsoleColorizer.h"
 
 #include <fstream>
 #include <sstream>
@@ -74,6 +75,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 		return false;
 	}
 
+	int histocount = 0;
 	std::string line;
 	while(getline(configFile,line)){
 		if(line.empty() || line[0] == '#'){
@@ -94,15 +96,17 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			config.type = type;
 			if(iss >> config.name >> config.title >> config.nbinsx >> config.xmin >> config.xmax){
 				addHisto1D(config);
+				histocount += 1;
 			} else {
 				std::cerr << "Error: Invalid 1D Histogram configuration: " << line << std::endl;
 			}
-		} else if(type == "TH2F" || type == "TH2D" || type == "TH1I" || type == "TProfile2D"){
+		} else if(type == "TH2F" || type == "TH2D" || type == "TH2I" || type == "TProfile2D"){
 			HistoConfig2D config;
 			config.directory = directory;
 			config.type = type;
 			if(iss >> config.name >> config.title >> config.nbinsx >> config.xmin >> config.xmax >> config.nbinsy >> config.ymin >> config.ymax){
 				addHisto2D(config);
+				histocount += 1;
 			} else {
 				std::cerr << "Error: Invalid 2D Histogram configuration: " << line << std::endl;
 			}
@@ -112,6 +116,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			config.type = type;
 			if(iss >> config.name >> config.title >> config.nbinsx >> config.xmin >> config.xmax >> config.nbinsy >> config.ymin >> config.ymax >> config.nbinsz >> config.zmin >> config.zmax){
 				addHisto3D(config);
+				histocount += 1;
 			} else {
 				std::cerr << "Error: Invalid 3D Histogram configuration: " << line << std::endl;
 			}
@@ -121,6 +126,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			config.type = type;
 			if(iss >> config.name >> config.title) {
 				addHisto2DPoly(config);
+				histocount += 1;
 				//can parse polygons here in the future
 			} else {
 				std::cerr << "Error: Invalid TH2Poly Histogram configuration: " << line << std::endl;
@@ -129,6 +135,9 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 			std::cerr << "Error: Unknown histogram type: " << type << " in line: " << line << std::endl;
 		}
 	}
+
+	TString temp = Form("Read %d histograms in from %s!\n\n", histocount, configFilePath.Data());
+	ConsoleColorizer::PrintGreen(temp.Data());
 
 	configFile.close();
 	return true;
@@ -147,7 +156,7 @@ void HistoManager::addHisto1D(const TString& name, const TString& title, Int_t n
 }
 
 void HistoManager::addHisto1D(const HistoConfig1D& config){
-	if(getHisto1D(config.name)){
+	if(getHisto1D(config.name,false)){
 		std::cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
@@ -181,7 +190,7 @@ void HistoManager::addHisto2D(const TString& name, const TString& title, Int_t n
 }
 
 void HistoManager::addHisto2D(const HistoConfig2D& config){
-	if(getHisto2D(config.name)){
+	if(getHisto2D(config.name,false)){
 		std::cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
@@ -209,7 +218,7 @@ void HistoManager::addHisto2DPoly(const TString& name, const TString& title, con
 }
 
 void HistoManager::addHisto2DPoly(const HistoConfig2DPoly& config){
-	if(getHisto2DPoly(config.name)){
+	if(getHisto2DPoly(config.name,false)){
 		std::cerr << "Warning: TH2Poly " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
@@ -241,7 +250,7 @@ void HistoManager::addHisto3D(const TString& name, const TString& title, Int_t n
 }
 
 void HistoManager::addHisto3D(const HistoConfig3D& config){
-	if(getHisto3D(config.name)){
+	if(getHisto3D(config.name,false)){
 		std::cerr << "Warning: Histogram " << config.name << " already exists. Skipping." << std::endl;
 		return;
 	}
@@ -257,28 +266,70 @@ void HistoManager::addHisto3D(const HistoConfig3D& config){
 
 
 
-TH1* HistoManager::getHisto1D(const TString& name) const{
-	return dynamic_cast<TH1*>(m_h1DTable.FindObject(name.Data()));
+TH1* HistoManager::getHisto1D(const TString& name, bool verbose) const{
+	//return dynamic_cast<TH1*>(m_h1DTable.FindObject(name.Data()));
+	TH1* histo = dynamic_cast<TH1*>(m_h1DTable.FindObject(name.Data()));
+	if(!histo && verbose){
+		ConsoleColorizer::PrintRed("Warning! 1D histogram ");
+		ConsoleColorizer::PrintRed(name.Data());
+		ConsoleColorizer::PrintRed(" does not exist in HMConfig file! Expect seg fault soon! (sorry...)\n\n");
+	}
+	return histo;
 }
 
-TH2* HistoManager::getHisto2D(const TString& name) const{
-	return dynamic_cast<TH2*>(m_h2DTable.FindObject(name.Data()));
+TH2* HistoManager::getHisto2D(const TString& name, bool verbose) const{
+	//return dynamic_cast<TH2*>(m_h2DTable.FindObject(name.Data()));
+	TH2* histo = dynamic_cast<TH2*>(m_h2DTable.FindObject(name.Data()));
+	if(!histo && verbose){
+		ConsoleColorizer::PrintRed("Warning! 2D histogram ");
+		ConsoleColorizer::PrintRed(name.Data());
+		ConsoleColorizer::PrintRed(" does not exist in HMConfig file! Expect seg fault soon! (sorry...)\n\n");
+	}
+	return histo;
 }
 
-TH3* HistoManager::getHisto3D(const TString& name) const{
-	return dynamic_cast<TH3*>(m_h3DTable.FindObject(name.Data()));
+TH3* HistoManager::getHisto3D(const TString& name, bool verbose) const{
+	//return dynamic_cast<TH3*>(m_h3DTable.FindObject(name.Data()));
+	TH3* histo = dynamic_cast<TH3*>(m_h3DTable.FindObject(name.Data()));
+	if(!histo && verbose){
+		ConsoleColorizer::PrintRed("Warning! 3D histogram ");
+		ConsoleColorizer::PrintRed(name.Data());
+		ConsoleColorizer::PrintRed(" does not exist in HMConfig file! Expect seg fault soon! (sorry...)\n\n");
+	}
+	return histo;
 }
 
-TProfile* HistoManager::getProfile1D(const TString& name) const {
-	return dynamic_cast<TProfile*>(m_profile1DTable.FindObject(name.Data()));
+TProfile* HistoManager::getProfile1D(const TString& name, bool verbose) const {
+	//return dynamic_cast<TProfile*>(m_profile1DTable.FindObject(name.Data()));
+	TProfile* prof = dynamic_cast<TProfile*>(m_profile1DTable.FindObject(name.Data()));
+	if(!prof && verbose){
+		ConsoleColorizer::PrintRed("Warning! 1D profile ");
+		ConsoleColorizer::PrintRed(name.Data());
+		ConsoleColorizer::PrintRed(" does not exist in HMConfig file! Expect seg fault soon! (sorry...)\n\n");
+	}
+	return prof;
 }
 
-TProfile2D* HistoManager::getProfile2D(const TString& name) const {
-	return dynamic_cast<TProfile2D*>(m_profile2DTable.FindObject(name.Data()));
+TProfile2D* HistoManager::getProfile2D(const TString& name, bool verbose) const {
+	//return dynamic_cast<TProfile2D*>(m_profile2DTable.FindObject(name.Data()));
+	TProfile2D* prof = dynamic_cast<TProfile2D*>(m_profile2DTable.FindObject(name.Data()));
+	if(!prof && verbose){
+		ConsoleColorizer::PrintRed("Warning! 2D profile ");
+		ConsoleColorizer::PrintRed(name.Data());
+		ConsoleColorizer::PrintRed(" does not exist in HMConfig file! Expect seg fault soon! (sorry...)\n\n");
+	}
+	return prof;
 }
 
-TH2Poly* HistoManager::getHisto2DPoly(const TString& name) const {
-	return dynamic_cast<TH2Poly*>(m_h2DPolyTable.FindObject(name.Data()));
+TH2Poly* HistoManager::getHisto2DPoly(const TString& name, bool verbose) const {
+	//return dynamic_cast<TH2Poly*>(m_h2DPolyTable.FindObject(name.Data()));
+	TH2Poly* poly = dynamic_cast<TH2Poly*>(m_h2DPolyTable.FindObject(name.Data()));
+	if(!poly && verbose){
+		ConsoleColorizer::PrintRed("Warning! 2D poly histo ");
+		ConsoleColorizer::PrintRed(name.Data());
+		ConsoleColorizer::PrintRed(" does not exist in HMConfig file! Expect seg fault soon! (sorry...)\n\n");
+	}
+	return poly;
 }
 
 // void HistoManager::WriteAll(bool writeFileToDiskAutomatically){
