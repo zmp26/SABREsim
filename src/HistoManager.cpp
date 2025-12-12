@@ -136,7 +136,7 @@ bool HistoManager::loadHistoConfig(const TString& configFilePath){
 		}
 	}
 
-	TString temp = Form("Read %d histograms in from %s!\n\n", histocount, configFilePath.Data());
+	TString temp = Form("Created %d histograms as described in %s!\n\n", histocount, configFilePath.Data());
 	ConsoleColorizer::PrintGreen(temp.Data());
 
 	configFile.close();

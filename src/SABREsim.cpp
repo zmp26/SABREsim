@@ -572,6 +572,8 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 	onePartHits_ = det3mcProcessor.GetOnePartHits();
 	twoPartHits_ = det3mcProcessor.GetTwoPartHits();
 	threePartHits_ = det3mcProcessor.GetThreePartHits();
+
+	RootPlotter->SaveAndWrite();
 }
 
 void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
@@ -645,6 +647,8 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	twoPartHits_ = det4mcProcessor.GetTwoPartHits();
 	threePartHits_ = det4mcProcessor.GetThreePartHits();
 	fourPartHits_ = det4mcProcessor.GetFourPartHits();
+
+	RootPlotter->SaveAndWrite();
 }
 
 void SABREsim::PrintSummary() const {
