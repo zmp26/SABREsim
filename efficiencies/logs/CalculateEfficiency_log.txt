@@ -1,0 +1,273 @@
+2026-01-20 14:52:47,053 - INFO - kin2mc() started
+2026-01-20 14:52:47,065 - INFO - readying to run kin2mc for ExE = 1.5 MeV
+2026-01-20 14:52:47,184 - INFO - passing kin2mc input file to kin2mc for ExE = 1.5 MeV
+2026-01-20 14:53:01,199 - INFO - finished running kin2mc for ExE = 1.5 MeV
+2026-01-20 14:53:01,202 - INFO - readying SABREsim config file for ExE = 1.5 MeV
+2026-01-20 14:53:01,206 - INFO - wrote sabre config file for ExE = 1.5 MeV, preparing to run
+2026-01-20 14:53:01,208 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 14:53:02,533 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1.5MeV.txt
+2026-01-20 14:53:02,534 - INFO - efficiencies extracted and stored for ExE = 1.5
+2026-01-20 14:53:02,534 - INFO - incremented ExE to 1.505 MeV
+2026-01-20 14:53:02,535 - INFO - readying to run kin2mc for ExE = 1.505 MeV
+2026-01-20 14:53:02,571 - INFO - passing kin2mc input file to kin2mc for ExE = 1.505 MeV
+2026-01-20 14:53:15,741 - INFO - finished running kin2mc for ExE = 1.505 MeV
+2026-01-20 14:53:15,744 - INFO - readying SABREsim config file for ExE = 1.505 MeV
+2026-01-20 14:53:15,749 - INFO - wrote sabre config file for ExE = 1.505 MeV, preparing to run
+2026-01-20 14:53:15,750 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 14:53:16,535 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1.505MeV.txt
+2026-01-20 14:53:16,536 - INFO - efficiencies extracted and stored for ExE = 1.505
+2026-01-20 14:53:16,537 - INFO - incremented ExE to 1.5099999999999998 MeV
+2026-01-20 14:53:16,537 - INFO - readying to run kin2mc for ExE = 1.5099999999999998 MeV
+2026-01-20 14:53:16,562 - INFO - passing kin2mc input file to kin2mc for ExE = 1.5099999999999998 MeV
+2026-01-20 14:53:29,951 - INFO - finished running kin2mc for ExE = 1.5099999999999998 MeV
+2026-01-20 14:53:29,954 - INFO - readying SABREsim config file for ExE = 1.5099999999999998 MeV
+2026-01-20 14:53:29,961 - INFO - wrote sabre config file for ExE = 1.5099999999999998 MeV, preparing to run
+2026-01-20 14:53:29,963 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 14:53:30,740 - INFO - wrote SABRE stdout for ExE = 1.5099999999999998 to /mnt/e/SABREsim/logs/templog1.5099999999999998MeV.txt
+2026-01-20 14:53:30,742 - INFO - efficiencies extracted and stored for ExE = 1.5099999999999998
+2026-01-20 14:53:30,743 - INFO - incremented ExE to 1.5149999999999997 MeV
+2026-01-20 14:53:30,744 - INFO - finished loop in 3 iterations
+2026-01-20 14:56:14,980 - INFO - kin2mc() started
+2026-01-20 14:56:14,980 - INFO - readying to run kin2mc for ExE = 1.5 MeV
+2026-01-20 14:56:15,081 - INFO - passing kin2mc input file to kin2mc for ExE = 1.5 MeV
+2026-01-20 14:56:28,499 - INFO - finished running kin2mc for ExE = 1.5 MeV
+2026-01-20 14:56:28,500 - INFO - readying SABREsim config file for ExE = 1.5 MeV
+2026-01-20 14:56:28,503 - INFO - wrote sabre config file for ExE = 1.5 MeV, preparing to run
+2026-01-20 14:56:28,503 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 14:56:29,282 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1.5MeV.txt
+2026-01-20 14:56:29,283 - INFO - efficiencies extracted and stored for ExE = 1.5
+2026-01-20 14:56:29,283 - INFO - incremented ExE to 1.505 MeV
+2026-01-20 14:56:29,284 - INFO - readying to run kin2mc for ExE = 1.505 MeV
+2026-01-20 14:56:29,676 - INFO - passing kin2mc input file to kin2mc for ExE = 1.505 MeV
+2026-01-20 14:56:42,745 - INFO - finished running kin2mc for ExE = 1.505 MeV
+2026-01-20 14:56:42,747 - INFO - readying SABREsim config file for ExE = 1.505 MeV
+2026-01-20 14:56:42,751 - INFO - wrote sabre config file for ExE = 1.505 MeV, preparing to run
+2026-01-20 14:56:42,752 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 14:56:43,530 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1.505MeV.txt
+2026-01-20 14:56:43,531 - INFO - efficiencies extracted and stored for ExE = 1.505
+2026-01-20 14:56:43,532 - INFO - incremented ExE to 1.5099999999999998 MeV
+2026-01-20 14:56:43,533 - INFO - readying to run kin2mc for ExE = 1.5099999999999998 MeV
+2026-01-20 14:56:43,893 - INFO - passing kin2mc input file to kin2mc for ExE = 1.5099999999999998 MeV
+2026-01-20 14:56:57,089 - INFO - finished running kin2mc for ExE = 1.5099999999999998 MeV
+2026-01-20 14:56:57,092 - INFO - readying SABREsim config file for ExE = 1.5099999999999998 MeV
+2026-01-20 14:56:57,097 - INFO - wrote sabre config file for ExE = 1.5099999999999998 MeV, preparing to run
+2026-01-20 14:56:57,099 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 14:56:57,885 - INFO - wrote SABRE stdout for ExE = 1.5099999999999998 to /mnt/e/SABREsim/logs/templog1.5099999999999998MeV.txt
+2026-01-20 14:56:57,887 - INFO - efficiencies extracted and stored for ExE = 1.5099999999999998
+2026-01-20 14:56:57,887 - INFO - incremented ExE to 1.5149999999999997 MeV
+2026-01-20 14:56:57,888 - INFO - finished loop in 3 iterations
+2026-01-20 14:56:58,444 - INFO - finished plotting, saved to efficiency_plot.png
+2026-01-20 14:56:58,459 - INFO - finished saving efficiencies to /mnt/e/SABREsim/efficiencies/efficiencies.txt
+2026-01-20 14:56:58,459 - INFO - Successfully finished running kin2mc for 7Li(3He,4He)6Li
+2026-01-20 15:03:44,790 - INFO - kin2mc() started
+2026-01-20 15:03:44,791 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:03:44,898 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:03:58,553 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:03:58,554 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:03:58,557 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:03:58,557 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:03:59,406 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1.5MeV.txt
+2026-01-20 15:03:59,407 - INFO - efficiencies extracted and stored for ExE = 1500.0 keV
+2026-01-20 15:03:59,408 - INFO - incremented ExE to 1505.0 keV
+2026-01-20 15:03:59,408 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:04:00,490 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-20 15:04:14,073 - INFO - finished running kin2mc for ExE = 1505.0 keV
+2026-01-20 15:04:14,077 - INFO - readying SABREsim config file for ExE = 1505.0 keV
+2026-01-20 15:04:14,082 - INFO - wrote sabre config file for ExE = 1505.0 keV, preparing to run
+2026-01-20 15:04:14,083 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:04:15,225 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1.505MeV.txt
+2026-01-20 15:04:15,228 - INFO - efficiencies extracted and stored for ExE = 1505.0 keV
+2026-01-20 15:04:15,230 - INFO - incremented ExE to 1510.0 keV
+2026-01-20 15:04:15,232 - INFO - readying to run kin2mc for ExE = 1510.0 keV
+2026-01-20 15:04:15,254 - INFO - passing kin2mc input file to kin2mc for ExE = 1510.0 keV
+2026-01-20 15:04:28,602 - INFO - finished running kin2mc for ExE = 1510.0 keV
+2026-01-20 15:04:28,605 - INFO - readying SABREsim config file for ExE = 1510.0 keV
+2026-01-20 15:04:28,609 - INFO - wrote sabre config file for ExE = 1510.0 keV, preparing to run
+2026-01-20 15:04:28,610 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:04:29,398 - INFO - wrote SABRE stdout for ExE = 1.51 to /mnt/e/SABREsim/logs/templog1.51MeV.txt
+2026-01-20 15:04:29,399 - INFO - efficiencies extracted and stored for ExE = 1510.0 keV
+2026-01-20 15:04:29,399 - INFO - incremented ExE to 1515.0 keV
+2026-01-20 15:04:29,400 - INFO - readying to run kin2mc for ExE = 1515.0 keV
+2026-01-20 15:04:29,751 - INFO - passing kin2mc input file to kin2mc for ExE = 1515.0 keV
+2026-01-20 15:04:43,237 - INFO - finished running kin2mc for ExE = 1515.0 keV
+2026-01-20 15:04:43,238 - INFO - readying SABREsim config file for ExE = 1515.0 keV
+2026-01-20 15:04:43,241 - INFO - wrote sabre config file for ExE = 1515.0 keV, preparing to run
+2026-01-20 15:04:43,241 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:04:44,019 - INFO - wrote SABRE stdout for ExE = 1.515 to /mnt/e/SABREsim/logs/templog1.515MeV.txt
+2026-01-20 15:04:44,020 - INFO - efficiencies extracted and stored for ExE = 1515.0 keV
+2026-01-20 15:04:44,021 - INFO - incremented ExE to 1520.0 keV
+2026-01-20 15:04:44,021 - INFO - readying to run kin2mc for ExE = 1520.0 keV
+2026-01-20 15:04:44,042 - INFO - passing kin2mc input file to kin2mc for ExE = 1520.0 keV
+2026-01-20 15:04:57,591 - INFO - finished running kin2mc for ExE = 1520.0 keV
+2026-01-20 15:04:57,593 - INFO - readying SABREsim config file for ExE = 1520.0 keV
+2026-01-20 15:04:57,602 - INFO - wrote sabre config file for ExE = 1520.0 keV, preparing to run
+2026-01-20 15:04:57,603 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:04:58,407 - INFO - wrote SABRE stdout for ExE = 1.52 to /mnt/e/SABREsim/logs/templog1.52MeV.txt
+2026-01-20 15:04:58,408 - INFO - efficiencies extracted and stored for ExE = 1520.0 keV
+2026-01-20 15:04:58,409 - INFO - incremented ExE to 1525.0 keV
+2026-01-20 15:04:58,410 - INFO - readying to run kin2mc for ExE = 1525.0 keV
+2026-01-20 15:04:58,770 - INFO - passing kin2mc input file to kin2mc for ExE = 1525.0 keV
+2026-01-20 15:05:12,554 - INFO - finished running kin2mc for ExE = 1525.0 keV
+2026-01-20 15:05:12,555 - INFO - readying SABREsim config file for ExE = 1525.0 keV
+2026-01-20 15:05:12,558 - INFO - wrote sabre config file for ExE = 1525.0 keV, preparing to run
+2026-01-20 15:05:12,558 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:05:17,012 - INFO - kin2mc() started
+2026-01-20 15:05:17,012 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:05:17,123 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:05:30,794 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:05:30,796 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:05:30,802 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:05:30,802 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:05:31,630 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1500.0keV.txt
+2026-01-20 15:05:31,631 - INFO - efficiencies extracted and stored for ExE = 1500.0 keV
+2026-01-20 15:05:31,632 - INFO - incremented ExE to 1505.0 keV
+2026-01-20 15:05:31,633 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:05:31,758 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-20 15:05:45,707 - INFO - finished running kin2mc for ExE = 1505.0 keV
+2026-01-20 15:05:45,710 - INFO - readying SABREsim config file for ExE = 1505.0 keV
+2026-01-20 15:05:45,715 - INFO - wrote sabre config file for ExE = 1505.0 keV, preparing to run
+2026-01-20 15:05:45,716 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:05:46,503 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1505.0keV.txt
+2026-01-20 15:05:46,504 - INFO - efficiencies extracted and stored for ExE = 1505.0 keV
+2026-01-20 15:05:46,506 - INFO - incremented ExE to 1510.0 keV
+2026-01-20 15:05:46,506 - INFO - readying to run kin2mc for ExE = 1510.0 keV
+2026-01-20 15:05:46,529 - INFO - passing kin2mc input file to kin2mc for ExE = 1510.0 keV
+2026-01-20 15:05:54,008 - INFO - kin2mc() started
+2026-01-20 15:05:54,008 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:05:54,118 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:06:07,678 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:06:07,681 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:06:07,685 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:06:07,686 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:06:08,479 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1500keV.txt
+2026-01-20 15:06:08,480 - INFO - efficiencies extracted and stored for ExE = 1500.0 keV
+2026-01-20 15:06:08,480 - INFO - incremented ExE to 1505.0 keV
+2026-01-20 15:06:08,481 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:06:08,501 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-20 15:06:23,211 - INFO - finished running kin2mc for ExE = 1505.0 keV
+2026-01-20 15:06:23,214 - INFO - readying SABREsim config file for ExE = 1505.0 keV
+2026-01-20 15:06:23,223 - INFO - wrote sabre config file for ExE = 1505.0 keV, preparing to run
+2026-01-20 15:06:23,224 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:06:24,000 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1505keV.txt
+2026-01-20 15:06:24,001 - INFO - efficiencies extracted and stored for ExE = 1505.0 keV
+2026-01-20 15:06:24,002 - INFO - incremented ExE to 1510.0 keV
+2026-01-20 15:06:24,002 - INFO - readying to run kin2mc for ExE = 1510.0 keV
+2026-01-20 15:06:24,475 - INFO - passing kin2mc input file to kin2mc for ExE = 1510.0 keV
+2026-01-20 15:06:38,207 - INFO - finished running kin2mc for ExE = 1510.0 keV
+2026-01-20 15:06:38,208 - INFO - readying SABREsim config file for ExE = 1510.0 keV
+2026-01-20 15:06:38,212 - INFO - wrote sabre config file for ExE = 1510.0 keV, preparing to run
+2026-01-20 15:06:38,213 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:06:39,014 - INFO - wrote SABRE stdout for ExE = 1.51 to /mnt/e/SABREsim/logs/templog1510keV.txt
+2026-01-20 15:06:39,015 - INFO - efficiencies extracted and stored for ExE = 1510.0 keV
+2026-01-20 15:06:39,016 - INFO - incremented ExE to 1515.0 keV
+2026-01-20 15:06:39,017 - INFO - finished loop in 3 iterations
+2026-01-20 15:06:39,581 - INFO - finished plotting, saved to efficiency_plot.png
+2026-01-20 15:06:39,934 - INFO - finished saving efficiencies to /mnt/e/SABREsim/efficiencies/efficiencies.txt
+2026-01-20 15:06:39,936 - INFO - Successfully finished running kin2mc for 7Li(3He,4He)6Li
+2026-01-20 15:07:36,413 - INFO - kin2mc() started
+2026-01-20 15:07:36,414 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:07:37,160 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:07:50,795 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:07:50,797 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:07:50,799 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:07:50,801 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:07:51,613 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1500keV.txt
+2026-01-20 15:07:51,614 - INFO - efficiencies extracted and stored for ExE = 1500.0 keV
+2026-01-20 15:07:51,615 - INFO - incremented ExE to 1505.0 keV
+2026-01-20 15:07:51,615 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:07:52,003 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-20 15:08:05,273 - INFO - finished running kin2mc for ExE = 1505.0 keV
+2026-01-20 15:08:05,276 - INFO - readying SABREsim config file for ExE = 1505.0 keV
+2026-01-20 15:08:05,281 - INFO - wrote sabre config file for ExE = 1505.0 keV, preparing to run
+2026-01-20 15:08:05,282 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:08:06,084 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1505keV.txt
+2026-01-20 15:08:06,085 - INFO - efficiencies extracted and stored for ExE = 1505.0 keV
+2026-01-20 15:08:06,086 - INFO - incremented ExE to 1510.0 keV
+2026-01-20 15:08:06,087 - INFO - readying to run kin2mc for ExE = 1510.0 keV
+2026-01-20 15:08:06,107 - INFO - passing kin2mc input file to kin2mc for ExE = 1510.0 keV
+2026-01-20 15:08:19,605 - INFO - finished running kin2mc for ExE = 1510.0 keV
+2026-01-20 15:08:19,606 - INFO - readying SABREsim config file for ExE = 1510.0 keV
+2026-01-20 15:08:19,609 - INFO - wrote sabre config file for ExE = 1510.0 keV, preparing to run
+2026-01-20 15:08:19,610 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:08:20,515 - INFO - wrote SABRE stdout for ExE = 1.51 to /mnt/e/SABREsim/logs/templog1510keV.txt
+2026-01-20 15:08:20,516 - INFO - efficiencies extracted and stored for ExE = 1510.0 keV
+2026-01-20 15:08:20,516 - INFO - incremented ExE to 1515.0 keV
+2026-01-20 15:08:20,517 - INFO - finished loop in 3 iterations
+2026-01-20 15:08:21,082 - INFO - finished plotting, saved to /mnt/e/SABREsim/efficiencies/efficiencies.png
+2026-01-20 15:08:21,243 - INFO - finished saving efficiencies to /mnt/e/SABREsim/efficiencies/efficiencies.txt
+2026-01-20 15:08:21,246 - INFO - Successfully finished running kin2mc for 7Li(3He,4He)6Li
+2026-01-20 15:11:18,733 - INFO - kin2mc() started
+2026-01-20 15:11:18,734 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:11:18,845 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:11:32,559 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:11:32,561 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:11:32,565 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:11:32,565 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:11:33,332 - INFO - wrote SABRE stdout for ExE = 1.5 to /mnt/e/SABREsim/logs/templog1500keV.txt
+2026-01-20 15:11:33,333 - INFO - efficiencies extracted and stored for ExE = 1500.0 keV
+2026-01-20 15:11:33,334 - INFO - incremented ExE to 1505.0 keV
+2026-01-20 15:11:33,335 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:11:33,533 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-20 15:11:46,878 - INFO - finished running kin2mc for ExE = 1505.0 keV
+2026-01-20 15:11:46,881 - INFO - readying SABREsim config file for ExE = 1505.0 keV
+2026-01-20 15:11:46,887 - INFO - wrote sabre config file for ExE = 1505.0 keV, preparing to run
+2026-01-20 15:11:46,888 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:11:47,665 - INFO - wrote SABRE stdout for ExE = 1.505 to /mnt/e/SABREsim/logs/templog1505keV.txt
+2026-01-20 15:11:47,666 - INFO - efficiencies extracted and stored for ExE = 1505.0 keV
+2026-01-20 15:11:47,667 - INFO - incremented ExE to 1510.0 keV
+2026-01-20 15:11:47,667 - INFO - readying to run kin2mc for ExE = 1510.0 keV
+2026-01-20 15:11:47,683 - INFO - passing kin2mc input file to kin2mc for ExE = 1510.0 keV
+2026-01-20 15:12:01,169 - INFO - finished running kin2mc for ExE = 1510.0 keV
+2026-01-20 15:12:01,171 - INFO - readying SABREsim config file for ExE = 1510.0 keV
+2026-01-20 15:12:01,177 - INFO - wrote sabre config file for ExE = 1510.0 keV, preparing to run
+2026-01-20 15:12:01,179 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:12:01,959 - INFO - wrote SABRE stdout for ExE = 1.51 to /mnt/e/SABREsim/logs/templog1510keV.txt
+2026-01-20 15:12:01,960 - INFO - efficiencies extracted and stored for ExE = 1510.0 keV
+2026-01-20 15:12:01,960 - INFO - incremented ExE to 1515.0 keV
+2026-01-20 15:12:01,961 - INFO - finished loop in 3 iterations
+2026-01-20 15:12:02,526 - INFO - finished plotting, saved to /mnt/e/SABREsim/efficiencies/efficiencies.png
+2026-01-20 15:12:02,806 - INFO - finished saving efficiencies to /mnt/e/SABREsim/efficiencies/efficiencies.txt
+2026-01-20 15:12:02,808 - INFO - Successfully finished running kin2mc for 7Li(3He,4He)6Li
+2026-01-20 15:13:53,199 - INFO - kin2mc() started
+2026-01-20 15:13:53,200 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:13:53,302 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:14:06,660 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:14:06,662 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:14:06,667 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:14:06,668 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:30:36,822 - INFO - kin2mc() started
+2026-01-20 15:30:36,823 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:30:36,929 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:30:50,253 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:30:50,254 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:30:50,257 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:30:50,257 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:30:51,281 - WARNING - Error running SABREsim for ExE = 1500.0 keV
+2026-01-20 15:30:51,282 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:30:51,296 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-20 15:31:04,427 - INFO - finished running kin2mc for ExE = 1505.0 keV
+2026-01-20 15:31:04,428 - INFO - readying SABREsim config file for ExE = 1505.0 keV
+2026-01-20 15:31:04,431 - INFO - wrote sabre config file for ExE = 1505.0 keV, preparing to run
+2026-01-20 15:31:04,431 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:31:05,256 - WARNING - Error running SABREsim for ExE = 1505.0 keV
+2026-01-20 15:31:05,257 - INFO - readying to run kin2mc for ExE = 1510.0 keV
+2026-01-20 15:31:05,272 - INFO - passing kin2mc input file to kin2mc for ExE = 1510.0 keV
+2026-01-20 15:31:18,691 - INFO - finished running kin2mc for ExE = 1510.0 keV
+2026-01-20 15:31:18,693 - INFO - readying SABREsim config file for ExE = 1510.0 keV
+2026-01-20 15:31:18,698 - INFO - wrote sabre config file for ExE = 1510.0 keV, preparing to run
+2026-01-20 15:31:18,699 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:31:20,427 - WARNING - Error running SABREsim for ExE = 1510.0 keV
+2026-01-20 15:31:20,428 - INFO - finished loop in 3 iterations
+2026-01-20 15:31:21,000 - INFO - finished plotting, saved to /mnt/e/SABREsim/efficiencies/efficiencies.png
+2026-01-20 15:31:21,021 - INFO - finished saving efficiencies to /mnt/e/SABREsim/efficiencies/efficiencies.txt
+2026-01-20 15:31:21,021 - INFO - Successfully finished running kin2mc for 7Li(3He,4He)6Li
+2026-01-20 15:34:58,936 - INFO - kin2mc() started
+2026-01-20 15:34:58,936 - INFO - readying to run kin2mc for ExE = 1500.0 keV
+2026-01-20 15:34:59,042 - INFO - passing kin2mc input file to kin2mc for ExE = 1500.0 keV
+2026-01-20 15:35:12,573 - INFO - finished running kin2mc for ExE = 1500.0 keV
+2026-01-20 15:35:12,577 - INFO - readying SABREsim config file for ExE = 1500.0 keV
+2026-01-20 15:35:12,600 - INFO - wrote sabre config file for ExE = 1500.0 keV, preparing to run
+2026-01-20 15:35:12,601 - INFO - Running SABRE command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
+2026-01-20 15:35:13,552 - WARNING - Error running SABREsim for ExE = 1500.0 keV
+2026-01-20 15:35:13,553 - INFO - readying to run kin2mc for ExE = 1505.0 keV
+2026-01-20 15:35:13,570 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV

@@ -1,6 +1,6 @@
 #calculateEfficiency.py
 #purpose: 
-#	to take all of the kinXmc output files generated in the generateInputFilesAndRun.py code
+#	to take all of the kinXmc output files generated in the generateInputFilesAndRun.py code (located at kin2/3/4mc in /mnt/e/kinematics/)
 #	and pass them to SABREsim and extract the calculated efficiency for all three cases (detect only bu1, bu2, or both)
 #	
 #Result:
@@ -14,6 +14,18 @@
 #	where X = (2,3,4)
 #	and the paths are paths to directories containing the files, not a files itself!
 #
+
+'''
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!!!!!!!!!!!	UPDATE run_SABREsim_kin2/3/4mc to work with new SABREsim input file system!		 
+
+!!!!!!!!!!! The dispersion of the calculation must match what EVB gives for SE-SPS (which is 8keV/bin, so we must increment in units of 8 keV beginning at starting point that is multiple of 8)
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+'''
 
 import sys
 import os
@@ -59,16 +71,17 @@ def extractEfficienciesFromSTDOUT_kin2mc(stdout):
 	eff = {'ej':None, 'rec':None, 'both':None}
 	lines = stdout.splitlines()
 	for line in lines:
-		if "only ejectile" in line:
-			match = re.search(r"\(([\d.]+)%", line)
+		low = line.lower()
+		if "only ejectile" in low:
+			match = re.search(r"\(([\d.]+)%", low)
 			if match:
 				eff['ej'] = float(match.group(1))
-		elif "only recoil" in line:
-			match = re.search(r"\(([\d.]+)%", line)
+		elif "only recoil" in low:
+			match = re.search(r"\(([\d.]+)%", low)
 			if match:
 				eff['rec'] = float(match.group(1))
-		elif "both" in line:
-			match = re.search(r"\(([\d.]+)%", line)
+		elif "both" in low:
+			match = re.search(r"\(([\d.]+)%", low)
 			if match:
 				eff['both'] = float(match.group(1))
 	return eff
@@ -77,16 +90,17 @@ def extractEfficienciesFromSTDOUT_kin3mc(stdout):
 	eff = {'bu1':None,'bu2':None,'both':None}
 	lines = stdout.splitlines()
 	for line in lines:
-		if "Only bu1" in line:
-			match = re.search(r"\(([\d.]+)%",line)
+		low = line.lower()
+		if "only bu1" in low:
+			match = re.search(r"\(([\d.]+)%",low)
 			if match:
 				eff['bu1'] = float(match.group(1))
-		elif "Only bu2" in line:
-			match = re.search(r"\(([\d.]+)%",line)
+		elif "only bu2" in low:
+			match = re.search(r"\(([\d.]+)%",low)
 			if match:
 				eff['bu2'] = float(match.group(1))
-		elif "Both bu1 & bu2" in line:
-			match = re.search(r"\(([\d.]+)%",line)
+		elif "both bu1 & bu2" in low:
+			match = re.search(r"\(([\d.]+)%",low)
 			if match:
 				eff['both'] = float(match.group(1))
 	return eff
@@ -110,43 +124,44 @@ def extractEfficienciesFromSTDOUT_kin4mc(stdout):
 	lines = stdout.splitlines()
 
 	for line in lines:
-		if "Only bu1:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		low = line.lower()
+		if "only bu1:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['bu1'] = (count / total_events) * 100.
 
-		elif "Only bu2:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		elif "only bu2:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['bu2'] = (count / total_events) * 100.
 
-		elif "Only bu3:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		elif "only bu3:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['bu3'] = (count / total_events) * 100.
 
-		elif "Only bu1 & bu2:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		elif "only bu1 & bu2:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['bu1_bu2'] = (count / total_events) * 100.
-		elif "Only bu2 & bu3:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		elif "only bu2 & bu3:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['bu2_bu3'] = (count / total_events) * 100.
 
-		elif "Only bu1 & bu3:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		elif "only bu1 & bu3:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['bu1_bu3'] = (count / total_events) * 100.
 
-		elif "Only bu1, bu2 & bu3:" in line:
-			match = re.search(r":\s*(\d+)",line)
+		elif "only bu1, bu2 & bu3:" in low:
+			match = re.search(r":\s*(\d+)",low)
 			if match:
 				count = int(match.group(1))
 				eff['all'] = (count / total_events) * 100.
