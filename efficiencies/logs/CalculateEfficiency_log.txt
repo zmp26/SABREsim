@@ -271,3 +271,10 @@
 2026-01-20 15:35:13,552 - WARNING - Error running SABREsim for ExE = 1500.0 keV
 2026-01-20 15:35:13,553 - INFO - readying to run kin2mc for ExE = 1505.0 keV
 2026-01-20 15:35:13,570 - INFO - passing kin2mc input file to kin2mc for ExE = 1505.0 keV
+2026-01-21 13:46:15,824 - INFO - kin4mc() started
+2026-01-21 13:46:15,937 - INFO - readying to run kin4mc for ExE = 0 keV
+2026-01-21 13:46:15,963 - INFO - passing kin4mc input file to kin4mc for ExE = 0 keV
+2026-01-21 13:46:17,962 - INFO - finished running kin4mc for ExE = 0 keV
+2026-01-21 13:46:17,965 - INFO - readying SABREsim config file for ExE = 0 keV
+2026-01-21 13:46:18,062 - INFO - wrote SABRE config file for ExE = 0 keV, preparing to run
+2026-01-21 13:46:18,064 - INFO - running SABREsim command: ['/mnt/e/SABREsim/bin/SABREsim', '/mnt/e/SABREsim/config/EffCalc.conf']
