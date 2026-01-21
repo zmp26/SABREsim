@@ -683,13 +683,13 @@ void SABREsim::PrintSummary() const {
 		std::cout << "2‑particle events: " << twoPartHits_ << "\n";
 		std::cout << "3‑particle events: " << threePartHits_ << "\n";
 		std::cout << "4‑particle events: " << fourPartHits_ << "\n";
-		std::cout << "Only bu1: " << hitOnly1_ << "\n";
-		std::cout << "Only bu2: " << hitOnly2_ << "\n";
-		std::cout << "Only bu3: " << hitOnly3_ << "\n";
-		std::cout << "Only bu1 & bu2: " << hitOnly12_ << "\n";
-		std::cout << "Only bu2 & bu3: " << hitOnly23_ << "\n";
-		std::cout << "Only bu1 & bu3: " << hitOnly13_ << "\n";
-		std::cout << "Only bu1, bu2 & bu3: " << hitOnly123_ << std::endl;
+		std::cout << "Only bu1: " << hitOnly1_ << " (" << float(hitOnly1_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Only bu2: " << hitOnly2_ << " (" << float(hitOnly2_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Only bu3: " << hitOnly3_ << " (" << float(hitOnly3_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Only bu1 & bu2: " << hitOnly12_ << " (" << float(hitOnly12_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Only bu2 & bu3: " << hitOnly23_ << " (" << float(hitOnly23_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Only bu1 & bu3: " << hitOnly13_ << " (" << float(hitOnly13_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Only bu1, bu2 & bu3: " << hitOnly123_ << " (" << float(hitOnly123_)*100.0f / float(nevents_) << "%)\n";
 	}
 	for (size_t i = 0; i < detectorHits_.size(); i++) {
 		std::cout << "Detector_" << i << " total hits = " << detectorHits_[i] << "\n";
