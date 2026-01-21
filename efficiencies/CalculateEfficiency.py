@@ -60,9 +60,9 @@ Resonance/reaction specific SABREsim config data:
 '''
 #targetlosses:
 TARGETLOSS_PAR1 = "alpha_in_LiF"
-TARGETLOSS_PAR2 = "6Li_in_LiF"
+TARGETLOSS_PAR2 = "none"
 TARGETLOSS_PAR3 = "alpha_in_LiF"
-TARGETLOSS_PAR4 = "deuteron_in_LiF"
+TARGETLOSS_PAR4 = "alpha_in_LiF"
 
 #target angular straggling:
 ENABLESTRAGGLE1 = False
@@ -77,9 +77,9 @@ STRAGGLE4 = "none"
 
 #dead layer losses
 DEADLAYERLOSS_PAR1 = "alpha_in_Si"
-DEADLAYERLOSS_PAR2 = "6Li_in_Si"
+DEADLAYERLOSS_PAR2 = "none"
 DEADLAYERLOSS_PAR3 = "alpha_in_Si"
-DEADLAYERLOSS_PAR4 = "deuteron_in_Si"
+DEADLAYERLOSS_PAR4 = "alpha_in_Si"
 
 #beam spot
 PROFILE = "gaussian"
@@ -95,8 +95,8 @@ Binning:
 
 '''
 
-ENERGY_START_KEV = 1500
-ENERGY_STOP_KEV = 1510
+ENERGY_START_KEV = 0
+ENERGY_STOP_KEV = 500
 ENERGY_BIN_KEV = 5 #bin size
 
 
@@ -107,6 +107,11 @@ ENERGY_BIN_KEV = 5 #bin size
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+def getPercentage(line):
+	match = re.search(r"\(([\d.]+)%",line)
+	if match:
+		return float(match.group(1))
+
 
 def extractEfficienciesFromSTDOUT_kin2mc(stdout):
 	eff = {'ej':None, 'rec':None, 'both':None}
@@ -114,17 +119,63 @@ def extractEfficienciesFromSTDOUT_kin2mc(stdout):
 	for line in lines:
 		low = line.lower()
 		if "only ejectile" in low:
-			match = re.search(r"\(([\d.]+)%", low)
-			if match:
-				eff['ej'] = float(match.group(1))
+			eff['ej'] = getPercentage(low)
+
 		elif "only recoil" in low:
-			match = re.search(r"\(([\d.]+)%", low)
-			if match:
-				eff['rec'] = float(match.group(1))
+			eff['rec'] = getPercentage(low)
+
 		elif "both" in low:
-			match = re.search(r"\(([\d.]+)%", low)
-			if match:
-				eff['both'] = float(match.group(1))
+			eff['both'] = getPercentage(low)
+
+	return eff
+
+def extractEfficienciesFromSTDOUT_kin3mc(stdout):
+	eff = {'bu1':None,'bu2':None,'both':None}
+	lines = stdout.splitlines()
+	for line in lines:
+		low = line.lower()
+		if "only bu1" in low:
+			eff['bu1'] = getPercentage(low)
+
+		elif "only bu2" in low:
+			eff['bu2'] = getPercentage(low)
+
+		elif "both bu1 & bu2" in low:
+			eff['both'] = getPercentage(low)
+
+	return eff
+
+def extractEfficienciesFromSTDOUT_kin4mc(stdout):
+	eff = {'bu1':None, 'bu2':None, 'bu3':None, 'bu1bu2':None, 'bu2bu3':None, 'bu1bu3':None, 'all':None}
+	lines = stdout.splitlines()
+	for line in lines:
+
+		print(f"line = {line}")
+		low = line.lower()
+		print(f"low = {low}")
+
+		if "only bu1:" in low:
+			eff['bu1'] = getPercentage(low)
+
+		elif "only bu2:" in low:
+			eff['bu2'] = getPercentage(low)
+
+		elif "only bu3:" in low:
+			eff['bu3'] = getPercentage(low)
+
+		elif "only bu1 & bu2:" in low:
+			eff['bu1bu2'] = getPercentage(low)
+
+		elif "only bu2 & bu3:" in low:
+			eff['bu2bu3'] = getPercentage(low)
+
+		elif "only bu1 & bu3:" in low:
+			eff['bu1bu3'] = getPercentage(low)
+
+		elif "only bu1, bu2 & bu3:" in low:
+			eff['all'] = getPercentage(low)
+
+	print(f"eff = {eff}")
 	return eff
 
 def kin2mc():
@@ -154,7 +205,7 @@ def kin2mc():
 	phimin_deg = 0.
 	phimax_deg = 360.
 	use_lookup = 0
-	num_events = 1000000
+	num_events = 100000
 
 	#main loop here:
 	results = []
@@ -390,6 +441,7 @@ def kin3mc():
 		logger.info(f"passing kin3mc input file to kin3mc for ExE = {exc2_keV} keV")
 		with open(in_filename) as fin:
 			subprocess.run(["/mnt/e/kinematics/kin3mc/kin3mc_legacy/src/kin3mc"], stdin=fin, check=True)
+
 		os.replace(FIXED_OUTPUT_NAME, out_filename)
 		logger.info(f"finished running kin3mc for ExE = {exc2_keV} keV")
 
@@ -489,9 +541,9 @@ def kin3mc():
 	bu2_vals = [r['bu2'] for r in results]
 	both_vals = [r['both'] for r in results]
 
-	plt.plot(energies, ej_vals, label="Ejectile", marker="o")
-	plt.plot(energies, bu1_vals, label="Recoil", marker="o")
-	plt.plot(energies, bu2_vals, label="Both", marker="o")
+	plt.plot(energies, bu1_vals, label="BU1", marker="o")
+	plt.plot(energies, bu2_vals, label="BU2", marker="o")
+	plt.plot(energies, both_vals, label="Both", marker="o")
 
 	plt.xlabel("Excitation Energy (keV)")
 	plt.ylabel("Efficiency (%)")
@@ -515,6 +567,219 @@ def kin3mc():
 
 def kin4mc():
 	logger.info("kin4mc() started")
+
+	FIXED_OUTPUT_NAME = "kin4mc_bw.out" #default for kin4mc outpu, should never change unless kin4mc changes
+
+	#prep info for kin4mc input file
+	energy_start_keV = float(ENERGY_START_KEV)
+	energy_stop_keV = float(ENERGY_STOP_KEV)
+	energy_step_keV = ENERGY_BIN_KEV
+
+	target = "10B"#UPDATE THIS PER CURVE
+	beam = "3He"#UPDATE THIS PER CURVE
+	ejectile = "4He"#UPDATE THIS PER CURVE
+	recoil = "9B"#UPDATE THIS PER CURVE
+
+	reaction = target + "(" + beam + "," + ejectile + ")" + recoil #this is for kin2mc input purposes
+	reaction_nospecchars = target + beam + ejectile + recoil #this is for filename purposes
+
+	decay1_particle = "1H" #UPDATE THIS PER CURVE
+	decay1_half_width_MeV = 0.00027 #UPDATE THIS PER CURVE
+
+	decay2_particle = "4He"
+	decay2_half_width_MeV = 0.000002785
+
+	daughter_excMeV = 0 #this is for the alpha that 8Be splits into
+	daughter_half_width_MeV = 0 #this is for the alpha that 8Be splits into
+
+	beamenergy = 7.5#UPDATE THIS PER CURVE
+	exc1_MeV = 0.
+	exc2_keV = ENERGY_START_KEV
+	exc3_MeV = 0.
+	exc4_MeV = 0.
+	thetamin_deg = 0.
+	thetamax_deg = 180.
+	phimin_deg = 0.
+	phimax_deg = 360.
+	use_lookup = 0
+	num_events = 100000
+
+	anything = "z"
+
+	results = []
+	counter = 0
+	while exc2_keV <= energy_stop_keV:
+		logger.info(f"readying to run kin4mc for ExE = {exc2_keV} keV")
+		input_lines = [
+			"1",
+			reaction,
+			decay1_particle,
+			decay2_particle,
+			"3",
+			str(beamenergy),
+			"4",
+			str(exc1_MeV),
+			str(exc2_keV/1000.),
+			str(decay1_half_width_MeV),
+			str(exc3_MeV),
+			str(exc4_MeV),
+			str(decay2_half_width_MeV),
+			str(daughter_excMeV),#ex of final daughter
+			str(daughter_excMeV),#ex of final daughter
+			str(daughter_half_width_MeV),
+			"5",
+			str(thetamin_deg),
+			str(thetamax_deg),
+			str(phimin_deg),
+			str(phimax_deg),
+			"6",
+			str(use_lookup),
+			str(num_events),
+			anything,
+			"9"
+		]
+
+		in_filename = KINMC_INPUT_FILEPATH
+		out_filename = os.path.join(KINMC_OUTPUT_DIR, f"kin4mc_{reaction_nospecchars}_{decay1_particle}_{decay2_particle}_at9BExE{exc2_keV}keV.out")
+
+		with open(in_filename, "w") as f:
+			for line in input_lines:
+				f.write(line + "\n")
+
+		logger.info(f"passing kin4mc input file to kin4mc for ExE = {exc2_keV} keV")
+		with open(in_filename) as fin:
+			subprocess.run(["/mnt/e/kinematics/kin4mc/kin4mc_legacy/src/kin4mc"], stdin=fin, check=True)
+
+		os.replace(FIXED_OUTPUT_NAME, out_filename)
+		logger.info(f"finished running kin4mc for ExE = {exc2_keV} keV")
+
+		logger.info(f"readying SABREsim config file for ExE = {exc2_keV} keV")
+		infilename = out_filename
+		detfilename = os.path.join(SABRESIM_CONFIG_DETDIR, f"kin4mc_{reaction_nospecchars}_{decay1_particle}_{decay2_particle}_ExE{exc2_keV}keV.det")
+		treefilename = os.path.join(SABRESIM_CONFIG_TREEDIR, f"kin4mc_{reaction_nospecchars}_{decay1_particle}_{decay2_particle}_ExE{exc2_keV}keV_tree.root")
+		histofilename = os.path.join(SABRESIM_CONFIG_HISTODIR, f"kin4mc_{reaction_nospecchars}_{decay1_particle}_{decay2_particle}_ExE{exc2_keV}keV_histos.root")
+
+		es1 = "true" if ENABLESTRAGGLE1 else "false"
+		es2 = "true" if ENABLESTRAGGLE2 else "false"
+		es3 = "true" if ENABLESTRAGGLE3 else "false"
+		es4 = "true" if ENABLESTRAGGLE4 else "false"
+
+		outputlines = [
+			"#Default SABREsim config file\n\n[General]\ndetmc_version = 4",
+			f"\ninfile = {infilename}",
+			f"\ndetfile = {detfilename}",
+			f"\ntreefile = {treefilename}",
+			f"\nhistofile = {histofilename}",
+			"\n\n[TargetLosses]",
+			f"\ntargetLoss_par1 = {TARGETLOSS_PAR1}",
+			f"\ntargetLoss_par2 = {TARGETLOSS_PAR2}",
+			f"\ntargetLoss_par3 = {TARGETLOSS_PAR3}",
+			f"\ntargetLoss_par4 = {TARGETLOSS_PAR4}",
+			"\n\n[TargetAngularStraggling]",
+			f"\nenableStraggle1 = {es1}",
+			f"\nstraggle1 = {STRAGGLE1}",
+			f"\nenableStraggle2 = {es2}",
+			f"\nstraggle2 = {STRAGGLE2}",
+			f"\nenableStraggle3 = {es3}",
+			f"\nstraggle3 = {STRAGGLE3}",
+			f"\nenableStraggle4 = {es4}",
+			f"\nstraggle4 = {STRAGGLE4}",
+			"\n\n[DeadLayerLosses]",
+			f"\ndeadLayerLoss_par1 = {DEADLAYERLOSS_PAR1}",
+			f"\ndeadLayerLoss_par2 = {DEADLAYERLOSS_PAR2}",
+			f"\ndeadLayerLoss_par3 = {DEADLAYERLOSS_PAR3}",
+			f"\ndeadLayerLoss_par4 = {DEADLAYERLOSS_PAR4}",
+			"\n\n[Beamspot]",
+			f"\nprofile = {PROFILE}",
+			f"\nparX = {PARX}",
+			f"\nparY = {PARY}",
+			f"\nbeam_offsetX = {BEAMOFFSETX}",
+			f"\nbeam_offsetY = {BEAMOFFSETY}",
+			"\n\n[MetaData]",
+			f"\nreaction = {reaction}",
+			f"\nbeam_energy = {beamenergy}",
+			f"\nrecoil_excitation_energy = {exc2_keV/1000.}",
+			"\n"
+		]
+
+		with open(SABRESIM_CONFIG_FILEPATH, "w") as configfile:
+			for line in outputlines:
+				configfile.write(line)
+		logger.info(f"wrote SABRE config file for ExE = {exc2_keV} keV, preparing to run")
+
+		sabresimlogfile = os.path.join(SABRESIM_LOGDIR, f"templog{int(exc2_keV)}keV.txt")
+		command = [SABRESIM_EXE, SABRESIM_CONFIG_FILEPATH]
+		logger.info(f"running SABREsim command: {command}")
+		result = subprocess.run(command, capture_output=True, text=True)
+
+		if result.returncode != 0:
+			logger.warning(f"Error running SABREsim for ExE = {exc2_keV} keV")
+			exc2_keV += energy_step_keV
+			counter += 1
+			continue
+
+		with open(sabresimlogfile, "w") as logf:
+			if result.stdout:
+				logf.write("=== STDOUT ===\n" + result.stdout)
+			if result.stderr:
+				logf.write("=== STDERR ===\n" + result.stderr)
+		logger.info(f"wrote SABRE stdout for ExE = {exc2_keV} keV to {sabresimlogfile}")
+
+		efficiencies = extractEfficienciesFromSTDOUT_kin4mc(result.stdout)
+		results.append(
+			{
+				'energy':exc2_keV/1000.,
+				'bu1':efficiencies['bu1'],
+				'bu2':efficiencies['bu2'],
+				'bu3':efficiencies['bu3'],
+				'bu1bu2':efficiencies['bu1bu2'],
+				'bu2bu3':efficiencies['bu2bu3'],
+				'bu1bu3':efficiencies['bu1bu3'],
+				'all':efficiencies['all']
+			}
+		)
+		logger.info(f"efficiencies extracted and stored for ExE = {exc2_keV} keV")
+
+		exc2_keV += energy_step_keV
+		logger.info(f"incremented ExE to {exc2_keV} keV")
+		counter += 1
+
+	logger.info(f"finished loop in {counter} iterations")
+
+	energies = [r['energy']*1000. for r in results]
+	bu1_vals = [r['bu1'] for r in results]
+	bu2_vals = [r['bu2'] for r in results]
+	bu3_vals = [r['bu3'] for r in results]
+	bu1bu2_vals = [r['bu1bu2'] for r in results]
+	bu2bu3_vals = [r['bu2bu3'] for r in results]
+	bu1bu3_vals = [r['bu1bu3'] for r in results]
+	all_vals = [r['all'] for r in results]
+
+	plt.plot(energies, bu1_vals, label=f"BU1", marker="o")
+	plt.plot(energies, bu2_vals, label=f"BU2", marker="o")
+	plt.plot(energies, bu3_vals, label=f"BU3", marker="o")
+	plt.plot(energies, bu1bu2_vals, label=f"BU1&BU2", marker="o")
+	plt.plot(energies, bu2bu3_vals, label=f"BU2&BU3", marker="o")
+	plt.plot(energies, bu1bu3_vals, label=f"BU1&BU3", marker="o")
+	plt.plot(energies, all_vals, label=f"BU1&BU2&BU3", marker="o")
+
+	plt.xlabel("Excitation Energy (MeV)")
+	plt.ylabel("Efficiency (%)")
+	plt.title("Detection Efficiency vs Excitation Energy")
+	plt.legend()
+	plt.grid(True)
+	plt.tight_layout()
+	plt.savefig(EFFICIENCIES_PLOT_FILEPATH)
+
+	logger.info(f"finished plotting, saved to {EFFICIENCIES_PLOT_FILEPATH}")
+
+	with open(EFFICIENCIES_FILEPATH, "w") as f:
+		f.write("ExE(keV)\tbu1\tbu2\tbu3\tbu1bu2\tbu2bu3\tbu1bu3\n")
+		for x in range(len(energies)):
+			f.write(f"{energies[x]}\t{bu1_vals[x]}\t{bu2_vals[x]}\t{bu3_vals[x]}\t{bu1bu2_vals[x]}\t{bu2bu3_vals[x]}\t{bu1bu3_vals[x]}\t{all_vals[x]}\n")
+
+	logger.info(f"finished saving efficiencies to {EFFICIENCIES_FILEPATH}")
+	logger.info(f"Successfully finished calculating kin4mc efficiencies for {reaction}")
 	
 
 def main():
@@ -552,7 +817,7 @@ def main():
 		print("kin3mc option chosen")
 		kin3mc()
 
-	elif(sys.argv[2] == '4'):
+	elif(sys.argv[1] == '4'):
 		print("kin4mc option chosen")
 		kin4mc()
 
