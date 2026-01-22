@@ -96,7 +96,7 @@ Binning:
 '''
 
 ENERGY_START_KEV = 0
-ENERGY_STOP_KEV = 500
+ENERGY_STOP_KEV = 5000
 ENERGY_BIN_KEV = 5 #bin size
 
 
