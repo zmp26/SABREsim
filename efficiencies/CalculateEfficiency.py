@@ -59,10 +59,10 @@ EFFICIENCIES_PLOT_FILEPATH = "/mnt/e/SABREsim/efficiencies/efficiencies.png"
 Resonance/reaction specific SABREsim config data:
 '''
 #targetlosses:
-TARGETLOSS_PAR1 = "alpha_in_LiF"
+TARGETLOSS_PAR1 = "none"
 TARGETLOSS_PAR2 = "none"
-TARGETLOSS_PAR3 = "alpha_in_LiF"
-TARGETLOSS_PAR4 = "alpha_in_LiF"
+TARGETLOSS_PAR3 = "none"
+TARGETLOSS_PAR4 = "none"
 
 #target angular straggling:
 ENABLESTRAGGLE1 = False
@@ -76,10 +76,10 @@ STRAGGLE3 = "none"
 STRAGGLE4 = "none"
 
 #dead layer losses
-DEADLAYERLOSS_PAR1 = "alpha_in_Si"
+DEADLAYERLOSS_PAR1 = "none"
 DEADLAYERLOSS_PAR2 = "none"
-DEADLAYERLOSS_PAR3 = "alpha_in_Si"
-DEADLAYERLOSS_PAR4 = "alpha_in_Si"
+DEADLAYERLOSS_PAR3 = "none"
+DEADLAYERLOSS_PAR4 = "none"
 
 #beam spot
 PROFILE = "gaussian"
@@ -96,7 +96,7 @@ Binning:
 '''
 
 ENERGY_START_KEV = 0
-ENERGY_STOP_KEV = 5000
+ENERGY_STOP_KEV = 6000
 ENERGY_BIN_KEV = 5 #bin size
 
 
@@ -150,9 +150,9 @@ def extractEfficienciesFromSTDOUT_kin4mc(stdout):
 	lines = stdout.splitlines()
 	for line in lines:
 
-		print(f"line = {line}")
+		#print(f"line = {line}")
 		low = line.lower()
-		print(f"low = {low}")
+		#print(f"low = {low}")
 
 		if "only bu1:" in low:
 			eff['bu1'] = getPercentage(low)
@@ -175,7 +175,7 @@ def extractEfficienciesFromSTDOUT_kin4mc(stdout):
 		elif "only bu1, bu2 & bu3:" in low:
 			eff['all'] = getPercentage(low)
 
-	print(f"eff = {eff}")
+	#print(f"eff = {eff}")
 	return eff
 
 def kin2mc():
@@ -385,7 +385,7 @@ def kin3mc():
 	reaction_nospecchars = target + beam + ejectile + recoil #this is for filename purposes
 
 	decay_particle = "4He"#UPDATE THIS PER CURVE
-	decay_half_width_MeV = 0.012#UPDATE THIS PER CURVE
+	decay_half_width_MeV = 0.001#UPDATE THIS PER CURVE
 
 
 	beamenergy = 7.5#UPDATE THIS PER CURVE
@@ -393,10 +393,10 @@ def kin3mc():
 	exc2_keV = ENERGY_START_KEV
 	exc3_MeV = 0.
 	exc4_MeV = 0.
-	thetamin_deg = 0.
-	thetamax_deg = 180.
-	phimin_deg = 0.
-	phimax_deg = 360.
+	thetamin_deg = 17.8
+	thetamax_deg = 21.8
+	phimin_deg = -2.125
+	phimax_deg = 2.125
 	use_lookup = 0
 	num_events = 100000
 
@@ -405,7 +405,7 @@ def kin3mc():
 	results = []
 	counter = 0
 	while exc2_keV <= energy_stop_keV:
-		logger.info(f"readying to run kin3mc for ExE = {exc2_keV} keV")
+		
 		input_lines = [
 			"1",
 			reaction,
@@ -433,17 +433,25 @@ def kin3mc():
 		in_filename = KINMC_INPUT_FILEPATH
 		out_filename = os.path.join(KINMC_OUTPUT_DIR, f"kin3mc_{reaction_nospecchars}_ExE{int(round(exc2_keV))}keV.out")
 
-		with open(in_filename, "w") as f:
-			for line in input_lines:
-				f.write(line + "\n")
+		if os.path.exists(out_filename):
+			logger.info(f"kin3mc output already exists for ExE = {exc2_keV} keV, skipping kin3mc and reusing existing file")	
+
+		else:
+			logger.info(f"readying to run kin3mc for ExE = {exc2_keV} keV")
 
 
-		logger.info(f"passing kin3mc input file to kin3mc for ExE = {exc2_keV} keV")
-		with open(in_filename) as fin:
-			subprocess.run(["/mnt/e/kinematics/kin3mc/kin3mc_legacy/src/kin3mc"], stdin=fin, check=True)
+			with open(in_filename, "w") as f:
+				for line in input_lines:
+					f.write(line + "\n")
 
-		os.replace(FIXED_OUTPUT_NAME, out_filename)
-		logger.info(f"finished running kin3mc for ExE = {exc2_keV} keV")
+
+
+			logger.info(f"passing kin3mc input file to kin3mc for ExE = {exc2_keV} keV")
+			with open(in_filename) as fin:
+				subprocess.run(["/mnt/e/kinematics/kin3mc/kin3mc_legacy/src/kin3mc"], stdin=fin, check=True)
+
+			os.replace(FIXED_OUTPUT_NAME, out_filename)
+			logger.info(f"finished running kin3mc for ExE = {exc2_keV} keV")
 
 		logger.info(f"readying SABREsim config file for ExE = {exc2_keV} keV")
 		infilename = out_filename
@@ -584,7 +592,8 @@ def kin4mc():
 	reaction_nospecchars = target + beam + ejectile + recoil #this is for filename purposes
 
 	decay1_particle = "1H" #UPDATE THIS PER CURVE
-	decay1_half_width_MeV = 0.00027 #UPDATE THIS PER CURVE
+	#decay1_half_width_MeV = 0.00027 #UPDATE THIS PER CURVE
+	decay1_half_width_MeV = 0.001
 
 	decay2_particle = "4He"
 	decay2_half_width_MeV = 0.000002785
@@ -597,10 +606,10 @@ def kin4mc():
 	exc2_keV = ENERGY_START_KEV
 	exc3_MeV = 0.
 	exc4_MeV = 0.
-	thetamin_deg = 0.
-	thetamax_deg = 180.
-	phimin_deg = 0.
-	phimax_deg = 360.
+	thetamin_deg = 17.8
+	thetamax_deg = 21.8
+	phimin_deg = -2.125
+	phimax_deg = 2.125
 	use_lookup = 0
 	num_events = 100000
 
@@ -609,7 +618,7 @@ def kin4mc():
 	results = []
 	counter = 0
 	while exc2_keV <= energy_stop_keV:
-		logger.info(f"readying to run kin4mc for ExE = {exc2_keV} keV")
+
 		input_lines = [
 			"1",
 			reaction,
@@ -642,16 +651,27 @@ def kin4mc():
 		in_filename = KINMC_INPUT_FILEPATH
 		out_filename = os.path.join(KINMC_OUTPUT_DIR, f"kin4mc_{reaction_nospecchars}_{decay1_particle}_{decay2_particle}_at9BExE{exc2_keV}keV.out")
 
-		with open(in_filename, "w") as f:
-			for line in input_lines:
-				f.write(line + "\n")
 
-		logger.info(f"passing kin4mc input file to kin4mc for ExE = {exc2_keV} keV")
-		with open(in_filename) as fin:
-			subprocess.run(["/mnt/e/kinematics/kin4mc/kin4mc_legacy/src/kin4mc"], stdin=fin, check=True)
+		if os.path.exists(out_filename):
 
-		os.replace(FIXED_OUTPUT_NAME, out_filename)
-		logger.info(f"finished running kin4mc for ExE = {exc2_keV} keV")
+			logger.info(f"kin4mc output already exists for ExE = {exc2_keV} keV, skipping kin4mc and reusing existing file")
+		
+		else:
+
+			logger.info(f"readying to run kin4mc for ExE = {exc2_keV} keV")
+
+			with open(in_filename, "w") as f:
+				for line in input_lines:
+					f.write(line + "\n")
+
+			logger.info(f"passing kin4mc input file to kin4mc for ExE = {exc2_keV} keV")
+			with open(in_filename) as fin:
+				subprocess.run(["/mnt/e/kinematics/kin4mc/kin4mc_legacy/src/kin4mc"], stdin=fin, check=True)
+
+			os.replace(FIXED_OUTPUT_NAME, out_filename)
+			logger.info(f"finished running kin4mc for ExE = {exc2_keV} keV")
+
+
 
 		logger.info(f"readying SABREsim config file for ExE = {exc2_keV} keV")
 		infilename = out_filename
