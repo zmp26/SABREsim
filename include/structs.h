@@ -2,6 +2,7 @@
 #define STRUCTS_H
 
 #include <cmath>
+#include "TString.h"
 
 static const int numwedges = 8;
 static const int numrings = 16;
@@ -21,9 +22,17 @@ struct PHYSDATA { double e, theta, phi; };
 struct SABREDATA { int detectorIndex=-666, particleIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge; };
 
 struct Nucleus {
-	int A;
-	TString sym;
-	double massMeV;
+	int A = -666;
+	TString sym = "";
+	double massMeV = -666;
+
+	bool Filled() const {
+		return (A != -666 && sym != "" && massMeV != -666);
+	}
+
+	TString ToString() const {
+		return Form("%d%s", A, sym.Data());
+	}
 
 	void SetA(int newA){
 		A = newA;
@@ -74,6 +83,38 @@ struct Reaction3{
 		TString retval = Form("%d%s(%d%s,%d%s)%d%s at E=%f to ExE=%f",target.A,target.sym.Data(),beam.A,beam.sym.Data(),ejectile.A,ejectile.sym.Data(),recoil.A,recoil.sym.Data(),beamEnergy,recoilExE);
 		return retval;
 	};
+};
+
+struct CaseResult {
+
+	TVector3 boostvector;
+
+	double Vcm1 = 0;
+	double KEcm1 = 0;
+	double ThetaCM1 = 0;
+	double PhiCM1 = 0;
+	double ELab1 = 0;
+	double ThetaLab1 = 0;
+	double PhiLab1 = 0;
+	double breakup1_LabAngleWRTVCM = 0;
+
+	double Vcm2 = 0;
+	double KEcm2 = 0;
+	double ThetaCM2 = 0;
+	double PhiCM2 = 0;
+	double ELab2 = 0;
+	double ThetaLab2 = 0;
+	double PhiLab2 = 0;
+	double breakup2_LabAngleWRTVCM = 0;
+
+	double recInvMass = 0;
+	double ejInvMass = 0;
+	double bu1InvMass = 0;
+	double bu2InvMass = 0;
+
+	double Ecm = 0;
+	double recoilExE = 0;
+
 };
 
 #endif//STRUCTS_H
