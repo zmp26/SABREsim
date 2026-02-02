@@ -201,7 +201,7 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 bool SABREsim::InitializeModels(){
 	//energy resolution models (eventually, config_ should have the ability to set the resolution and cut off below dynamically)
 	for(size_t i=0; i<SABRE_Array_.size(); i++){
-		SABRE_EnergyResolutionModel* m = new SABRE_EnergyResolutionModel(0.050, 0.2);
+		SABRE_EnergyResolutionModel* m = new SABRE_EnergyResolutionModel(0.050, 0.100);
 		SABREARRAY_EnergyResolutionModels_.push_back(m);
 	}
 

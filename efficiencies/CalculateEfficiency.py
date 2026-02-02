@@ -95,8 +95,8 @@ Binning:
 
 '''
 
-ENERGY_START_KEV = 0
-ENERGY_STOP_KEV = 6000
+ENERGY_START_KEV = 5560
+ENERGY_STOP_KEV = 7000
 ENERGY_BIN_KEV = 5 #bin size
 
 
@@ -583,20 +583,20 @@ def kin4mc():
 	energy_stop_keV = float(ENERGY_STOP_KEV)
 	energy_step_keV = ENERGY_BIN_KEV
 
-	target = "10B"#UPDATE THIS PER CURVE
+	target = "7Li"#UPDATE THIS PER CURVE
 	beam = "3He"#UPDATE THIS PER CURVE
 	ejectile = "4He"#UPDATE THIS PER CURVE
-	recoil = "9B"#UPDATE THIS PER CURVE
+	recoil = "6Li"#UPDATE THIS PER CURVE
 
 	reaction = target + "(" + beam + "," + ejectile + ")" + recoil #this is for kin2mc input purposes
 	reaction_nospecchars = target + beam + ejectile + recoil #this is for filename purposes
 
-	decay1_particle = "1H" #UPDATE THIS PER CURVE
+	decay1_particle = "n" #UPDATE THIS PER CURVE
 	#decay1_half_width_MeV = 0.00027 #UPDATE THIS PER CURVE
 	decay1_half_width_MeV = 0.001
 
 	decay2_particle = "4He"
-	decay2_half_width_MeV = 0.000002785
+	decay2_half_width_MeV = 1.23/2
 
 	daughter_excMeV = 0 #this is for the alpha that 8Be splits into
 	daughter_half_width_MeV = 0 #this is for the alpha that 8Be splits into
