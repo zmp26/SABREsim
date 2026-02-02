@@ -670,6 +670,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			const CaseResult& resultB = immmaResults.second;
 
 			//pass resultA, resultB into RootWriter and RootPlotter here eventually, but must add that functionality first!
+			RootWriter->AddIMMMAResults({resultA, resultB});
 
 		} else if(detected3 || detected4){
 			//only one breakup fragment detected
@@ -683,7 +684,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			const CaseResult& resultB = immmaResults.second;
 
 			//pass resultA, resultB into RootWriter and RootPlotter here eventually, but must add that functionality first!
-
+			RootWriter->AddIMMMAResults({resultA, resultB}); 
 		}
 
 		if((detected1&&!detected3&&!detected4) || (!detected1&&detected3&&!detected4) || (!detected1&&!detected3&&detected4)){

@@ -24,6 +24,33 @@ RootWriter::RootWriter(const std::string& filename){
 	tree_->Branch("localx", localx_, "localx[4]/D");
 	tree_->Branch("localy", localy_, "localy[4]/D");
 
+	tree_->Branch("immma_nCases", &immma_nCases, "immma_nCases/I");
+
+	tree_->Branch("immma_Ecm", immma_Ecm, "immma_Ecm[immma_nCases]/D");
+
+	tree_->Branch("immma_recInvMass", immma_recInvMass, "immma_recInvMass[immma_nCases]/D");
+	tree_->Branch("immma_bu1InvMass", immma_bu1InvMass, "immma_bu1InvMass[immma_nCases]/D");
+	tree_->Branch("immma_bu2InvMass", immma_bu2InvMass, "immma_bu1InvMass[immma_nCases]/D");
+
+	tree_->Branch("immma_Vcm1", immma_Vcm1, "immma_Vcm1[immma_nCases]/D");
+	tree_->Branch("immma_KEcm1", immma_KEcm1, "immma_KEcm1[immma_nCases]/D");
+	tree_->Branch("immma_ThetaCM1", immma_ThetaCM1, "immma_ThetaCM1[immma_nCases]/D");
+	tree_->Branch("immma_PhiCM1", immma_PhiCM1, "immma_PhiCM1[immma_nCases]/D");
+
+	tree_->Branch("immma_Vcm2", immma_Vcm2, "immma_Vcm2[immma_nCases]/D");
+	tree_->Branch("immma_KEcm2", immma_KEcm2, "immma_KEcm2[immma_nCases]/D");
+	tree_->Branch("immma_ThetaCM2", immma_ThetaCM2, "immma_ThetaCM2[immma_nCases]/D");
+	tree_->Branch("immma_PhiCM2", immma_PhiCM2, "immma_PhiCM2[immma_nCases]/D");
+
+	tree_->Branch("immma_ELab1",immma_ELab1,"immma_ELab1[immma_nCases]/D");
+	tree_->Branch("immma_ThetaLab1",immma_ThetaLab1,"immma_ThetaLab1[immma_nCases]/D");
+	tree_->Branch("immma_PhiLab1",immma_PhiLab1,"immma_PhiLab1[immma_nCases]/D");
+
+	tree_->Branch("immma_ELab2",immma_ELab2,"immma_ELab2[immma_nCases]/D");
+	tree_->Branch("immma_ThetaLab2",immma_ThetaLab2,"immma_ThetaLab2[immma_nCases]/D");
+	tree_->Branch("immma_PhiLab2",immma_PhiLab2,"immma_PhiLab2[immma_nCases]/D");
+
+
 	ResetEvent();
 
 	//default metadata values:
@@ -58,6 +85,30 @@ void RootWriter::ResetEvent() {
 	std::fill_n(wedgeEnergy_, 4, -666.);
 	std::fill_n(localx_, 4, -666.);
 	std::fill_n(localy_, 4, -666.);
+
+	immma_nCases = 0;
+
+	std::fill_n(immma_Ecm, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_recInvMass, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_bu1InvMass, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_bu2InvMass, MAX_IMMMA_CASES, -666.);
+
+	std::fill_n(immma_Vcm1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_KEcm1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_ThetaCM1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_PhiCM1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_Vcm2, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_KEcm2, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_ThetaCM2, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_PhiCM2, MAX_IMMMA_CASES, -666.);
+
+	std::fill_n(immma_ELab1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_ThetaLab1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_PhiLab1, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_ELab2, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_ThetaLab2, MAX_IMMMA_CASES, -666.);
+	std::fill_n(immma_PhiLab2, MAX_IMMMA_CASES, -666.);
+
 
 }
 
@@ -132,4 +183,42 @@ void RootWriter::WriteAndClose(){
 		delete file_;
 		file_ = nullptr;
 	}
+}
+
+void RootWriter::AddIMMMAResults(const std::vector<CaseResult>& cases){
+
+	immma_nCases = std::min((int)cases.size(), MAX_IMMMA_CASES);
+
+	for(int i = 0; i< immma_nCases; i++){
+		const CaseResult& c = cases[i];
+
+		immma_Ecm[i] = c.Ecm;
+
+		immma_recInvMass[i] = c.recInvMass;
+		immma_bu1InvMass[i] = c.bu1InvMass;
+		immma_bu2InvMass[i] = c.bu2InvMass;
+
+		immma_Vcm1[i] = c.Vcm1;
+		immma_KEcm1[i] = c.KEcm1;
+		immma_ThetaCM1[i] = c.ThetaCM1;
+		immma_PhiCM1[i] = c.PhiCM1;
+
+		immma_Vcm2[i] = c.Vcm2;
+		immma_KEcm2[i] = c.KEcm2;
+		immma_ThetaCM2[i] = c.ThetaCM2;
+		immma_PhiCM2[i] = c.PhiCM2;
+
+		immma_ELab1[i] = c.ELab1;
+		immma_ThetaLab1[i] = c.ThetaLab1;
+		immma_PhiLab1[i] = c.PhiLab1;
+
+		immma_ELab2[i] = c.ELab2;
+		immma_ThetaLab2[i] = c.ThetaLab2;
+		immma_PhiLab2[i] = c.PhiLab2;
+
+
+
+
+	}
+
 }

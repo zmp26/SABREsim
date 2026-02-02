@@ -9,6 +9,7 @@
 #include "TTree.h"
 #include "TParameter.h"
 #include "TNamed.h"
+#include "structs.h"
 
 
 class RootWriter {
@@ -37,6 +38,8 @@ public:
 				double localx,
 				double localy);
 
+	void AddIMMMAResults(const std::vector<CaseResult>& cases);
+
 	void FillEvent();
 	void WriteAndClose();
 
@@ -47,6 +50,8 @@ public:
 	void SetBeamEnergyMeV(double energy) { beamEnergyMeV_ = energy; };
 	void SetBeamSpotProfile(const std::string& profile) { beamSpotProfile_ = profile; };
 	void SetBeamSpotParameters(double x, double y) { beamSpotParX_ = x; beamSpotParY_ = y; };
+
+	static constexpr int MAX_IMMMA_CASES = 6;
 
 private:
 	TFile *file_;
@@ -72,6 +77,33 @@ private:
 	double wedgeEnergy_[4];
 	double localx_[4];
 	double localy_[4];
+
+	//IMMMA
+	int immma_nCases;
+
+	double immma_Ecm[MAX_IMMMA_CASES];
+	
+	double immma_recInvMass[MAX_IMMMA_CASES];
+	double immma_bu1InvMass[MAX_IMMMA_CASES];
+	double immma_bu2InvMass[MAX_IMMMA_CASES];
+
+	double immma_Vcm1[MAX_IMMMA_CASES];
+	double immma_KEcm1[MAX_IMMMA_CASES];
+	double immma_ThetaCM1[MAX_IMMMA_CASES];
+	double immma_PhiCM1[MAX_IMMMA_CASES];
+
+	double immma_Vcm2[MAX_IMMMA_CASES];
+	double immma_KEcm2[MAX_IMMMA_CASES];
+	double immma_ThetaCM2[MAX_IMMMA_CASES];
+	double immma_PhiCM2[MAX_IMMMA_CASES];
+
+	double immma_ELab1[MAX_IMMMA_CASES];
+	double immma_ThetaLab1[MAX_IMMMA_CASES];
+	double immma_PhiLab1[MAX_IMMMA_CASES];
+
+	double immma_ELab2[MAX_IMMMA_CASES];
+	double immma_ThetaLab2[MAX_IMMMA_CASES];
+	double immma_PhiLab2[MAX_IMMMA_CASES];
 
 	//metadata:
 	std::string inputfile_;
