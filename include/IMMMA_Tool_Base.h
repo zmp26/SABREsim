@@ -82,7 +82,6 @@ protected:
 		const TLorentzVector& parent,
 		const IMMMA_Fragment& f1,
 		const IMMMA_Fragment& f2,
-		TLorentzVector& outComposite,
 		TLorentzVector& outLV1,
 		TLorentzVector& outLV2
 	) const;

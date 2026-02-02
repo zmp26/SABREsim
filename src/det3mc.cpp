@@ -3,6 +3,7 @@
 #include "ConsoleColorizer.h"
 #include "TH2.h"
 #include "TFile.h"
+#include "IMMMA_Tool_3.h"
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
@@ -368,14 +369,14 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// -----	SimConfig, but that will   -----
 	// -----	take some more time        -----
 	IMMMA_Tool_3 immmaTool;
-	immmaTool.SetBeamNucleus();
-	immmaTool.SetTargetNucleus();
-	immmaTool.SetEjectileNucleus();
-	immmaTool.SetRecoilNucleus();
-	immmaTool.SetBreakup1Nucleus();
-	immmaTool.SetBreakup2Nucleus();
-	immmaTool.SetBeamEnergyMeV();
-	immmaTool.SetRecoilExEMeV();
+	immmaTool.SetBeamNucleus(0,"",0);
+	immmaTool.SetTargetNucleus(0,"",0);
+	immmaTool.SetEjectileNucleus(0,"",0);
+	immmaTool.SetRecoilNucleus(0,"",0);
+	immmaTool.SetBreakup1Nucleus(0,"",0);
+	immmaTool.SetBreakup2Nucleus(0,"",0);
+	immmaTool.SetBeamEnergyMeV(0);
+	immmaTool.SetRecoilExEMeV(0);
 
 
 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){

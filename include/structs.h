@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "TString.h"
+#include "TVector3.h"
 
 static const int numwedges = 8;
 static const int numrings = 16;

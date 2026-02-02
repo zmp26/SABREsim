@@ -38,34 +38,34 @@ void IMMMA_Tool_3::SetRecoilExEMeV(double energy){
 //build lab-frame vectors:
 TLorentzVector IMMMA_Tool_3::BuildBeamLV() const {
 	// TLorentzVector v;
-	// double p = std::sqrt(2.0 * beam.mass * beam_energy);
-	// v.SetPxPyPzE(0, 0, p, beam.mass + beam_energy);
+	// double p = std::sqrt(2.0 * beam.massMeV * beam_energy);
+	// v.SetPxPyPzE(0, 0, p, beam.massMeV + beam_energy);
 	// return v;
-	IMMMA_Fragment f{beam.mass, beam_energy, 0, 0, false};
+	IMMMA_Fragment f{beam.massMeV, beam_energy, 0, 0, false};
 	return BuildLab4Vector(f);
 }
 
 TLorentzVector IMMMA_Tool_3::BuildTargetLV() const {
 	// TLorentzVector v;
-	// v.SetPxPyPzE(0, 0, 0, target.mass);
+	// v.SetPxPyPzE(0, 0, 0, target.massMeV);
 	// return v;
-	IMMMA_Fragment f{target.mass, 0, 0, 0, false};
+	IMMMA_Fragment f{target.massMeV, 0, 0, 0, false};
 	return BuildLab4Vector(f);
 }
 
 TLorentzVector IMMMA_Tool_3::BuildEjectileLV(double E, double th, double ph) const {
 	// TLorentzVector v;
-	// double p = std::sqrt(2.0 * ejectile.mass * E);
+	// double p = std::sqrt(2.0 * ejectile.massMeV * E);
 
 	// v.SetPxPyPzE(
 	// 				p*std::sin(DEGRAD * th) * std::cos(DEGRAD * ph),
 	// 				p*std::sin(DEGRAD * th) * std::sin(DEGRAD * ph),
 	// 				p*std::cos(DEGRAD * th),
-	// 				ejectile.mass + E
+	// 				ejectile.massMeV + E
 	// 			);
 	// return v;
 
-	IMMMA_Fragment f{ejectile.mass, E, th, ph, false};
+	IMMMA_Fragment f{ejectile.massMeV, E, th, ph, false};
 	return BuildLab4Vector(f);
 }
 
@@ -87,8 +87,8 @@ CaseResult IMMMA_Tool_3::ConvertDecayResult(const IMMMA_DecayResult& d,
 	r.breakup1_LabAngleWRTVCM = d.LabAngle1WRTBoost;
 	r.breakup2_LabAngleWRTVCM = d.LabAngle2WRTBoost;
 
-	r.Elab1 = p1_lab.Energy();
-	r.Elab2 = p2_lab.Energy();
+	r.ELab1 = p1_lab.Energy();
+	r.ELab2 = p2_lab.Energy();
 
 	r.ThetaLab1 = RADDEG * p1_lab.Theta();
 	r.PhiLab1 = RADDEG * p1_lab.Phi();

@@ -21,8 +21,8 @@ TLorentzVector IMMMA_Tool_Base::BuildLab4Vector(const IMMMA_Fragment& f) const{
 	return v;
 }
 
-IMMMA_Fragment IMMMA_Tool_Base::MakeFragment(const Nucleus& nuc, double E, double th, double ph, bool missing = false) const {
-	return IMMMA_Fragment{nuc.mass, E, th, ph, missing};
+IMMMA_Fragment IMMMA_Tool_Base::MakeFragment(const Nucleus& nuc, double E, double th, double ph, bool missing) const {
+	return IMMMA_Fragment{nuc.massMeV, E, th, ph, missing};
 }
 
 IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
@@ -80,14 +80,14 @@ IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
 	LV2_cm.Boost(boost);
 
 	//fragment 1 CM
-	res.Vcm1 = (LV1_cm.Vect() / LV1_cm.E()).Mag();
+	res.Vcm1 = (LV1_cm.Vect() * ( 1 / LV1_cm.E())).Mag();
 	res.KEcm1 = 0.5 * f1.mass * res.Vcm1 * res.Vcm1;
 	res.ThetaCM1 = RADDEG * LV1_cm.Theta();
 	res.PhiCM1 = RADDEG * LV1_cm.Phi();
 	if(res.PhiCM1 < 0) res.PhiCM1 += 360.;
 
 	//fragment 2 CM
-	res.Vcm2 = (LV2_cm.Vect() / LV2_cm.E()).Mag();
+	res.Vcm2 = (LV2_cm.Vect() * ( 1 / LV2_cm.E())).Mag();
 	res.KEcm2 = 0.5 * f2.mass * res.Vcm2 * res.Vcm2;
 	res.ThetaCM2 = RADDEG * LV2_cm.Theta();
 	res.PhiCM2 = RADDEG * LV2_cm.Phi();
