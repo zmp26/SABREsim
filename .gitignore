@@ -11,6 +11,4 @@ SABREsim
 config/corners/*
 logs/*
 config/SABREsim_laptop_COPY.conf
-efficiencies/efficiencies.txt
-efficiencies/kinmc.in
-efficiencies/logs/CalculateEfficiency_log.txt
+efficiencies/*txt
