@@ -72,15 +72,19 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 	const auto& beam = config->GetBeam();
 	immmaTool.SetBeamNucleus(beam.A, beam.symbol, beam.mass);
+	std::cout << "set beam to mass " << beam.mass << std::endl;
 
 	const auto& target = config->GetTarget();
 	immmaTool.SetTargetNucleus(target.A, target.symbol, target.mass);
+	std::cout << "set target to mass " << target.mass << std::endl;
 
 	const auto& ejectile = config->GetEjectile();
 	immmaTool.SetEjectileNucleus(ejectile.A, ejectile.symbol, ejectile.mass);
+	std::cout << "set ejectile to mass " << ejectile.mass << std::endl;
 
 	const auto& recoil = config->GetRecoil();
 	immmaTool.SetRecoilNucleus(recoil.A, recoil.symbol, recoil.mass);
+	std::cout << "set recoil to mass " << recoil.mass << std::endl;
 
 	// const auto& bu1 = config->GetBreakup1();
 	// immmaTool.SetBreakup1(bu1.A, bu1.symbol, bu1.mass);
@@ -390,6 +394,8 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//pass resultA, resultB into RootWriter and RootPlotter here eventually, but must add that functionality first!
 			RootWriter->AddIMMMAResults({resultA, resultB});
+			RootPlotter->Fill_IMM(resultA, recoil.mass);
+			RootPlotter->Fill_IMM(resultB, recoil.mass);
 
 		} else if(detected3 || detected4){
 			//only one breakup fragment detected
@@ -403,7 +409,9 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			const CaseResult& resultB = immmaResults.second;
 
 			//pass resultA, resultB into RootWriter and RootPlotter here eventually, but must add that functionality first!
-			RootWriter->AddIMMMAResults({resultA, resultB}); 
+			RootWriter->AddIMMMAResults({resultA, resultB});
+			RootPlotter->Fill_MMM(resultA, recoil.mass);
+			RootPlotter->Fill_MMM(resultB, recoil.mass);
 		}
 
 		if((detected1&&!detected3&&!detected4) || (!detected1&&detected3&&!detected4) || (!detected1&&!detected3&&detected4)){

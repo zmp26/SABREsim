@@ -177,6 +177,28 @@ void plot3mc::FillStraggleHistos(double oldTheta, double oldPhi, double newTheta
 	histoman->getHisto1D("hdPhi")->Fill(dPhi);
 }
 
+void plot3mc::Fill_IMM(const CaseResult& cr, double recoilGroundMassMeV){
+	double ExE = cr.recInvMass - recoilGroundMassMeV;
+	histoman->getHisto1D("hIMM_RecoilExE")->Fill(ExE);
+	histoman->getHisto1D("hIMM_Ecm")->Fill(cr.Ecm);
+	histoman->getHisto1D("hIMM_recInvMass")->Fill(cr.recInvMass);
+	histoman->getHisto1D("hIMM_ejInvMass")->Fill(cr.ejInvMass);
+	histoman->getHisto1D("hIMM_bu1InvMass")->Fill(cr.bu1InvMass);
+	histoman->getHisto1D("hIMM_bu2InvMass")->Fill(cr.bu2InvMass);
+	histoman->getHisto1D("hIMM_recGroundMass")->Fill(recoilGroundMassMeV);
+}
+
+void plot3mc::Fill_MMM(const CaseResult& cr, double recoilGroundMassMeV){
+	double ExE = cr.recInvMass - recoilGroundMassMeV;
+	histoman->getHisto1D("hMMM_RecoilExE")->Fill(ExE);
+	histoman->getHisto1D("hMMM_Ecm")->Fill(cr.Ecm);
+	histoman->getHisto1D("hMMM_recInvMass")->Fill(cr.recInvMass);
+	histoman->getHisto1D("hMMM_ejInvMass")->Fill(cr.ejInvMass);
+	histoman->getHisto1D("hMMM_bu1InvMass")->Fill(cr.bu1InvMass);
+	histoman->getHisto1D("hMMM_bu2InvMass")->Fill(cr.bu2InvMass);
+	histoman->getHisto1D("hMMM_recGroundMass")->Fill(recoilGroundMassMeV);
+}
+
 bool plot3mc::FillTH1D(const TString& histoname, double value){
 	if(!histoman->getHisto1D(histoname)) return false;
 	histoman->getHisto1D(histoname)->Fill(value);
@@ -361,6 +383,7 @@ void plot3mc::ProcessTXTOutput(const std::string& outputLines){
 
 void plot3mc::SaveAndWrite(){
 	UpdateHistoAxes();
+	histofile->cd();
 	histoman->WriteAll(true);
 }
 

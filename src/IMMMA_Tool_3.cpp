@@ -94,6 +94,7 @@ CaseResult IMMMA_Tool_3::ConvertDecayResult(const IMMMA_DecayResult& d,
 	r.PhiLab2 = RADDEG * p2_lab.Phi();
 	if(r.PhiLab2 < 0) r.PhiLab2 += 360.;
 
+	r.ejInvMass = std::sqrt(d.invMassSquaredEj);
 	r.bu1InvMass = std::sqrt(d.invMassSquared1);
 	r.bu2InvMass = std::sqrt(d.invMassSquared2);
 	r.recInvMass = std::sqrt(d.invMassSquaredParent);
@@ -114,7 +115,8 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventIMM(
 		throw std::runtime_error("IMMMA_Tool_3 requires 2 breakup nuclei!");
 	}
 
-	TLorentzVector recoilLV = BuildBeamLV() + BuildTargetLV() - BuildEjectileLV(ejectileE, ejectileTheta, ejectilePhi);
+	//TLorentzVector recoilLV = BuildBeamLV() + BuildTargetLV() - BuildEjectileLV(ejectileE, ejectileTheta, ejectilePhi);
+	TLorentzVector recoilLV = BuildLab4Vector(MakeFragment(breakups[0].massMeV, detected1E, detected1Theta, detected1Phi, false)) + BuildLab4Vector(MakeFragment(breakups[1].massMeV, detected2E, detected2Theta, detected2Phi, false));
 
 	//hypothesis A:
 	IMMMA_Fragment f1A = MakeFragment(breakups[0], detected1E, detected1Theta, detected1Phi);

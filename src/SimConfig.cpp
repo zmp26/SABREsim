@@ -109,43 +109,54 @@ bool SimConfig::Parse(){
 		else if(section == "IMMMA"){
 
 			auto parseNucleus = [&](const std::string& prefix, NucleusConfig& nuc){
-				if(key == prefix + "_A") nuc.A = std::stoi(val);
-				else if(key == prefix + "_symbol") nuc.symbol = val;
 
-				nuc.mass = masstable->GetMassMeV(nuc.symbol.Data(), nuc.A);
+				if(key == prefix + "_A"){
+					nuc.A = std::stoi(val);
+
+				}
+				else if(key == prefix + "_symbol"){
+					nuc.symbol = val;
+
+				}
+				else if(key == prefix + "_mass"){
+					nuc.mass = std::stod(val);
+				}
+
+				//if(prefix == "ejectile" && nuc.A > 0 && nuc.mass > 0) std::cout << prefix << "\t A = " << nuc.A << "\tsym = " << nuc.symbol << "\tmass = " << nuc.mass << std::endl;
 			};
 
 			parseNucleus("beam",beam_);
 			parseNucleus("target",target_);
 			parseNucleus("ejectile",ejectile_);
-			parseNucleus("recoil",recoil_);
-			
+			parseNucleus("recoil", recoil_);
 
-			if(key.rfind("breakup",0) == 0){
-
+			if(key.rfind("breakup", 0) == 0){
 				size_t idxStart = std::string("breakup").size();
 				size_t underscore = key.find('_', idxStart);
-				if(underscore == std::string::npos) return true;
+				if(underscore == std::string::npos) continue;
 
 				int index = std::stoi(key.substr(idxStart, underscore - idxStart)) - 1;
-				std::string field = key.substr(underscore+1);
+				std::string field = key.substr(underscore + 1);
+				if(index < 0) continue;
 
-				if(index<0) return true;
-
-				if(breakups_.size() <= static_cast<size_t>(index))
-					breakups_.resize(index+1);
+				if(breakups_.size() <= static_cast<size_t>(index)) breakups_.resize(index+1);
 
 				NucleusConfig& nuc = breakups_[index];
 
 				if(field == "A") nuc.A = std::stoi(val);
 				else if(field == "symbol") nuc.symbol = val;
+				else if(field == "mass") nuc.mass = std::stod(val);
 
-				nuc.mass = masstable->GetMassMeV(nuc.symbol.Data(), nuc.A);
-			}
+			} 
 
 		}
 	}
 
+
+	std::cout << "beam\t A = " << beam_.A << "\tsymbol = " << beam_.symbol << "\tmass = " << beam_.mass << std::endl;
+	std::cout << "target\t A = " << target_.A << "\tsymbol = " << target_.symbol << "\tmass = " << target_.mass << std::endl;
+	std::cout << "ejectile\t A = " << ejectile_.A << "\tsymbol = " << ejectile_.symbol << "\tmass = " << ejectile_.mass << std::endl;
+	std::cout << "recoil\t A = " << recoil_.A << "\tsymbol = " << recoil_.symbol << "\tmass = " << recoil_.mass << std::endl; 
 
 	infile.close();
 	return true;

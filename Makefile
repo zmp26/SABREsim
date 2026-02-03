@@ -2,7 +2,12 @@ CC = g++
 ROOTCFLAGS := $(shell root-config --cflags)
 ROOTLIBS := $(shell root-config --libs)
 
-ASAN_FLAGS = -fsanitize=address -g -O1
+ASAN ?= 0
+
+ASAN_FLAGS = 
+ifeq ($(ASAN),1)
+	ASAN_FLAGS = -fsanitize=address -g -O1
+endif
 
 CFLAGS = -Wall -std=c++17 $(ROOTCFLAGS) $(ASAN_FLAGS)
 LDFLAGS = $(ROOTLIBS) $(ASAN_FLAGS)

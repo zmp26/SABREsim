@@ -25,6 +25,10 @@ IMMMA_Fragment IMMMA_Tool_Base::MakeFragment(const Nucleus& nuc, double E, doubl
 	return IMMMA_Fragment{nuc.massMeV, E, th, ph, missing};
 }
 
+IMMMA_Fragment IMMMA_Tool_Base::MakeFragment(double massMeV, double E, double th, double ph, bool missing) const {
+	return IMMMA_Fragment{massMeV, E, th, ph, missing};
+}
+
 IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
 	const TLorentzVector& parent,
 	const IMMMA_Fragment& f1,
@@ -46,13 +50,23 @@ IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
 	//case 2: f1 missing, f2 detected
 	else if(f1.isMissing && !f2.isMissing){
 		outLV2 = BuildLab4Vector(f2);
-		outLV1 = parent - outLV2;
+		
+		TVector3 p_miss_dir = (parent - outLV2).Vect().Unit();
+		double m = f1.mass;
+		double E_miss = std::sqrt(std::pow(parent.E() - outLV2.E(), 2) - (parent.Vect() - outLV2.Vect()).Mag2() + m*m);
+		TVector3 p_miss = p_miss_dir * std::sqrt(E_miss*E_miss - m*m);
+		outLV1.SetVectM(p_miss, m);
 	}
 
 	//case 3: f1 detected, f2 missing
 	else if(!f1.isMissing && f2.isMissing){
 		outLV1 = BuildLab4Vector(f1);
-		outLV2 = parent - outLV1;
+		
+		TVector3 p_miss_dir = (parent - outLV1).Vect().Unit();
+		double m = f2.mass;
+		double E_miss = std::sqrt(std::pow(parent.E() - outLV1.E(), 2) - (parent.Vect() - outLV1.Vect()).Mag2() + m*m);
+		TVector3 p_miss = p_miss_dir  * std::sqrt(E_miss*E_miss - m*m);
+		outLV2.SetVectM(p_miss, m);
 	}
 
 	//case 4: neither detected

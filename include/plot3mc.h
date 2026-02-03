@@ -28,6 +28,9 @@ public:
 
 	void FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi, double dTheta, double dPhi);
 
+	void Fill_IMM(const CaseResult& cr, double recoilGroundMassMeV);
+	void Fill_MMM(const CaseResult& cr, double recoilGroundMassMeV);
+
 	bool FillTH1D(const TString& histoname, double value);
 	bool FillTH2D(const TString& histoname, double valuex, double valuey);
 	bool FillTH3D(const TString& histoname, double valuex, double valuey, double valuez);

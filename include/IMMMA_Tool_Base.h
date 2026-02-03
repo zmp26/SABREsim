@@ -55,6 +55,7 @@ struct IMMMA_DecayResult {
 	double Ecm = 0.;
 
 	//invariant masses squared:
+	double invMassSquaredEj = 0.;
 	double invMassSquared1 = 0.;
 	double invMassSquared2 = 0.;
 	double invMassSquaredParent = 0.;
@@ -89,6 +90,7 @@ protected:
 	TLorentzVector BuildLab4Vector(const IMMMA_Fragment& f) const;
 
 	IMMMA_Fragment MakeFragment(const Nucleus& nuc, double E, double th, double ph, bool missing = false) const;
+	IMMMA_Fragment MakeFragment(double massMeV, double E, double th, double ph, bool missing = false) const;
 };
 
 #endif//IMMMA_TOOL_BASE_H

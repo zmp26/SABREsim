@@ -38,6 +38,28 @@ HistoManager::HistoManager(TFile* outputfile) : m_outputFile(outputfile){
 
 HistoManager::~HistoManager(){
 
+	auto detachFromROOT = [](THashTable& table){
+		TIter it(table.MakeIterator());
+		TObject* obj;
+		while((obj = it())){
+			if(auto h1 = dynamic_cast<TH1*>(obj)) h1->SetDirectory(nullptr);
+			else if(auto h2 = dynamic_cast<TH2*>(obj)) h2->SetDirectory(nullptr);
+			else if(auto h3 = dynamic_cast<TH3*>(obj)) h3->SetDirectory(nullptr);
+			else if(auto p1 = dynamic_cast<TProfile*>(obj)) p1->SetDirectory(nullptr);
+			else if(auto p2 = dynamic_cast<TProfile2D*>(obj)) p2->SetDirectory(nullptr);
+			else if(auto h2p = dynamic_cast<TH2Poly*>(obj)) h2p->SetDirectory(nullptr);
+		}
+	};
+
+	detachFromROOT(m_h1DTable);
+	detachFromROOT(m_h2DTable);
+	detachFromROOT(m_h3DTable);
+	detachFromROOT(m_profile1DTable);
+	detachFromROOT(m_profile2DTable);
+	detachFromROOT(m_h2DPolyTable);
+
+
+
 	TIter next1D(m_h1DTable.MakeIterator());
 	TObject *obj1D;
 	while((obj1D = next1D())){
@@ -52,6 +74,13 @@ HistoManager::~HistoManager(){
 	}
 	m_h2DTable.Clear();
 
+	TIter next3D(m_h3DTable.MakeIterator());
+	TObject *obj3D;
+	while((obj3D = next3D())){
+		delete obj3D;
+	}
+	m_h3DTable.Clear();
+
 	TIter nextProfile1D(m_profile1DTable.MakeIterator());
 	TObject *objp1D;
 	while((objp1D = nextProfile1D())){
@@ -65,6 +94,13 @@ HistoManager::~HistoManager(){
 		delete objp2D;
 	}
 	m_profile2DTable.Clear();
+
+	TIter nextPoly(m_h2DPolyTable.MakeIterator());
+	TObject *objPoly;
+	while((objPoly = nextPoly())){
+		delete objPoly;
+	}
+	m_h2DPolyTable.Clear();
 
 }
 
