@@ -51,7 +51,7 @@ private:
 	double beam_energy = 0;
 	double recoil_ExE = 0;
 
-	CaseResult ConvertDecayResult(const IMMMA_DecayResult& d, const TLorentzVector& p1_lab, const TLorentzVector& p2_lab) const;
+	CaseResult ConvertDecayResult(const IMMMA_DecayResult& d, const TLorentzVector& p1_lab, double m1, const TLorentzVector& p2_lab, double m2) const;
 
 	TLorentzVector BuildBeamLV() const;
 	TLorentzVector BuildTargetLV() const;

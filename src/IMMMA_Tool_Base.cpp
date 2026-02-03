@@ -50,24 +50,24 @@ IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
 	//case 2: f1 missing, f2 detected
 	else if(f1.isMissing && !f2.isMissing){
 		outLV2 = BuildLab4Vector(f2);
-		
-		TVector3 p_miss_dir = (parent - outLV2).Vect().Unit();
-		double m = f1.mass;
-		double E_miss = std::sqrt(std::pow(parent.E() - outLV2.E(), 2) - (parent.Vect() - outLV2.Vect()).Mag2() + m*m);
-		TVector3 p_miss = p_miss_dir * std::sqrt(E_miss*E_miss - m*m);
-		outLV1.SetVectM(p_miss, m);
+
+		TVector3 p_miss = parent.Vect() - outLV2.Vect();
+
+		double KE_miss = p_miss.Mag2() / (2.0 * f1.mass);
+
+		outLV1.SetPxPyPzE(p_miss.X(), p_miss.Y(), p_miss.Z(), f1.mass + KE_miss);
 	}
 
-	//case 3: f1 detected, f2 missing
 	else if(!f1.isMissing && f2.isMissing){
 		outLV1 = BuildLab4Vector(f1);
-		
-		TVector3 p_miss_dir = (parent - outLV1).Vect().Unit();
-		double m = f2.mass;
-		double E_miss = std::sqrt(std::pow(parent.E() - outLV1.E(), 2) - (parent.Vect() - outLV1.Vect()).Mag2() + m*m);
-		TVector3 p_miss = p_miss_dir  * std::sqrt(E_miss*E_miss - m*m);
-		outLV2.SetVectM(p_miss, m);
+
+		TVector3 p_miss = parent.Vect() - outLV1.Vect();
+
+		double KE_miss = p_miss.Mag2() / (2.0 * f2.mass);
+
+		outLV2.SetPxPyPzE(p_miss.X(), p_miss.Y(), p_miss.Z(), f2.mass + KE_miss);
 	}
+
 
 	//case 4: neither detected
 	else{

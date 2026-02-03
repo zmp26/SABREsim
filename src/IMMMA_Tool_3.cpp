@@ -66,8 +66,8 @@ TLorentzVector IMMMA_Tool_3::BuildEjectileLV(double E, double th, double ph) con
 }
 
 CaseResult IMMMA_Tool_3::ConvertDecayResult(const IMMMA_DecayResult& d,
-											const TLorentzVector& p1_lab,
-											const TLorentzVector& p2_lab
+											const TLorentzVector& p1_lab, double m1,
+											const TLorentzVector& p2_lab, double m2
 										   ) const {
 
 
@@ -124,14 +124,14 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventIMM(
 
 	TLorentzVector outLV1A, outLV2A;
 	IMMMA_DecayResult dA = SolveTwoBodyDecay(recoilLV, f1A, f2A, outLV1A, outLV2A);
-	CaseResult resultA = ConvertDecayResult(dA, outLV1A, outLV2A);
+	CaseResult resultA = ConvertDecayResult(dA, outLV1A, breakups[0].massMeV, outLV2A, breakups[1].massMeV);
 
 	//hypothesis B:
 	IMMMA_Fragment f1B = MakeFragment(breakups[1], detected1E, detected1Theta, detected1Phi);
 	IMMMA_Fragment f2B = MakeFragment(breakups[0], detected2E, detected2Theta, detected2Phi);
 	TLorentzVector outLV1B, outLV2B;
 	IMMMA_DecayResult dB = SolveTwoBodyDecay(recoilLV, f1B, f2B, outLV1B, outLV2B);
-	CaseResult resultB = ConvertDecayResult(dB, outLV1B, outLV2B);
+	CaseResult resultB = ConvertDecayResult(dB, outLV1B, breakups[1].massMeV, outLV2B, breakups[0].massMeV);
 
 	return{resultA, resultB};
 
@@ -156,14 +156,14 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventMMM(
 	IMMMA_Fragment missA = MakeFragment(breakups[1], 0, 0, 0, true);
 	TLorentzVector outLV1A, outLV2A;
 	IMMMA_DecayResult decayA = SolveTwoBodyDecay(recoilLV, obsA, missA, outLV1A, outLV2A);
-	CaseResult resultA = ConvertDecayResult(decayA, outLV1A, outLV2A);
+	CaseResult resultA = ConvertDecayResult(decayA, outLV1A, breakups[0].massMeV, outLV2A, breakups[1].massMeV);
 
 	// hypothesis  B:
 	IMMMA_Fragment obsB = MakeFragment(breakups[1], detectedE, detectedTheta, detectedPhi);
 	IMMMA_Fragment missB = MakeFragment(breakups[0], 0, 0, 0, true);
 	TLorentzVector outLV1B, outLV2B;
 	IMMMA_DecayResult decayB = SolveTwoBodyDecay(recoilLV, obsB, missB, outLV1B, outLV2B);
-	CaseResult resultB = ConvertDecayResult(decayB, outLV1B, outLV2B);
+	CaseResult resultB = ConvertDecayResult(decayB, outLV1B, breakups[1].massMeV, outLV2B, breakups[0].massMeV);
 
 	return {resultA, resultB};
 }
