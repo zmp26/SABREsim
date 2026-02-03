@@ -403,7 +403,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			double detectedTheta_meas = detected3 ? theta3_meas : theta4_meas;
 			double detectedPhi_meas = detected3 ? phi3_meas : phi4_meas;
 
-			auto immmaResults = immmaTool.AnalyzeEventMMM(smearedERing1, theta1_meas, phi1_meas,
+			auto immmaResults = immmaTool.AnalyzeEventMMM(e1, theta1, phi1,
 														  detectedE_meas, detectedTheta_meas, detectedPhi_meas);
 			const CaseResult& resultA = immmaResults.first;
 			const CaseResult& resultB = immmaResults.second;
