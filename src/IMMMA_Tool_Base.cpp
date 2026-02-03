@@ -62,9 +62,10 @@ IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
 
 		TVector3 p_miss = parent.Vect() - outLV2.Vect();
 
-		double KE_miss = p_miss.Mag2() / (2.0 * f1.mass);
+		//double KE_miss = p_miss.Mag2() / (2.0 * f1.mass);
+		double E_miss = parent.E() - outLV2.E();
 
-		outLV1.SetPxPyPzE(p_miss.X(), p_miss.Y(), p_miss.Z(), f1.mass + KE_miss);
+		outLV1.SetPxPyPzE(p_miss.X(), p_miss.Y(), p_miss.Z(), E_miss);
 	}
 
 	else if(!f1.isMissing && f2.isMissing){
@@ -72,9 +73,10 @@ IMMMA_DecayResult IMMMA_Tool_Base::SolveTwoBodyDecay(
 
 		TVector3 p_miss = parent.Vect() - outLV1.Vect();
 
-		double KE_miss = p_miss.Mag2() / (2.0 * f2.mass);
+		//double KE_miss = p_miss.Mag2() / (2.0 * f2.mass);
+		double E_miss = parent.E() - outLV1.E();
 
-		outLV2.SetPxPyPzE(p_miss.X(), p_miss.Y(), p_miss.Z(), f2.mass + KE_miss);
+		outLV2.SetPxPyPzE(p_miss.X(), p_miss.Y(), p_miss.Z(), E_miss);
 	}
 
 
