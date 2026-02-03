@@ -83,8 +83,8 @@ CaseResult IMMMA_Tool_3::ConvertDecayResult(const IMMMA_DecayResult& d,
 	r.breakup1_LabAngleWRTVCM = d.LabAngle1WRTBoost;
 	r.breakup2_LabAngleWRTVCM = d.LabAngle2WRTBoost;
 
-	r.ELab1 = p1_lab.Energy();
-	r.ELab2 = p2_lab.Energy();
+	r.ELab1 = p1_lab.Energy() - m1;
+	r.ELab2 = p2_lab.Energy() - m2;
 
 	r.ThetaLab1 = RADDEG * p1_lab.Theta();
 	r.PhiLab1 = RADDEG * p1_lab.Phi();
