@@ -27,6 +27,15 @@ struct Nucleus {
 	TString sym = "";
 	double massMeV = -666;
 
+	Nucleus() = default;
+	Nucleus(int a, const TString& s, double m) : A(a), sym(s), massMeV(m) {}
+
+	Nucleus(const Nucleus&) = default;
+
+	Nucleus(Nucleus&&) = default;
+
+	Nucleus& operator=(const Nucleus&) = default;
+
 	bool Filled() const {
 		return (A != -666 && sym != "" && massMeV != -666);
 	}

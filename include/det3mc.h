@@ -16,6 +16,7 @@
 #include "plot3mc.h"
 #include "TargetAngularStraggler.h"
 #include "structs.h"
+#include "SimConfig.h"
 
 class det3mc{
 public:
@@ -36,7 +37,7 @@ public:
 		   TargetAngularStraggler* straggler_par3,
 		   TargetAngularStraggler* straggler_par4);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, bool targetStraggle1, bool targetStraggle2, bool targetStraggle3, bool targetStraggle4);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, SimConfig* config);
 
 	//after Run(), these functions can be called to query for statistics:
 	long GetNumEvents() const;

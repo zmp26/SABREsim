@@ -19,8 +19,8 @@ public:
 	void SetTargetNucleus(int A, TString sym, double mass);
 	void SetEjectileNucleus(int A, TString sym, double mass);
 	void SetRecoilNucleus(int A, TString sym, double mass);
-	void SetBreakup1Nucleus(int A, TString sym, double mass);
-	void SetBreakup2Nucleus(int A, TString sym, double mass);
+	
+	void SetBreakupNuclei(const std::vector<Nucleus>& b);
 
 	void SetBeamEnergyMeV(double energy);
 	void SetRecoilExEMeV(double energy);
@@ -45,8 +45,8 @@ private:
 	Nucleus target;
 	Nucleus ejectile;
 	Nucleus recoil;
-	Nucleus breakup1;
-	Nucleus breakup2;
+	
+	std::vector<Nucleus> breakups;
 
 	double beam_energy = 0;
 	double recoil_ExE = 0;

@@ -30,7 +30,7 @@ RootWriter::RootWriter(const std::string& filename){
 
 	tree_->Branch("immma_recInvMass", immma_recInvMass, "immma_recInvMass[immma_nCases]/D");
 	tree_->Branch("immma_bu1InvMass", immma_bu1InvMass, "immma_bu1InvMass[immma_nCases]/D");
-	tree_->Branch("immma_bu2InvMass", immma_bu2InvMass, "immma_bu1InvMass[immma_nCases]/D");
+	tree_->Branch("immma_bu2InvMass", immma_bu2InvMass, "immma_bu2InvMass[immma_nCases]/D");
 
 	tree_->Branch("immma_Vcm1", immma_Vcm1, "immma_Vcm1[immma_nCases]/D");
 	tree_->Branch("immma_KEcm1", immma_KEcm1, "immma_KEcm1[immma_nCases]/D");

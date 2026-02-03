@@ -19,12 +19,8 @@ void IMMMA_Tool_3::SetRecoilNucleus(int A, TString sym, double mass){
 	recoil = {A, sym, mass};
 }
 
-void IMMMA_Tool_3::SetBreakup1Nucleus(int A, TString sym, double mass){
-	breakup1 = {A, sym, mass};
-}
-
-void IMMMA_Tool_3::SetBreakup2Nucleus(int A, TString sym, double mass){
-	breakup2 = {A, sym, mass};
+void IMMMA_Tool_3::SetBreakupNuclei(const std::vector<Nucleus>& b){
+	breakups = b;
 }
 
 void IMMMA_Tool_3::SetBeamEnergyMeV(double energy){
@@ -113,19 +109,24 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventIMM(
 		double detected2E, double detected2Theta, double detected2Phi) const
 {
 
+	if(breakups.size() <= 2){
+		std::cout << breakups.size() << std::endl;
+		throw std::runtime_error("IMMMA_Tool_3 requires 2 breakup nuclei!");
+	}
+
 	TLorentzVector recoilLV = BuildBeamLV() + BuildTargetLV() - BuildEjectileLV(ejectileE, ejectileTheta, ejectilePhi);
 
 	//hypothesis A:
-	IMMMA_Fragment f1A = MakeFragment(breakup1, detected1E, detected1Theta, detected1Phi);
-	IMMMA_Fragment f2A = MakeFragment(breakup2, detected2E, detected2Theta, detected2Phi);
+	IMMMA_Fragment f1A = MakeFragment(breakups[0], detected1E, detected1Theta, detected1Phi);
+	IMMMA_Fragment f2A = MakeFragment(breakups[1], detected2E, detected2Theta, detected2Phi);
 
 	TLorentzVector outLV1A, outLV2A;
 	IMMMA_DecayResult dA = SolveTwoBodyDecay(recoilLV, f1A, f2A, outLV1A, outLV2A);
 	CaseResult resultA = ConvertDecayResult(dA, outLV1A, outLV2A);
 
 	//hypothesis B:
-	IMMMA_Fragment f1B = MakeFragment(breakup2, detected1E, detected1Theta, detected1Phi);
-	IMMMA_Fragment f2B = MakeFragment(breakup1, detected2E, detected2Theta, detected2Phi);
+	IMMMA_Fragment f1B = MakeFragment(breakups[1], detected1E, detected1Theta, detected1Phi);
+	IMMMA_Fragment f2B = MakeFragment(breakups[0], detected2E, detected2Theta, detected2Phi);
 	TLorentzVector outLV1B, outLV2B;
 	IMMMA_DecayResult dB = SolveTwoBodyDecay(recoilLV, f1B, f2B, outLV1B, outLV2B);
 	CaseResult resultB = ConvertDecayResult(dB, outLV1B, outLV2B);
@@ -140,18 +141,24 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventMMM(
 													double detectedE, double detectedTheta, double detectedPhi) const
 {
 
+	if(breakups.size() <= 2){
+		std::cout << breakups.size() << std::endl;
+		throw std::runtime_error("IMMMA_Tool_3 requires 2 breakup nuclei!");
+	}
+
+
 	TLorentzVector recoilLV = BuildBeamLV() + BuildTargetLV() - BuildEjectileLV(ejectileE, ejectileTheta, ejectilePhi);
 
 	// hypothesis A:
-	IMMMA_Fragment obsA = MakeFragment(breakup1, detectedE, detectedTheta, detectedPhi);
-	IMMMA_Fragment missA = MakeFragment(breakup2, 0, 0, 0, true);
+	IMMMA_Fragment obsA = MakeFragment(breakups[0], detectedE, detectedTheta, detectedPhi);
+	IMMMA_Fragment missA = MakeFragment(breakups[1], 0, 0, 0, true);
 	TLorentzVector outLV1A, outLV2A;
 	IMMMA_DecayResult decayA = SolveTwoBodyDecay(recoilLV, obsA, missA, outLV1A, outLV2A);
 	CaseResult resultA = ConvertDecayResult(decayA, outLV1A, outLV2A);
 
 	// hypothesis  B:
-	IMMMA_Fragment obsB = MakeFragment(breakup2, detectedE, detectedTheta, detectedPhi);
-	IMMMA_Fragment missB = MakeFragment(breakup1, 0, 0, 0, true);
+	IMMMA_Fragment obsB = MakeFragment(breakups[1], detectedE, detectedTheta, detectedPhi);
+	IMMMA_Fragment missB = MakeFragment(breakups[0], 0, 0, 0, true);
 	TLorentzVector outLV1B, outLV2B;
 	IMMMA_DecayResult decayB = SolveTwoBodyDecay(recoilLV, obsB, missB, outLV1B, outLV2B);
 	CaseResult resultB = ConvertDecayResult(decayB, outLV1B, outLV2B);

@@ -128,6 +128,9 @@ void SABREsim::CleanUp(){
 	delete straggler_6Li_3061keV_LiF_;
 	delete straggler_none_;
 
+	delete config_;
+	delete RootWriter_;
+
 }
 
 TargetEnergyLoss* SABREsim::GetTargetEnergyLoss(const std::string targetloss){
@@ -559,7 +562,7 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 
 	plot3mc *RootPlotter = new plot3mc(config_->GetHistoFile());
 
-	det3mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2), config_->GetStraggleEnabled(3), config_->GetStraggleEnabled(4));
+	det3mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_);
 
 	nevents_ = det3mcProcessor.GetNumEvents();
 	detectorHits_ = det3mcProcessor.GetDetectorHits();

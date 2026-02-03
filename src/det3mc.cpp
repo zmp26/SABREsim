@@ -54,308 +54,8 @@ det3mc::det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
 
 	}
 
-// void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, bool targetStraggle1=true, bool targetStraggle2=true, bool targetStraggle3=true, bool targetStraggle4=true){
-	
-// 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
-	
-// 	//TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
 
-// 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
-		
-// 		nevents_ += 1;
-// 		bool detected1 = false, detected3 = false, detected4 = false;
-
-// 		//get reaction origin based on beamspot
-// 		Vec3 reactionOrigin = beamspot_->GeneratePoint();//same for whole event!
-// 		//hBeamSpot->Fill(reactionOrigin.GetX(),reactionOrigin.GetY());
-// 		//Vec3 reactionOrigin = {0.,0.,0.};
-
-// 		std::ostringstream ss;
-// 		ss << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\t" << e3 << "\t" << theta3 << "\t" << phi3 << "\t" << e4 << "\t" << theta4 << "\t" << phi4 << std::endl;
-
-// 		if(nevents_%50000==0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n"); //std::cout << "Processed " << nevents_ << " events..." << std::endl;
-		
-
-// 		RootWriter->SetKinematics(0,e1,theta1,phi1);
-// 		RootWriter->SetKinematics(1,e2,theta2,phi2);
-// 		RootWriter->SetKinematics(2,e3,theta3,phi3);
-// 		RootWriter->SetKinematics(3,e4,theta4,phi4);
-
-
-// 		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
-
-
-// 		for(size_t i=0; i<SABRE_Array_.size(); i++){
-// 			/*///////////////////////////////////////////////
-// 			//  check if particle 1 (ejectile) is detected //
-// 			///////////////////////////////////////////////*/
-// 			double smearedERing = 0., smearedEWedge = 0.;
-
-// 			double dtheta1 = straggler_par1_->Sample();
-// 			double dphi1 = straggler_par1_->SamplePhi();
-
-// 			//original kinematic trajectory
-// 			Vec3 originalTrajectory1;
-// 			originalTrajectory1.SetVectorSpherical(1, theta1*DEGRAD, phi1*DEGRAD);
-			
-// 			//define new basis vectors
-// 			Vec3 etheta1, ephi1;
-// 			etheta1.SetVectorCartesian(std::cos(theta1*DEGRAD)*std::cos(phi1*DEGRAD), std::cos(theta1*DEGRAD)*std::sin(phi1*DEGRAD), -std::sin(theta1*DEGRAD));
-// 			ephi1.SetVectorCartesian(-std::sin(phi1*DEGRAD), std::cos(phi1*DEGRAD), 0.);
-
-// 			//adjusted trajectory:
-// 			Vec3 adjustedTrajectory1;
-// 			adjustedTrajectory1 = std::cos(dtheta1*DEGRAD)*originalTrajectory1 + std::sin(dtheta1*DEGRAD)*(std::cos(dphi1*DEGRAD)*etheta1 + std::sin(dphi1*DEGRAD)*ephi1);
-// 			adjustedTrajectory1 = adjustedTrajectory1.Unit();
-
-// 			//now convert back
-// 			double theta1_prime, phi1_prime;
-// 			if(targetStraggle1){
-
-// 				theta1_prime = adjustedTrajectory1.GetTheta()*RADDEG;
-// 				phi1_prime = adjustedTrajectory1.GetPhi()*RADDEG;
-// 				if(phi1_prime < 0) phi1_prime += 360.;
-// 				RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, dtheta1, dphi1);
-
-// 			} else {
-
-// 				theta1_prime = theta1;
-// 				phi1_prime = phi1;
-// 				RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, 0, 0);
-
-// 			}
-
-// 			//std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta1*DEGRAD,phi1*DEGRAD);
-// 			std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEGRAD,phi1_prime*DEGRAD,reactionOrigin);
-
-// 			if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
-
-// 				//apply target energy loss to e1:
-// 				double e1_aftertarget = targetLoss_par1_->ApplyEnergyLoss(e1, theta1_prime);
-
-// 				//apply dead layer energy loss to e1_aftertarget:
-// 				Vec3 trajectory;
-// 				trajectory.SetVectorSpherical(1,theta1_prime*DEGRAD,phi1_prime*DEGRAD);
-// 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
-// 				normal = normal*(1/normal.Mag());
-// 				double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
-
-// 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second,e1_afterDeadLayer,smearedEWedge)){
-// 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
-// 					//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",100+i,hit1_rw.first,hit1_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
-// 					ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
-// 					detected1=true;
-// 					hit1_+=1;
-// 					detectorHits_[i] += 1;
-
-// 					RootWriter->AddHit(0,
-// 									   1,
-// 									   i,
-// 									   offsets[i].first + hit1_rw.first,
-// 									   offsets[i].second + hit1_rw.second,
-// 									   hit1_rw.first,
-// 									   hit1_rw.second,
-// 									   smearedERing,
-// 									   smearedEWedge,
-// 									   localCoords.GetX(),
-// 									   localCoords.GetY()
-// 									   );
-
-// 				}
-// 			}
-// 			/*//////////////////////////////////////////
-// 			//  check if particle 3 (bu1) is detected //
-// 			//////////////////////////////////////////*/
-// 			smearedERing = 0.;
-// 			smearedEWedge = 0.;
-
-// 			double dtheta3 = straggler_par3_->Sample();
-// 			double dphi3 = straggler_par3_->SamplePhi();
-
-// 			//define original kinematical trajectory
-// 			Vec3 originalTrajectory3;
-// 			originalTrajectory3.SetVectorSpherical(1, theta3*DEGRAD, phi3*DEGRAD);
-
-// 			//define new basis vectors
-// 			Vec3 etheta3, ephi3;
-// 			etheta3.SetVectorCartesian(std::cos(theta3*DEGRAD)*std::cos(phi3*DEGRAD), std::cos(theta3*DEGRAD)*std::sin(phi3*DEGRAD), -std::sin(theta3*DEGRAD));
-// 			ephi3.SetVectorCartesian(-std::sin(phi3*DEGRAD), std::cos(phi3*DEGRAD), 0.);
-
-// 			//adjusted trajectory:
-// 			Vec3 adjustedTrajectory3;
-// 			adjustedTrajectory3 = std::cos(dtheta3*DEGRAD)*originalTrajectory3 + std::sin(dtheta3*DEGRAD)*(std::cos(dphi3*DEGRAD)*etheta3 + std::sin(dphi3*DEGRAD)*ephi3);
-// 			adjustedTrajectory3 = adjustedTrajectory3.Unit();
-
-// 			//now convert back
-// 			double theta3_prime, phi3_prime;
-// 			if(targetStraggle3){
-
-// 				theta3_prime = adjustedTrajectory3.GetTheta()*RADDEG;
-// 				phi3_prime = adjustedTrajectory3.GetPhi()*RADDEG;
-// 				if(phi3_prime < 0) phi3_prime += 360.;
-// 				RootPlotter->FillStraggleHistos(theta3, phi3, theta3_prime, phi3_prime, dtheta3, dphi3);
-
-// 			} else {
-
-// 				theta3_prime = theta3;
-// 				phi3_prime = phi3;
-// 				RootPlotter->FillStraggleHistos(theta3, phi3, theta3_prime, phi3_prime, dtheta3, dphi3);
-
-// 			}
-
-// 			//std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta3*DEGRAD,phi3*DEGRAD);
-// 			std::pair<int,int> hit3_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta3_prime*DEGRAD,phi3_prime*DEGRAD,reactionOrigin);
-
-// 			if(hit3_rw.first != -1 && hit3_rw.second != -1 && !detected3){
-
-// 				//apply target energy loss to e3:
-// 				double e3_aftertarget = targetLoss_par3_->ApplyEnergyLoss(e3, theta3_prime);
-
-// 				//apply dead layer energy loss to e3_aftertarget:
-// 				Vec3 trajectory;
-// 				trajectory.SetVectorSpherical(1,theta3_prime*DEGRAD,phi3_prime*DEGRAD);
-// 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
-// 				normal = normal*(1/normal.Mag());
-// 				double e3_afterDeadLayer = deadLayerLoss_par3_->ApplyEnergyLoss(e3_aftertarget, trajectory, normal);
-
-// 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit3_rw.first,e3_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit3_rw.second,e3_afterDeadLayer,smearedEWedge)){
-// 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first,hit3_rw.second);
-// 					//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",300+i,hit3_rw.first,hit3_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
-// 					ss << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
-// 					detected3 = true;
-// 					hit3_ += 1;
-// 					detectorHits_[i] += 1;
-
-// 					RootWriter->AddHit(2,
-// 									   3,
-// 									   i,
-// 									   offsets[i].first + hit3_rw.first,
-// 									   offsets[i].second + hit3_rw.second,
-// 									   hit3_rw.first,
-// 									   hit3_rw.second,
-// 									   smearedERing,
-// 									   smearedEWedge,
-// 									   localCoords.GetX(),
-// 									   localCoords.GetY()
-// 									   );
-
-// 				}
-// 			}
-
-
-// 			/*//////////////////////////////////////////
-// 			//  check if particle 4 (bu2) is detected //
-// 			//////////////////////////////////////////*/
-// 			smearedERing = 0.;
-// 			smearedEWedge = 0.;
-
-// 			double dtheta4 = straggler_par4_->Sample();
-// 			double dphi4 = straggler_par4_->SamplePhi();
-
-// 			//define original kinematical trajectory
-// 			Vec3 originalTrajectory4;
-// 			originalTrajectory4.SetVectorSpherical(1, theta4*DEGRAD, phi4*DEGRAD);
-
-// 			//define new basis vectors
-// 			Vec3 etheta4, ephi4;
-// 			etheta4.SetVectorCartesian(std::cos(theta4*DEGRAD)*std::cos(phi4*DEGRAD), std::cos(theta4*DEGRAD)*std::sin(phi4*DEGRAD), -std::sin(theta4*DEGRAD));
-// 			ephi4.SetVectorCartesian(-std::sin(phi4*DEGRAD), std::cos(phi4*DEGRAD), 0.);
-
-// 			//adjusted trajectory:
-// 			Vec3 adjustedTrajectory4;
-// 			adjustedTrajectory4 = std::cos(dtheta4*DEGRAD)*originalTrajectory4 + std::sin(dtheta4*DEGRAD)*(std::cos(dphi4*DEGRAD)*etheta4 + std::sin(dphi4*DEGRAD)*ephi4);
-// 			adjustedTrajectory4 = adjustedTrajectory4.Unit();
-
-// 			//now convert back
-// 			double theta4_prime, phi4_prime;
-// 			if(targetStraggle4){
-
-// 				theta4_prime = adjustedTrajectory4.GetTheta()*RADDEG;
-// 				phi4_prime = adjustedTrajectory4.GetPhi()*RADDEG;
-// 				if(phi4_prime < 0) phi4_prime += 360.;
-// 				RootPlotter->FillStraggleHistos(theta4, phi4, theta4_prime, phi4_prime, dtheta4, dphi4);
-
-// 			} else {
-
-// 				theta4_prime = theta4;
-// 				phi4_prime = phi4;
-// 				RootPlotter->FillStraggleHistos(theta4, phi4, theta4_prime, phi4_prime, dtheta4, dphi4);
-
-// 			}
-
-// 			//std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta4*DEGRAD,phi4*DEGRAD);
-// 			std::pair<int,int> hit4_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta4_prime*DEGRAD,phi4_prime*DEGRAD,reactionOrigin);
-
-// 			if(hit4_rw.first != -1 && hit4_rw.second != -1 && !detected4){
-
-// 				//apply target energy loss to e4:
-// 				double e4_aftertarget = targetLoss_par4_->ApplyEnergyLoss(e4, theta4_prime);
-
-// 				//apply dead layer energy loss to e4_aftertarget:
-// 				Vec3 trajectory;
-// 				trajectory.SetVectorSpherical(1,theta4_prime*DEGRAD,phi4_prime*DEGRAD);
-// 				Vec3 normal = SABRE_Array_[i]->GetNormTilted();
-// 				normal = normal*(1/normal.Mag());
-// 				double e4_afterDeadLayer = deadLayerLoss_par4_->ApplyEnergyLoss(e4_aftertarget, trajectory, normal);
-
-// 				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit4_rw.first,e4_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit4_rw.second,e4_afterDeadLayer,smearedEWedge)){
-// 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
-// 					//outfile << std::format("%d\t%d\t%d\t%f\t%f\t%f\t%f",400+i,hit4_rw.first,hit4_rw.second,smearedERing,smearedEWedge,localCoords.GetX(),localCoords.GetY()) << endl;
-// 					ss << 400+i << "\t" << hit4_rw.first << "\t" << hit4_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
-// 					detected4 = true;
-// 					hit4_ += 1;
-// 					detectorHits_[i] += 1;
-
-// 					RootWriter->AddHit(3,
-// 									   4,
-// 									   i,
-// 									   offsets[i].first + hit4_rw.first,
-// 									   offsets[i].second + hit4_rw.second,
-// 									   hit4_rw.first,
-// 									   hit4_rw.second,
-// 									   smearedERing,
-// 									   smearedEWedge,
-// 									   localCoords.GetX(),
-// 									   localCoords.GetY()
-// 									   );
-// 				}
-// 			}
-
-// 		}
-
-// 		if(detected3 && detected4){
-// 			hitBoth34_ += 1;
-// 		}
-// 		if(detected3&&!detected4){
-// 			hitOnly3_ += 1;
-// 		}
-// 		if(detected4&&!detected3){
-// 			hitOnly4_ += 1;
-// 		}
-
-// 		if((detected1&&!detected3&&!detected4) || (!detected1&&detected3&&!detected4) || (!detected1&&!detected3&&detected4)){
-// 			onePartHits_ += 1;
-// 		} else if((detected1&&detected3&&!detected4) || (!detected1&&detected3&&detected4) || (detected1&&!detected3&&detected4)){
-// 			twoPartHits_ += 1;
-// 		} else if((detected1&&detected3&&detected4)){
-// 			threePartHits_ += 1;
-// 		}
-
-// 		ss << eoev;
-
-// 		outfile << ss.str() << "\n";
-
-// 		RootPlotter->ProcessTXTOutput(ss.str());
-
-// 		RootWriter->FillEvent();
-// 	}
-
-// 	TFile *tempfile = new TFile("BeamSpotHisto_det3mc.root","RECREATE");
-// 	//hBeamSpot->Write();
-// 	tempfile->Close();
-// }
-
-void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, bool targetStraggle1=true, bool targetStraggle2=true, bool targetStraggle3=true, bool targetStraggle4=true){
+void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, SimConfig* config){
 	
 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
 	
@@ -369,14 +69,33 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// -----	SimConfig, but that will   -----
 	// -----	take some more time        -----
 	IMMMA_Tool_3 immmaTool;
-	immmaTool.SetBeamNucleus(0,"",0);
-	immmaTool.SetTargetNucleus(0,"",0);
-	immmaTool.SetEjectileNucleus(0,"",0);
-	immmaTool.SetRecoilNucleus(0,"",0);
-	immmaTool.SetBreakup1Nucleus(0,"",0);
-	immmaTool.SetBreakup2Nucleus(0,"",0);
-	immmaTool.SetBeamEnergyMeV(0);
-	immmaTool.SetRecoilExEMeV(0);
+
+	const auto& beam = config->GetBeam();
+	immmaTool.SetBeamNucleus(beam.A, beam.symbol, beam.mass);
+
+	const auto& target = config->GetTarget();
+	immmaTool.SetTargetNucleus(target.A, target.symbol, target.mass);
+
+	const auto& ejectile = config->GetEjectile();
+	immmaTool.SetEjectileNucleus(ejectile.A, ejectile.symbol, ejectile.mass);
+
+	const auto& recoil = config->GetRecoil();
+	immmaTool.SetRecoilNucleus(recoil.A, recoil.symbol, recoil.mass);
+
+	// const auto& bu1 = config->GetBreakup1();
+	// immmaTool.SetBreakup1(bu1.A, bu1.symbol, bu1.mass);
+
+	// const auto& bu2 = config->GetBreakup2();
+	// immmaTool.SetBreakup2(bu2.A, bu2.symbol, bu2.mass);
+
+	std::vector<Nucleus> breakups;
+	for(const auto& cfg : config->GetBreakups()){
+		breakups.emplace_back(cfg.A, cfg.symbol, cfg.mass);
+	}
+	immmaTool.SetBreakupNuclei(breakups);
+
+	immmaTool.SetBeamEnergyMeV(config->GetBeamEnergy());
+	immmaTool.SetRecoilExEMeV(config->GetRecoilExcitationEnergy());
 
 
 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
@@ -433,7 +152,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta1_prime, phi1_prime;
-			if(targetStraggle1){
+			if(config->GetStraggleEnabled(1)){
 
 				theta1_prime = adjustedTrajectory1.GetTheta()*RADDEG;
 				phi1_prime = adjustedTrajectory1.GetPhi()*RADDEG;
@@ -514,7 +233,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta3_prime, phi3_prime;
-			if(targetStraggle3){
+			if(config->GetStraggleEnabled(3)){
 
 				theta3_prime = adjustedTrajectory3.GetTheta()*RADDEG;
 				phi3_prime = adjustedTrajectory3.GetPhi()*RADDEG;
@@ -597,7 +316,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta4_prime, phi4_prime;
-			if(targetStraggle4){
+			if(config->GetStraggleEnabled(4)){
 
 				theta4_prime = adjustedTrajectory4.GetTheta()*RADDEG;
 				phi4_prime = adjustedTrajectory4.GetPhi()*RADDEG;

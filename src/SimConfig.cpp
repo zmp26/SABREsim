@@ -19,6 +19,13 @@ SimConfig::SimConfig(const std::string& filename)
 	enableStraggle_par_.resize(4,false);
 	targetStraggle_par_.resize(4,"none");
 
+	masstable = new MassTable;
+	masstable->Init("config/masstable.dat");
+}
+
+SimConfig::~SimConfig(){
+	if(masstable) delete masstable;
+	masstable = nullptr;
 }
 
 std::string SimConfig::Trim(const std::string& s){
@@ -98,6 +105,44 @@ bool SimConfig::Parse(){
 			if(key == "reaction") reaction_ = val;
 			else if(key == "beam_energy") beam_energy_ = std::stod(val);
 			else if(key == "recoil_excitation_energy") recoil_excitation_energy_ = std::stod(val);
+		}
+		else if(section == "IMMMA"){
+
+			auto parseNucleus = [&](const std::string& prefix, NucleusConfig& nuc){
+				if(key == prefix + "_A") nuc.A = std::stoi(val);
+				else if(key == prefix + "_symbol") nuc.symbol = val;
+
+				nuc.mass = masstable->GetMassMeV(nuc.symbol.Data(), nuc.A);
+			};
+
+			parseNucleus("beam",beam_);
+			parseNucleus("target",target_);
+			parseNucleus("ejectile",ejectile_);
+			parseNucleus("recoil",recoil_);
+			
+
+			if(key.rfind("breakup",0) == 0){
+
+				size_t idxStart = std::string("breakup").size();
+				size_t underscore = key.find('_', idxStart);
+				if(underscore == std::string::npos) return true;
+
+				int index = std::stoi(key.substr(idxStart, underscore - idxStart)) - 1;
+				std::string field = key.substr(underscore+1);
+
+				if(index<0) return true;
+
+				if(breakups_.size() <= static_cast<size_t>(index))
+					breakups_.resize(index+1);
+
+				NucleusConfig& nuc = breakups_[index];
+
+				if(field == "A") nuc.A = std::stoi(val);
+				else if(field == "symbol") nuc.symbol = val;
+
+				nuc.mass = masstable->GetMassMeV(nuc.symbol.Data(), nuc.A);
+			}
+
 		}
 	}
 

@@ -1,8 +1,11 @@
 CC = g++
 ROOTCFLAGS := $(shell root-config --cflags)
 ROOTLIBS := $(shell root-config --libs)
-CFLAGS = -Wall -std=c++17 $(ROOTCFLAGS)
-LDFLAGS = $(ROOTLIBS)
+
+ASAN_FLAGS = -fsanitize=address -g -O1
+
+CFLAGS = -Wall -std=c++17 $(ROOTCFLAGS) $(ASAN_FLAGS)
+LDFLAGS = $(ROOTLIBS) $(ASAN_FLAGS)
 
 SRC_DIR = src
 INC_DIR = include
