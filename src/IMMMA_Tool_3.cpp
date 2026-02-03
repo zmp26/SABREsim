@@ -110,7 +110,7 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventIMM(
 		double detected2E, double detected2Theta, double detected2Phi) const
 {
 
-	if(breakups.size() <= 2){
+	if(breakups.size() < 2){
 		std::cout << breakups.size() << std::endl;
 		throw std::runtime_error("IMMMA_Tool_3 requires 2 breakup nuclei!");
 	}
@@ -143,7 +143,7 @@ std::pair<CaseResult, CaseResult> IMMMA_Tool_3::AnalyzeEventMMM(
 													double detectedE, double detectedTheta, double detectedPhi) const
 {
 
-	if(breakups.size() <= 2){
+	if(breakups.size() < 2){
 		std::cout << breakups.size() << std::endl;
 		throw std::runtime_error("IMMMA_Tool_3 requires 2 breakup nuclei!");
 	}
