@@ -61,6 +61,17 @@ struct IMMMA_DecayResult {
 	double invMassSquaredParent = 0.;
 };
 
+struct IMMMA_DecayResult4 {
+	//first decay (recoil/resonance1 -> breakup1 + resonance2)
+	IMMMA_DecayResult decay_recoil;
+
+	//second decay (resonance2 -> breakup2 + breakup3)
+	IMMMA_DecayResult decay_resonance2;
+
+	//combined validity flag
+	bool valid = true;
+};
+
 struct IMMMA_EventResult{
 	std::vector<IMMMA_DecayResult> decays;
 	double recoilExE = 0.;
