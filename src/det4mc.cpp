@@ -459,6 +459,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		outfile << ss.str() << "\n";
 
 		RootPlotter->ProcessTXTOutput(ss.str());
+		std::cout << "test" << std::endl;
 
 		RootWriter->FillEvent();
 
