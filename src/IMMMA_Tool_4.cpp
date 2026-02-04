@@ -119,7 +119,14 @@ IMMMA_DecayResult4 IMMMA_Tool_4::SolveSequentialDecay(const TLorentzVector& reco
 
 
 	//switch to second decay resonance2->bu2+bu3
-	result.decay_resonance2 = SolveTwoBodyDecay(resonance2_lab, fbu2, fbu3, outLV_bu2, outLV_bu3);
+	// result.decay_resonance2 = SolveTwoBodyDecay(resonance2_lab, fbu2, fbu3, outLV_bu2, outLV_bu3);
+	IMMMA_Fragment fbu2_analysis = fbu2;
+	IMMMA_Fragment fbu3_analysis = fbu3;
+
+	fbu2_analysis.isMissing = true;
+	fbu3_analysis.isMissing = true;
+
+	result.decay_resonance2 = SolveTwoBodyDecay(resonance2_lab, fbu2_analysis, fbu3_analysis, outLV_bu2, outLV_bu3);
 
 	double res2_mass = resonance2_lab.M();
 	double res2_KE = resonance2_lab.E() - res2_mass;
@@ -132,8 +139,17 @@ IMMMA_DecayResult4 IMMMA_Tool_4::SolveSequentialDecay(const TLorentzVector& reco
 
 
 	//first decay
+	IMMMA_Fragment fbu1_analysis = fbu1;
+	IMMMA_Fragment f_res2_analysis = f_res2;
 	TLorentzVector outLV_res2_dummy;
-	result.decay_recoil = SolveTwoBodyDecay(recoil, fbu1, f_res2, outLV_bu1, outLV_res2_dummy);
+	fbu1_analysis.isMissing = true;
+	f_res2_analysis.isMissing = true;
+
+	result.decay_recoil = SolveTwoBodyDecay(recoil,
+                      						fbu1_analysis,
+                      						f_res2_analysis,
+                      						outLV_bu1,
+                      						outLV_res2_dummy);
 
 	result.valid = result.decay_recoil.valid && result.decay_resonance2.valid;
 
