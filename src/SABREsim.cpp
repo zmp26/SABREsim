@@ -627,6 +627,7 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det4mcProcessor.GetToString_TargetLoss1().data(),det4mcProcessor.GetToString_TargetLoss2().data(),det4mcProcessor.GetToString_TargetLoss3().data(),det4mcProcessor.GetToString_TargetLoss4().data(),det4mcProcessor.GetToString_DeadLayerLoss1().data(),det4mcProcessor.GetToString_DeadLayerLoss2().data(),det4mcProcessor.GetToString_DeadLayerLoss3().data(),det4mcProcessor.GetToString_DeadLayerLoss4().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
 
+	std::cout << "histofile: " << config_->GetHistoFile() << std::endl;
 	plot4mc *RootPlotter = new plot4mc(config_->GetHistoFile());
 
 	det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_);
