@@ -273,7 +273,7 @@ void plot4mc::ProcessTXTOutput(std::vector<std::string> txtoutput){
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
 				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//likewise^
 
-				FillKinematicsHistos(pd1, pd2, pd3, pd4);
+				//FillKinematicsHistos(pd1, pd2, pd3, pd4);
 
 				if(sd1.particleIndex == 100){
 					FillSABREHistos(sd1, pd1);
@@ -296,7 +296,7 @@ void plot4mc::ProcessTXTOutput(std::vector<std::string> txtoutput){
 				sd2.theta = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}].first;//wow this is ugly but it works
 				sd2.phi = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}].second;//likewise^
 
-				FillKinematicsHistos(pd1, pd2, pd3, pd4);
+				//FillKinematicsHistos(pd1, pd2, pd3, pd4);
 
 				if(sd1.particleIndex == 100){
 					FillSABREHistos(sd1, pd1);
@@ -321,6 +321,7 @@ void plot4mc::ProcessTXTOutput(std::vector<std::string> txtoutput){
 			} else if(eventLines.size() == 4){
 				//kinematics line plus 3 particle in SABRE
 				ParsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				FillKinematicsHistos(pd1, pd2, pd3, pd4);
 				ParseSABREData(eventLines[1],sd1);
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
 				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//likewise^
@@ -364,6 +365,7 @@ void plot4mc::ProcessTXTOutput(std::vector<std::string> txtoutput){
 			} else if(eventLines.size() == 5){
 				//kinematics line plus 4 particle in SABRE
 				ParsePhysData(eventLines[0],pd1,pd2,pd3,pd4);
+				FillKinematicsHistos(pd1, pd2, pd3, pd4);
 				ParseSABREData(eventLines[1],sd1);
 				sd1.theta = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].first;//wow this is ugly but it works
 				sd1.phi = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}].second;//likewise^
@@ -442,6 +444,7 @@ void plot4mc::ProcessTXTOutput(const std::string& outputLines){
 
 void plot4mc::SaveAndWrite(){
 	UpdateHistoAxes();
+	histofile->cd();
 	histoman->WriteAll(true);
 }
 
