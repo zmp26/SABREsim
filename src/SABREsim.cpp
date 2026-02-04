@@ -629,7 +629,7 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 
 	plot4mc *RootPlotter = new plot4mc(config_->GetHistoFile());
 
-	det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2), config_->GetStraggleEnabled(3), config_->GetStraggleEnabled(4));
+	det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_);
 
 	nevents_ = det4mcProcessor.GetNumEvents();
 	detectorHits_ = det4mcProcessor.GetDetectorHits();

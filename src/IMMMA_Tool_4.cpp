@@ -13,6 +13,10 @@ void IMMMA_Tool_4::SetTargetNucleus(int A, TString sym, double mass){
 	target = {A, sym, mass};
 }
 
+void IMMMA_Tool_4::SetEjectileNucleus(int A, TString sym, double mass){
+	ejectile = {A, sym, mass};
+}
+
 void IMMMA_Tool_4::SetRecoilNucleus(int A, TString sym, double mass){
 	recoil = {A, sym, mass};
 }

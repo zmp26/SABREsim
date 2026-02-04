@@ -63,11 +63,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 
 	// ----- Initialize IMMMA_Tool_3 Below -----
-	// -----	This should be updated     -----
-	// -----	before running, and will   -----
-	// -----	eventually come from       -----
-	// -----	SimConfig, but that will   -----
-	// -----	take some more time        -----
+
 	IMMMA_Tool_3 immmaTool;
 
 	const auto& beam = config->GetBeam();
@@ -385,7 +381,7 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			hitBoth34_ += 1;
 
 			//IMM Analysis:
-			auto immmaResults = immmaTool.AnalyzeEventIMM(smearedERing1, theta1_meas, phi1_meas,
+			auto immmaResults = immmaTool.AnalyzeEventIMM(e1, theta1, phi1,
 														  smearedERing3, theta3_meas, phi3_meas,
 														  smearedERing4, theta4_meas, phi4_meas);
 

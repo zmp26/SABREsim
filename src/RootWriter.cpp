@@ -189,7 +189,7 @@ void RootWriter::AddIMMMAResults(const std::vector<CaseResult>& cases){
 
 	immma_nCases = std::min((int)cases.size(), MAX_IMMMA_CASES);
 
-	for(int i = 0; i< immma_nCases; i++){
+	for(int i = 0; i < immma_nCases; i++){
 		const CaseResult& c = cases[i];
 
 		immma_Ecm[i] = c.Ecm;

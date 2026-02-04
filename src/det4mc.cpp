@@ -4,6 +4,7 @@
 #include "TH2.h"
 #include "TFile.h"
 #include "plot4mc.h"
+#include "IMMMA_Tool_4.h"
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
@@ -37,7 +38,7 @@ det4mc::det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
 
 	}
 
-void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, bool targetStraggle1, bool targetStraggle2, bool targetStraggle3, bool targetStraggle4){
+void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, SimConfig* config){
 
 	// std::cerr << "SABRE_Array_ size: " << SABRE_Array_.size()
 	// 		  << ", SABREARRAY_EnergyResolutionModels_ size: " << SABREARRAY_EnergyResolutionModels_.size()
@@ -45,6 +46,36 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 
 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
+
+	// ----- Initialize IMMMA_Tool_4 Below -----
+
+	IMMMA_Tool_4 immmaTool;
+
+	const auto& beam = config->GetBeam();
+	immmaTool.SetBeamNucleus(beam.A, beam.symbol, beam.mass);
+	std::cout << "set beam mass to " << beam.mass << std::endl;
+
+	const auto& target = config->GetTarget();
+	immmaTool.SetTargetNucleus(target.A, target.symbol, target.mass);
+	std::cout << "set target mass to " << target.mass << std::endl;
+
+	const auto& ejectile = config->GetEjectile();
+	immmaTool.SetEjectileNucleus(ejectile.A, ejectile.symbol, ejectile.mass);
+	std::cout << "set ejectile mass to " << ejectile.mass << std::endl;
+
+	const auto& recoil = config->GetRecoil();
+	immmaTool.SetRecoilNucleus(recoil.A, recoil.symbol, recoil.mass);
+	std::cout << "set recoil mass to " << recoil.mass << std::endl;
+
+	std::vector<Nucleus> breakups;
+	for(const auto& cfg : config->GetBreakups()){
+		breakups.emplace_back(cfg.A, cfg.symbol, cfg.mass);
+	}
+	immmaTool.SetBreakupNuclei(breakups);
+
+	immmaTool.SetBeamEnergyMeV(config->GetBeamEnergy());
+	immmaTool.SetRecoilExEMeV(config->GetRecoilExcitationEnergy());
+
 
 	//TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
 
@@ -73,11 +104,18 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 		RootWriter->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
 
+
+		double smearedE1 = 0.;
+		double smearedERing2 = 0., smearedERing3 = 0., smearedERing4 = 0.;
+		double smearedEWedge2 = 0., smearedEWedge3 = 0., smearedEWedge4 = 0.;
+		double theta1_meas = 0., theta2_meas = 0., theta3_meas = 0., theta4_meas = 0.;
+		double phi1_meas = 0., phi2_meas = 0., phi3_meas = 0., phi4_meas = 0.;
+
 		for(size_t i=0; i<SABRE_Array_.size(); i++){
 			/*///////////////////////////////////////////////
 			//  check if particle 1 (ejectile) is detected //
 			///////////////////////////////////////////////*/
-			double smearedERing = 0., smearedEWedge = 0.;
+			double smearedERing1 = 0., smearedEWedge1 = 0.;
 
 			double dtheta1 = straggler_par1_->Sample();
 			double dphi1 = straggler_par1_->SamplePhi();
@@ -98,7 +136,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta1_prime, phi1_prime;
-			if(targetStraggle1){
+			if(config->GetStraggleEnabled(0)){
 
 				theta1_prime = adjustedTrajectory1.GetTheta()*RADDEG;
 				phi1_prime = adjustedTrajectory1.GetPhi()*RADDEG;
@@ -127,9 +165,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				normal = normal*(1/normal.Mag());
 				double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
 
-				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first, e1_afterDeadLayer, smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second, e1_afterDeadLayer, smearedEWedge)){
+				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first, e1_afterDeadLayer, smearedERing1) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second, e1_afterDeadLayer, smearedEWedge1)){
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
-					ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+					ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing1 << "\t" << smearedEWedge1 << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
 					detectedEj = true;
 					hitej_ += 1;
 					detectorHits_[i] += 1;
@@ -141,11 +179,15 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 									   offsets[i].second + hit1_rw.second,
 									   hit1_rw.first,
 									   hit1_rw.second,
-									   smearedERing,
-									   smearedEWedge,
+									   smearedERing1,
+									   smearedEWedge1,
 									   localCoords.GetX(),
 									   localCoords.GetY()
 									   );
+
+					//for now, update theta1_meas to be exactly theta1_prime
+					theta1_meas = theta1_prime;
+					phi1_meas = phi1_prime;
 
 				}
 			}
@@ -154,8 +196,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			/*//////////////////////////////////////////
 			//  check if particle 2 (bu1) is detected //
 			//////////////////////////////////////////*/
-			smearedERing = 0.;
-			smearedEWedge = 0.;
+			smearedERing2 = 0.;
+			smearedEWedge2 = 0.;
 
 			double dtheta2 = straggler_par2_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
 			double dphi2 = straggler_par2_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
@@ -176,7 +218,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta2_prime, phi2_prime;
-			if(targetStraggle2){
+			if(config->GetStraggleEnabled(2)){
 
 				theta2_prime = adjustedTrajectory2.GetTheta()*RADDEG;//std::acos(adjustedTrajectory2.GetZ())*RADDEG;
 				phi2_prime = adjustedTrajectory2.GetPhi()*RADDEG;//std::atan2(adjustedTrajectory2.GetY(), adjustedTrajectory2.GetX())*RADDEG;
@@ -207,9 +249,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//std::cout << "here2 again" << std::endl;
 
-				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
+				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing2) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge2)){
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
-					ss << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+					ss << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing2 << "\t" << smearedEWedge2 << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
 					detected1 = true;
 					hit1_ += 1;
 					detectorHits_[i] += 1;
@@ -221,11 +263,15 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 									   offsets[i].second + hit2_rw.second,
 									   hit2_rw.first,
 									   hit2_rw.second,
-									   smearedERing,
-									   smearedEWedge,
+									   smearedERing2,
+									   smearedEWedge2,
 									   localCoords.GetX(),
 									   localCoords.GetY()
 									   );
+
+					//for now, update theta2_meas to be exactly theta2_prime
+					theta2_meas = theta2_prime;
+					phi2_meas = phi2_prime;
 				}
 
 				//std::cout << "here2 again again" << std::endl;
@@ -234,8 +280,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			/*//////////////////////////////////////////
 			//  check if particle 3 (bu2) is detected //
 			//////////////////////////////////////////*/
-			smearedERing = 0.;
-			smearedEWedge = 0.;
+			smearedERing3 = 0.;
+			smearedEWedge3 = 0.;
 
 			double dtheta3 = straggler_par3_->Sample();
 			double dphi3 = straggler_par3_->SamplePhi();
@@ -256,7 +302,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta3_prime, phi3_prime;
-			if(targetStraggle3){
+			if(config->GetStraggleEnabled(2)){
 
 				theta3_prime = adjustedTrajectory3.GetTheta()*RADDEG;
 				phi3_prime = adjustedTrajectory3.GetPhi()*RADDEG;
@@ -287,11 +333,11 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 				//std::cout << "here3 again" << std::endl;
 
-				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit3_rw.first,e3_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit3_rw.second,e3_afterDeadLayer,smearedEWedge)){
+				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit3_rw.first,e3_afterDeadLayer,smearedERing3) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit3_rw.second,e3_afterDeadLayer,smearedEWedge3)){
 					//std::cout << "here3 again again 1" << std::endl;
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit3_rw.first, hit3_rw.second);
 					//std::cout << "here3 again again 2" << std::endl;
-					ss << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+					ss << 300+i << "\t" << hit3_rw.first << "\t" << hit3_rw.second << "\t" << smearedERing3 << "\t" << smearedEWedge3 << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
 					//std::cout << "here3 again again 3" << std::endl;
 					detected2 = true;
 					//std::cout << "here3 again again 4" << std::endl;
@@ -307,11 +353,15 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 									   offsets[i].second + hit3_rw.second,
 									   hit3_rw.first,
 									   hit3_rw.second,
-									   smearedERing,
-									   smearedEWedge,
+									   smearedERing3,
+									   smearedEWedge3,
 									   localCoords.GetX(),
 									   localCoords.GetY()
 									   );
+
+					//for now, update theta3_meas to be exactly theta3_prime
+					theta3_meas = theta3_prime;
+					phi3_meas = phi3_prime;
 				}
 
 				//std::cout << "here3 again again again" << std::endl;
@@ -321,8 +371,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			/*//////////////////////////////////////////
 			//  check if particle 4 (bu2) is detected //
 			//////////////////////////////////////////*/
-			smearedERing = 0.;
-			smearedEWedge = 0.;
+			smearedERing4 = 0.;
+			smearedEWedge4 = 0.;
 
 			double dtheta4 = straggler_par4_->Sample();
 			double dphi4 = straggler_par4_->SamplePhi();
@@ -343,7 +393,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta4_prime, phi4_prime;
-			if(targetStraggle4){
+			if(config->GetStraggleEnabled(3)){
 
 				theta4_prime = adjustedTrajectory4.GetTheta()*RADDEG;
 				phi4_prime = adjustedTrajectory4.GetPhi()*RADDEG;
@@ -372,9 +422,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				normal = normal * (1/normal.Mag());
 				double e4_afterDeadLayer = deadLayerLoss_par4_->ApplyEnergyLoss(e4_aftertarget, trajectory, normal);
 
-				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit4_rw.first,e4_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit4_rw.second,e4_afterDeadLayer,smearedEWedge)){
+				if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit4_rw.first,e4_afterDeadLayer,smearedERing4) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit4_rw.second,e4_afterDeadLayer,smearedEWedge4)){
 					Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit4_rw.first,hit4_rw.second);
-					ss << 400+i << "\t" << hit4_rw.first << "\t" << hit4_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
+					ss << 400+i << "\t" << hit4_rw.first << "\t" << hit4_rw.second << "\t" << smearedERing4 << "\t" << smearedEWedge4 << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << std::endl;
 					detected3 = true;
 					hit3_ += 1;
 					detectorHits_[i] += 1;
@@ -386,11 +436,15 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 									   offsets[i].second + hit4_rw.second,
 									   hit4_rw.first,
 									   hit4_rw.second,
-									   smearedERing,
-									   smearedEWedge,
+									   smearedERing4,
+									   smearedEWedge4,
 									   localCoords.GetX(),
 									   localCoords.GetY()
 									   );
+
+					//for now, update theta4_meas to be exactly theta4_prime
+					theta4_meas = theta4_prime;
+					phi4_meas = phi4_prime;
 				}
 			}
 
@@ -431,6 +485,81 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		if((detectedEj && detected1 && !detected2 && !detected3) || (!detectedEj && detected1 && detected2 && !detected3) || (!detectedEj && !detected1 && detected2 && detected3) || (detectedEj && !detected1 && !detected2 && detected3)) twoPartHits_ += 1;
 		if((detectedEj && detected1 && detected2 && !detected3) || (!detectedEj && detected1 && detected2 && detected3) || (detectedEj && !detected1 && detected2 && detected3) || (detectedEj && detected1 && !detected2 && detected3)) threePartHits_ += 1;
 		if(detectedEj && detected1 && detected2 && detected3) fourPartHits_ += 1;
+
+
+		//check detections here for IMMMA_Tool_4 purposes:
+		if(detected1 && detected2 && detected3){
+
+			//do IMM
+			auto immmaResults = immmaTool.AnalyzeEventIMM(e1, theta1, phi1,
+														  smearedERing2, theta2_meas, phi2_meas,
+														  smearedERing3, theta3_meas, phi3_meas,
+														  smearedERing4, theta4_meas, phi4_meas);
+
+			std::vector<CaseResult4> tempvect;
+			for(const auto& res : immmaResults){
+				tempvect.emplace_back(res);
+			}
+
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+
+			//RootWriter->AddIMMMAResults(tempvect);
+			
+		}
+		else if( (detected1 && detected2 && !detected3) ){
+
+			//do MMM
+			//in this case, we detect bu1 and bu2
+			auto immmaResults = immmaTool.AnalyzeEventMMM(e1, theta1, phi1,
+														  smearedERing2, theta2_meas, phi2_meas,
+														  smearedERing3, theta3_meas, phi3_meas);
+
+			std::vector<CaseResult4> tempvect;
+			for(const auto& res : immmaResults){
+				tempvect.emplace_back(res);
+			}
+
+
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+
+			//RootWriter->AddIMMMAResults(tempvect);
+		}
+
+		else if( (detected1 && !detected2 && detected3) ){
+
+			//do MMM
+			//in this case, we detect bu1 and bu3
+			auto immmaResults = immmaTool.AnalyzeEventMMM(e1, theta1, phi1,
+														  smearedERing2, theta2_meas, phi2_meas,
+														  smearedERing4, theta4_meas, phi4_meas);
+			
+			std::vector<CaseResult4> tempvect;
+			for(const auto& res : immmaResults){
+				tempvect.emplace_back(res);
+			}
+
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+
+			//RootWriter->AddIMMMAResults(tempvect);
+		}
+
+		else if( (!detected1 && detected2 && detected3) ){
+
+			//do MMM
+			//in this case, we detect bu2 and bu3
+			auto immmaResults = immmaTool.AnalyzeEventMMM(e1, theta1, phi1,
+														  smearedERing3, theta3_meas, phi3_meas,
+														  smearedERing4, theta4_meas, phi4_meas);
+			
+			std::vector<CaseResult4> tempvect;
+			for(const auto& res : immmaResults){
+				tempvect.emplace_back(res);
+			}
+
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+
+			//RootWriter->AddIMMMAResults(tempvect);
+		}
 
 	}
 

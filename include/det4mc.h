@@ -16,6 +16,7 @@
 #include "structs.h"
 #include "TargetAngularStraggler.h"
 #include "plot4mc.h"
+#include "SimConfig.h"
 
 class det4mc{
 public:
@@ -36,7 +37,7 @@ public:
 		   TargetAngularStraggler* straggler_par3,
 		   TargetAngularStraggler* straggler_par4);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, bool targetStraggle1=true, bool targetStraggle2=true, bool targetStraggle3=true, bool targetStraggle4=true);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, SimConfig* config);
 
 	/*
 		A(a,b)B
