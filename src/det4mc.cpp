@@ -458,7 +458,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 		outfile << ss.str() << "\n";
 
-		
+		RootPlotter->ProcessTXTOutput(ss.str());
 
 		RootWriter->FillEvent();
 
@@ -560,8 +560,6 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//RootWriter->AddIMMMAResults(tempvect);
 		}
-
-	RootPlotter->ProcessTXTOutput(ss.str());
 
 	}
 
