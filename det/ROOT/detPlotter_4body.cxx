@@ -31,7 +31,7 @@ int numWedges = 8;
 
 
 struct PHYSDATA {double e, theta, phi;};
-struct SABREDATA {int detectorIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
+struct SABREDATA {int detectorIndex=-666, particleIndex=-666; double theta, phi, ringEnergy, wedgeEnergy, localx, localy; int ring, wedge;};
 
 
 struct Corner{
