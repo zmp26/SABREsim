@@ -530,7 +530,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 			}
 
 
-			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_MMM(immmaResults[i], recoil.mass);
 
 			//RootWriter->AddIMMMAResults(tempvect);
 		}
@@ -548,7 +548,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				tempvect.emplace_back(res);
 			}
 
-			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_MMM(immmaResults[i], recoil.mass);
 
 			//RootWriter->AddIMMMAResults(tempvect);
 		}
@@ -566,7 +566,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				tempvect.emplace_back(res);
 			}
 
-			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_IMM(immmaResults[i], recoil.mass);
+			for(size_t i=0; i<immmaResults.size(); i++) RootPlotter->Fill_MMM(immmaResults[i], recoil.mass);
 
 			//RootWriter->AddIMMMAResults(tempvect);
 		}
