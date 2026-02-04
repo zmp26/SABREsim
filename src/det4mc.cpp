@@ -79,6 +79,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 	//TH2D *hBeamSpot = new TH2D("hBeamSpot","BeamSpot",200, -0.05, 0.05, 200, -0.05, 0.05);
 
+	
 	while(infile >> e1 >> theta1 >> phi1 >> e2 >> theta2 >> phi2 >> e3 >> theta3 >> phi3 >> e4 >> theta4 >> phi4){
 
 		nevents_ += 1;
@@ -136,8 +137,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta1_prime, phi1_prime;
-			if(config->GetStraggleEnabled(0)){
-
+			//std::cout << "test1" << std::endl;
+			if(config->GetStraggleEnabled(1)){
+				//std::cout << "test2" << std::endl;
 				theta1_prime = adjustedTrajectory1.GetTheta()*RADDEG;
 				phi1_prime = adjustedTrajectory1.GetPhi()*RADDEG;
 				if(phi1_prime < 0) phi1_prime += 360.;
@@ -192,6 +194,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				}
 			}
 
+
+			//std::cout << "test part 1 done" << std::endl;
 
 			/*//////////////////////////////////////////
 			//  check if particle 2 (bu1) is detected //
@@ -277,6 +281,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				//std::cout << "here2 again again" << std::endl;
 			}
 
+			//std::cout << "test part 2 done" << std::endl;
+
 			/*//////////////////////////////////////////
 			//  check if particle 3 (bu2) is detected //
 			//////////////////////////////////////////*/
@@ -302,7 +308,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta3_prime, phi3_prime;
-			if(config->GetStraggleEnabled(2)){
+			if(config->GetStraggleEnabled(3)){
 
 				theta3_prime = adjustedTrajectory3.GetTheta()*RADDEG;
 				phi3_prime = adjustedTrajectory3.GetPhi()*RADDEG;
@@ -367,7 +373,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				//std::cout << "here3 again again again" << std::endl;
 
 			}
-
+			//std::cout << "test part 3 done" << std::endl;
 			/*//////////////////////////////////////////
 			//  check if particle 4 (bu2) is detected //
 			//////////////////////////////////////////*/
@@ -393,7 +399,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 			//now convert back
 			double theta4_prime, phi4_prime;
-			if(config->GetStraggleEnabled(3)){
+			if(config->GetStraggleEnabled(4)){
 
 				theta4_prime = adjustedTrajectory4.GetTheta()*RADDEG;
 				phi4_prime = adjustedTrajectory4.GetPhi()*RADDEG;
@@ -448,6 +454,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				}
 			}
 
+		//std::cout << "test part 4 done" << std::endl;
+
 		//std::cout << "here end 1" << std::endl;
 
 		}
@@ -458,8 +466,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 		outfile << ss.str() << "\n";
 
+
 		RootPlotter->ProcessTXTOutput(ss.str());
-		std::cout << "test" << std::endl;
+		
 
 		RootWriter->FillEvent();
 
