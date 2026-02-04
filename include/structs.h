@@ -127,4 +127,94 @@ struct CaseResult {
 
 };
 
+struct CaseResult4 {
+
+	//boost vectors
+	TVector3 boostvector_recoil;			//VCM_recoil = VCM_resonance1		resonance1 -> resonance2 + breakup1
+	TVector3 boostvector_resonance2;		//VCM_resonance2					resonance2 -> breakup2 + breakup3
+
+
+	//--------------------------------------
+	//-		recoil/resonance1 CM frame	   -
+	//--------------------------------------
+
+	//breakup1 in recoil/resonance1 CM frame
+	double Vcm_bu1_in_recoilCM;
+	double KEcm_bu1_in_recoilCM;
+	double ThetaCM_bu1_in_recoilCM;
+	double PhiCM_bu1_in_recoilCM;
+
+	//resonance2 in recoil/resonance1 CM frame (this is not measured)
+	double Vcm_res2_in_recoilCM;
+	double KEcm_res2_in_recoilCM;
+	double ThetaCM_res2_in_recoilCM;
+	double PhiCM_res2_in_recoilCM;
+
+	//total energy in recoil/resonance1 CM
+	double Ecm_recoilCM;
+
+
+
+	//--------------------------------------
+	//-		recoil/resonance1 CM frame	   -
+	//--------------------------------------
+
+	//breakup2 in resonance2 CM frame
+	double Vcm_bu2_in_res2CM;
+	double KEcm_bu2_in_res2CM;
+	double ThetaCM_bu2_in_res2CM;
+	double PhiCM_bu2_in_res2CM;
+
+	//breakup3 in resonance2 CM frame
+	double Vcm_bu3_in_res2CM;
+	double KEcm_bu3_in_res2CM;
+	double ThetaCM_bu3_in_res2CM;
+	double PhiCM_bu3_in_res2CM;
+
+	//total energy in resonance2 CM
+	double Ecm_res2CM;
+
+	//--------------------------------------
+	//-		Lab frame angles WRT VCM	   -
+	//--------------------------------------
+	double bu1_LabAngleWRTVCM_recoilCM;
+	double res2_LabAngleWRTVCM_recoilCM;
+	double bu2_LabAngleWRTVCM_res2CM;
+	double bu3_LabAngleWRTVCM_res2CM;
+
+	//--------------------------------------
+	//-			Lab frame energies 		   -
+	//--------------------------------------
+	double ELab_bu1;
+	double ELab_bu2;
+	double ELab_bu3;
+
+	//--------------------------------------
+	//-			Lab frame angles 		   -
+	//--------------------------------------
+	double ThetaLab_bu1;
+	double PhiLab_bu1;
+	double ThetaLab_bu2;
+	double PhiLab_bu2;
+	double ThetaLab_bu3;
+	double PhiLab_bu3;
+
+
+	//--------------------------------------
+	//-			Invariant Masses 		   -
+	//--------------------------------------
+	double ejInvMass;
+	double bu1InvMass;
+	double bu2InvMass;
+	double bu3InvMass;
+	double res2InvMass;
+	double recInvMass;
+
+
+	//--------------------------------------
+	//-			  Validity Flag		   	   -
+	//--------------------------------------
+	bool valid = true;
+};
+
 #endif//STRUCTS_H
