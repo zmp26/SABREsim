@@ -95,8 +95,8 @@ Binning:
 
 '''
 
-ENERGY_START_KEV = 5560
-ENERGY_STOP_KEV = 7000
+ENERGY_START_KEV = 1690
+ENERGY_STOP_KEV = 1700
 ENERGY_BIN_KEV = 5 #bin size
 
 
@@ -583,19 +583,19 @@ def kin4mc():
 	energy_stop_keV = float(ENERGY_STOP_KEV)
 	energy_step_keV = ENERGY_BIN_KEV
 
-	target = "7Li"#UPDATE THIS PER CURVE
+	target = "10B"#UPDATE THIS PER CURVE
 	beam = "3He"#UPDATE THIS PER CURVE
 	ejectile = "4He"#UPDATE THIS PER CURVE
-	recoil = "6Li"#UPDATE THIS PER CURVE
+	recoil = "9B"#UPDATE THIS PER CURVE
 
 	reaction = target + "(" + beam + "," + ejectile + ")" + recoil #this is for kin2mc input purposes
 	reaction_nospecchars = target + beam + ejectile + recoil #this is for filename purposes
 
-	decay1_particle = "n" #UPDATE THIS PER CURVE
+	decay1_particle = "4He" #UPDATE THIS PER CURVE
 	#decay1_half_width_MeV = 0.00027 #UPDATE THIS PER CURVE
 	decay1_half_width_MeV = 0.001
 
-	decay2_particle = "4He"
+	decay2_particle = "p"
 	decay2_half_width_MeV = 1.23/2
 
 	daughter_excMeV = 0 #this is for the alpha that 8Be splits into
@@ -652,24 +652,24 @@ def kin4mc():
 		out_filename = os.path.join(KINMC_OUTPUT_DIR, f"kin4mc_{reaction_nospecchars}_{decay1_particle}_{decay2_particle}_at9BExE{exc2_keV}keV.out")
 
 
-		if os.path.exists(out_filename):
+		# if os.path.exists(out_filename):
 
-			logger.info(f"kin4mc output already exists for ExE = {exc2_keV} keV, skipping kin4mc and reusing existing file")
+		# 	logger.info(f"kin4mc output already exists for ExE = {exc2_keV} keV, skipping kin4mc and reusing existing file")
 		
-		else:
+		# else:
 
-			logger.info(f"readying to run kin4mc for ExE = {exc2_keV} keV")
+		logger.info(f"readying to run kin4mc for ExE = {exc2_keV} keV")
 
-			with open(in_filename, "w") as f:
-				for line in input_lines:
-					f.write(line + "\n")
+		with open(in_filename, "w") as f:
+			for line in input_lines:
+				f.write(line + "\n")
 
-			logger.info(f"passing kin4mc input file to kin4mc for ExE = {exc2_keV} keV")
-			with open(in_filename) as fin:
-				subprocess.run(["/mnt/e/kinematics/kin4mc/kin4mc_legacy/src/kin4mc"], stdin=fin, check=True)
+		logger.info(f"passing kin4mc input file to kin4mc for ExE = {exc2_keV} keV")
+		with open(in_filename) as fin:
+			subprocess.run(["/mnt/e/kinematics/kin4mc/kin4mc_legacy/src/kin4mc"], stdin=fin, check=True)
 
-			os.replace(FIXED_OUTPUT_NAME, out_filename)
-			logger.info(f"finished running kin4mc for ExE = {exc2_keV} keV")
+		os.replace(FIXED_OUTPUT_NAME, out_filename)
+		logger.info(f"finished running kin4mc for ExE = {exc2_keV} keV")
 
 
 
@@ -719,6 +719,14 @@ def kin4mc():
 			f"\nreaction = {reaction}",
 			f"\nbeam_energy = {beamenergy}",
 			f"\nrecoil_excitation_energy = {exc2_keV/1000.}",
+			"\n\n[IMMMA]",
+			"\nbeam_A = 3\nbeam_symbol = He\nbeam_mass = 2809.414",
+			"\n\ntarget_A = 10\ntarget_symbol = B\ntarget_mass = 9324.256",
+			"\n\nejectile_A = 4\nejectile_symbol = He\nejectile_mass = 3728.401",
+			"\n\nrecoil_A = 9\nrecoil_symbol = B\nrecoil_mass = 8395.556",
+			"\n\nbreakup1_A = 4\nbreakup1_symbol = He\nbreakup1_mass = 3728.401",
+			"\n\nbreakup2_A = 1\nbreakup2_symbol = H\nbreakup2_mass = 938.783",
+			"\n\nbreakup3_A = 4\nbreakup3_symbol = He\nbreakup3_mass = 3728.401",
 			"\n"
 		]
 
@@ -794,7 +802,7 @@ def kin4mc():
 	logger.info(f"finished plotting, saved to {EFFICIENCIES_PLOT_FILEPATH}")
 
 	with open(EFFICIENCIES_FILEPATH, "w") as f:
-		f.write("ExE(keV)\tbu1\tbu2\tbu3\tbu1bu2\tbu2bu3\tbu1bu3\n")
+		f.write("ExE(keV)\tbu1\tbu2\tbu3\tbu1bu2\tbu2bu3\tbu1bu3\tall\n")
 		for x in range(len(energies)):
 			f.write(f"{energies[x]}\t{bu1_vals[x]}\t{bu2_vals[x]}\t{bu3_vals[x]}\t{bu1bu2_vals[x]}\t{bu2bu3_vals[x]}\t{bu1bu3_vals[x]}\t{all_vals[x]}\n")
 
