@@ -25,6 +25,13 @@ void scaleHist(const char* inputFileName, const char* inHistName, const char* ou
 		//hScaled->SetBinError(i, hScaled->GetBinError(i)*scaleFactor);
 	}
 
+	hScaled->GetXaxis()->CenterTitle();
+	hScaled->GetYaxis()->CenterTitle();
+	hScaled->GetXaxis()->SetTitle("^{6}Li Excitation Energy (MeV)");
+	hScaled->GetYaxis()->SetTitle("Counts / 25 keV");
+	hScaled->SetTitle("");
+	hScaled->SetStats(0);
+	hScaled->GetXaxis()->SetRangeUser(0,7);
 	hScaled->Draw();
 
 	// TFile* outfile = TFile::Open(outputFileName, "RECREATE");
@@ -41,3 +48,18 @@ void scaleHist(const char* inputFileName, const char* inHistName, const char* ou
 	// infile->Close();
 
 }
+
+/*
+
+
+commands for:
+
+	6Li 2.186 MeV a+d:
+		
+		IMM:	
+		scaleHist("/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_detPlothistos.root", "2par/h2par_RecInvMassExE", "hIMM_RecoilExE_SCALED", "/mnt/e/SABREsim/det/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_IMM_Scaled.root", 6228./1247004.)
+
+		MMM:
+		scaleHist("/mnt/e/SABREsim/det/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos.root", "SABRE/MMM/hMMM_RecoilExE", "hMMM_RecoilExE_SCALED", "/mnt/e/SABREsim/det/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_MMM_Scaled.root", 6228./1229380.)
+	
+*/

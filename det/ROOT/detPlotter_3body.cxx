@@ -433,7 +433,7 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 
 	TFile *outfile = new TFile(output_rootfilename,"RECREATE");
 	HistoManager *histoman = new HistoManager(outfile);
-	histoman->loadHistoConfig("HMConfig/LiFha_2par_3plus.HMConfig");
+	histoman->loadHistoConfig("HMConfig/LiFha_2par_3plus.HMconfig");
 
 	//mass table
 	TMassTable fMassTable;

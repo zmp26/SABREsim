@@ -45,6 +45,8 @@ kin3mc TH2D hThetaLabPhiLab_4 ThetaLabVsPhiLab_4 180 -0.5 179.5 360 -0.5 359.5
 #
 kin3mc TH1D hBreakupLabAngle BreakupLabAngle 180 0 180
 #
+# SABRE Rings vs Wedges (16 rings by 40 wedges - map all rings to same "local ring" but keep wedges separate)
+SABRE TH2D hSABRE_RingsVSWedges SABRE_RingsVSWedges 40 -0.5 39.5 16 -0.5 15.5
 #
 #
 #
