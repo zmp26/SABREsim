@@ -496,7 +496,7 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 	r.breakup2.SetAll(4, "He", bu2Mass);
 	r.breakup3.SetAll(4, "He", bu3Mass);
 	r.beamEnergy = 7.5;
-	r.recoilExE = 2.186;
+	r.recoilExE = 0.;
 	reactions.push_back(r);
 
 	//reaction 10B(3He,4He)9B, 9B -> 4He + 5Li, 5Li -> p + 4He
