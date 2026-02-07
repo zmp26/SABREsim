@@ -57,9 +57,9 @@ commands for:
 	6Li 2.186 MeV a+d:
 		
 		IMM:	
-		scaleHist("/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_detPlothistos.root", "2par/h2par_RecInvMassExE", "hIMM_RecoilExE_SCALED", "/mnt/e/SABREsim/det/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_IMM_Scaled.root", 6228./1247004.)
+		scaleHist("/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_detPlothistos.root", "2par/h2par_RecInvMassExE", "hIMM_RecoilExE_SIMSCALED", "/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_IMM_Scaled.root", 6228./1247004.)
 
 		MMM:
-		scaleHist("/mnt/e/SABREsim/det/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos.root", "SABRE/MMM/hMMM_RecoilExE", "hMMM_RecoilExE_SCALED", "/mnt/e/SABREsim/det/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_MMM_Scaled.root", 6228./1229380.)
+		scaleHist("/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_detPlothistos.root", "1par/h1par_RecMissMassExE", "hMMM_RecoilExE_SIMSCALED", "/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_MMM_Scaled.root", 6228./1229380.)
 	
 */
