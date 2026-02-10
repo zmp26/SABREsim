@@ -44,6 +44,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// 		  << ", SABREARRAY_EnergyResolutionModels_ size: " << SABREARRAY_EnergyResolutionModels_.size()
 	// 		  << std::endl;
 
+	std::ofstream tempoutfileIMM("tempIMM.txt");
+	std::ofstream tempoutfileMMM("tempMMM.txt");
+
 
 	double e1, theta1, phi1, e2, theta2, phi2, e3, theta3, phi3, e4, theta4, phi4;
 

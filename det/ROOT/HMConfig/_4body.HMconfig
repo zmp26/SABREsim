@@ -168,12 +168,34 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 #
 # MMM:
 2par/MMM TH1D hMMM_9BExE_2par_Be8_He4He4 MMM_9BExE_2par_Be8_He4He4 2100 -1 20
+2par/MMM TH1D hMMM_9BExE_2par_5Li_He4p MMM_9BExE_2par_Be8_He4He4 2100 -1 20
+2par/MMM TH1D hMMM_daughterExE MMM_daughterExE 2100 -1 20
 #
 #2par/MMM TH1D hMMM_9BExE_2par_5Li_pHe4 MMM_9BExE_2par_5Li_pHe4 2100 -1 20
 #
 # IMM:
 3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4 IMM_9BExE_3par_Be8_He4He4 2100 -1 20
-#3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p hIMM_9BExE_3par_5Li_He4p 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_gate IMM_9BExE_3par_Be8_He4He4_gate 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_correct IMM_9BExE_3par_Be8_He4He4_correct 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_wrong IMM_9BExE_3par_Be8_He4He4_wrong 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_case1 IMM_9BExE_3par_Be8_He4He4_case1 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_case2 IMM_9BExE_3par_Be8_He4He4_case2 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_case3 IMM_9BExE_3par_Be8_He4He4_case3 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_case4 IMM_9BExE_3par_Be8_He4He4_case4 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_case5 IMM_9BExE_3par_Be8_He4He4_case5 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_Be8_He4He4_case6 IMM_9BExE_3par_Be8_He4He4_case6 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p IMM_9BExE_3par_5Li_He4p 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_gate IMM_9BExE_3par_5Li_He4p_gate 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_correct IMM_9BExE_3par_5Li_He4p_correct 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_wrong IMM_9BExE_3par_5Li_He4p_wrong 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_case1 IMM_9BExE_3par_5Li_He4p_case1 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_case2 IMM_9BExE_3par_5Li_He4p_case2 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_case3 IMM_9BExE_3par_5Li_He4p_case3 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_case4 IMM_9BExE_3par_5Li_He4p_case4 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_case5 IMM_9BExE_3par_5Li_He4p_case5 2100 -1 20
+3par/IMM TH1D hIMM_9BExE_3par_5Li_He4p_case6 IMM_9BExE_3par_5Li_He4p_case6 2100 -1 20
+#3par/IMM TH1D hIMM_daughterIM IMM_daughterIM 200 7440 7460
+3par/IMM TH1D hIMM_daughterExE IMM_daughterExE 2100 -1 20
 #
 3par TH1D h3par_RecInvMassExE 3par_RecInvMassExE 1100 -1 10
 2par TH1D h2par_RecMissMassExE 2par_RecMissMassExE 1100 -1 10
