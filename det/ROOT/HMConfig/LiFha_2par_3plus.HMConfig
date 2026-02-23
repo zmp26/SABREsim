@@ -164,6 +164,8 @@ SABRE/GEOM TH2Poly hSABRE_PixelMap SABRE_PixelMap
 #
 #2par TH1D h2par_RecInvMassExE 2par_RecInvMassExE 275 -1 10
 2par TH1D h2par_RecInvMassExE 2par_RecInvMassExE 1100 -1 10
+2par TH1D h2par_RecInvMassExE_incorrect 2par_RecInvMassExE_incorrect 1100 -1 10
+2par TH1D h2par_RecInvMassExE_correct 2par_RecInvMassExE_correct 1100 -1 10
 1par TH1D h1par_RecMissMassExE 1par_RecMissMassExE 1100 -1 10
 #angle histos:
 #these are angle between lab vector and VCM vector in lab frame

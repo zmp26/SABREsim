@@ -63,3 +63,53 @@ commands for:
 		scaleHist("/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_detPlothistos.root", "1par/h1par_RecMissMassExE", "hMMM_RecoilExE_SIMSCALED", "/mnt/e/SABREsim/det/kin3mc/kin3mc_7Li3He4He6Li2186keV_4He2H_7500keV_theta178218_phi_-2.125_2.125_histos_MMM_Scaled.root", 6228./1229380.)
 	
 */
+
+void scaleLiFManualHistos(){
+
+	TString infilename = "LiFha_3plus_manual.root";
+
+
+	TString inHistName = "hIncorrect_6LiadEx";
+	TString outHistName = "hIncorrect_6LiadEx_scaled";
+	
+	TString outrootname = "hIncorrect_6LiadEx_scaled.root";
+
+	double factor = 5204./1247004.;
+
+
+	TFile *infile = TFile::Open(infilename,"READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "bad root file\n";
+		return;
+	}
+
+	TH1D *h = dynamic_cast<TH1D*>(infile->Get(inHistName));
+	if(!h){
+		std::cerr << "bad histo or histo not found\n";
+		infile->Close();
+		return;
+	}
+
+	TH1D *hScaled = dynamic_cast<TH1D*>(h->Clone(Form("%s",outHistName.Data())));
+
+	//infile->Close();
+
+	for(int i=1; i <= hScaled->GetNbinsX(); i++){
+		hScaled->SetBinContent(i, hScaled->GetBinContent(i)*factor);
+	}
+
+	hScaled->GetXaxis()->CenterTitle();
+	hScaled->GetYaxis()->CenterTitle();
+	hScaled->GetXaxis()->SetTitle("^{6}Li -> \\alpha + d Excitation Energy (MeV)");
+	hScaled->GetYaxis()->SetTitle("Counts / 25 keV");
+	hScaled->SetTitle("");
+	hScaled->SetStats(0);
+	hScaled->GetXaxis()->SetRangeUser(1,3);
+	hScaled->Draw();
+
+	//TFile *outfile = TFile::Open(outrootname,"RECREATE");
+	//outfile->cd();
+	//hScaled->Write();
+
+	std::cout << "Saved " << outHistName << " to " << outrootname << "\n";
+}

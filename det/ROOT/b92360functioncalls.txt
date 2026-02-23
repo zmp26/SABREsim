@@ -1,0 +1,15 @@
+SIM = 9B->p+8Be->a+a		RECON = 9B->p+8Be->a+a
+B10ha_3halfminus_manual2("/mnt/e/SABREsim/det/ROOT/B92360keV_p8Be_4He4He.det", "/mnt/e/SABREsim/det/ROOT/B92360keV_p8BeSIM_p8BeRECON.root", "8Be", 0)
+
+
+SIM = 9B->p+8Be->a+a		RECON = 9B->a+5Li->p+a
+B10ha_3halfminus_manual2("/mnt/e/SABREsim/det/ROOT/B92360keV_p8Be_4He4He.det", "/mnt/e/SABREsim/det/ROOT/B92360keV_p8BeSIM_a5LiRECON.root", "5Li", 0)
+
+
+SIM = 9B->a+5Li->p+a		RECON = 9B->a+5Li->p+a
+B10ha_3halfminus_manual2("/mnt/e/SABREsim/det/ROOT/B92360keV_a5Li_p4He.det", "/mnt/e/SABREsim/det/ROOT/B92360keV_a5LiSIM_a5LiRECON.root", "5Li", 0)
+
+
+SIM = 9B->a+5Li->p+a		RECON = 9B->p+8Be->a+a
+B10ha_3halfminus_manual2("/mnt/e/SABREsim/det/ROOT/B92360keV_a5Li_p4He.det", "/mnt/e/SABREsim/det/ROOT/B92360keV_a5LiSIM_p8BeRECON.root", "8Be", 0)
+

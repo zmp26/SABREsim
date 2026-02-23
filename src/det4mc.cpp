@@ -56,19 +56,19 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 
 	const auto& beam = config->GetBeam();
 	immmaTool.SetBeamNucleus(beam.A, beam.symbol, beam.mass);
-	std::cout << "set beam mass to " << beam.mass << std::endl;
+	//std::cout << "set beam mass to " << beam.mass << std::endl;
 
 	const auto& target = config->GetTarget();
 	immmaTool.SetTargetNucleus(target.A, target.symbol, target.mass);
-	std::cout << "set target mass to " << target.mass << std::endl;
+	//std::cout << "set target mass to " << target.mass << std::endl;
 
 	const auto& ejectile = config->GetEjectile();
 	immmaTool.SetEjectileNucleus(ejectile.A, ejectile.symbol, ejectile.mass);
-	std::cout << "set ejectile mass to " << ejectile.mass << std::endl;
+	//std::cout << "set ejectile mass to " << ejectile.mass << std::endl;
 
 	const auto& recoil = config->GetRecoil();
 	immmaTool.SetRecoilNucleus(recoil.A, recoil.symbol, recoil.mass);
-	std::cout << "set recoil mass to " << recoil.mass << std::endl;
+	//std::cout << "set recoil mass to " << recoil.mass << std::endl;
 
 	std::vector<Nucleus> breakups;
 	for(const auto& cfg : config->GetBreakups()){

@@ -408,9 +408,8 @@ void UpdateCMCMinMax(CMCMinMax& minmax, double value){
 	}
 }
 
-double calculateSPS_ExE(double spsE, double spsTheta, double spsPhi, TMassTable& table){
+double calculateSPS_ExE(double smearedSPSE, double spsTheta, double spsPhi, TMassTable& table){
 	TLorentzVector beam, target, ejectile, recoil;
-	double smearedSPSE = getSPSEnergy(spsE);
 	double beamEnergy = 7.5;
 	beam.SetPxPyPzE(0.,0.,sqrt(2*table.GetMassMeV("He",3)*beamEnergy),beamEnergy+table.GetMassMeV("He",3));
 	target.SetPxPyPzE(0.,0.,0.,table.GetMassMeV("Li",7));
@@ -516,12 +515,13 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 					fillSABREHistos(histoman, sd1, pd4);
 				}
 
-				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
+				double smearedSPSE = getSPSEnergy(pd1.e, 0.05);
+				Double_t exe = calculateSPS_ExE(smearedSPSE,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy);
 				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy);
 				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
 				//kin IMM to get thetacm and phicm quickly:
-				std::pair<CaseResult,CaseResult> kin = tools[0]->AnalyzeEventIMM(pd1.e,pd1.theta,pd1.phi,pd3.e,pd3.theta,pd3.phi,pd4.e,pd4.theta,pd4.phi);
+				std::pair<CaseResult,CaseResult> kin = tools[0]->AnalyzeEventIMM(smearedSPSE,pd1.theta,pd1.phi,pd3.e,pd3.theta,pd3.phi,pd4.e,pd4.theta,pd4.phi);
 				histoman->getHisto1D("hThetaCM_3")->Fill(kin.first.ThetaCM1);
 				histoman->getHisto1D("hThetaCM_4")->Fill(kin.first.ThetaCM2);
 				histoman->getHisto1D("hPhiCM_3")->Fill(kin.first.PhiCM1);
@@ -530,7 +530,8 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				histoman->getHisto2D("hCosThetaCM3_vs_CosThetaCM4")->Fill(TMath::Cos(kin.first.ThetaCM1*DEGRAD),TMath::Cos(kin.first.ThetaCM2*DEGRAD));
 
 				//do MMM here
-				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventMMM(pd1.e, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi);
+				// std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventMMM(smearedSPSE, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi);
+				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventMMM(smearedSPSE, pd1.theta, pd1.phi, sd1.ringEnergy, sd1.theta, sd1.phi);
 				CaseResult case1 = results.first;
 				CaseResult case2 = results.second;
 				//fill angle between lab vector and VCM (in lab frame) vector histograms here
@@ -606,12 +607,13 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 					fillSABREHistos(histoman, sd2, pd4);
 				}
 
-				Double_t exe = calculateSPS_ExE(pd1.e,pd1.theta,pd1.phi,fMassTable);
+				double smearedSPSE = getSPSEnergy(pd1.e);
+				Double_t exe = calculateSPS_ExE(smearedSPSE,pd1.theta,pd1.phi,fMassTable);
 				histoman->getHisto2D("hSABRE_SabreRingESumVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
 				histoman->getHisto1D("hSABRE_SabreRingESum")->Fill(sd1.ringEnergy+sd2.ringEnergy);
 				histoman->getHisto1D("hSPS_ExE")->Fill(exe);
 				//kin IMM to get thetacm and phicm quickly:
-				std::pair<CaseResult,CaseResult> kin = tools[0]->AnalyzeEventIMM(pd1.e,pd1.theta,pd1.phi,pd3.e,pd3.theta,pd3.phi,pd4.e,pd4.theta,pd4.phi);
+				std::pair<CaseResult,CaseResult> kin = tools[0]->AnalyzeEventIMM(smearedSPSE,pd1.theta,pd1.phi,pd3.e,pd3.theta,pd3.phi,pd4.e,pd4.theta,pd4.phi);
 				histoman->getHisto1D("hThetaCM_3")->Fill(kin.first.ThetaCM1);
 				histoman->getHisto1D("hThetaCM_4")->Fill(kin.first.ThetaCM2);
 				histoman->getHisto1D("hPhiCM_3")->Fill(kin.first.PhiCM1);
@@ -619,7 +621,7 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 				histoman->getHisto2D("hThetaCM3_vs_ThetaCM4")->Fill(kin.first.ThetaCM1,kin.first.ThetaCM2);
 				histoman->getHisto2D("hCosThetaCM3_vs_CosThetaCM4")->Fill(TMath::Cos(kin.first.ThetaCM1*DEGRAD),TMath::Cos(kin.first.ThetaCM2*DEGRAD));
 				//do IMM here
-				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventIMM(pd1.e,pd1.theta,pd1.phi,sd1.ringEnergy,sd1.theta,sd1.phi,sd2.ringEnergy,sd2.theta,sd2.phi);
+				std::pair<CaseResult,CaseResult> results = tools[0]->AnalyzeEventIMM(smearedSPSE,pd1.theta,pd1.phi,sd1.ringEnergy,sd1.theta,sd1.phi,sd2.ringEnergy,sd2.theta,sd2.phi);
 				CaseResult case1 = results.first;
 				CaseResult case2 = results.second;
 				//fill histograms here:
@@ -661,6 +663,9 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 
 				histoman->getHisto2D("h2par_SabreRingESumVsLi6ExE_3plus")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
 				histoman->getHisto2D("h1and2par_SabreRingEVsLi6ExE")->Fill(exe,sd1.ringEnergy+sd2.ringEnergy);
+
+				if(sd1.particleIndex == 100) histoman->getHisto1D("h2par_RecInvMassExE_correct")->Fill(case1.recInvMass - recoilMass); else histoman->getHisto1D("h2par_RecInvMassExE_incorrect")->Fill(case1.recInvMass - recoilMass);
+				if(sd2.particleIndex == 100) histoman->getHisto1D("h2par_RecInvMassExE_incorrect")->Fill(case2.recInvMass - recoilMass); else histoman->getHisto1D("h2par_RecInvMassExE_correct")->Fill(case2.recInvMass - recoilMass);
 
 				int ringoffset = offsets[sd1.detectorIndex].first;
 				int wedgeoffset = offsets[sd1.detectorIndex].second;
@@ -1041,6 +1046,200 @@ void LiFha_3plus(const char* input_filename, const char* output_rootfilename, co
 	cout << "Processed " << count << " events.\n";
 	cout << "ROOT file saved to " << output_rootfilename << "\n";
 }
+
+void LiFha_3plus_manual(const char* input_filename, const char* output_rootfilename, const char* ntpname = "kin3"){
+
+	TH1D *hCorrect_6LiadEx = new TH1D("hCorrect_6LiadEx", "Correct_6LiadEx", 525, -1, 20);
+	TH1D *hIncorrect_6LiadEx = new TH1D("hIncorrect_6LiadEx", "Incorrect_6LiadEx", 525, -1, 20);
+	TH1D *h6LiadEx = new TH1D("h6LiadEx", "6LiadEx", 525, -1, 20);
+
+	std::map<std::pair<int,int>,std::pair<double,double>> sabre_thetaphimap = readAngleMaps();
+
+	ifstream infile(input_filename);
+	if(!infile.is_open()){
+		std::cerr << "Error: Could not open file " << input_filename << std::endl;
+		return;
+	}
+
+	TFile *outfile = new TFile(output_rootfilename,"RECREATE");
+
+	TMassTable fMassTable;
+	fMassTable.Init("../../config/masstable.dat");
+
+
+	double beamMass = fMassTable.GetMassMeV("He",3);
+	double targetMass = fMassTable.GetMassMeV("Li",7);
+	double ejectileMass = fMassTable.GetMassMeV("He",4);
+	double recoilMass = fMassTable.GetMassMeV("Li",6);
+	double bu1Mass = fMassTable.GetMassMeV("He",4);
+	double bu2Mass = fMassTable.GetMassMeV("H",2);
+
+	string line;
+
+	std::cout << "Processing " << input_filename << "...\n";
+	int count = 0;
+
+	std::vector<std::string> eventLines;
+	while(std::getline(infile,line)){
+
+
+		if(line == "-1"){
+
+			PHYSDATA pd1, pd2, pd3, pd4;
+			SABREDATA sd1, sd2;
+			SABREDATA bu1, bu2;
+
+
+			if(eventLines.size() == 1){
+
+				//kin line only
+
+			}
+
+			else if(eventLines.size() == 2){
+
+				//1 sabre particle, do MMM here eventually
+				parseSABREData(eventLines[1],sd1);
+				std::pair<double, double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
+				sd1.theta = anglepair.first;
+				sd1.phi = anglepair.second;
+
+				//sd1
+				if(sd1.particleIndex == 300){
+
+					//this means sd1 is bu1
+					bu1 = sd1;
+
+
+				} else if(sd1.particleIndex == 400){
+
+					//this means sd1 is bu2
+					bu2 = sd1;
+
+				}
+
+				double p1 = sqrt(2*bu1Mass*bu1.ringEnergy);
+
+			}
+
+
+			else if(eventLines.size() == 3){
+
+				//2 sabre particle, do IMM here
+
+				parseSABREData(eventLines[1],sd1);
+				std::pair<double, double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
+				sd1.theta = anglepair.first;
+				sd1.phi = anglepair.second;
+				parseSABREData(eventLines[2],sd2);
+				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
+				sd2.theta = anglepair.first;
+				sd2.phi = anglepair.second;
+
+
+				//sd1
+				if(sd1.particleIndex == 300){
+
+					//this means sd1 is bu1
+					bu1 = sd1;
+
+
+				} else if(sd1.particleIndex == 400){
+
+					//this means sd1 is bu2
+					bu2 = sd1;
+
+				}
+
+				//sd2
+				if(sd2.particleIndex == 300){
+
+					//this means sd2 is bu1
+					bu1 = sd2;
+
+
+				} else if(sd2.particleIndex == 400){
+
+					//this means sd2 is bu2
+					bu2 = sd2;
+
+				}
+
+				//std::cout << "bu1 = " << bu1.particleIndex << "\nbu2 = " << bu2.particleIndex << "\n";
+
+
+				double p1 = sqrt(2*bu1Mass*bu1.ringEnergy);
+				double p2 = sqrt(2*bu2Mass*bu2.ringEnergy);
+
+				TLorentzVector bu1LV, bu2LV, Li6LV;
+
+				bu1LV.SetPxPyPzE(p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+								 p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+								 p1*std::cos(DEGRAD*bu1.theta),
+								 bu1.ringEnergy + bu1Mass
+								 );
+
+				bu2LV.SetPxPyPzE(p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+								 p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+								 p2*std::cos(DEGRAD*bu2.theta),
+								 bu2.ringEnergy + bu2Mass
+								 );
+
+				Li6LV = bu1LV + bu2LV;
+				//std::cout << "CASE1:\nLi6 IM = " << Li6LV.M() << "\nbu1 IM = " << bu1LV.M() << "\nbu2IM = " << bu2LV.M() << "\n\n";
+
+				h6LiadEx->Fill(Li6LV.M() - recoilMass);
+				hCorrect_6LiadEx->Fill(Li6LV.M() - recoilMass);
+
+
+
+				//swap masses
+				p1 = sqrt(2*bu2Mass*bu1.ringEnergy);
+				p2 = sqrt(2*bu1Mass*bu2.ringEnergy);
+
+				bu1LV.SetPxPyPzE(p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+								 p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+								 p1*std::cos(DEGRAD*bu1.theta),
+								 bu1.ringEnergy + bu2Mass
+								 );
+
+				bu2LV.SetPxPyPzE(p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+								 p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+								 p2*std::cos(DEGRAD*bu2.theta),
+								 bu2.ringEnergy + bu1Mass
+								 );
+
+				Li6LV = bu1LV + bu2LV;
+				//std::cout << "CASE2:\nLi6 IM = " << Li6LV.M() << "\nbu1 IM = " << bu1LV.M() << "\nbu2IM = " << bu2LV.M() << "\n\n";
+
+				h6LiadEx->Fill(Li6LV.M() - recoilMass);
+				hIncorrect_6LiadEx->Fill(Li6LV.M() - recoilMass);
+
+			}
+
+			eventLines.clear();
+			count += 1;
+
+
+		} else {
+			eventLines.push_back(line);
+		}
+
+	}
+
+	outfile->cd();
+	hCorrect_6LiadEx->Write();
+	hIncorrect_6LiadEx->Write();
+	h6LiadEx->Write();
+
+	std::cout << "\nProcessed " << count << " events.\nROOT file saved to " << output_rootfilename << "\n";
+
+	outfile->Close();
+
+
+
+}
+
 
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map){
 

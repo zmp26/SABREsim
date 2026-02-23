@@ -220,7 +220,7 @@ void fillSABREHistos(HistoManager* histoman, SABREDATA& sabredata1, PHYSDATA &ph
 				histoman->getHisto2D("hSABRE0_ESummaryRings")->Fill(sabredata1.ring, sabredata1.ringEnergy);
 				histoman->getHisto2D("hSABRE0_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				histoman->getHisto2D("hSABRE_AngleHitsMap")->Fill(sabredata1.theta, sabredata1.phi);
-				//cout << "theta = " << sabredata1.theta << ", phi = " << sabredata1.phi << endl;
+				//cout << "theta = " << sabredata1.theta << ", phcount = " << sabredata1.phi << endl;
 				histoman->getHisto2D("hSABREARRAY_hitsMapLocal")->Fill(-sabredata1.localx, -sabredata1.localy);
 				// histoman->getHisto2D("hSABRE0_ringEVSkinE")->Fill(physdata1.e, sabredata1.ringEnergy);
 				// histoman->getHisto2D("hSABRE0_wedgeEVSkinE")->Fill(physdata1.e, sabredata1.wedgeEnergy);
@@ -448,13 +448,13 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 
 
 	//8Be case:
-	// bool Be8 = true;
-	// bool Li5 = false;
+	bool Be8 = true;
+	bool Li5 = false;
 
 
 	//5Li case:
-	bool Be8 = false;
-	bool Li5 = true;
+	// bool Be8 = false;
+	// bool Li5 = true;
 
 
 
@@ -489,26 +489,26 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 
 	//masses
 	if(Be8){
-		beamMass = fMassTable.GetMassMeV("He",3);
-		targetMass = fMassTable.GetMassMeV("B",10);
-		ejectileMass = fMassTable.GetMassMeV("He",4);
-		recoilMass = fMassTable.GetMassMeV("B",9);
-		bu1Mass = fMassTable.GetMassMeV("H",1);
-		daughter1Mass = fMassTable.GetMassMeV("Be",8);
-		bu2Mass = fMassTable.GetMassMeV("He",4);
-		bu3Mass = fMassTable.GetMassMeV("He",4);
+		beamMass = fMassTable.GetNuclearMassMeV("He",3);
+		targetMass = fMassTable.GetNuclearMassMeV("B",10);
+		ejectileMass = fMassTable.GetNuclearMassMeV("He",4);
+		recoilMass = fMassTable.GetNuclearMassMeV("B",9);
+		bu1Mass = fMassTable.GetNuclearMassMeV("H",1);
+		daughter1Mass = fMassTable.GetNuclearMassMeV("Be",8);
+		bu2Mass = fMassTable.GetNuclearMassMeV("He",4);
+		bu3Mass = fMassTable.GetNuclearMassMeV("He",4);
 	}
 
 	//masses for 9B -> 4He + 5Li, 5Li -> p + 4He:
 	if(Li5){
-		beamMass = fMassTable.GetMassMeV("He",3);
-		targetMass = fMassTable.GetMassMeV("B",10);
-		ejectileMass = fMassTable.GetMassMeV("He",4);
-		recoilMass = fMassTable.GetMassMeV("B",9);
-		bu1Mass = fMassTable.GetMassMeV("He",4);
-		daughter1Mass = fMassTable.GetMassMeV("Li",5);
-		bu2Mass = fMassTable.GetMassMeV("H",1);
-		bu3Mass = fMassTable.GetMassMeV("He",4);
+		beamMass = fMassTable.GetNuclearMassMeV("He",3);
+		targetMass = fMassTable.GetNuclearMassMeV("B",10);
+		ejectileMass = fMassTable.GetNuclearMassMeV("He",4);
+		recoilMass = fMassTable.GetNuclearMassMeV("B",9);
+		bu1Mass = fMassTable.GetNuclearMassMeV("He",4);
+		daughter1Mass = fMassTable.GetNuclearMassMeV("Li",5);
+		bu2Mass = fMassTable.GetNuclearMassMeV("H",1);
+		bu3Mass = fMassTable.GetNuclearMassMeV("He",4);
 	}
 
 	//reactions
@@ -825,6 +825,1226 @@ void B10ha_3halfminus(const char* input_filename, const char* output_rootfilenam
 	std::cout << "\nProcessed " << count << " events.\nROOT file saved to " << output_rootfilename << "\n";
 }
 
+void B10ha_3halfminus_manual(const char* input_filename, const char* output_rootfilename, const char* ntpname = "kin4"){
+
+
+	//8Be case:
+	// bool Be8 = true;
+	// bool Li5 = false;
+
+
+	//5Li case:
+	bool Be8 = false;
+	bool Li5 = true;
+
+	// TH1D *hCorrect_daughterIM = new TH1D("hCorrect_daughterIM","hCorrect_daughterIM", 160, 4666, 4672);
+	// TH1D *hCorrect_9BReconExE = new TH1D("hCorrect_9BReconExE","hCorrect_9BReconExE", 525, -1, 20);
+	// TH1D *hCorrect_9BReconExE_gated = new TH1D("hCorrect_9BReconExE_gated", "hCorrect_9BReconExE_gated", 525, -1, 20);
+
+	// TH1D *hIncorrect1_daughterIM = new TH1D("hIncorrect1_daughterIM","hIncorrect1_daughterIM", 160, 4666, 4672);
+	// TH1D *hIncorrect1_9BReconExE = new TH1D("hIncorrect1_9BReconExE","hIncorrect1_9BReconExE", 525, -1, 20);
+	// TH1D *hIncorrect1_9BReconExE_gated = new TH1D("hIncorrect1_9BReconExE_gated","hIncorrect1_9BReconExE_gated", 525, -1, 20);
+
+	// TH1D *hIncorrect2_daughterIM = new TH1D("hIncorrect2_daughterIM","hIncorrect2_daughterIM", 200, 7454, 7464);
+	// TH1D *hIncorrect2_9BReconExE = new TH1D("hIncorrect2_9BReconExE","hIncorrect2_9BReconExE", 525, -1, 20);
+	// TH1D *hIncorrect2_9BReconExE_gated = new TH1D("hIncorrect2_9BReconExE_gated","hIncorrect2_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase1_daughterIM = new TH1D("hCase1_daughterIM","hCase1_daughterIM", 160, 7400, 7400);
+	TH1D *hCase1_daughterExE = new TH1D("hCase1_daughterExE","hCase1_daughterExE", 525, -1, 20);
+	TH1D *hCase1_daughterExE_gate = new TH1D("hCase1_daughterExE_gate","hCase1_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase1_9BReconExE = new TH1D("hCase1_9BReconExE","hCase1_9BReconExE", 525, -1, 20);
+	TH1D *hCase1_9BReconExE_gated = new TH1D("hCase1_9BReconExE_gated", "hCase1_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase2_daughterIM = new TH1D("hCase2_daughterIM","hCase2_daughterIM", 160, 7400, 7500);
+	TH1D *hCase2_daughterExE = new TH1D("hCase2_daughterExE","hCase2_daughterExE", 525, -1, 20);
+	TH1D *hCase2_daughterExE_gate = new TH1D("hCase2_daughterExE_gate","hCase2_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase2_9BReconExE = new TH1D("hCase2_9BReconExE","hCase2_9BReconExE", 525, -1, 20);
+	TH1D *hCase2_9BReconExE_gated = new TH1D("hCase2_9BReconExE_gated", "hCase2_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase3_daughterIM = new TH1D("hCase3_daughterIM","hCase3_daughterIM", 160, 7400, 7500);
+	TH1D *hCase3_daughterExE = new TH1D("hCase3_daughterExE","hCase3_daughterExE", 525, -1, 20);
+	TH1D *hCase3_daughterExE_gate = new TH1D("hCase3_daughterExE_gate","hCase3_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase3_9BReconExE = new TH1D("hCase3_9BReconExE","hCase3_9BReconExE", 525, -1, 20);
+	TH1D *hCase3_9BReconExE_gated = new TH1D("hCase3_9BReconExE_gated", "hCase3_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase4_daughterIM = new TH1D("hCase4_daughterIM","hCase4_daughterIM", 160, 7400, 7500);
+	TH1D *hCase4_daughterExE = new TH1D("hCase4_daughterExE","hCase4_daughterExE", 525, -1, 20);
+	TH1D *hCase4_daughterExE_gate = new TH1D("hCase4_daughterExE_gate","hCase4_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase4_9BReconExE = new TH1D("hCase4_9BReconExE","hCase4_9BReconExE", 525, -1, 20);
+	TH1D *hCase4_9BReconExE_gated = new TH1D("hCase4_9BReconExE_gated", "hCase4_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase5_daughterIM = new TH1D("hCase5_daughterIM","hCase5_daughterIM", 160, 7400, 7500);
+	TH1D *hCase5_daughterExE = new TH1D("hCase5_daughterExE","hCase5_daughterExE", 525, -1, 20);
+	TH1D *hCase5_daughterExE_gate = new TH1D("hCase5_daughterExE_gate","hCase5_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase5_9BReconExE = new TH1D("hCase5_9BReconExE","hCase5_9BReconExE", 525, -1, 20);
+	TH1D *hCase5_9BReconExE_gated = new TH1D("hCase5_9BReconExE_gated", "hCase5_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase6_daughterIM = new TH1D("hCase6_daughterIM","hCase6_daughterIM", 160, 7400, 7500);
+	TH1D *hCase6_daughterExE = new TH1D("hCase6_daughterExE","hCase6_daughterExE", 525, -1, 20);
+	TH1D *hCase6_daughterExE_gate = new TH1D("hCase6_daughterExE_gate","hCase6_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase6_9BReconExE = new TH1D("hCase6_9BReconExE","hCase6_9BReconExE", 525, -1, 20);
+	TH1D *hCase6_9BReconExE_gated = new TH1D("hCase6_9BReconExE_gated", "hCase6_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hAllCases_daughterIM = new TH1D("hAllCases_daughterIM","hAllCases_daughterIM", 160, 7400, 7500);
+	TH1D *hAllCases_daughterExE = new TH1D("hAllCases_daughterExE","hAllCases_daughterExE", 525, -1, 20);
+	TH1D *hAllCases_daughterExE_gate = new TH1D("hAllCases_daughterExE_gate","hAllCases_daughterExE_gate", 525, -1, 20);
+	TH1D *hAllCases_9BReconExE = new TH1D("hAllCases_9BReconExE","hAllCases_9BReconExE", 525, -1, 20);
+	TH1D *hAllCases_9BReconExE_gated = new TH1D("hAllCases_9BReconExE_gated", "hAllCases_9BReconExE_gated", 525, -1, 20);
+
+
+
+
+	std::map<std::pair<int,int>,std::pair<double,double>> sabre_thetaphimap = readAngleMaps();
+
+	ifstream infile(input_filename);
+	if(!infile.is_open()){
+		std::cerr << "Error: Could not open file " << input_filename << std::endl;
+		return;
+	}
+
+	TFile *outfile = new TFile(output_rootfilename,"RECREATE");
+
+	TMassTable fMassTable;
+	fMassTable.Init("../../config/masstable.dat");
+
+	Double_t beamMass;// = fMassTable.GetMassMeV("He",3);
+	Double_t targetMass;// = fMassTable.GetMassMeV("B",10);
+	Double_t ejectileMass;// = fMassTable.GetMassMeV("He",4);
+	Double_t recoilMass;//= fMassTable.GetMassMeV("B",9);
+	Double_t bu1Mass;// = fMassTable.GetMassMeV("H",1);
+	Double_t daughter1Mass;// = fMassTable.GetMassMeV("Be",8);
+	Double_t bu2Mass;// = fMassTable.GetMassMeV("He",4);
+	Double_t bu3Mass;// = fMassTable.GetMassMeV("He",4);
+
+	//masses
+	if(Be8){
+		beamMass = fMassTable.GetNuclearMassMeV("He",3);
+		targetMass = fMassTable.GetNuclearMassMeV("B",10);
+		ejectileMass = fMassTable.GetNuclearMassMeV("He",4);
+		recoilMass = fMassTable.GetNuclearMassMeV("B",9);
+		bu1Mass = fMassTable.GetNuclearMassMeV("H",1);
+		daughter1Mass = fMassTable.GetNuclearMassMeV("Be",8);
+		bu2Mass = fMassTable.GetNuclearMassMeV("He",4);
+		bu3Mass = fMassTable.GetNuclearMassMeV("He",4);
+	}
+
+	//masses for 9B -> 4He + 5Li, 5Li -> p + 4He:
+	if(Li5){
+		beamMass = fMassTable.GetNuclearMassMeV("He",3);
+		targetMass = fMassTable.GetNuclearMassMeV("B",10);
+		ejectileMass = fMassTable.GetNuclearMassMeV("He",4);
+		recoilMass = fMassTable.GetNuclearMassMeV("B",9);
+		bu1Mass = fMassTable.GetNuclearMassMeV("He",4);
+		daughter1Mass = fMassTable.GetNuclearMassMeV("Li",5);
+		bu2Mass = fMassTable.GetNuclearMassMeV("H",1);
+		bu3Mass = fMassTable.GetNuclearMassMeV("He",4);
+	}
+
+	TTree* kin4 = new TTree(ntpname, "10B 3par 9B_3halfminus manual");
+
+	string line;
+
+	std::cout << "Processing " << input_filename << "..." << std::endl;
+	int count = 0;
+
+	std::vector<std::string> eventLines;
+	while(std::getline(infile,line)){
+
+		if(line == "-1"){
+
+			
+
+			PHYSDATA pd1, pd2, pd3, pd4;
+			SABREDATA sd1, sd2, sd3;			
+			SABREDATA bu1, bu2, bu3;
+
+			//eoev = end of event marker, signified by line containing only -1 to separte SABRE events
+			//This means we need to process the lines that contain the detected particles, so let's check how many we have:
+			
+			if(eventLines.size() == 1){//no sabre detections, only kinematics line
+
+
+				//skip for now
+				//std::cout << "eventLines.size == 1, count = " << count << "\n";
+
+			}
+
+			else if(eventLines.size() == 2){//1 sabre detection, skip for now
+
+				//skip for now
+				//std::cout << "eventLines.size == 2, count = " << count << "\n";
+
+			}
+
+			else if(eventLines.size() == 3){//2 particle sabre detection, do manual MMM here eventually
+
+				//do mmm eventually, skip for now
+				//std::cout << "eventLines.size == 3, count = " << count << "\n";
+
+			}
+
+			else if(eventLines.size() == 4){//3 particle sabre detection, do manual IMM here
+
+				//std::cout << "eventLines.size == 4, count = " << count << "\n";
+
+				//do imm here - manually
+				// parseSABREData(eventLines[1],sd1);
+				// parseSABREData(eventLines[1],sd2);
+				// parseSABREData(eventLines[1],sd3);
+
+				//determine which particle is in event line:
+				parseSABREData(eventLines[1],sd1);
+				std::pair<double, double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
+				sd1.theta = anglepair.first;
+				sd1.phi = anglepair.second;
+				parseSABREData(eventLines[2],sd2);
+				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
+				sd2.theta = anglepair.first;
+				sd2.phi = anglepair.second;
+				parseSABREData(eventLines[3],sd3);
+				anglepair = sabre_thetaphimap[{sd3.ring+offsets[sd3.detectorIndex].first, sd3.wedge+offsets[sd3.detectorIndex].second}];
+				sd3.theta = anglepair.first;
+				sd3.phi = anglepair.second;
+				//for some reason, the particle ids are not necessarily in order...so we can't trust that sd1 = bu1, sd2 = bu2, sd3 = bu3
+				//let's just manually check and update new variables for simplicity
+
+				//sd1
+				if(sd1.particleIndex == 200){
+
+					//this means sd1 is bu1
+					bu1 = sd1;
+
+
+				} else if(sd1.particleIndex == 300){
+
+					//this means sd1 is bu2
+					bu2 = sd1;
+
+				} else if(sd1.particleIndex == 400){
+
+					//this meanas sd1 is bu3
+					bu3 = sd1;
+
+				}
+
+				//sd2
+				if(sd2.particleIndex == 200){
+
+					//this means sd2 is bu1
+					bu1 = sd2;
+
+				} else if(sd2.particleIndex == 300){
+
+					//this means sd2 is bu2
+					bu2 = sd2;
+
+				} else if(sd2.particleIndex == 400){
+
+					//this meanas sd2 is bu3
+					bu3 = sd2;
+
+				}
+
+
+				//sd3
+				if(sd3.particleIndex == 200){
+
+					//this means sd3 is bu1
+					bu1 = sd3;
+
+				} else if(sd3.particleIndex == 300){
+
+					//this means sd3 is bu2
+					bu2 = sd3;
+
+				} else if(sd3.particleIndex == 400){
+
+					//this meanas sd3 is bu3
+					bu3 = sd3;
+
+				}
+
+				//now, bu1, bu2, bu3 should have the correct theta assumptions
+
+
+				//case1 -> p1 = alpha1	p2 = p 	p3 = alpha2
+				//daughter = p2 + p3
+				//first we do the "correct case" thanks to simulation omniscience
+				double p1 = sqrt(2*bu1Mass*bu1.ringEnergy);
+				double p2 = sqrt(2*bu2Mass*bu2.ringEnergy);
+				double p3 = sqrt(2*bu3Mass*bu3.ringEnergy);
+
+				TLorentzVector bu1LV, bu2LV, bu3LV, daughter, boron9;
+
+				bu1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + bu1Mass
+					);
+
+				bu2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + bu2Mass
+					);
+
+				bu3LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + bu3Mass
+					);
+
+
+				daughter = bu2LV + bu3LV;
+				boron9 = bu1LV + daughter;
+
+				hCase1_daughterIM->Fill(daughter.M());
+				hCase1_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase1_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				if(std::abs(boron9.M() - recoilMass) <= 1.){
+					hCase1_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+				} 
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(daughter.M() - daughter1Mass) <= 0.05) hCase1_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+
+				
+				
+
+
+				//case2  -> p1 = alpha1	p2 = alpha2 	p3 = p
+				//daughter = p2 + p3
+				p1 = sqrt(2*bu1Mass*bu1.ringEnergy);
+				p2 = sqrt(2*bu3Mass*bu2.ringEnergy);
+				p3 = sqrt(2*bu2Mass*bu3.ringEnergy);
+
+				bu1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + bu1Mass
+					);
+
+				bu2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + bu3Mass
+					);
+
+				bu3LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + bu2Mass
+					);
+
+				daughter = bu2LV + bu3LV;
+				boron9 = bu1LV + daughter;
+
+				hCase2_daughterIM->Fill(daughter.M());
+				hCase2_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase2_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				if(std::abs(boron9.M() - recoilMass) <= 1.){
+					hCase2_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+				} 
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(daughter.M() - daughter1Mass) <= 0.05) hCase2_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+
+
+				//case3  -> p1 = alpha2	p2 = p 	p3 = alpha1
+				//daughter = p1 + p2
+				p1 = sqrt(2*bu3Mass*bu1.ringEnergy);
+				p2 = sqrt(2*bu1Mass*bu2.ringEnergy);
+				p3 = sqrt(2*bu2Mass*bu3.ringEnergy);
+
+				bu1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + bu3Mass
+					);
+
+				bu2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + bu1Mass
+					);
+
+				bu3LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + bu2Mass
+					);
+
+				daughter = bu1LV + bu2LV;
+				boron9 = daughter + bu3LV;
+
+				hCase3_daughterIM->Fill(daughter.M());
+				hCase3_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase3_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(boron9.M() - recoilMass) <= 1.){
+					hCase3_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+				} 
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(daughter.M() - daughter1Mass) <= 0.05) hCase3_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+
+
+
+				//case4  -> p1 = alpha2	p2 = alpha1 	p3 = p
+				//daughter = p1 + p3
+				p1 = sqrt(2*bu3Mass*bu1.ringEnergy);
+				p2 = sqrt(2*bu2Mass*bu2.ringEnergy);
+				p3 = sqrt(2*bu1Mass*bu3.ringEnergy);
+
+				bu1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + bu3Mass
+					);
+
+				bu2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + bu2Mass
+					);
+
+				bu3LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + bu1Mass
+					);
+
+				daughter = bu1LV + bu3LV;
+				boron9 = daughter + bu2LV;
+
+				hCase4_daughterIM->Fill(daughter.M());
+				hCase4_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase4_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(boron9.M() - recoilMass) <= 1.){
+					hCase4_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+				} 
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(daughter.M() - daughter1Mass) <= 0.05) hCase4_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+
+				//case5  -> p1 = p	p2 = alpha1 	p3 = alpha2
+				//daughter = p1 + p3
+				p1 = sqrt(2*bu2Mass*bu1.ringEnergy);
+				p2 = sqrt(2*bu1Mass*bu2.ringEnergy);
+				p3 = sqrt(2*bu3Mass*bu3.ringEnergy);
+
+				bu1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + bu2Mass
+					);
+
+				bu2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + bu1Mass
+					);
+
+				bu3LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + bu3Mass
+					);
+
+				daughter = bu1LV + bu3LV;
+				boron9 = daughter + bu2LV;
+
+				hCase5_daughterIM->Fill(daughter.M());
+				hCase5_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase5_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				if(std::abs(boron9.M() - recoilMass) <= 1.){
+					hCase5_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+				} 
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(daughter.M() - daughter1Mass) <= 0.05) hCase5_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+
+				//case6  -> p1 = p	p2 = alpha2 	p3 = alpha1
+				//daughter = p1 + p2
+				p1 = sqrt(2*bu2Mass*bu1.ringEnergy);
+				p2 = sqrt(2*bu3Mass*bu2.ringEnergy);
+				p3 = sqrt(2*bu1Mass*bu3.ringEnergy);
+
+				bu1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + bu2Mass
+					);
+
+				bu2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + bu3Mass
+					);
+
+				bu3LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + bu1Mass
+					);
+
+				daughter = bu1LV + bu2LV;
+				boron9 = daughter + bu3LV;
+
+				hCase6_daughterIM->Fill(daughter.M());
+				hCase6_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase6_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				if(std::abs(boron9.M() - recoilMass) <= 1.){
+					hCase6_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+				} 
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				if(std::abs(daughter.M() - daughter1Mass) <= 0.05) hCase6_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+				
+
+			}
+
+			eventLines.clear();
+			count += 1;	
+
+
+		} else {
+
+			eventLines.push_back(line);
+
+		}
+
+
+	}
+
+	outfile->cd();
+
+	// hCorrect_daughterIM->Write();
+	// hCorrect_9BReconExE->Write();
+	// hCorrect_9BReconExE_gated->Write();
+
+	// hIncorrect1_daughterIM->Write();
+	// hIncorrect1_9BReconExE->Write();
+	// hIncorrect1_9BReconExE_gated->Write();
+
+	// hIncorrect2_daughterIM->Write();
+	// hIncorrect2_9BReconExE->Write();
+	// hIncorrect2_9BReconExE_gated->Write();
+
+	hCase1_daughterIM->Write();
+	hCase1_daughterExE->Write();
+	hCase1_daughterExE_gate->Write();
+	hCase1_9BReconExE->Write();
+	//hCase1_9BReconExE_gated->Write();
+	hCase2_daughterIM->Write();
+	hCase2_daughterExE->Write();
+	hCase2_daughterExE_gate->Write();
+	hCase2_9BReconExE->Write();
+	//hCase2_9BReconExE_gated->Write();
+	hCase3_daughterIM->Write();
+	hCase3_daughterExE->Write();
+	hCase3_daughterExE_gate->Write();
+	hCase3_9BReconExE->Write();
+	//hCase3_9BReconExE_gated->Write();
+	hCase4_daughterIM->Write();
+	hCase4_daughterExE->Write();
+	hCase4_daughterExE_gate->Write();
+	hCase4_9BReconExE->Write();
+	//hCase4_9BReconExE_gated->Write();
+	hCase5_daughterIM->Write();
+	hCase5_daughterExE->Write();
+	hCase5_daughterExE_gate->Write();
+	hCase5_9BReconExE->Write();
+	//hCase5_9BReconExE_gated->Write();
+	hCase6_daughterIM->Write();
+	hCase6_daughterExE->Write();
+	hCase6_daughterExE_gate->Write();
+	hCase6_9BReconExE->Write();
+	//hCase6_9BReconExE_gated->Write();
+	hAllCases_daughterIM->Write();
+	hAllCases_daughterExE->Write();
+	hAllCases_daughterExE_gate->Write();
+	hAllCases_9BReconExE->Write();
+
+	std::cout << "\nProcessed " << count << " events.\nROOT file saved to " << output_rootfilename << "\n";
+
+}
+
+void B10ha_3halfminus_manual2(const char* input_filename, const char* output_rootfilename, TString casename="8Be", double daughterExEMeV=0){
+
+	/*
+		
+		This function takes as input:
+				input_filename 				= path to input .det file from SABREsim
+				output_rootfilename			= path to output .root file
+				casename 					= "8Be" string for 8Be step, "5Li" string for 5Li step
+
+	
+		This code asusmes that the input is a .det file from SABREsim simulation of the 10B(3He,a)9B*
+		where Ex(9B*) > S_a(9B) (~1.7 MeV)
+
+		It can assume one of two decay paths:
+				9B* -> p + 8Be -> a1 + a2
+
+				9B* -> a1 + 5Li -> p + a2
+
+		For SABRE multiplicity-3 events, we always have p, a1, a2 in final state regardless of channel
+		Therefore, we must cycle through which SABRE detection with (E, theta, phi) is applied to which
+		of these cases. 
+
+		We must make an assumption of which decay path we are assuming for analysis. This is done by
+		toggling the bool values for each path.
+	
+		Particle numbers correspond to kin4mc output:
+				ejectile = particle 1
+				decay 1 = particle 2
+				decay 2 = particle 3
+				decay 3 = particle 4
+
+		When applied to the above decay paths, particle 1 is the a from (3He,a), particle 2 is the
+		p/a1 from 9B->8Be/5Li breakup (depending on which simulation you chose to input), and
+		particle 3 is a1/p and particle 4 is a2.
+
+		SABREsim preserves knowledge of which detected particle is particle 2/3/4, and passes it along.
+		Unfortunately I wrote bad code and it is not necessarily in order of 2/3/4 but rather in order
+		of which SABRE detector it was detected in. But, we simply check for this and assign the (E,theta,phi) 
+		variables for bu1, bu2, and bu3 to the particles 2, 3, 4 respectively. This will help us keep track of what the
+		simulation knows is true (so long as you don't lie to the code).
+
+		The 6 cases we must try are as follows:
+
+			I) Assume:
+							particle1 = a1
+							particle2 = p
+							particle3 = a2
+							if(decay==8Be) daughter = particle1 + particle3
+							if(decay==5Li) daughter = particle2 + particle3
+
+			II) Assume:
+							particle1 = a1
+							particle2 = a2
+							particle3 = p
+							if(decay==8Be) daughter = particle1 + particle2
+							if(decay==5Li) daughter = particle3 + particle2
+
+			III) Assume:
+							particle1 = a2
+							particle2 = p
+							particle3 = a1
+							if(decay==8Be) daughter = particle1 + particle3
+							if(decay==5Li) daughter = particle2 + particle1
+
+			IV) Assume:
+							particle1 = a2
+							particle2 = a1
+							particle3 = p
+							if(decay==8Be) daughter = particle2 + particle1
+							if(decay==5Li) daughter = particle3 + particle1
+
+			V) Assume:
+							particle1 = p
+							particle2 = a1
+							particle3 = a2
+							if(decay==8Be) daughter = particle2 + particle3
+							if(decay==5Li) daughter = particle1 + particle3
+
+			VI) Assume:
+							particle1 = p
+							particle2 = a2
+							particle3 = a1
+							if(decay==8Be) daughter = particle3 + particle2
+							if(decay==5Li) daughter = particle1 + particle2
+
+
+		Assuming you choose the correct case in the code for the file you pass in, the first
+		case shuold correspond to correct case. Other cases are incorrect. Likely some overlap
+		in 9B ExE spectrum, but look at daughter IM and ExE histograms for rejection purposes.
+
+
+
+		!!!! IMPORTANT !!!!
+
+		It is assumed that in the 8Be case, the kin4mc particles 2/3/4 are proton, alpha1, alpha2
+		and in the 5Li case, the kin4mc particles 2/3/4 are alpha1, proton, alpha2. Make sure when
+		running kin4mc for 8Be to choose decay particle 1 to be p and decay particle 2 to be a. 
+		Make sure when running kin4mc for 5Li to choose decay particle 1 to be a and decay particle 2
+		to be p! If you do not then cases will not align!
+
+	*/
+
+	bool Be8, Li5;
+	casename.ToLower();
+
+	if(casename.EqualTo("8be")){
+		Be8 = true;
+		Li5 = false;
+	} else if(casename.EqualTo("5li")){
+		Be8 = false;
+		Li5 = true;
+	} else {
+		Be8 = false;
+		Li5 = false;
+		std::cout << "unexpected casename, got " << casename << "\n";
+		return;
+	}
+
+	TH1D *hCase1_daughterIM = new TH1D("hCase1_daughterIM","hCase1_daughterIM", 29000, 4600, 7500);
+	TH1D *hCase1_daughterExE = new TH1D("hCase1_daughterExE","hCase1_daughterExE", 525, -1, 20);
+	//TH1D *hCase1_daughterExE_gate = new TH1D("hCase1_daughterExE_gate","hCase1_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase1_9BReconExE = new TH1D("hCase1_9BReconExE","hCase1_9BReconExE", 525, -1, 20);
+	TH1D *hCase1_9BReconExE_gated = new TH1D("hCase1_9BReconExE_gated", "hCase1_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase2_daughterIM = new TH1D("hCase2_daughterIM","hCase2_daughterIM", 29000, 4600, 7500);
+	TH1D *hCase2_daughterExE = new TH1D("hCase2_daughterExE","hCase2_daughterExE", 525, -1, 20);
+	//TH1D *hCase2_daughterExE_gate = new TH1D("hCase2_daughterExE_gate","hCase2_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase2_9BReconExE = new TH1D("hCase2_9BReconExE","hCase2_9BReconExE", 525, -1, 20);
+	TH1D *hCase2_9BReconExE_gated = new TH1D("hCase2_9BReconExE_gated", "hCase2_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase3_daughterIM = new TH1D("hCase3_daughterIM","hCase3_daughterIM", 29000, 4600, 7500);
+	TH1D *hCase3_daughterExE = new TH1D("hCase3_daughterExE","hCase3_daughterExE", 525, -1, 20);
+	//TH1D *hCase3_daughterExE_gate = new TH1D("hCase3_daughterExE_gate","hCase3_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase3_9BReconExE = new TH1D("hCase3_9BReconExE","hCase3_9BReconExE", 525, -1, 20);
+	TH1D *hCase3_9BReconExE_gated = new TH1D("hCase3_9BReconExE_gated", "hCase3_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase4_daughterIM = new TH1D("hCase4_daughterIM","hCase4_daughterIM", 29000, 4600, 7500);
+	TH1D *hCase4_daughterExE = new TH1D("hCase4_daughterExE","hCase4_daughterExE", 525, -1, 20);
+	//TH1D *hCase4_daughterExE_gate = new TH1D("hCase4_daughterExE_gate","hCase4_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase4_9BReconExE = new TH1D("hCase4_9BReconExE","hCase4_9BReconExE", 525, -1, 20);
+	TH1D *hCase4_9BReconExE_gated = new TH1D("hCase4_9BReconExE_gated", "hCase4_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase5_daughterIM = new TH1D("hCase5_daughterIM","hCase5_daughterIM", 29000, 4600, 7500);
+	TH1D *hCase5_daughterExE = new TH1D("hCase5_daughterExE","hCase5_daughterExE", 525, -1, 20);
+	//TH1D *hCase5_daughterExE_gate = new TH1D("hCase5_daughterExE_gate","hCase5_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase5_9BReconExE = new TH1D("hCase5_9BReconExE","hCase5_9BReconExE", 525, -1, 20);
+	TH1D *hCase5_9BReconExE_gated = new TH1D("hCase5_9BReconExE_gated", "hCase5_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hCase6_daughterIM = new TH1D("hCase6_daughterIM","hCase6_daughterIM", 29000, 4600, 7500);
+	TH1D *hCase6_daughterExE = new TH1D("hCase6_daughterExE","hCase6_daughterExE", 525, -1, 20);
+	//TH1D *hCase6_daughterExE_gate = new TH1D("hCase6_daughterExE_gate","hCase6_daughterExE_gate", 525, -1, 20);
+	TH1D *hCase6_9BReconExE = new TH1D("hCase6_9BReconExE","hCase6_9BReconExE", 525, -1, 20);
+	TH1D *hCase6_9BReconExE_gated = new TH1D("hCase6_9BReconExE_gated", "hCase6_9BReconExE_gated", 525, -1, 20);
+
+	TH1D *hAllCases_daughterIM = new TH1D("hAllCases_daughterIM","hAllCases_daughterIM", 29000, 4600, 7500);
+	TH1D *hAllCases_daughterExE = new TH1D("hAllCases_daughterExE","hAllCases_daughterExE", 525, -1, 20);
+	//TH1D *hAllCases_daughterExE_gate = new TH1D("hAllCases_daughterExE_gate","hAllCases_daughterExE_gate", 525, -1, 20);
+	TH1D *hAllCases_9BReconExE = new TH1D("hAllCases_9BReconExE","hAllCases_9BReconExE", 525, -1, 20);
+	TH1D *hAllCases_9BReconExE_gated = new TH1D("hAllCases_9BReconExE_gated", "hAllCases_9BReconExE_gated", 525, -1, 20);
+
+
+	std::map<std::pair<int,int>, std::pair<double,double>> sabre_thetaphimap = readAngleMaps();
+
+	ifstream infile(input_filename);
+	if(!infile.is_open()){
+		std::cerr << "Error: cannot open file " << input_filename << std::endl;
+		return;
+	}
+
+	TFile *outfile = new TFile(output_rootfilename, "RECREATE");
+
+	TMassTable fMassTable;
+	fMassTable.Init("../../config/masstable.dat");
+
+	Double_t beamMass;
+	Double_t targetMass;
+	Double_t ejectileMass;
+	Double_t recoilMass;
+	Double_t daughter1Mass;
+	Double_t alphaMass;
+	Double_t protonMass;
+
+	double gate_Be8 = 0.1;
+	double gate_Li5 = 1.0;
+	double gate;
+
+
+	alphaMass = fMassTable.GetNuclearMassMeV("He",4);
+	protonMass = fMassTable.GetNuclearMassMeV("H",1);
+	beamMass = fMassTable.GetNuclearMassMeV("He",3);
+	targetMass = fMassTable.GetNuclearMassMeV("B",10);
+	ejectileMass = fMassTable.GetNuclearMassMeV("He",4);
+	recoilMass = fMassTable.GetNuclearMassMeV("B",9);
+
+	if(Be8){
+		daughter1Mass = fMassTable.GetNuclearMassMeV("Be",8);// + daughterExEMeV;
+		gate = gate_Be8;
+	}
+
+	else if(Li5){
+		daughter1Mass = fMassTable.GetNuclearMassMeV("Li",5);// + daughterExEMeV;	
+		gate = gate_Li5;
+	}
+
+	string line;
+
+	std::cout << "Processing SABREsim detection file " << input_filename << "..." << std::endl;
+	int count = 0;
+
+	std::vector<std::string> eventLines;
+	while(std::getline(infile,line)){
+
+		if(line == "-1"){
+
+			PHYSDATA pd1, pd2, pd3, pd4; //holds kin4mc data
+			SABREDATA sd1, sd2, sd3;			//holds SABREsim data
+			SABREDATA bu1, bu2, bu3;					
+
+
+			if(eventLines.size() == 1){
+				//skip for now
+			}
+
+			else if(eventLines.size() == 2){//SABRE mult = 1
+				//skip for now
+			}
+
+			else if(eventLines.size() == 3){//SABRE mult = 2
+
+			}
+
+			else if(eventLines.size() == 4){//SABRE mult = 3
+				//determine which particle is in event line:
+				parseSABREData(eventLines[1],sd1);
+				std::pair<double, double> anglepair = sabre_thetaphimap[{sd1.ring+offsets[sd1.detectorIndex].first, sd1.wedge+offsets[sd1.detectorIndex].second}];
+				sd1.theta = anglepair.first;
+				sd1.phi = anglepair.second;
+				parseSABREData(eventLines[2],sd2);
+				anglepair = sabre_thetaphimap[{sd2.ring+offsets[sd2.detectorIndex].first, sd2.wedge+offsets[sd2.detectorIndex].second}];
+				sd2.theta = anglepair.first;
+				sd2.phi = anglepair.second;
+				parseSABREData(eventLines[3],sd3);
+				anglepair = sabre_thetaphimap[{sd3.ring+offsets[sd3.detectorIndex].first, sd3.wedge+offsets[sd3.detectorIndex].second}];
+				sd3.theta = anglepair.first;
+				sd3.phi = anglepair.second;
+				//for some reason, the particle ids are not necessarily in order...so we can't trust that sd1 = bu1, sd2 = bu2, sd3 = bu3
+				//let's just manually check and update new variables for simplicity
+
+								//sd1
+				if(sd1.particleIndex == 200){
+
+					//this means sd1 is bu1
+					bu1 = sd1;
+
+
+				} else if(sd1.particleIndex == 300){
+
+					//this means sd1 is bu2
+					bu2 = sd1;
+
+				} else if(sd1.particleIndex == 400){
+
+					//this meanas sd1 is bu3
+					bu3 = sd1;
+
+				}
+
+				//sd2
+				if(sd2.particleIndex == 200){
+
+					//this means sd2 is bu1
+					bu1 = sd2;
+
+				} else if(sd2.particleIndex == 300){
+
+					//this means sd2 is bu2
+					bu2 = sd2;
+
+				} else if(sd2.particleIndex == 400){
+
+					//this meanas sd2 is bu3
+					bu3 = sd2;
+
+				}
+
+
+				//sd3
+				if(sd3.particleIndex == 200){
+
+					//this means sd3 is bu1
+					bu1 = sd3;
+
+				} else if(sd3.particleIndex == 300){
+
+					//this means sd3 is bu2
+					bu2 = sd3;
+
+				} else if(sd3.particleIndex == 400){
+
+					//this meanas sd3 is bu3
+					bu3 = sd3;
+
+				}
+
+				//now, bu1, bu2, bu3 should have the correct theta assumptions
+
+
+	//--------------------------------------------------------------------------------------------
+				// CASE 1 (particle1 = a1, particle2 = p, particle3 = a2)
+				double p1 = sqrt(2*alphaMass*bu1.ringEnergy);//a1
+				double p2 = sqrt(2*protonMass*bu2.ringEnergy);//p
+				double p3 = sqrt(2*alphaMass*bu3.ringEnergy);//a2
+
+				TLorentzVector a1LV, pLV, a2LV, daughter, boron9;
+
+				a1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + alphaMass
+				);
+
+				pLV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + protonMass
+				);
+
+				a2LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + alphaMass
+				);
+
+				if(Be8) daughter = a1LV + a2LV;
+				if(Li5) daughter = pLV + a2LV;
+
+				boron9 = a1LV + pLV + a2LV;
+
+				hCase1_daughterIM->Fill(daughter.M());
+				hCase1_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase1_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				//if(std::abs(daughter.M() - daughter1Mass) <= gate){
+				if((daughter.M() - daughter1Mass >= daughterExEMeV-gate) && (daughter.M() - daughter1Mass <= daughterExEMeV+gate)){
+					//hCase1_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hCase1_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+				}
+
+	//--------------------------------------------------------------------------------------------
+				// CASE 2 (particle1 = a1, particle2 = a2, particle3 = p)
+				p1 = sqrt(2*alphaMass*bu1.ringEnergy);
+				p2 = sqrt(2*alphaMass*bu2.ringEnergy);
+				p3 = sqrt(2*protonMass*bu3.ringEnergy);
+
+				a1LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + alphaMass
+				);
+
+				a2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + alphaMass
+				);
+
+				pLV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + protonMass
+				);
+
+				if(Be8) daughter = a1LV + a2LV;
+				if(Li5) daughter = pLV + a2LV;
+
+				boron9 = a1LV + pLV + a2LV;
+
+				hCase2_daughterIM->Fill(daughter.M());
+				hCase2_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase2_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				//if(std::abs(daughter.M() - daughter1Mass) <= gate){
+				if((daughter.M() - daughter1Mass >= daughterExEMeV-gate) && (daughter.M() - daughter1Mass <= daughterExEMeV+gate)){
+					//hCase2_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hCase2_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);	
+				}
+
+	//--------------------------------------------------------------------------------------------
+				// CASE 3 (particle1 = a2, particle2 = p, particle3 = a1)
+				p1 = sqrt(2*alphaMass*bu1.ringEnergy);
+				p2 = sqrt(2*protonMass*bu2.ringEnergy);
+				p3 = sqrt(2*alphaMass*bu3.ringEnergy);
+
+				a2LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + alphaMass
+				);
+
+				pLV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + protonMass
+				);
+
+				a1LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + alphaMass
+				);
+
+				if(Be8) daughter = a1LV + a2LV;
+				if(Li5) daughter = pLV + a2LV;
+
+				boron9 = a1LV + pLV + a2LV;
+
+				hCase3_daughterIM->Fill(daughter.M());
+				hCase3_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase3_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				//if(std::abs(daughter.M() - daughter1Mass) <= gate){
+				if((daughter.M() - daughter1Mass >= daughterExEMeV-gate) && (daughter.M() - daughter1Mass <= daughterExEMeV+gate)){
+					//hCase3_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hCase3_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+				}
+
+	//--------------------------------------------------------------------------------------------
+				// CASE 4 (particle1 = a2, particle2 = a1, particle3 = p)
+				p1 = sqrt(2*alphaMass*bu1.ringEnergy);
+				p2 = sqrt(2*alphaMass*bu2.ringEnergy);
+				p3 = sqrt(2*protonMass*bu3.ringEnergy);
+
+				a2LV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + alphaMass
+				);
+
+				a1LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + alphaMass
+				);
+
+				pLV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + protonMass
+				);
+
+				if(Be8) daughter = a1LV + a2LV;
+				if(Li5) daughter = pLV + a2LV;
+
+				boron9 = a1LV + pLV + a2LV;
+
+				hCase4_daughterIM->Fill(daughter.M());
+				hCase4_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase4_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				//if(std::abs(daughter.M() - daughter1Mass) <= gate){
+				if((daughter.M() - daughter1Mass >= daughterExEMeV-gate) && (daughter.M() - daughter1Mass <= daughterExEMeV+gate)){
+					//hCase4_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hCase4_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+				}
+
+	//--------------------------------------------------------------------------------------------
+				// CASE 5 (particle1 = p, particle2 = a1, particle3 = a2)
+				p1 = sqrt(2*protonMass*bu1.ringEnergy);
+				p2 = sqrt(2*alphaMass*bu2.ringEnergy);
+				p3 = sqrt(2*alphaMass*bu3.ringEnergy);
+
+				pLV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + protonMass
+				);
+
+				a1LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + alphaMass
+				);
+
+				a2LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + alphaMass
+				);
+
+				if(Be8) daughter = a1LV + a2LV;
+				if(Li5) daughter = pLV + a2LV;
+
+				boron9 = a1LV + pLV + a2LV;
+
+				hCase5_daughterIM->Fill(daughter.M());
+				hCase5_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase5_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				//if(std::abs(daughter.M() - daughter1Mass) <= gate){
+				if((daughter.M() - daughter1Mass >= daughterExEMeV-gate) && (daughter.M() - daughter1Mass <= daughterExEMeV+gate)){
+					//hCase5_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hCase5_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+				}
+
+	//--------------------------------------------------------------------------------------------
+				// CASE 6 (particle1 = p, particle2 = a2, particle3 = a1)
+				p1 = sqrt(2*protonMass*bu1.ringEnergy);
+				p2 = sqrt(2*alphaMass*bu2.ringEnergy);
+				p3 = sqrt(2*alphaMass*bu3.ringEnergy);
+
+				pLV.SetPxPyPzE(
+						p1*std::sin(DEGRAD*bu1.theta)*std::cos(DEGRAD*bu1.phi),
+						p1*std::sin(DEGRAD*bu1.theta)*std::sin(DEGRAD*bu1.phi),
+						p1*std::cos(DEGRAD*bu1.theta),
+						bu1.ringEnergy + protonMass
+				);	
+				
+				a2LV.SetPxPyPzE(
+						p2*std::sin(DEGRAD*bu2.theta)*std::cos(DEGRAD*bu2.phi),
+						p2*std::sin(DEGRAD*bu2.theta)*std::sin(DEGRAD*bu2.phi),
+						p2*std::cos(DEGRAD*bu2.theta),
+						bu2.ringEnergy + alphaMass
+				);
+
+				a1LV.SetPxPyPzE(
+						p3*std::sin(DEGRAD*bu3.theta)*std::cos(DEGRAD*bu3.phi),
+						p3*std::sin(DEGRAD*bu3.theta)*std::sin(DEGRAD*bu3.phi),
+						p3*std::cos(DEGRAD*bu3.theta),
+						bu3.ringEnergy + alphaMass
+				);
+
+				if(Be8) daughter = a1LV + a2LV;
+				if(Li5) daughter = pLV + a2LV;
+
+				boron9 = a1LV + pLV + a2LV;
+
+				hCase6_daughterIM->Fill(daughter.M());
+				hCase6_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hCase6_9BReconExE->Fill(boron9.M() - recoilMass);
+				hAllCases_daughterExE->Fill(daughter.M() - daughter1Mass);
+				hAllCases_daughterIM->Fill(daughter.M());
+				hAllCases_9BReconExE->Fill(boron9.M() - recoilMass);
+				//if(std::abs(daughter.M() - daughter1Mass) <= gate){
+				if((daughter.M() - daughter1Mass >= daughterExEMeV-gate) && (daughter.M() - daughter1Mass <= daughterExEMeV+gate)){
+					//hCase6_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hCase6_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
+					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
+				}
+
+			}
+
+			eventLines.clear();
+			count += 1;
+
+		} else {
+			eventLines.push_back(line);
+		}
+
+	}
+
+	outfile->cd();
+
+	hCase1_daughterIM->Write();
+	hCase1_daughterExE->Write();
+	//hCase1_daughterExE_gate->Write();
+	hCase1_9BReconExE->Write();
+	hCase1_9BReconExE_gated->Write();
+
+	hCase2_daughterIM->Write();
+	hCase2_daughterExE->Write();
+	//hCase2_daughterExE_gate->Write();
+	hCase2_9BReconExE->Write();
+	hCase2_9BReconExE_gated->Write();
+
+	hCase3_daughterIM->Write();
+	hCase3_daughterExE->Write();
+	//hCase3_daughterExE_gate->Write();
+	hCase3_9BReconExE->Write();
+	hCase3_9BReconExE_gated->Write();
+
+	hCase4_daughterIM->Write();
+	hCase4_daughterExE->Write();
+	//hCase4_daughterExE_gate->Write();
+	hCase4_9BReconExE->Write();
+	hCase4_9BReconExE_gated->Write();
+
+	hCase5_daughterIM->Write();
+	hCase5_daughterExE->Write();
+	//hCase5_daughterExE_gate->Write();
+	hCase5_9BReconExE->Write();
+	hCase5_9BReconExE_gated->Write();
+
+	hCase6_daughterIM->Write();
+	hCase6_daughterExE->Write();
+	//hCase6_daughterExE_gate->Write();
+	hCase6_9BReconExE->Write();
+	hCase6_9BReconExE_gated->Write();
+
+	hAllCases_daughterIM->Write();
+	hAllCases_daughterExE->Write();
+	//hAllCases_daughterExE_gate->Write();
+	hAllCases_9BReconExE->Write();
+
+	hAllCases_9BReconExE_gated->Write();
+
+	outfile->Close();
+	std::cout << "\nProcessed " << count << " events.\nROOT file saved to " << output_rootfilename << "\n";
+
+}
+
 std::pair<double,double> getReconstructedAngles(int detectorIndex, int ring, int wedge, std::map<std::pair<int,int>,std::pair<double,double>> map){
 
 	if(detectorIndex < 0 || detectorIndex >= 5){
@@ -889,7 +2109,7 @@ void readSingleAngleMap(ifstream& infile, std::map<std::pair<int,int>,std::pair<
 	double theta, phi;
 	while(infile >> ringChannel >> wedgeChannel >> theta >> phi){
 		map[{ringChannel,wedgeChannel}] = {theta,phi};
-		//cout << "theta = " << theta << ", phi = " << phi << endl;
+		//cout << "theta = " << theta << ", phcount = " << phi << endl;
 	}
 }
 
