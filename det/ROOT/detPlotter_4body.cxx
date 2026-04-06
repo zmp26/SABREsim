@@ -1522,6 +1522,18 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	//TH1D *hCase1_daughterExE_gate = new TH1D("hCase1_daughterExE_gate","hCase1_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase1_9BReconExE = new TH1D("hCase1_9BReconExE","hCase1_9BReconExE", 525, -1, 20);
 	TH1D *hCase1_9BReconExE_gated = new TH1D("hCase1_9BReconExE_gated", "hCase1_9BReconExE_gated", 525, -1, 20);
+	TH1D *hCase1_daughterThetaCM1 = new TH1D("hCase1_daughterThetaCM1","hCase1_daughterThetaCM1",181,0,180);
+	TH1D *hCase1_daughterPhiCM1 = new TH1D("hCase1_daughterPhiCM1","hCase1_daughterPhiCM1",361,0,360);
+	TH1D *hCase1_particle1ThetaCM1 = new TH1D("hCase1_particle1ThetaCM1","hCase1_particle1ThetaCM1",181,0,180);
+	TH1D *hCase1_particle1PhiCM1 = new TH1D("hCase1_particle1PhiCM1","hCase1_particle1PhiCM1",361,0,360);
+	TH1D *hCase1_ThetaCM1Sum = new TH1D("hCase1_ThetaCM1Sum","hCase1_ThetaCM1Sum",181,0,180);
+	TH1D *hCase1_PhiCM1Sep = new TH1D("hCase1_PhiCM1Sep","hCase1_PhiCM1Sep",361,0,360);
+	TH1D *hCase1_particle2ThetaCM2 = new TH1D("hCase1_particle2ThetaCM2","hCase1_particle2ThetaCM2",181,0,180); 
+	TH1D *hCase1_particle2PhiCM2 = new TH1D("hCase1_particle2PhiCM2","hCase1_particle2PhiCM2",361,0,360);
+	TH1D *hCase1_particle3ThetaCM2 = new TH1D("hCase1_particle3ThetaCM2","hCase1_particle3ThetaCM2",181,0,180);
+	TH1D *hCase1_particle3PhiCM2 = new TH1D("hCase1_particle3PhiCM2","hCase1_particle3PhiCM2",361,0,360);
+	TH1D *hCase1_ThetaCM2Sum = new TH1D("hCase1_ThetaCM2Sum","hCase1_ThetaCM2Sum",181,0,180);
+	TH1D *hCase1_PhiCM2Sep = new TH1D("hCase1_PhiCM2Sep","hCase1_PhiCM2Sep",361,0,360);
 
 	TH1D *hCase2_daughterIM = new TH1D("hCase2_daughterIM","hCase2_daughterIM", 29000, 4600, 7500);
 	TH1D *hCase2_daughterExE = new TH1D("hCase2_daughterExE","hCase2_daughterExE", 525, -1, 20);
@@ -1582,7 +1594,7 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	Double_t protonMass;
 
 	double gate_Be8 = 0.1;
-	double gate_Li5 = 1.0;
+	double gate_Li5 = 0.2;
 	double gate;
 
 
