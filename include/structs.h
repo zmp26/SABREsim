@@ -217,4 +217,27 @@ struct CaseResult4 {
 	bool valid = true;
 };
 
+struct Hit{
+	int particleID = -666;
+	int detectorID = -666;
+	int ringChannel = -666;
+	int wedgeChannel = -666;
+	int localRing = -666;
+	int localWedge = -666;
+	double ringEnergy = -666.;
+	double wedgeEnergy = -666.;
+	double ringTheta = -666.;
+	double wedgePhi = -666.;
+	double localx = -666.;
+	double localy = -666.;
+
+	Hit(int pid=-666, int did=-666, int rChan=-666, int wChan=-666,
+		int lRing=-666, int lWedge=-666, double rEnergy=-666., double wEnergy=-666.,
+		double rTheta=-666., double wPhi=-666., double lx=-666., double ly=-666.)
+		: particleID(pid), detectorID(did), ringChannel(rChan), wedgeChannel(wChan),
+		  localRing(lRing), localWedge(lWedge), ringEnergy(rEnergy), wedgeEnergy(wEnergy),
+		  ringTheta(rTheta), wedgePhi(wPhi), localx(lx), localy(ly)
+	{}
+};		
+
 #endif//STRUCTS_H

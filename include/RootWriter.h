@@ -75,6 +75,8 @@ private:
 	int localWedge_[4];
 	double ringEnergy_[4];
 	double wedgeEnergy_[4];
+	double ringTheta_[4];
+	double wedgePhi_[4];
 	double localx_[4];
 	double localy_[4];
 

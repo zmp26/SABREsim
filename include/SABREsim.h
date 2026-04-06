@@ -13,6 +13,7 @@
 #include "det3mc.h"
 #include "det4mc.h"
 #include "RootWriter.h"
+#include "EventRecorder.h"
 #include "SimConfig.h"
 #include "TargetAngularStraggler.h"
 
@@ -197,6 +198,7 @@ private:
 	Beamspot* beamspot_;
 
 	RootWriter* RootWriter_;
+	EventRecorder* EventRecorder_;
 
 	bool failState_; //true means failure, false means ok
 

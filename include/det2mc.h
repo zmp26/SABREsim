@@ -13,8 +13,10 @@
 #include <cmath>
 #include "Beamspot.h"
 #include "RootWriter.h"
+#include "EventRecorder.h"
 #include "plot2mc.h"
 #include "TargetAngularStraggler.h"
+#include "structs.h"
 
 class det2mc {
 public:
@@ -31,7 +33,9 @@ public:
 		   TargetAngularStraggler* straggler_par1,
 		   TargetAngularStraggler* straggler_par2);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle1, bool targetStraggle2);
+	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle1, bool targetStraggle2);//RootWriter
+	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot2mc* RootPlotter, bool targetStraggle1, bool targetStraggle2);//EventRecorder
+
 
 	//after Run(), these functions may be called to query for statistics:
 	long GetNumEvents() const;

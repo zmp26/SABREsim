@@ -286,6 +286,106 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	//hTargetAngularStraggler->Write();
 	//hTargetAngularStraggler_phi->Write();
 	//tempfile->Close();
+}
+
+void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot2mc* RootPlotter, SimConfig* config){
+	double e1, theta1, phi1, thetacm, e2, theta2, phi2;
+
+	while(infile >> e1 >> theta1 >> phi1 >> thetacm >> e2 >> theta2 >> phi2){
+		nevents_ += 1;
+		bool detected1 = false;
+		bool detected2 = false;
+
+		Vec3 reactionOrigin = beamspot_->GeneratePoint();
+
+		std::ostringstream ss;
+		ss << e1 << "\t" << theta1 << "\t" << phi1 << "\t" << thetacm << "\t" << e2 << "\t" << theta2 << "\t" << phi2 << "\n";
+		if(nevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
+
+		if(phi1 < 0) phi1 += 360.;
+		if(phi2 < 0) phi2 += 360.;
+
+		EventRecorder->SetKinematics(0,e1,theta1,phi1);
+		EventRecorder->SetKinematics(1,e2,theta2,phi2);
+		EventRecorder->SetReactionOrigin(reactionOrigin.GetX(), reactionOrigin.GetY(), reactionOrigin.GetZ());
+
+		RootPlotter->FillBeamSpotHisto(reactionOrigin);
+
+		for(size_t i=0; i<SABRE_Array_.size(); i++){
+			/*///////////////////////////////////////////////
+			//  check if particle 1 (ejectile) is detected //
+			///////////////////////////////////////////////*/
+
+			double smearedERing = 0., smearedEWedge = 0.;
+
+			double dtheta1 = straggler_par1_->Sample();
+			double dphi1 = straggler_par1_->SamplePhi();
+
+			Vec3 originalTrajectory1;
+				originalTrajectory1.SetVectorSpherical(1, theta1*DEG2RAD, phi1*DEG2RAD);
+
+				//define new basis vectors
+				Vec3 etheta1, ephi1;
+				etheta1.SetVectorCartesian(std::cos(theta1*DEG2RAD)*std::cos(phi1*DEG2RAD), std::cos(theta1*DEG2RAD)*std::sin(phi1*DEG2RAD), -std::sin(theta1*DEG2RAD));
+				ephi1.SetVectorCartesian(-std::sin(phi1*DEG2RAD), std::cos(phi1*DEG2RAD), 0.);
+
+				//adjusted trajectory:
+				Vec3 adjustedTrajectory1;
+				adjustedTrajectory1 = std::cos(dtheta1*DEG2RAD)*originalTrajectory1 + std::sin(dtheta1*DEG2RAD)*(std::cos(dphi1*DEG2RAD)*etheta1 + std::sin(dphi1*DEG2RAD)*ephi1);
+				adjustedTrajectory1 = adjustedTrajectory1.Unit();
+
+
+				double theta1_prime, phi1_prime;
+				if(config->GetStraggleEnabled(1)){
+					theta1_prime = adjustedTrajectory1.GetTheta()*RAD2DEG;//std::acos(adjustedTrajectory1.GetZ())*RAD2DEG;
+					phi1_prime = adjustedTrajectory1.GetPhi()*RAD2DEG;// std::atan2(adjustedTrajectory1.GetY(), adjustedTrajectory1.GetX())*RAD2DEG;
+					if(phi1_prime < 0) phi1_prime += 360.;
+					RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, dtheta1, dphi1);
+				} else {
+					theta1_prime = theta1;
+					phi1_prime = phi1;
+					RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, 0, 0);
+				}
+
+				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
+
+				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
+
+					//apply target energy loss to e1:
+					double e1_aftertarget = targetLoss_par1_->ApplyEnergyLoss(e1, theta1_prime);
+					RootPlotter->FillTH2D("hNewELoss_vs_OldELoss",e1 - targetLoss_par1_->ApplyEnergyLoss(e1, theta1), e1 - e1_aftertarget);
+
+					//apply dead layer energy loss to e1_aftertarget:
+					Vec3 trajectory;
+					trajectory.SetVectorSpherical(1,theta1_prime*DEG2RAD,phi1_prime*DEG2RAD);
+					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
+					normal = normal*(1/normal.Mag());
+					double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
+					//hDeadLayerELoss->Fill(abs(e1_afterDeadLayer - e1_aftertarget)*1000.);
+
+					// if(nevents%10000 == 0){
+					// 	std::cout << "hit1 target_energy_loss = " << abs(e1-e1_aftertarget) << " MeV" << std::endl;
+					// }
+
+					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second, e1_afterDeadLayer, smearedEWedge)){
+						Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
+				
+						ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
+						detected1 = true;
+						hit1_+=1;
+						detectorHits_[i] += 1;
+
+
+						//need to get (theta,phi) from (ring,wedge) from anglemap --> needs new class for anglemap!
+						Hit h = {1, i, offsets[i].first + hit1_rw.first, offsets[i].second + hit1_rw.second, hit1_rw.first, hit1_rw.second, smearedERing, smearedEWedge, rt, wp, localCoords.GetX(), localCoords.GetY()};
+						EventRecorder->Addhit(h);
+
+					}
+
+
+				}
+		}
+	}
 
 }
 

@@ -103,6 +103,14 @@ SABREsim::SABREsim(const std::string& configFilename)
 	RootWriter_->SetBeamSpotProfile(config_->GetBeamProfile());
 	RootWriter_->SetBeamSpotParameters(config_->GetBeamParX(), config_->GetBeamParY());
 
+	EventRecorder_ = new EventRecorder(treeFilename_);
+	EventRecorder_->SetReaction(config_->GetReaction());
+	EventRecorder_->SetDetMCVersion(kinX_);
+	EventRecorder_->SetInputFile(config_->GetInFile());
+	EventRecorder_->SetBeamEnergyMeV(config_->GetBeamEnergy());
+	EventRecorder_->SetBeamSpotProfile(config_->GetBeamProfile());
+	EventRecorder_->SetBeamSpotParameters(config_->GetBeamParX(), config_->GetBeamParY());
+
 }
 
 SABREsim::~SABREsim(){
@@ -130,6 +138,7 @@ void SABREsim::CleanUp(){
 
 	delete config_;
 	delete RootWriter_;
+	delete EventRecorder_;
 
 }
 
@@ -461,6 +470,7 @@ void SABREsim::Run(){
 	outfile.close();
 
 	RootWriter_->WriteAndClose();
+	EventRecorder_->WriteAndClose();
 
 	PrintSummary();
 }
