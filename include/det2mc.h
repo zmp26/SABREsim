@@ -17,13 +17,25 @@
 #include "plot2mc.h"
 #include "TargetAngularStraggler.h"
 #include "structs.h"
+#include "SimConfig.h"
+#include "SABRE_Array.h"
 
 class det2mc {
 public:
 	static constexpr double DEG2RAD = M_PI/180.;
 	static constexpr double RAD2DEG = 180./M_PI;
 
-	det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
+	// det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
+	// 	   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
+	// 	   TargetEnergyLoss* targetLoss_par1,
+	// 	   TargetEnergyLoss* targetLoss_par2,
+	// 	   SABRE_DeadLayerModel* deadLayerLoss_par1,
+	// 	   SABRE_DeadLayerModel* deadLayerLoss_par2,
+	// 	   Beamspot* beamspot,
+	// 	   TargetAngularStraggler* straggler_par1,
+	// 	   TargetAngularStraggler* straggler_par2);
+
+	det2mc(SABRE_Array* array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 		   TargetEnergyLoss* targetLoss_par1,
 		   TargetEnergyLoss* targetLoss_par2,
@@ -34,7 +46,7 @@ public:
 		   TargetAngularStraggler* straggler_par2);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot2mc* RootPlotter, bool targetStraggle1, bool targetStraggle2);//RootWriter
-	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot2mc* RootPlotter, bool targetStraggle1, bool targetStraggle2);//EventRecorder
+	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot2mc* RootPlotter, SimConfig* config);//EventRecorder
 
 
 	//after Run(), these functions may be called to query for statistics:
@@ -53,7 +65,8 @@ public:
 	std::string GetToString_DeadLayerLoss2() { return deadLayerLoss_par2_->ToString(); }
 
 private:
-	std::vector<SABRE_Detector*>& SABRE_Array_;
+	//std::vector<SABRE_Detector*>& SABRE_Array_;
+	SABRE_Array* SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
 	//TargetEnergyLoss* targetLoss_;
 	//SABRE_DeadLayerModel* deadLayerLoss_;

@@ -62,6 +62,7 @@
 #include <cmath>
 #include "Vec3.h"
 #include "Rotation.h"
+#include "SABRE_AngleMap.h"
 
 class SABRE_Detector {
 
@@ -178,6 +179,9 @@ private:
 
 	std::vector<std::vector<Vec3>> m_ringCoords_flat, m_wedgeCoords_flat;
 	std::vector<std::vector<Vec3>> m_ringCoords_tilt, m_wedgeCoords_tilt;
+
+	//add SABRE_AngleMap here:
+	SABRE_AngleMap* anglemap;
 	
 };
 

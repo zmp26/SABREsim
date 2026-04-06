@@ -16,6 +16,7 @@
 #include "EventRecorder.h"
 #include "SimConfig.h"
 #include "TargetAngularStraggler.h"
+#include "SABRE_Array.h"
 
 class SABREsim {
 public:
@@ -48,7 +49,8 @@ private:
 	std::string treeFilename_;
 	std::string histoFilename_;
 
-	std::vector<SABRE_Detector*> SABRE_Array_;
+	//std::vector<SABRE_Detector*> SABRE_Array_;
+	SABRE_Array *SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels_;
 
 	//---------------------------TARGET ENERGY LOSSES------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

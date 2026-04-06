@@ -61,7 +61,7 @@
 #include "Vec3.h"
 
 SABRE_Detector::SABRE_Detector() :
-m_Router(0.1351), m_Rinner(0.0326), m_deltaPhi_flat(54.4*deg2rad), m_phiCentral(0.0), m_tilt(0.0), m_translation(0.,0.,0.), m_norm_flat(0,0,1.0)
+m_Router(0.1351), m_Rinner(0.0326), m_deltaPhi_flat(54.4*deg2rad), m_phiCentral(0.0), m_tilt(0.0), m_translation(0.,0.,0.), m_norm_flat(0,0,1.0), anglemap(nullptr)
 {
 	m_YRot.SetAngle(m_tilt);
 	m_ZRot.SetAngle(m_phiCentral);
@@ -87,7 +87,7 @@ m_Router(0.1351), m_Rinner(0.0326), m_deltaPhi_flat(54.4*deg2rad), m_phiCentral(
 }
 
 SABRE_Detector::SABRE_Detector(double Rin, double Rout, double deltaPhi_flat, double phiCentral, double tiltFromVert, double zdist, double xdist, double ydist) :
-m_Router(Rout), m_Rinner(Rin), m_deltaPhi_flat(deltaPhi_flat), m_phiCentral(phiCentral), m_tilt(tiltFromVert), m_translation(xdist, ydist, zdist), m_norm_flat(0,0,1.0)
+m_Router(Rout), m_Rinner(Rin), m_deltaPhi_flat(deltaPhi_flat), m_phiCentral(phiCentral), m_tilt(tiltFromVert), m_translation(xdist, ydist, zdist), m_norm_flat(0,0,1.0), anglemap(nullptr)
 {
 	m_YRot.SetAngle(m_tilt);
 	m_ZRot.SetAngle(m_phiCentral);

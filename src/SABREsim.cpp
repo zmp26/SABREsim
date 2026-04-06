@@ -95,6 +95,8 @@ SABREsim::SABREsim(const std::string& configFilename)
 	treeFilename_ = config_->GetTreeFile();
 	histoFilename_ = config_->GetHistoFile();
 
+	SABRE_Array_ = new SABRE_Array();
+
 	RootWriter_ = new RootWriter(treeFilename_);
 	RootWriter_->SetReaction(config_->GetReaction());
 	RootWriter_->Set_detmc(kinX_);
@@ -118,8 +120,9 @@ SABREsim::~SABREsim(){
 }
 
 void SABREsim::CleanUp(){
-	for (auto d : SABRE_Array_) delete d;
-	SABRE_Array_.clear();
+	// for (auto d : SABRE_Array_) delete d;
+	// SABRE_Array_.clear();
+	SABRE_Array_->Clear();
 
 	for(auto m : SABREARRAY_EnergyResolutionModels_) delete m;
 	SABREARRAY_EnergyResolutionModels_.clear();
@@ -181,7 +184,7 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 
 	for(size_t i=0; i<PHI.size(); i++){
 		SABRE_Detector* det = new SABRE_Detector(INNER_R, OUTER_R, PHI_COVERAGE*DEG2RAD, PHI[i]*DEG2RAD, TILT*DEG2RAD, ZDIST);
-		SABRE_Array_.push_back(det);
+		SABRE_Array_->push_back(det);
 		// std::cout << "Created SABRE_Detector[" << i << "] at phi = " << PHI[i]
 		//           << " norm = (" << det->GetNormTilted.GetX()
 		//           << ", " << det->GetNormTilted().GetY()
@@ -206,13 +209,17 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 		}
 
 	}
+
+
+
+
 	std::cout << "\n";
 
 }
 
 bool SABREsim::InitializeModels(){
 	//energy resolution models (eventually, config_ should have the ability to set the resolution and cut off below dynamically)
-	for(size_t i=0; i<SABRE_Array_.size(); i++){
+	for(size_t i=0; i<SABRE_Array_->size(); i++){
 		SABRE_EnergyResolutionModel* m = new SABRE_EnergyResolutionModel(0.05, 0.001);
 		SABREARRAY_EnergyResolutionModels_.push_back(m);
 	}
@@ -518,7 +525,8 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 
 	plot2mc *RootPlotter = new plot2mc(config_->GetHistoFile());
 
-	det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2));
+	//det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2));
+	det2mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
 	nevents_ = det2mcProcessor.GetNumEvents();
 	detectorHits_ = det2mcProcessor.GetDetectorHits();
@@ -572,7 +580,8 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 
 	plot3mc *RootPlotter = new plot3mc(config_->GetHistoFile());
 
-	det3mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_);
+	//det3mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_);
+	det3mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
 	nevents_ = det3mcProcessor.GetNumEvents();
 	detectorHits_ = det3mcProcessor.GetDetectorHits();
@@ -640,7 +649,8 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	std::cout << "histofile: " << config_->GetHistoFile() << std::endl;
 	plot4mc *RootPlotter = new plot4mc(config_->GetHistoFile());
 
-	det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_);
+	// det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_);
+	det4mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
 	nevents_ = det4mcProcessor.GetNumEvents();
 	detectorHits_ = det4mcProcessor.GetDetectorHits();

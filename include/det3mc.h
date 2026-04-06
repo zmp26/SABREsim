@@ -17,11 +17,13 @@
 #include "TargetAngularStraggler.h"
 #include "structs.h"
 #include "SimConfig.h"
+#include "EventRecorder.h"
+#include "SABRE_Array.h"
 
 class det3mc{
 public:
 
-	det3mc(std::vector<SABRE_Detector*>& SABRE_Array,
+	det3mc(SABRE_Array* array,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 		   TargetEnergyLoss* targetLoss_par1,
 		   TargetEnergyLoss* targetLoss_par2,
@@ -38,6 +40,7 @@ public:
 		   TargetAngularStraggler* straggler_par4);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, SimConfig* config);
+	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot3mc* RootPlotter, SimConfig* config);
 
 	//after Run(), these functions can be called to query for statistics:
 	long GetNumEvents() const;
@@ -63,7 +66,8 @@ public:
 	std::string GetToString_DeadLayerLoss4() { return deadLayerLoss_par4_->ToString(); }
 
 private:
-	std::vector<SABRE_Detector*> SABRE_Array_;
+	//std::vector<SABRE_Detector*> SABRE_Array_;
+	SABRE_Array* SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
 	// TargetEnergyLoss* targetLoss_;
 	// SABRE_DeadLayerModel* deadLayerLoss_;

@@ -17,11 +17,29 @@
 #include "TargetAngularStraggler.h"
 #include "plot4mc.h"
 #include "SimConfig.h"
+#include "EventRecorder.h"
+#include "SABRE_Array.h"
 
 class det4mc{
 public:
 
-	det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
+	// det4mc(std::vector<SABRE_Detector*>& SABRE_Array,
+	// 	   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
+	// 	   TargetEnergyLoss* targetLoss_par1,
+	// 	   TargetEnergyLoss* targetLoss_par2,
+	// 	   TargetEnergyLoss* targetLoss_par3,
+	// 	   TargetEnergyLoss* targetLoss_par4,
+	// 	   SABRE_DeadLayerModel* deadLayerLoss_par1,
+	// 	   SABRE_DeadLayerModel* deadLayerLoss_par2,
+	// 	   SABRE_DeadLayerModel* deadLayerLoss_par3,
+	// 	   SABRE_DeadLayerModel* deadLayerLoss_par4,
+	// 	   Beamspot* beamspot,
+	// 	   TargetAngularStraggler* straggler_par1,
+	// 	   TargetAngularStraggler* straggler_par2,
+	// 	   TargetAngularStraggler* straggler_par3,
+	// 	   TargetAngularStraggler* straggler_par4);
+
+	det4mc(SABRE_Array* SABRE_Array_,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 		   TargetEnergyLoss* targetLoss_par1,
 		   TargetEnergyLoss* targetLoss_par2,
@@ -38,6 +56,7 @@ public:
 		   TargetAngularStraggler* straggler_par4);
 
 	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, SimConfig* config);
+	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot4mc* RootPlotter, SimConfig* config);
 
 	/*
 		A(a,b)B
@@ -79,7 +98,8 @@ public:
 	std::string GetToString_DeadLayerLoss4() { return deadLayerLoss_par4_->ToString(); }
 
 private:
-	std::vector<SABRE_Detector*> SABRE_Array_;
+	//std::vector<SABRE_Detector*> SABRE_Array_;
+	SABRE_Array* SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
 
 

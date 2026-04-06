@@ -4,7 +4,7 @@
 #include <algorithm>
 
 EventRecorder::EventRecorder(const std::string& filename)
-	: file_(nullptr), tree_(nullptr), nParticles_(0), numHits_(0),
+	: file_(nullptr), tree_(nullptr), numHits_(0),
 	inputfile_(""), detmcVersion_(0), reaction_(""), beamEnergyMeV_(-666.),
 	beamSpotProfile_(""), beamSpotParX_(0.), beamSpotParY_(0.)
 {
@@ -25,6 +25,8 @@ EventRecorder::EventRecorder(const std::string& filename)
 	tree_->Branch("localWedge", localWedge_, "localWedge[4]/I");
 	tree_->Branch("ringEnergy", ringEnergy_, "ringEnergy[4]/D");
 	tree_->Branch("wedgeEnergy", wedgeEnergy_, "wedgeEnergy[4]/D");
+	tree_->Branch("ringTheta", ringTheta_, "ringTheta[4]/D");
+	tree_->Branch("wedgePhi", wedgePhi_, "wedgePhi[4]/D");
 	tree_->Branch("localx", localx_, "localx[4]/D");
 	tree_->Branch("localy", localy_, "localy[4]/D");
 
@@ -36,7 +38,6 @@ EventRecorder::~EventRecorder(){
 }
 
 void EventRecorder::ResetEvent(){
-	nParticles_ = 0;
 	numHits_ = 0;
 	hits_.clear();
 
@@ -53,6 +54,8 @@ void EventRecorder::ResetEvent(){
 	std::fill_n(localWedge_, 4, -666);
 	std::fill_n(ringEnergy_, 4, -666.);
 	std::fill_n(wedgeEnergy_, 4, -666.);
+	std::fill_n(ringTheta_, 4, -666.);
+	std::fill_n(wedgePhi_, 4, -666.);
 	std::fill_n(localx_, 4, -666.);
 	std::fill_n(localy_, 4, -666.);
 }
@@ -79,7 +82,6 @@ void EventRecorder::AddHit(const Hit& hit){
 }
 
 void EventRecorder::FillEvent(){
-	numHits_ = 0;
 	int n = std::min((int)hits_.size(), 4);
 	for(int i=0; i<n; i++){
 		const Hit& h = hits_[i];
@@ -91,6 +93,8 @@ void EventRecorder::FillEvent(){
 		localWedge_[i] = h.localWedge;
 		ringEnergy_[i] = h.ringEnergy;
 		wedgeEnergy_[i] = h.wedgeEnergy;
+		ringTheta_[i] = h.ringTheta;
+		wedgePhi_[i] = h.wedgePhi;
 		localx_[i] = h.localx;
 		localy_[i] = h.localy;
 		if(h.ringEnergy > 0) numHits_ += 1;

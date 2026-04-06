@@ -3,6 +3,8 @@
 #include "ConsoleColorizer.h"
 #include "TH2.h"
 #include "TFile.h"
+#include "structs.h"
+#include <optional>
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
@@ -14,7 +16,33 @@ const std::pair<int,int> det2mc::offsets[] = {
 		{48,0}		//detector4 {ringOffset,wedgeOffset}
 	};
 
-det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
+// det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
+// 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
+// 			   TargetEnergyLoss* targetLoss_par1,
+// 			   TargetEnergyLoss* targetLoss_par2,
+// 			   SABRE_DeadLayerModel* deadLayerLoss_par1,
+// 			   SABRE_DeadLayerModel* deadLayerLoss_par2,
+// 			   Beamspot* beamspot,
+// 			   TargetAngularStraggler* straggler_par1,
+// 			   TargetAngularStraggler* straggler_par2)
+// 	: SABRE_Array_(SABRE_Array),
+// 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
+// 	  targetLoss_par1_(targetLoss_par1),
+// 	  targetLoss_par2_(targetLoss_par2),
+// 	  deadLayerLoss_par1_(deadLayerLoss_par1),
+// 	  deadLayerLoss_par2_(deadLayerLoss_par2),
+// 	  straggler_par1_(straggler_par1),
+// 	  straggler_par2_(straggler_par2),
+// 	  nevents_(0),
+// 	  hit1_(0), hit2_(0), hitBoth_(0),
+// 	  hit1Only_(0), hit2Only_(0),
+// 	  detectorHits_(SABRE_Array.size(),0),
+// 	  beamspot_(beamspot)
+// 	  {
+
+// 	  }
+
+det2mc::det2mc(SABRE_Array* array,
 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 			   TargetEnergyLoss* targetLoss_par1,
 			   TargetEnergyLoss* targetLoss_par2,
@@ -23,7 +51,7 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 			   Beamspot* beamspot,
 			   TargetAngularStraggler* straggler_par1,
 			   TargetAngularStraggler* straggler_par2)
-	: SABRE_Array_(SABRE_Array),
+	: SABRE_Array_(array),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_par1_(targetLoss_par1),
 	  targetLoss_par2_(targetLoss_par2),
@@ -34,7 +62,7 @@ det2mc::det2mc(std::vector<SABRE_Detector*>& SABRE_Array,
 	  nevents_(0),
 	  hit1_(0), hit2_(0), hitBoth_(0),
 	  hit1Only_(0), hit2Only_(0),
-	  detectorHits_(SABRE_Array.size(),0),
+	  detectorHits_(array->size(),0),
 	  beamspot_(beamspot)
 	  {
 
@@ -86,7 +114,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 		// hTargetAngularStraggler_phi->Fill(tempphi);
 		//std::cout << "tempphi = " << tempphi << std::endl;
 
-		for(size_t i=0; i<SABRE_Array_.size(); i++){
+		for(size_t i=0; i<SABRE_Array_->size(); i++){
 				/*///////////////////////////////////////////////
 				//  check if particle 1 (ejectile) is detected //
 				///////////////////////////////////////////////*/
@@ -126,8 +154,8 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				}
 
 				//get <ring,wedge> pair based on theta,phi
-				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
-				//pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0.000001,0.000001,0.000001});
+				std::pair<int,int> hit1_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
+				//pair<int,int> hit1_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta1*DEG2RAD,phi1*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
 					//apply target energy loss to e1:
@@ -137,7 +165,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta1_prime*DEG2RAD,phi1_prime*DEG2RAD);
-					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
+					Vec3 normal = SABRE_Array_->at(i)->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
 					//hDeadLayerELoss->Fill(abs(e1_afterDeadLayer - e1_aftertarget)*1000.);
@@ -147,7 +175,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 					// }
 
 					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second,e1_afterDeadLayer,smearedEWedge)){
-						Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
+						Vec3 localCoords = SABRE_Array_->at(i)->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
 						//outfile << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						detected1 = true;
@@ -212,9 +240,9 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 				}
 
 
-				//std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
-				std::pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2_prime*DEG2RAD,phi2_prime*DEG2RAD,reactionOrigin);
-				//pair<int,int> hit2_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
+				//std::pair<int,int> hit2_rw = SABRE_Array_->at(i)->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
+				std::pair<int,int> hit2_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta2_prime*DEG2RAD,phi2_prime*DEG2RAD,reactionOrigin);
+				//pair<int,int> hit2_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
 				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
 
 					//apply target energy loss to e1:
@@ -224,7 +252,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta2_prime*DEG2RAD,phi2_prime*DEG2RAD);
-					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
+					Vec3 normal = SABRE_Array_->at(i)->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e2_afterDeadLayer = deadLayerLoss_par2_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
 					//hDeadLayerELoss->Fill(std::fabs(e2_afterDeadLayer - e2_aftertarget)*1000.);
@@ -234,7 +262,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 					//hEnergyLosses->Fill((e2_afterDeadLayer-e2_aftertarget)*1000.);//for dead layer energy loss
 
 					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
-						Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
+						Vec3 localCoords = SABRE_Array_->at(i)->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
 						//outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						ss << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						detected2 = true;
@@ -311,7 +339,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 		RootPlotter->FillBeamSpotHisto(reactionOrigin);
 
-		for(size_t i=0; i<SABRE_Array_.size(); i++){
+		for(size_t i=0; i<SABRE_Array_->size(); i++){
 			/*///////////////////////////////////////////////
 			//  check if particle 1 (ejectile) is detected //
 			///////////////////////////////////////////////*/
@@ -347,7 +375,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 					RootPlotter->FillStraggleHistos(theta1, phi1, theta1_prime, phi1_prime, 0, 0);
 				}
 
-				std::pair<int,int> hit1_rw = SABRE_Array_[i]->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
+				std::pair<int,int> hit1_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta1_prime*DEG2RAD, phi1_prime*DEG2RAD, reactionOrigin);
 
 				if(hit1_rw.first != -1 && hit1_rw.second != -1 && !detected1){
 
@@ -358,7 +386,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 					//apply dead layer energy loss to e1_aftertarget:
 					Vec3 trajectory;
 					trajectory.SetVectorSpherical(1,theta1_prime*DEG2RAD,phi1_prime*DEG2RAD);
-					Vec3 normal = SABRE_Array_[i]->GetNormTilted();
+					Vec3 normal = SABRE_Array_->at(i)->GetNormTilted();
 					normal = normal*(1/normal.Mag());
 					double e1_afterDeadLayer = deadLayerLoss_par1_->ApplyEnergyLoss(e1_aftertarget, trajectory, normal);
 					//hDeadLayerELoss->Fill(abs(e1_afterDeadLayer - e1_aftertarget)*1000.);
@@ -368,7 +396,7 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 					// }
 
 					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit1_rw.first,e1_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit1_rw.second, e1_afterDeadLayer, smearedEWedge)){
-						Vec3 localCoords = SABRE_Array_[i]->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
+						Vec3 localCoords = SABRE_Array_->at(i)->GetHitCoordinatesRandomWiggle(hit1_rw.first,hit1_rw.second);
 				
 						ss << 100+i << "\t" << hit1_rw.first << "\t" << hit1_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
 						detected1 = true;
@@ -376,15 +404,115 @@ void det2mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 						detectorHits_[i] += 1;
 
 
-						//need to get (theta,phi) from (ring,wedge) from anglemap --> needs new class for anglemap!
-						Hit h = {1, i, offsets[i].first + hit1_rw.first, offsets[i].second + hit1_rw.second, hit1_rw.first, hit1_rw.second, smearedERing, smearedEWedge, rt, wp, localCoords.GetX(), localCoords.GetY()};
-						EventRecorder->Addhit(h);
+						std::optional<std::pair<double,double>> anglepair_optional = SABRE_Array_->GetDetectorThetaPhi(offsets[i].first + hit1_rw.first, offsets[i].second + hit1_rw.second);
+						if(anglepair_optional){
+							std::pair<double,double> anglepair = *anglepair_optional;
+							Hit h = {1, (int)i, offsets[i].first + hit1_rw.first, offsets[i].second + hit1_rw.second, hit1_rw.first, hit1_rw.second, smearedERing, smearedEWedge, anglepair.first, anglepair.second, localCoords.GetX(), localCoords.GetY()};
+							EventRecorder->AddHit(h);
+						} else {
+							//do nothing for now
+						}
+						
 
 					}
 
 
 				}
+
+				/*/////////////////////////////////////////////
+				//  check if particle 2 (recoil) is detected //
+				/////////////////////////////////////////////*/
+
+				smearedERing = 0.;
+				smearedEWedge = 0.;
+
+				//sample (dtheta, dphi) to apply to kin2mc trajectory:
+				double dtheta2 = straggler_par2_->Sample();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+				double dphi2 = straggler_par2_->SamplePhi();//RIGHT NOW THIS CORRESPONDS TO 6LI GS IN LIF WORST CASE
+
+				//we now define the original kinematical trajectory as:
+				Vec3 originalTrajectory2;
+				originalTrajectory2.SetVectorSpherical(1, theta2*DEG2RAD, phi2*DEG2RAD);
+
+				//define new basis vectors
+				Vec3 etheta2, ephi2;
+				etheta2.SetVectorCartesian(std::cos(theta2*DEG2RAD)*std::cos(phi2*DEG2RAD), std::cos(theta2*DEG2RAD)*std::sin(phi2*DEG2RAD), -std::sin(theta2*DEG2RAD));
+				ephi2.SetVectorCartesian(-std::sin(phi2*DEG2RAD), std::cos(phi2*DEG2RAD), 0.);
+
+				//adjusted trajectory:
+				Vec3 adjustedTrajectory2;
+				adjustedTrajectory2 = std::cos(dtheta2*DEG2RAD)*originalTrajectory2 + std::sin(dtheta2*DEG2RAD)*(std::cos(dphi2*DEG2RAD)*etheta2 + std::sin(dphi2*DEG2RAD)*ephi2);
+				adjustedTrajectory2 = adjustedTrajectory2.Unit();
+
+				//now convert back
+				double theta2_prime, phi2_prime;
+				if(config->GetStraggleEnabled(2)){
+					theta2_prime = adjustedTrajectory2.GetTheta()*RAD2DEG;//std::acos(adjustedTrajectory2.GetZ())*RAD2DEG;
+					phi2_prime = adjustedTrajectory2.GetPhi()*RAD2DEG;//std::atan2(adjustedTrajectory2.GetY(), adjustedTrajectory2.GetX())*RAD2DEG;
+					if(phi2_prime < 0) phi2_prime += 360.;
+					RootPlotter->FillStraggleHistos(theta2, phi2, theta2_prime, phi2_prime, dtheta2, dphi2);
+				} else {
+					theta2_prime = theta2;
+					phi2_prime = phi2;
+					RootPlotter->FillStraggleHistos(theta2, phi2, theta2_prime, phi2_prime, 0, 0);
+				}
+
+				//std::pair<int,int> hit2_rw = SABRE_Array_->at(i)->GetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD);
+				std::pair<int,int> hit2_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta2_prime*DEG2RAD,phi2_prime*DEG2RAD,reactionOrigin);
+				//pair<int,int> hit2_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta2*DEG2RAD,phi2*DEG2RAD,{0.000001,0.000001,0.000001});
+				if(hit2_rw.first != -1 && hit2_rw.second != -1 && !detected2){
+
+					//apply target energy loss to e1:
+					double e2_aftertarget = targetLoss_par2_->ApplyEnergyLoss(e2, theta2_prime);
+					RootPlotter->FillTH2D("hNewELoss_vs_OldELoss",e2 - targetLoss_par2_->ApplyEnergyLoss(e2, theta2), e2 - e2_aftertarget);
+
+					//apply dead layer energy loss to e1_aftertarget:
+					Vec3 trajectory;
+					trajectory.SetVectorSpherical(1,theta2_prime*DEG2RAD,phi2_prime*DEG2RAD);
+					Vec3 normal = SABRE_Array_->at(i)->GetNormTilted();
+					normal = normal*(1/normal.Mag());
+					double e2_afterDeadLayer = deadLayerLoss_par2_->ApplyEnergyLoss(e2_aftertarget, trajectory, normal);
+					//hDeadLayerELoss->Fill(std::fabs(e2_afterDeadLayer - e2_aftertarget)*1000.);
+
+					//if(nevents%10000 == 0) std::cout << "hit2 target_energy_loss = " << e2-e2_aftertarget << " MeV" << std::endl;
+					//hEnergyLosses->Fill(abs(e2-e2_aftertarget)*1000.);//for target energy loss
+					//hEnergyLosses->Fill((e2_afterDeadLayer-e2_aftertarget)*1000.);//for dead layer energy loss
+
+					if(SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInRing(hit2_rw.first,e2_afterDeadLayer,smearedERing) && SABREARRAY_EnergyResolutionModels_[i]->detectEnergyInWedge(hit2_rw.second,e2_afterDeadLayer,smearedEWedge)){
+						Vec3 localCoords = SABRE_Array_->at(i)->GetHitCoordinatesRandomWiggle(hit2_rw.first,hit2_rw.second);
+						//outfile << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
+						ss << 200+i << "\t" << hit2_rw.first << "\t" << hit2_rw.second << "\t" << smearedERing << "\t" << smearedEWedge << "\t" << localCoords.GetX() << "\t" << localCoords.GetY() << "\n";
+						detected2 = true;
+						hit2_+=1;
+						detectorHits_[i] += 1;
+
+						std::optional<std::pair<double,double>> anglepair_optional = SABRE_Array_->GetDetectorThetaPhi(offsets[i].first + hit2_rw.first, offsets[i].second + hit2_rw.second);
+						if(anglepair_optional){
+							std::pair<double,double> anglepair = *anglepair_optional;
+							Hit h = {1, (int)i, offsets[i].first + hit2_rw.first, offsets[i].second + hit2_rw.second, hit2_rw.first, hit2_rw.second, smearedERing, smearedEWedge, anglepair.first, anglepair.second, localCoords.GetX(), localCoords.GetY()};
+							EventRecorder->AddHit(h);
+						} else {
+							//do nothing for now
+						}
+					}
+				}
 		}
+
+		if(detected1&&detected2) hitBoth_ += 1;
+
+		if(detected1&&!detected2) hit1Only_ += 1;
+
+		if(!detected1&&detected2) hit2Only_ += 1;
+
+		ss << eoev;
+
+		outfile << ss.str() << "\n";
+
+		//std::cout << "ss.str() = " << ss.str() << "\n";
+		RootPlotter->ProcessTXTOutput(ss.str());
+
+		EventRecorder->FillEvent();
+		EventRecorder->ResetEvent();
 	}
 
 }
