@@ -25,6 +25,7 @@ using namespace std;
 
 
 Float_t DEGRAD=0.017453293;
+Float_t RADDEG=1/DEGRAD;
 
 int numRings = 16;
 int numWedges = 8;
@@ -1522,18 +1523,24 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	//TH1D *hCase1_daughterExE_gate = new TH1D("hCase1_daughterExE_gate","hCase1_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase1_9BReconExE = new TH1D("hCase1_9BReconExE","hCase1_9BReconExE", 525, -1, 20);
 	TH1D *hCase1_9BReconExE_gated = new TH1D("hCase1_9BReconExE_gated", "hCase1_9BReconExE_gated", 525, -1, 20);
-	TH1D *hCase1_daughterThetaCM1 = new TH1D("hCase1_daughterThetaCM1","hCase1_daughterThetaCM1",181,0,180);
-	TH1D *hCase1_daughterPhiCM1 = new TH1D("hCase1_daughterPhiCM1","hCase1_daughterPhiCM1",361,0,360);
-	TH1D *hCase1_particle1ThetaCM1 = new TH1D("hCase1_particle1ThetaCM1","hCase1_particle1ThetaCM1",181,0,180);
-	TH1D *hCase1_particle1PhiCM1 = new TH1D("hCase1_particle1PhiCM1","hCase1_particle1PhiCM1",361,0,360);
-	TH1D *hCase1_ThetaCM1Sum = new TH1D("hCase1_ThetaCM1Sum","hCase1_ThetaCM1Sum",181,0,180);
-	TH1D *hCase1_PhiCM1Sep = new TH1D("hCase1_PhiCM1Sep","hCase1_PhiCM1Sep",361,0,360);
-	TH1D *hCase1_particle2ThetaCM2 = new TH1D("hCase1_particle2ThetaCM2","hCase1_particle2ThetaCM2",181,0,180); 
-	TH1D *hCase1_particle2PhiCM2 = new TH1D("hCase1_particle2PhiCM2","hCase1_particle2PhiCM2",361,0,360);
-	TH1D *hCase1_particle3ThetaCM2 = new TH1D("hCase1_particle3ThetaCM2","hCase1_particle3ThetaCM2",181,0,180);
-	TH1D *hCase1_particle3PhiCM2 = new TH1D("hCase1_particle3PhiCM2","hCase1_particle3PhiCM2",361,0,360);
-	TH1D *hCase1_ThetaCM2Sum = new TH1D("hCase1_ThetaCM2Sum","hCase1_ThetaCM2Sum",181,0,180);
-	TH1D *hCase1_PhiCM2Sep = new TH1D("hCase1_PhiCM2Sep","hCase1_PhiCM2Sep",361,0,360);
+	TH1D *hCase1_daughtervcm = new TH1D("hCase1_daughtervcm","hCase1_daughtervcm",100,0,1);
+	TH1D *hCase1_daughterkecm = new TH1D("hCase1_daughterkecm","hCase1_daughterkecm",100,0,1);
+	TH1D *hCase1_daughterthetacm = new TH1D("hCase1_daughterthetacm","hCase1_daughterthetacm",180,0,180);
+	TH1D *hCase1_daughterphicm = new TH1D("hCase1_daughterphicm","hCase1_daughterphicm",360,0,360);
+	TH1D *hCase1_pvcm = new TH1D("hCase1_pvcm","hCase1_pvcm",100,0,1);
+	TH1D *hCase1_pkecm = new TH1D("hCase1_pkecm","hCase1_pkecm",100,0,100);
+	TH1D *hCase1_pthetacm = new TH1D("hCase1_pthetacm","hCase1_pthetacm",180,0,180);
+	TH1D *hCase1_pphicm = new TH1D("hCase1_pphicm","hCase1_pphicm",360,0,360);
+	TH1D *hCase1_a1vcm = new TH1D("hCase1_a1vcm","hCase1_a1vcm",100,0,1);
+	TH1D *hCase1_a1kecm = new TH1D("hCase1_a1kecm","hCase1_a1kecm",100,0,100);
+	TH1D *hCase1_a1thetacm = new TH1D("hCase1_a1thetacm","hCase1_a1thetacm",180,0,180);
+	TH1D *hCase1_a1phicm = new TH1D("hCase1_a1phicm","hCase1_a1phicm",360,0,360);
+	TH1D *hCase1_a2vcm = new TH1D("hCase1_a2vcm","hCase1_a2vcm",100,0,1);
+	TH1D *hCase1_a2kecm = new TH1D("hCase1_a2kecm","hCase1_a2kecm",100,0,100);
+	TH1D *hCase1_a2thetacm = new TH1D("hCase1_a2thetacm","hCase1_a2thetacm",180,0,180);
+	TH1D *hCase1_a2phicm = new TH1D("hCase1_a2phicm","hCase1_a2phicm",360,0,360);
+	TH1D *hCase1_ecm1 = new TH1D("hCase1_ecm1","hCase1_ecm1",200,0,200);
+	TH1D *hCase1_ecm2 = new TH1D("hCase1_ecm2","hCase1_ecm2",200,0,200);
 
 	TH1D *hCase2_daughterIM = new TH1D("hCase2_daughterIM","hCase2_daughterIM", 29000, 4600, 7500);
 	TH1D *hCase2_daughterExE = new TH1D("hCase2_daughterExE","hCase2_daughterExE", 525, -1, 20);
@@ -1765,6 +1772,92 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
 					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
 				}
+
+				//NEW AS OF 04/07/2026:
+				//obtain boost vectors for CM frame calculations:
+				TVector3 boostvector1 = (-1/boron9.Energy())*boron9.Vect();
+				TVector3 boostvector2 = (-1/daughter.Energy())*daughter.Vect();
+
+				//boost vectors accordingly into proper frames (two CM frames, first is the CM frame for 9B-> a + B [where a, B are emitted back to back], next is the CM frame for B-> c + d [where c, d are emitted back to back from B at rest])
+				
+				if(Be8){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					pLV.Boost(boostvector1);//boost proton to CM of first break up
+					a1LV.Boost(boostvector2);//boost alpha1 to CM of second break up				
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				if(Li5){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					a1LV.Boost(boostvector1);//boost alpha1 to CM of first break up
+					pLV.Boost(boostvector2);//boost proton to CM of second break up
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				double daughter_vcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+				double p_vcm = ((1/pLV.Energy())*pLV.Vect()).Mag();
+				double a1_vcm = ((1/a1LV.Energy())*a1LV.Vect()).Mag();
+				double a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
+
+				hCase1_daughtervcm->Fill(daughter_vcm);
+				hCase1_pvcm->Fill(p_vcm);
+				hCase1_a1vcm->Fill(a1_vcm);
+				hCase1_a2vcm->Fill(a2_vcm);
+
+				double daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
+				double p_kecm = 0.5*protonMass*p_vcm*p_vcm;
+				double a1_kecm = 0.5*alphaMass*a1_vcm*a1_vcm;
+				double a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
+
+				hCase1_daughterkecm->Fill(daughter_kecm);
+				hCase1_pkecm->Fill(p_kecm);
+				hCase1_a1kecm->Fill(a1_kecm);
+				hCase1_a2kecm->Fill(a2_kecm);
+
+				double ecm1, ecm2;
+				double daughter_thetacm, p_thetacm, a1_thetacm, a2_thetacm;
+				double daughter_phicm, p_phicm, a1_phicm, a2_phicm;
+
+				if(Be8){
+					ecm1 = daughter_kecm + p_kecm;
+					ecm2 = a1_kecm + a2_kecm;
+				}
+				if(Li5){
+					ecm1 = daughter_kecm + a1_kecm;
+					ecm2 = p_kecm + a2_kecm;
+				}
+
+				hCase1_ecm1->Fill(ecm1);
+				hCase1_ecm2->Fill(ecm2);
+
+				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+				if(daughter_phicm < 0) daughter_phicm += 360.;
+
+				p_thetacm = RADDEG*acos(pLV.Vect().Z()/pLV.Vect().Mag());
+				p_phicm = RADDEG*atan2(pLV.Vect().Y(),pLV.Vect().X());
+				if(p_phicm < 0) p_phicm += 360.;
+
+				a1_thetacm = RADDEG*acos(a1LV.Vect().Z()/a1LV.Vect().Mag());
+				a1_phicm = RADDEG*atan2(a1LV.Vect().Y(),a1LV.Vect().X());
+				if(a1_phicm < 0) a1_phicm += 360.;
+
+				a2_thetacm = RADDEG*acos(a2LV.Vect().Z()/a2LV.Vect().Mag());
+				a2_phicm = RADDEG*atan2(a2LV.Vect().Y(),a2LV.Vect().X());
+				if(a2_phicm < 0) a2_phicm += 360.;
+
+				hCase1_daughterthetacm->Fill(daughter_thetacm);
+				hCase1_daughterphicm->Fill(daughter_phicm);
+
+				hCase1_pthetacm->Fill(p_thetacm);
+				hCase1_pphicm->Fill(p_phicm);
+
+				hCase1_a1thetacm->Fill(a1_thetacm);
+				hCase1_a1phicm->Fill(a1_phicm);
+
+				hCase1_a2thetacm->Fill(a2_thetacm);
+				hCase1_a2phicm->Fill(a2_phicm);
+
 
 	//--------------------------------------------------------------------------------------------
 				// CASE 2 (particle1 = a1, particle2 = a2, particle3 = p)
@@ -2014,6 +2107,25 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	//hCase1_daughterExE_gate->Write();
 	hCase1_9BReconExE->Write();
 	hCase1_9BReconExE_gated->Write();
+
+	hCase1_daughtervcm->Write();
+	hCase1_daughterkecm->Write();
+	hCase1_daughterthetacm->Write();
+	hCase1_daughterphicm->Write();
+	hCase1_pvcm->Write();
+	hCase1_pkecm->Write();
+	hCase1_pthetacm->Write();
+	hCase1_pphicm->Write();
+	hCase1_a1vcm->Write();
+	hCase1_a1kecm->Write();
+	hCase1_a1thetacm->Write();
+	hCase1_a1phicm->Write();
+	hCase1_a2vcm->Write();
+	hCase1_a2kecm->Write();
+	hCase1_a2thetacm->Write();
+	hCase1_a2phicm->Write();
+	hCase1_ecm1->Write();
+	hCase1_ecm2->Write();
 
 	hCase2_daughterIM->Write();
 	hCase2_daughterExE->Write();
