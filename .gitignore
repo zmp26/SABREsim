@@ -13,4 +13,4 @@ logs/*
 config/SABREsim_laptop_COPY.conf
 efficiencies/*txt
 *dat
-
+sanitycheck/*

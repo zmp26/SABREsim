@@ -1547,36 +1547,144 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	//TH1D *hCase2_daughterExE_gate = new TH1D("hCase2_daughterExE_gate","hCase2_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase2_9BReconExE = new TH1D("hCase2_9BReconExE","hCase2_9BReconExE", 525, -1, 20);
 	TH1D *hCase2_9BReconExE_gated = new TH1D("hCase2_9BReconExE_gated", "hCase2_9BReconExE_gated", 525, -1, 20);
+	TH1D *hCase2_daughtervcm = new TH1D("hCase2_daughtervcm","hCase2_daughtervcm",100,0,1);
+	TH1D *hCase2_daughterkecm = new TH1D("hCase2_daughterkecm","hCase2_daughterkecm",100,0,1);
+	TH1D *hCase2_daughterthetacm = new TH1D("hCase2_daughterthetacm","hCase2_daughterthetacm",180,0,180);
+	TH1D *hCase2_daughterphicm = new TH1D("hCase2_daughterphicm","hCase2_daughterphicm",360,0,360);
+	TH1D *hCase2_pvcm = new TH1D("hCase2_pvcm","hCase2_pvcm",100,0,1);
+	TH1D *hCase2_pkecm = new TH1D("hCase2_pkecm","hCase2_pkecm",100,0,100);
+	TH1D *hCase2_pthetacm = new TH1D("hCase2_pthetacm","hCase2_pthetacm",180,0,180);
+	TH1D *hCase2_pphicm = new TH1D("hCase2_pphicm","hCase2_pphicm",360,0,360);
+	TH1D *hCase2_a1vcm = new TH1D("hCase2_a1vcm","hCase2_a1vcm",100,0,1);
+	TH1D *hCase2_a1kecm = new TH1D("hCase2_a1kecm","hCase2_a1kecm",100,0,100);
+	TH1D *hCase2_a1thetacm = new TH1D("hCase2_a1thetacm","hCase2_a1thetacm",180,0,180);
+	TH1D *hCase2_a1phicm = new TH1D("hCase2_a1phicm","hCase2_a1phicm",360,0,360);
+	TH1D *hCase2_a2vcm = new TH1D("hCase2_a2vcm","hCase2_a2vcm",100,0,1);
+	TH1D *hCase2_a2kecm = new TH1D("hCase2_a2kecm","hCase2_a2kecm",100,0,100);
+	TH1D *hCase2_a2thetacm = new TH1D("hCase2_a2thetacm","hCase2_a2thetacm",180,0,180);
+	TH1D *hCase2_a2phicm = new TH1D("hCase2_a2phicm","hCase2_a2phicm",360,0,360);
+	TH1D *hCase2_ecm1 = new TH1D("hCase2_ecm1","hCase2_ecm1",200,0,200);
+	TH1D *hCase2_ecm2 = new TH1D("hCase2_ecm2","hCase2_ecm2",200,0,200);
 
 	TH1D *hCase3_daughterIM = new TH1D("hCase3_daughterIM","hCase3_daughterIM", 29000, 4600, 7500);
 	TH1D *hCase3_daughterExE = new TH1D("hCase3_daughterExE","hCase3_daughterExE", 525, -1, 20);
 	//TH1D *hCase3_daughterExE_gate = new TH1D("hCase3_daughterExE_gate","hCase3_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase3_9BReconExE = new TH1D("hCase3_9BReconExE","hCase3_9BReconExE", 525, -1, 20);
 	TH1D *hCase3_9BReconExE_gated = new TH1D("hCase3_9BReconExE_gated", "hCase3_9BReconExE_gated", 525, -1, 20);
+	TH1D *hCase3_daughtervcm = new TH1D("hCase3_daughtervcm","hCase3_daughtervcm",100,0,1);
+	TH1D *hCase3_daughterkecm = new TH1D("hCase3_daughterkecm","hCase3_daughterkecm",100,0,1);
+	TH1D *hCase3_daughterthetacm = new TH1D("hCase3_daughterthetacm","hCase3_daughterthetacm",180,0,180);
+	TH1D *hCase3_daughterphicm = new TH1D("hCase3_daughterphicm","hCase3_daughterphicm",360,0,360);
+	TH1D *hCase3_pvcm = new TH1D("hCase3_pvcm","hCase3_pvcm",100,0,1);
+	TH1D *hCase3_pkecm = new TH1D("hCase3_pkecm","hCase3_pkecm",100,0,100);
+	TH1D *hCase3_pthetacm = new TH1D("hCase3_pthetacm","hCase3_pthetacm",180,0,180);
+	TH1D *hCase3_pphicm = new TH1D("hCase3_pphicm","hCase3_pphicm",360,0,360);
+	TH1D *hCase3_a1vcm = new TH1D("hCase3_a1vcm","hCase3_a1vcm",100,0,1);
+	TH1D *hCase3_a1kecm = new TH1D("hCase3_a1kecm","hCase3_a1kecm",100,0,100);
+	TH1D *hCase3_a1thetacm = new TH1D("hCase3_a1thetacm","hCase3_a1thetacm",180,0,180);
+	TH1D *hCase3_a1phicm = new TH1D("hCase3_a1phicm","hCase3_a1phicm",360,0,360);
+	TH1D *hCase3_a2vcm = new TH1D("hCase3_a2vcm","hCase3_a2vcm",100,0,1);
+	TH1D *hCase3_a2kecm = new TH1D("hCase3_a2kecm","hCase3_a2kecm",100,0,100);
+	TH1D *hCase3_a2thetacm = new TH1D("hCase3_a2thetacm","hCase3_a2thetacm",180,0,180);
+	TH1D *hCase3_a2phicm = new TH1D("hCase3_a2phicm","hCase3_a2phicm",360,0,360);
+	TH1D *hCase3_ecm1 = new TH1D("hCase3_ecm1","hCase3_ecm1",200,0,200);
+	TH1D *hCase3_ecm2 = new TH1D("hCase3_ecm2","hCase3_ecm2",200,0,200);
 
 	TH1D *hCase4_daughterIM = new TH1D("hCase4_daughterIM","hCase4_daughterIM", 29000, 4600, 7500);
 	TH1D *hCase4_daughterExE = new TH1D("hCase4_daughterExE","hCase4_daughterExE", 525, -1, 20);
 	//TH1D *hCase4_daughterExE_gate = new TH1D("hCase4_daughterExE_gate","hCase4_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase4_9BReconExE = new TH1D("hCase4_9BReconExE","hCase4_9BReconExE", 525, -1, 20);
 	TH1D *hCase4_9BReconExE_gated = new TH1D("hCase4_9BReconExE_gated", "hCase4_9BReconExE_gated", 525, -1, 20);
+	TH1D *hCase4_daughtervcm = new TH1D("hCase4_daughtervcm","hCase4_daughtervcm",100,0,1);
+	TH1D *hCase4_daughterkecm = new TH1D("hCase4_daughterkecm","hCase4_daughterkecm",100,0,1);
+	TH1D *hCase4_daughterthetacm = new TH1D("hCase4_daughterthetacm","hCase4_daughterthetacm",180,0,180);
+	TH1D *hCase4_daughterphicm = new TH1D("hCase4_daughterphicm","hCase4_daughterphicm",360,0,360);
+	TH1D *hCase4_pvcm = new TH1D("hCase4_pvcm","hCase4_pvcm",100,0,1);
+	TH1D *hCase4_pkecm = new TH1D("hCase4_pkecm","hCase4_pkecm",100,0,100);
+	TH1D *hCase4_pthetacm = new TH1D("hCase4_pthetacm","hCase4_pthetacm",180,0,180);
+	TH1D *hCase4_pphicm = new TH1D("hCase4_pphicm","hCase4_pphicm",360,0,360);
+	TH1D *hCase4_a1vcm = new TH1D("hCase4_a1vcm","hCase4_a1vcm",100,0,1);
+	TH1D *hCase4_a1kecm = new TH1D("hCase4_a1kecm","hCase4_a1kecm",100,0,100);
+	TH1D *hCase4_a1thetacm = new TH1D("hCase4_a1thetacm","hCase4_a1thetacm",180,0,180);
+	TH1D *hCase4_a1phicm = new TH1D("hCase4_a1phicm","hCase4_a1phicm",360,0,360);
+	TH1D *hCase4_a2vcm = new TH1D("hCase4_a2vcm","hCase4_a2vcm",100,0,1);
+	TH1D *hCase4_a2kecm = new TH1D("hCase4_a2kecm","hCase4_a2kecm",100,0,100);
+	TH1D *hCase4_a2thetacm = new TH1D("hCase4_a2thetacm","hCase4_a2thetacm",180,0,180);
+	TH1D *hCase4_a2phicm = new TH1D("hCase4_a2phicm","hCase4_a2phicm",360,0,360);
+	TH1D *hCase4_ecm1 = new TH1D("hCase4_ecm1","hCase4_ecm1",200,0,200);
+	TH1D *hCase4_ecm2 = new TH1D("hCase4_ecm2","hCase4_ecm2",200,0,200);
 
 	TH1D *hCase5_daughterIM = new TH1D("hCase5_daughterIM","hCase5_daughterIM", 29000, 4600, 7500);
 	TH1D *hCase5_daughterExE = new TH1D("hCase5_daughterExE","hCase5_daughterExE", 525, -1, 20);
 	//TH1D *hCase5_daughterExE_gate = new TH1D("hCase5_daughterExE_gate","hCase5_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase5_9BReconExE = new TH1D("hCase5_9BReconExE","hCase5_9BReconExE", 525, -1, 20);
 	TH1D *hCase5_9BReconExE_gated = new TH1D("hCase5_9BReconExE_gated", "hCase5_9BReconExE_gated", 525, -1, 20);
+	TH1D *hCase5_daughtervcm = new TH1D("hCase5_daughtervcm","hCase5_daughtervcm",100,0,1);
+	TH1D *hCase5_daughterkecm = new TH1D("hCase5_daughterkecm","hCase5_daughterkecm",100,0,1);
+	TH1D *hCase5_daughterthetacm = new TH1D("hCase5_daughterthetacm","hCase5_daughterthetacm",180,0,180);
+	TH1D *hCase5_daughterphicm = new TH1D("hCase5_daughterphicm","hCase5_daughterphicm",360,0,360);
+	TH1D *hCase5_pvcm = new TH1D("hCase5_pvcm","hCase5_pvcm",100,0,1);
+	TH1D *hCase5_pkecm = new TH1D("hCase5_pkecm","hCase5_pkecm",100,0,100);
+	TH1D *hCase5_pthetacm = new TH1D("hCase5_pthetacm","hCase5_pthetacm",180,0,180);
+	TH1D *hCase5_pphicm = new TH1D("hCase5_pphicm","hCase5_pphicm",360,0,360);
+	TH1D *hCase5_a1vcm = new TH1D("hCase5_a1vcm","hCase5_a1vcm",100,0,1);
+	TH1D *hCase5_a1kecm = new TH1D("hCase5_a1kecm","hCase5_a1kecm",100,0,100);
+	TH1D *hCase5_a1thetacm = new TH1D("hCase5_a1thetacm","hCase5_a1thetacm",180,0,180);
+	TH1D *hCase5_a1phicm = new TH1D("hCase5_a1phicm","hCase5_a1phicm",360,0,360);
+	TH1D *hCase5_a2vcm = new TH1D("hCase5_a2vcm","hCase5_a2vcm",100,0,1);
+	TH1D *hCase5_a2kecm = new TH1D("hCase5_a2kecm","hCase5_a2kecm",100,0,100);
+	TH1D *hCase5_a2thetacm = new TH1D("hCase5_a2thetacm","hCase5_a2thetacm",180,0,180);
+	TH1D *hCase5_a2phicm = new TH1D("hCase5_a2phicm","hCase5_a2phicm",360,0,360);
+	TH1D *hCase5_ecm1 = new TH1D("hCase5_ecm1","hCase5_ecm1",200,0,200);
+	TH1D *hCase5_ecm2 = new TH1D("hCase5_ecm2","hCase5_ecm2",200,0,200);
 
 	TH1D *hCase6_daughterIM = new TH1D("hCase6_daughterIM","hCase6_daughterIM", 29000, 4600, 7500);
 	TH1D *hCase6_daughterExE = new TH1D("hCase6_daughterExE","hCase6_daughterExE", 525, -1, 20);
 	//TH1D *hCase6_daughterExE_gate = new TH1D("hCase6_daughterExE_gate","hCase6_daughterExE_gate", 525, -1, 20);
 	TH1D *hCase6_9BReconExE = new TH1D("hCase6_9BReconExE","hCase6_9BReconExE", 525, -1, 20);
 	TH1D *hCase6_9BReconExE_gated = new TH1D("hCase6_9BReconExE_gated", "hCase6_9BReconExE_gated", 525, -1, 20);
+	TH1D *hCase6_daughtervcm = new TH1D("hCase6_daughtervcm","hCase6_daughtervcm",100,0,1);
+	TH1D *hCase6_daughterkecm = new TH1D("hCase6_daughterkecm","hCase6_daughterkecm",100,0,1);
+	TH1D *hCase6_daughterthetacm = new TH1D("hCase6_daughterthetacm","hCase6_daughterthetacm",180,0,180);
+	TH1D *hCase6_daughterphicm = new TH1D("hCase6_daughterphicm","hCase6_daughterphicm",360,0,360);
+	TH1D *hCase6_pvcm = new TH1D("hCase6_pvcm","hCase6_pvcm",100,0,1);
+	TH1D *hCase6_pkecm = new TH1D("hCase6_pkecm","hCase6_pkecm",100,0,100);
+	TH1D *hCase6_pthetacm = new TH1D("hCase6_pthetacm","hCase6_pthetacm",180,0,180);
+	TH1D *hCase6_pphicm = new TH1D("hCase6_pphicm","hCase6_pphicm",360,0,360);
+	TH1D *hCase6_a1vcm = new TH1D("hCase6_a1vcm","hCase6_a1vcm",100,0,1);
+	TH1D *hCase6_a1kecm = new TH1D("hCase6_a1kecm","hCase6_a1kecm",100,0,100);
+	TH1D *hCase6_a1thetacm = new TH1D("hCase6_a1thetacm","hCase6_a1thetacm",180,0,180);
+	TH1D *hCase6_a1phicm = new TH1D("hCase6_a1phicm","hCase6_a1phicm",360,0,360);
+	TH1D *hCase6_a2vcm = new TH1D("hCase6_a2vcm","hCase6_a2vcm",100,0,1);
+	TH1D *hCase6_a2kecm = new TH1D("hCase6_a2kecm","hCase6_a2kecm",100,0,100);
+	TH1D *hCase6_a2thetacm = new TH1D("hCase6_a2thetacm","hCase6_a2thetacm",180,0,180);
+	TH1D *hCase6_a2phicm = new TH1D("hCase6_a2phicm","hCase6_a2phicm",360,0,360);
+	TH1D *hCase6_ecm1 = new TH1D("hCase6_ecm1","hCase6_ecm1",200,0,200);
+	TH1D *hCase6_ecm2 = new TH1D("hCase6_ecm2","hCase6_ecm2",200,0,200);
 
 	TH1D *hAllCases_daughterIM = new TH1D("hAllCases_daughterIM","hAllCases_daughterIM", 29000, 4600, 7500);
 	TH1D *hAllCases_daughterExE = new TH1D("hAllCases_daughterExE","hAllCases_daughterExE", 525, -1, 20);
 	//TH1D *hAllCases_daughterExE_gate = new TH1D("hAllCases_daughterExE_gate","hAllCases_daughterExE_gate", 525, -1, 20);
 	TH1D *hAllCases_9BReconExE = new TH1D("hAllCases_9BReconExE","hAllCases_9BReconExE", 525, -1, 20);
 	TH1D *hAllCases_9BReconExE_gated = new TH1D("hAllCases_9BReconExE_gated", "hAllCases_9BReconExE_gated", 525, -1, 20);
+	TH1D *hAllCases_daughtervcm = new TH1D("hAllCases_daughtervcm","hAllCases_daughtervcm",100,0,1);
+	TH1D *hAllCases_daughterkecm = new TH1D("hAllCases_daughterkecm","hAllCases_daughterkecm",100,0,1);
+	TH1D *hAllCases_daughterthetacm = new TH1D("hAllCases_daughterthetacm","hAllCases_daughterthetacm",180,0,180);
+	TH1D *hAllCases_daughterphicm = new TH1D("hAllCases_daughterphicm","hAllCases_daughterphicm",360,0,360);
+	TH1D *hAllCases_pvcm = new TH1D("hAllCases_pvcm","hAllCases_pvcm",100,0,1);
+	TH1D *hAllCases_pkecm = new TH1D("hAllCases_pkecm","hAllCases_pkecm",100,0,100);
+	TH1D *hAllCases_pthetacm = new TH1D("hAllCases_pthetacm","hAllCases_pthetacm",180,0,180);
+	TH1D *hAllCases_pphicm = new TH1D("hAllCases_pphicm","hAllCases_pphicm",360,0,360);
+	TH1D *hAllCases_a1vcm = new TH1D("hAllCases_a1vcm","hAllCases_a1vcm",100,0,1);
+	TH1D *hAllCases_a1kecm = new TH1D("hAllCases_a1kecm","hAllCases_a1kecm",100,0,100);
+	TH1D *hAllCases_a1thetacm = new TH1D("hAllCases_a1thetacm","hAllCases_a1thetacm",180,0,180);
+	TH1D *hAllCases_a1phicm = new TH1D("hAllCases_a1phicm","hAllCases_a1phicm",360,0,360);
+	TH1D *hAllCases_a2vcm = new TH1D("hAllCases_a2vcm","hAllCases_a2vcm",100,0,1);
+	TH1D *hAllCases_a2kecm = new TH1D("hAllCases_a2kecm","hAllCases_a2kecm",100,0,100);
+	TH1D *hAllCases_a2thetacm = new TH1D("hAllCases_a2thetacm","hAllCases_a2thetacm",180,0,180);
+	TH1D *hAllCases_a2phicm = new TH1D("hAllCases_a2phicm","hAllCases_a2phicm",360,0,360);
+	TH1D *hAllCases_ecm1 = new TH1D("hAllCases_ecm1","hAllCases_ecm1",200,0,200);
+	TH1D *hAllCases_ecm2 = new TH1D("hAllCases_ecm2","hAllCases_ecm2",200,0,200);
 
 
 	std::map<std::pair<int,int>, std::pair<double,double>> sabre_thetaphimap = readAngleMaps();
@@ -1800,9 +1908,16 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 				double a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
 
 				hCase1_daughtervcm->Fill(daughter_vcm);
+				hAllCases_daughtervcm->Fill(daughter_vcm);
+
 				hCase1_pvcm->Fill(p_vcm);
+				hAllCases_pvcm->Fill(p_vcm);
+
 				hCase1_a1vcm->Fill(a1_vcm);
+				hAllCases_a1vcm->Fill(a1_vcm);
+
 				hCase1_a2vcm->Fill(a2_vcm);
+				hAllCases_a2vcm->Fill(a2_vcm);
 
 				double daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
 				double p_kecm = 0.5*protonMass*p_vcm*p_vcm;
@@ -1810,9 +1925,16 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 				double a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
 
 				hCase1_daughterkecm->Fill(daughter_kecm);
+				hAllCases_daughterkecm->Fill(daughter_kecm);
+
 				hCase1_pkecm->Fill(p_kecm);
+				hAllCases_pkecm->Fill(p_kecm);
+
 				hCase1_a1kecm->Fill(a1_kecm);
+				hAllCases_a1kecm->Fill(a1_kecm);
+
 				hCase1_a2kecm->Fill(a2_kecm);
+				hAllCases_a2kecm->Fill(a2_kecm);
 
 				double ecm1, ecm2;
 				double daughter_thetacm, p_thetacm, a1_thetacm, a2_thetacm;
@@ -1828,7 +1950,10 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 				}
 
 				hCase1_ecm1->Fill(ecm1);
+				hAllCases_ecm1->Fill(ecm1);
+
 				hCase1_ecm2->Fill(ecm2);
+				hAllCases_ecm2->Fill(ecm2);
 
 				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
 				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
@@ -1847,16 +1972,28 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 				if(a2_phicm < 0) a2_phicm += 360.;
 
 				hCase1_daughterthetacm->Fill(daughter_thetacm);
+				hAllCases_daughterthetacm->Fill(daughter_thetacm);
+
 				hCase1_daughterphicm->Fill(daughter_phicm);
+				hAllCases_daughterphicm->Fill(daughter_phicm);
 
 				hCase1_pthetacm->Fill(p_thetacm);
+				hAllCases_pthetacm->Fill(p_thetacm);
+
 				hCase1_pphicm->Fill(p_phicm);
+				hAllCases_pphicm->Fill(p_phicm);
 
 				hCase1_a1thetacm->Fill(a1_thetacm);
+				hAllCases_a1thetacm->Fill(a1_thetacm);
+
 				hCase1_a1phicm->Fill(a1_phicm);
+				hAllCases_a1phicm->Fill(a1_phicm);
 
 				hCase1_a2thetacm->Fill(a2_thetacm);
+				hAllCases_a2thetacm->Fill(a2_thetacm);
+
 				hCase1_a2phicm->Fill(a2_phicm);
+				hAllCases_a2phicm->Fill(a2_phicm);
 
 
 	//--------------------------------------------------------------------------------------------
@@ -1905,6 +2042,116 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);	
 				}
 
+				//NEW AS OF 04/07/2026:
+				//obtain boost vectors for CM frame calculations:
+				boostvector1 = (-1/boron9.Energy())*boron9.Vect();
+				boostvector2 = (-1/daughter.Energy())*daughter.Vect();
+
+				//boost vectors accordingly into proper frames (two CM frames, first is the CM frame for 9B-> a + B [where a, B are emitted back to back], next is the CM frame for B-> c + d [where c, d are emitted back to back from B at rest])
+				
+				if(Be8){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					pLV.Boost(boostvector1);//boost proton to CM of first break up
+					a1LV.Boost(boostvector2);//boost alpha1 to CM of second break up				
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				if(Li5){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					a1LV.Boost(boostvector1);//boost alpha1 to CM of first break up
+					pLV.Boost(boostvector2);//boost proton to CM of second break up
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				daughter_vcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+				p_vcm = ((1/pLV.Energy())*pLV.Vect()).Mag();
+				a1_vcm = ((1/a1LV.Energy())*a1LV.Vect()).Mag();
+				a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
+
+				hCase2_daughtervcm->Fill(daughter_vcm);
+				hAllCases_daughtervcm->Fill(daughter_vcm);
+
+				hCase2_pvcm->Fill(p_vcm);
+				hAllCases_pvcm->Fill(p_vcm);
+
+				hCase2_a1vcm->Fill(a1_vcm);
+				hAllCases_a1vcm->Fill(a1_vcm);
+
+				hCase2_a2vcm->Fill(a2_vcm);
+				hAllCases_a2vcm->Fill(a2_vcm);
+
+				daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
+				p_kecm = 0.5*protonMass*p_vcm*p_vcm;
+				a1_kecm = 0.5*alphaMass*a1_vcm*a1_vcm;
+				a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
+
+				hCase2_daughterkecm->Fill(daughter_kecm);
+				hAllCases_daughterkecm->Fill(daughter_kecm);
+
+				hCase2_pkecm->Fill(p_kecm);
+				hAllCases_pkecm->Fill(p_kecm);
+
+				hCase2_a1kecm->Fill(a1_kecm);
+				hAllCases_a1kecm->Fill(a1_kecm);
+
+				hCase2_a2kecm->Fill(a2_kecm);
+				hAllCases_a2kecm->Fill(a2_kecm);
+
+				if(Be8){
+					ecm1 = daughter_kecm + p_kecm;
+					ecm2 = a1_kecm + a2_kecm;
+				}
+				if(Li5){
+					ecm1 = daughter_kecm + a1_kecm;
+					ecm2 = p_kecm + a2_kecm;
+				}
+
+				hCase2_ecm1->Fill(ecm1);
+				hAllCases_ecm1->Fill(ecm1);
+
+				hCase2_ecm2->Fill(ecm2);
+				hAllCases_ecm2->Fill(ecm2);
+
+				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+				if(daughter_phicm < 0) daughter_phicm += 360.;
+
+				p_thetacm = RADDEG*acos(pLV.Vect().Z()/pLV.Vect().Mag());
+				p_phicm = RADDEG*atan2(pLV.Vect().Y(),pLV.Vect().X());
+				if(p_phicm < 0) p_phicm += 360.;
+
+				a1_thetacm = RADDEG*acos(a1LV.Vect().Z()/a1LV.Vect().Mag());
+				a1_phicm = RADDEG*atan2(a1LV.Vect().Y(),a1LV.Vect().X());
+				if(a1_phicm < 0) a1_phicm += 360.;
+
+				a2_thetacm = RADDEG*acos(a2LV.Vect().Z()/a2LV.Vect().Mag());
+				a2_phicm = RADDEG*atan2(a2LV.Vect().Y(),a2LV.Vect().X());
+				if(a2_phicm < 0) a2_phicm += 360.;
+
+				hCase2_daughterthetacm->Fill(daughter_thetacm);
+				hAllCases_daughterthetacm->Fill(daughter_thetacm);
+
+				hCase2_daughterphicm->Fill(daughter_phicm);
+				hAllCases_daughterphicm->Fill(daughter_phicm);
+
+				hCase2_pthetacm->Fill(p_thetacm);
+				hAllCases_pthetacm->Fill(p_thetacm);
+
+				hCase2_pphicm->Fill(p_phicm);
+				hAllCases_pphicm->Fill(p_phicm);
+
+				hCase2_a1thetacm->Fill(a1_thetacm);
+				hAllCases_a1thetacm->Fill(a1_thetacm);
+
+				hCase2_a1phicm->Fill(a1_phicm);
+				hAllCases_a1phicm->Fill(a1_phicm);
+
+				hCase2_a2thetacm->Fill(a2_thetacm);
+				hAllCases_a2thetacm->Fill(a2_thetacm);
+
+				hCase2_a2phicm->Fill(a2_phicm);
+				hAllCases_a2phicm->Fill(a2_phicm);
+
 	//--------------------------------------------------------------------------------------------
 				// CASE 3 (particle1 = a2, particle2 = p, particle3 = a1)
 				p1 = sqrt(2*alphaMass*bu1.ringEnergy);
@@ -1950,6 +2197,117 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
 					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
 				}
+
+				//NEW AS OF 04/07/2026:
+				//obtain boost vectors for CM frame calculations:
+				boostvector1 = (-1/boron9.Energy())*boron9.Vect();
+				boostvector2 = (-1/daughter.Energy())*daughter.Vect();
+
+				//boost vectors accordingly into proper frames (two CM frames, first is the CM frame for 9B-> a + B [where a, B are emitted back to back], next is the CM frame for B-> c + d [where c, d are emitted back to back from B at rest])
+				
+				if(Be8){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					pLV.Boost(boostvector1);//boost proton to CM of first break up
+					a1LV.Boost(boostvector2);//boost alpha1 to CM of second break up				
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				if(Li5){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					a1LV.Boost(boostvector1);//boost alpha1 to CM of first break up
+					pLV.Boost(boostvector2);//boost proton to CM of second break up
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				daughter_vcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+				p_vcm = ((1/pLV.Energy())*pLV.Vect()).Mag();
+				a1_vcm = ((1/a1LV.Energy())*a1LV.Vect()).Mag();
+				a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
+
+				hCase3_daughtervcm->Fill(daughter_vcm);
+				hAllCases_daughtervcm->Fill(daughter_vcm);
+
+				hCase3_pvcm->Fill(p_vcm);
+				hAllCases_pvcm->Fill(p_vcm);
+
+				hCase3_a1vcm->Fill(a1_vcm);
+				hAllCases_a1vcm->Fill(a1_vcm);
+
+				hCase3_a2vcm->Fill(a2_vcm);
+				hAllCases_a2vcm->Fill(a2_vcm);
+
+				daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
+				p_kecm = 0.5*protonMass*p_vcm*p_vcm;
+				a1_kecm = 0.5*alphaMass*a1_vcm*a1_vcm;
+				a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
+
+				hCase3_daughterkecm->Fill(daughter_kecm);
+				hAllCases_daughterkecm->Fill(daughter_kecm);
+
+				hCase3_pkecm->Fill(p_kecm);
+				hAllCases_pkecm->Fill(p_kecm);
+
+				hCase3_a1kecm->Fill(a1_kecm);
+				hAllCases_a1kecm->Fill(a1_kecm);
+
+				hCase3_a2kecm->Fill(a2_kecm);
+				hAllCases_a2kecm->Fill(a2_kecm);
+
+
+				if(Be8){
+					ecm1 = daughter_kecm + p_kecm;
+					ecm2 = a1_kecm + a2_kecm;
+				}
+				if(Li5){
+					ecm1 = daughter_kecm + a1_kecm;
+					ecm2 = p_kecm + a2_kecm;
+				}
+
+				hCase3_ecm1->Fill(ecm1);
+				hAllCases_ecm1->Fill(ecm1);
+
+				hCase3_ecm2->Fill(ecm2);
+				hAllCases_ecm2->Fill(ecm2);
+
+				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+				if(daughter_phicm < 0) daughter_phicm += 360.;
+
+				p_thetacm = RADDEG*acos(pLV.Vect().Z()/pLV.Vect().Mag());
+				p_phicm = RADDEG*atan2(pLV.Vect().Y(),pLV.Vect().X());
+				if(p_phicm < 0) p_phicm += 360.;
+
+				a1_thetacm = RADDEG*acos(a1LV.Vect().Z()/a1LV.Vect().Mag());
+				a1_phicm = RADDEG*atan2(a1LV.Vect().Y(),a1LV.Vect().X());
+				if(a1_phicm < 0) a1_phicm += 360.;
+
+				a2_thetacm = RADDEG*acos(a2LV.Vect().Z()/a2LV.Vect().Mag());
+				a2_phicm = RADDEG*atan2(a2LV.Vect().Y(),a2LV.Vect().X());
+				if(a2_phicm < 0) a2_phicm += 360.;
+
+				hCase3_daughterthetacm->Fill(daughter_thetacm);
+				hAllCases_daughterthetacm->Fill(daughter_thetacm);
+
+				hCase3_daughterphicm->Fill(daughter_phicm);
+				hAllCases_daughterphicm->Fill(daughter_phicm);
+
+				hCase3_pthetacm->Fill(p_thetacm);
+				hAllCases_pthetacm->Fill(p_thetacm);
+
+				hCase3_pphicm->Fill(p_phicm);
+				hAllCases_pphicm->Fill(p_phicm);
+
+				hCase3_a1thetacm->Fill(a1_thetacm);
+				hAllCases_a1thetacm->Fill(a1_thetacm);
+
+				hCase3_a1phicm->Fill(a1_phicm);
+				hAllCases_a1phicm->Fill(a1_phicm);
+
+				hCase3_a2thetacm->Fill(a2_thetacm);
+				hAllCases_a2thetacm->Fill(a2_thetacm);
+
+				hCase3_a2phicm->Fill(a2_phicm);
+				hAllCases_a2phicm->Fill(a2_phicm);
 
 	//--------------------------------------------------------------------------------------------
 				// CASE 4 (particle1 = a2, particle2 = a1, particle3 = p)
@@ -1997,6 +2355,116 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
 				}
 
+				//NEW AS OF 04/07/2026:
+				//obtain boost vectors for CM frame calculations:
+				boostvector1 = (-1/boron9.Energy())*boron9.Vect();
+				boostvector2 = (-1/daughter.Energy())*daughter.Vect();
+
+				//boost vectors accordingly into proper frames (two CM frames, first is the CM frame for 9B-> a + B [where a, B are emitted back to back], next is the CM frame for B-> c + d [where c, d are emitted back to back from B at rest])
+				
+				if(Be8){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					pLV.Boost(boostvector1);//boost proton to CM of first break up
+					a1LV.Boost(boostvector2);//boost alpha1 to CM of second break up				
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				if(Li5){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					a1LV.Boost(boostvector1);//boost alpha1 to CM of first break up
+					pLV.Boost(boostvector2);//boost proton to CM of second break up
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				daughter_vcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+				p_vcm = ((1/pLV.Energy())*pLV.Vect()).Mag();
+				a1_vcm = ((1/a1LV.Energy())*a1LV.Vect()).Mag();
+				a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
+
+				hCase4_daughtervcm->Fill(daughter_vcm);
+				hAllCases_daughtervcm->Fill(daughter_vcm);
+
+				hCase4_pvcm->Fill(p_vcm);
+				hAllCases_pvcm->Fill(p_vcm);
+
+				hCase4_a1vcm->Fill(a1_vcm);
+				hAllCases_a1vcm->Fill(a1_vcm);
+
+				hCase4_a2vcm->Fill(a2_vcm);
+				hAllCases_a2vcm->Fill(a2_vcm);
+
+				daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
+				p_kecm = 0.5*protonMass*p_vcm*p_vcm;
+				a1_kecm = 0.5*alphaMass*a1_vcm*a1_vcm;
+				a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
+
+				hCase4_daughterkecm->Fill(daughter_kecm);
+				hAllCases_daughterkecm->Fill(daughter_kecm);
+
+				hCase4_pkecm->Fill(p_kecm);
+				hAllCases_pkecm->Fill(p_kecm);
+
+				hCase4_a1kecm->Fill(a1_kecm);
+				hAllCases_a1kecm->Fill(a1_kecm);
+
+				hCase4_a2kecm->Fill(a2_kecm);
+				hAllCases_a2kecm->Fill(a2_kecm);
+
+				if(Be8){
+					ecm1 = daughter_kecm + p_kecm;
+					ecm2 = a1_kecm + a2_kecm;
+				}
+				if(Li5){
+					ecm1 = daughter_kecm + a1_kecm;
+					ecm2 = p_kecm + a2_kecm;
+				}
+
+				hCase4_ecm1->Fill(ecm1);
+				hAllCases_ecm1->Fill(ecm1);
+
+				hCase4_ecm2->Fill(ecm2);
+				hAllCases_ecm2->Fill(ecm2);
+
+				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+				if(daughter_phicm < 0) daughter_phicm += 360.;
+
+				p_thetacm = RADDEG*acos(pLV.Vect().Z()/pLV.Vect().Mag());
+				p_phicm = RADDEG*atan2(pLV.Vect().Y(),pLV.Vect().X());
+				if(p_phicm < 0) p_phicm += 360.;
+
+				a1_thetacm = RADDEG*acos(a1LV.Vect().Z()/a1LV.Vect().Mag());
+				a1_phicm = RADDEG*atan2(a1LV.Vect().Y(),a1LV.Vect().X());
+				if(a1_phicm < 0) a1_phicm += 360.;
+
+				a2_thetacm = RADDEG*acos(a2LV.Vect().Z()/a2LV.Vect().Mag());
+				a2_phicm = RADDEG*atan2(a2LV.Vect().Y(),a2LV.Vect().X());
+				if(a2_phicm < 0) a2_phicm += 360.;
+
+				hCase4_daughterthetacm->Fill(daughter_thetacm);
+				hAllCases_daughterthetacm->Fill(daughter_thetacm);
+
+				hCase4_daughterphicm->Fill(daughter_phicm);
+				hAllCases_daughterphicm->Fill(daughter_phicm);
+
+				hCase4_pthetacm->Fill(p_thetacm);
+				hAllCases_pthetacm->Fill(p_thetacm);
+
+				hCase4_pphicm->Fill(p_phicm);
+				hAllCases_pphicm->Fill(p_phicm);
+
+				hCase4_a1thetacm->Fill(a1_thetacm);
+				hAllCases_a1thetacm->Fill(a1_thetacm);
+
+				hCase4_a1phicm->Fill(a1_phicm);
+				hAllCases_a1phicm->Fill(a1_phicm);
+
+				hCase4_a2thetacm->Fill(a2_thetacm);
+				hAllCases_a2thetacm->Fill(a2_thetacm);
+
+				hCase4_a2phicm->Fill(a2_phicm);
+				hAllCases_a2phicm->Fill(a2_phicm);
+
 	//--------------------------------------------------------------------------------------------
 				// CASE 5 (particle1 = p, particle2 = a1, particle3 = a2)
 				p1 = sqrt(2*protonMass*bu1.ringEnergy);
@@ -2042,6 +2510,116 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 					//hAllCases_daughterExE_gate->Fill(daughter.M() - daughter1Mass);
 					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
 				}
+
+				//NEW AS OF 04/07/2026:
+				//obtain boost vectors for CM frame calculations:
+				boostvector1 = (-1/boron9.Energy())*boron9.Vect();
+				boostvector2 = (-1/daughter.Energy())*daughter.Vect();
+
+				//boost vectors accordingly into proper frames (two CM frames, first is the CM frame for 9B-> a + B [where a, B are emitted back to back], next is the CM frame for B-> c + d [where c, d are emitted back to back from B at rest])
+				
+				if(Be8){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					pLV.Boost(boostvector1);//boost proton to CM of first break up
+					a1LV.Boost(boostvector2);//boost alpha1 to CM of second break up				
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				if(Li5){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					a1LV.Boost(boostvector1);//boost alpha1 to CM of first break up
+					pLV.Boost(boostvector2);//boost proton to CM of second break up
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				daughter_vcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+				p_vcm = ((1/pLV.Energy())*pLV.Vect()).Mag();
+				a1_vcm = ((1/a1LV.Energy())*a1LV.Vect()).Mag();
+				a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
+
+				hCase5_daughtervcm->Fill(daughter_vcm);
+				hAllCases_daughtervcm->Fill(daughter_vcm);
+
+				hCase5_pvcm->Fill(p_vcm);
+				hAllCases_pvcm->Fill(p_vcm);
+
+				hCase5_a1vcm->Fill(a1_vcm);
+				hAllCases_a1vcm->Fill(a1_vcm);
+
+				hCase5_a2vcm->Fill(a2_vcm);
+				hAllCases_a2vcm->Fill(a2_vcm);
+
+				daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
+				p_kecm = 0.5*protonMass*p_vcm*p_vcm;
+				a1_kecm = 0.5*alphaMass*a1_vcm*a1_vcm;
+				a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
+
+				hCase5_daughterkecm->Fill(daughter_kecm);
+				hAllCases_daughterkecm->Fill(daughter_kecm);
+
+				hCase5_pkecm->Fill(p_kecm);
+				hAllCases_pkecm->Fill(p_kecm);
+
+				hCase5_a1kecm->Fill(a1_kecm);
+				hAllCases_a1kecm->Fill(a1_kecm);
+
+				hCase5_a2kecm->Fill(a2_kecm);
+				hAllCases_a2kecm->Fill(a2_kecm);
+
+				if(Be8){
+					ecm1 = daughter_kecm + p_kecm;
+					ecm2 = a1_kecm + a2_kecm;
+				}
+				if(Li5){
+					ecm1 = daughter_kecm + a1_kecm;
+					ecm2 = p_kecm + a2_kecm;
+				}
+
+				hCase5_ecm1->Fill(ecm1);
+				hAllCases_ecm1->Fill(ecm1);
+
+				hCase5_ecm2->Fill(ecm2);
+				hAllCases_ecm2->Fill(ecm2);
+
+				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+				if(daughter_phicm < 0) daughter_phicm += 360.;
+
+				p_thetacm = RADDEG*acos(pLV.Vect().Z()/pLV.Vect().Mag());
+				p_phicm = RADDEG*atan2(pLV.Vect().Y(),pLV.Vect().X());
+				if(p_phicm < 0) p_phicm += 360.;
+
+				a1_thetacm = RADDEG*acos(a1LV.Vect().Z()/a1LV.Vect().Mag());
+				a1_phicm = RADDEG*atan2(a1LV.Vect().Y(),a1LV.Vect().X());
+				if(a1_phicm < 0) a1_phicm += 360.;
+
+				a2_thetacm = RADDEG*acos(a2LV.Vect().Z()/a2LV.Vect().Mag());
+				a2_phicm = RADDEG*atan2(a2LV.Vect().Y(),a2LV.Vect().X());
+				if(a2_phicm < 0) a2_phicm += 360.;
+
+				hCase5_daughterthetacm->Fill(daughter_thetacm);
+				hAllCases_daughterthetacm->Fill(daughter_thetacm);
+
+				hCase5_daughterphicm->Fill(daughter_phicm);
+				hAllCases_daughterphicm->Fill(daughter_phicm);
+
+				hCase5_pthetacm->Fill(p_thetacm);
+				hAllCases_pthetacm->Fill(p_thetacm);
+
+				hCase5_pphicm->Fill(p_phicm);
+				hAllCases_pphicm->Fill(p_phicm);
+
+				hCase5_a1thetacm->Fill(a1_thetacm);
+				hAllCases_a1thetacm->Fill(a1_thetacm);
+
+				hCase5_a1phicm->Fill(a1_phicm);
+				hAllCases_a1phicm->Fill(a1_phicm);
+
+				hCase5_a2thetacm->Fill(a2_thetacm);
+				hAllCases_a2thetacm->Fill(a2_thetacm);
+
+				hCase5_a2phicm->Fill(a2_phicm);
+				hAllCases_a2phicm->Fill(a2_phicm);
 
 	//--------------------------------------------------------------------------------------------
 				// CASE 6 (particle1 = p, particle2 = a2, particle3 = a1)
@@ -2089,6 +2667,116 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 					hAllCases_9BReconExE_gated->Fill(boron9.M() - recoilMass);
 				}
 
+				//NEW AS OF 04/07/2026:
+				//obtain boost vectors for CM frame calculations:
+				boostvector1 = (-1/boron9.Energy())*boron9.Vect();
+				boostvector2 = (-1/daughter.Energy())*daughter.Vect();
+
+				//boost vectors accordingly into proper frames (two CM frames, first is the CM frame for 9B-> a + B [where a, B are emitted back to back], next is the CM frame for B-> c + d [where c, d are emitted back to back from B at rest])
+				
+				if(Be8){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					pLV.Boost(boostvector1);//boost proton to CM of first break up
+					a1LV.Boost(boostvector2);//boost alpha1 to CM of second break up				
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				if(Li5){
+					daughter.Boost(boostvector1);//boost daughter to CM of first break up
+					a1LV.Boost(boostvector1);//boost alpha1 to CM of first break up
+					pLV.Boost(boostvector2);//boost proton to CM of second break up
+					a2LV.Boost(boostvector2);//boost alpha2 to CM of second break up
+				}
+
+				daughter_vcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+				p_vcm = ((1/pLV.Energy())*pLV.Vect()).Mag();
+				a1_vcm = ((1/a1LV.Energy())*a1LV.Vect()).Mag();
+				a2_vcm = ((1/a2LV.Energy())*a2LV.Vect()).Mag();
+
+				hCase6_daughtervcm->Fill(daughter_vcm);
+				hAllCases_daughtervcm->Fill(daughter_vcm);
+
+				hCase6_pvcm->Fill(p_vcm);
+				hAllCases_pvcm->Fill(p_vcm);
+
+				hCase6_a1vcm->Fill(a1_vcm);
+				hAllCases_a1vcm->Fill(a1_vcm);
+
+				hCase6_a2vcm->Fill(a2_vcm);
+				hAllCases_a2vcm->Fill(a2_vcm);
+
+				daughter_kecm = 0.5*daughter1Mass*daughter_vcm*daughter_vcm;
+				p_kecm = 0.5*protonMass*p_vcm*p_vcm;
+				a1_kecm = 0.5*alphaMass*a1_vcm*a1_vcm;
+				a2_kecm = 0.5*alphaMass*a2_vcm*a2_vcm;
+
+				hCase6_daughterkecm->Fill(daughter_kecm);
+				hAllCases_daughterkecm->Fill(daughter_kecm);
+
+				hCase6_pkecm->Fill(p_kecm);
+				hAllCases_pkecm->Fill(p_kecm);
+
+				hCase6_a1kecm->Fill(a1_kecm);
+				hAllCases_a1kecm->Fill(a1_kecm);
+
+				hCase6_a2kecm->Fill(a2_kecm);
+				hAllCases_a2kecm->Fill(a2_kecm);
+
+				if(Be8){
+					ecm1 = daughter_kecm + p_kecm;
+					ecm2 = a1_kecm + a2_kecm;
+				}
+				if(Li5){
+					ecm1 = daughter_kecm + a1_kecm;
+					ecm2 = p_kecm + a2_kecm;
+				}
+
+				hCase6_ecm1->Fill(ecm1);
+				hAllCases_ecm1->Fill(ecm1);
+
+				hCase6_ecm2->Fill(ecm2);
+				hAllCases_ecm2->Fill(ecm2);
+
+				daughter_thetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+				daughter_phicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+				if(daughter_phicm < 0) daughter_phicm += 360.;
+
+				p_thetacm = RADDEG*acos(pLV.Vect().Z()/pLV.Vect().Mag());
+				p_phicm = RADDEG*atan2(pLV.Vect().Y(),pLV.Vect().X());
+				if(p_phicm < 0) p_phicm += 360.;
+
+				a1_thetacm = RADDEG*acos(a1LV.Vect().Z()/a1LV.Vect().Mag());
+				a1_phicm = RADDEG*atan2(a1LV.Vect().Y(),a1LV.Vect().X());
+				if(a1_phicm < 0) a1_phicm += 360.;
+
+				a2_thetacm = RADDEG*acos(a2LV.Vect().Z()/a2LV.Vect().Mag());
+				a2_phicm = RADDEG*atan2(a2LV.Vect().Y(),a2LV.Vect().X());
+				if(a2_phicm < 0) a2_phicm += 360.;
+
+				hCase6_daughterthetacm->Fill(daughter_thetacm);
+				hAllCases_daughterthetacm->Fill(daughter_thetacm);
+
+				hCase6_daughterphicm->Fill(daughter_phicm);
+				hAllCases_daughterphicm->Fill(daughter_phicm);
+
+				hCase6_pthetacm->Fill(p_thetacm);
+				hAllCases_pthetacm->Fill(p_thetacm);
+
+				hCase6_pphicm->Fill(p_phicm);
+				hAllCases_pphicm->Fill(p_phicm);
+
+				hCase6_a1thetacm->Fill(a1_thetacm);
+				hAllCases_a1thetacm->Fill(a1_thetacm);
+
+				hCase6_a1phicm->Fill(a1_phicm);
+				hAllCases_a1phicm->Fill(a1_phicm);
+
+				hCase6_a2thetacm->Fill(a2_thetacm);
+				hAllCases_a2thetacm->Fill(a2_thetacm);
+
+				hCase6_a2phicm->Fill(a2_phicm);
+				hAllCases_a2phicm->Fill(a2_phicm);
+
 			}
 
 			eventLines.clear();
@@ -2107,7 +2795,6 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	//hCase1_daughterExE_gate->Write();
 	hCase1_9BReconExE->Write();
 	hCase1_9BReconExE_gated->Write();
-
 	hCase1_daughtervcm->Write();
 	hCase1_daughterkecm->Write();
 	hCase1_daughterthetacm->Write();
@@ -2132,40 +2819,181 @@ void B10ha_3halfminus_manual2(const char* input_filename, const char* output_roo
 	//hCase2_daughterExE_gate->Write();
 	hCase2_9BReconExE->Write();
 	hCase2_9BReconExE_gated->Write();
+	hCase2_daughtervcm->Write();
+	hCase2_daughterkecm->Write();
+	hCase2_daughterthetacm->Write();
+	hCase2_daughterphicm->Write();
+	hCase2_pvcm->Write();
+	hCase2_pkecm->Write();
+	hCase2_pthetacm->Write();
+	hCase2_pphicm->Write();
+	hCase2_a1vcm->Write();
+	hCase2_a1kecm->Write();
+	hCase2_a1thetacm->Write();
+	hCase2_a1phicm->Write();
+	hCase2_a2vcm->Write();
+	hCase2_a2kecm->Write();
+	hCase2_a2thetacm->Write();
+	hCase2_a2phicm->Write();
+	hCase2_ecm1->Write();
+	hCase2_ecm2->Write();
 
 	hCase3_daughterIM->Write();
 	hCase3_daughterExE->Write();
 	//hCase3_daughterExE_gate->Write();
 	hCase3_9BReconExE->Write();
 	hCase3_9BReconExE_gated->Write();
+	hCase3_daughtervcm->Write();
+	hCase3_daughterkecm->Write();
+	hCase3_daughterthetacm->Write();
+	hCase3_daughterphicm->Write();
+	hCase3_pvcm->Write();
+	hCase3_pkecm->Write();
+	hCase3_pthetacm->Write();
+	hCase3_pphicm->Write();
+	hCase3_a1vcm->Write();
+	hCase3_a1kecm->Write();
+	hCase3_a1thetacm->Write();
+	hCase3_a1phicm->Write();
+	hCase3_a2vcm->Write();
+	hCase3_a2kecm->Write();
+	hCase3_a2thetacm->Write();
+	hCase3_a2phicm->Write();
+	hCase3_ecm1->Write();
+	hCase3_ecm2->Write();
 
 	hCase4_daughterIM->Write();
 	hCase4_daughterExE->Write();
 	//hCase4_daughterExE_gate->Write();
 	hCase4_9BReconExE->Write();
 	hCase4_9BReconExE_gated->Write();
+	hCase4_daughtervcm->Write();
+	hCase4_daughterkecm->Write();
+	hCase4_daughterthetacm->Write();
+	hCase4_daughterphicm->Write();
+	hCase4_pvcm->Write();
+	hCase4_pkecm->Write();
+	hCase4_pthetacm->Write();
+	hCase4_pphicm->Write();
+	hCase4_a1vcm->Write();
+	hCase4_a1kecm->Write();
+	hCase4_a1thetacm->Write();
+	hCase4_a1phicm->Write();
+	hCase4_a2vcm->Write();
+	hCase4_a2kecm->Write();
+	hCase4_a2thetacm->Write();
+	hCase4_a2phicm->Write();
+	hCase4_ecm1->Write();
+	hCase4_ecm2->Write();
 
 	hCase5_daughterIM->Write();
 	hCase5_daughterExE->Write();
 	//hCase5_daughterExE_gate->Write();
 	hCase5_9BReconExE->Write();
 	hCase5_9BReconExE_gated->Write();
+	hCase5_daughtervcm->Write();
+	hCase5_daughterkecm->Write();
+	hCase5_daughterthetacm->Write();
+	hCase5_daughterphicm->Write();
+	hCase5_pvcm->Write();
+	hCase5_pkecm->Write();
+	hCase5_pthetacm->Write();
+	hCase5_pphicm->Write();
+	hCase5_a1vcm->Write();
+	hCase5_a1kecm->Write();
+	hCase5_a1thetacm->Write();
+	hCase5_a1phicm->Write();
+	hCase5_a2vcm->Write();
+	hCase5_a2kecm->Write();
+	hCase5_a2thetacm->Write();
+	hCase5_a2phicm->Write();
+	hCase5_ecm1->Write();
+	hCase5_ecm2->Write();
 
 	hCase6_daughterIM->Write();
 	hCase6_daughterExE->Write();
 	//hCase6_daughterExE_gate->Write();
 	hCase6_9BReconExE->Write();
-	hCase6_9BReconExE_gated->Write();
+	hCase6_daughtervcm->Write();
+	hCase6_daughterkecm->Write();
+	hCase6_daughterthetacm->Write();
+	hCase6_daughterphicm->Write();
+	hCase6_pvcm->Write();
+	hCase6_pkecm->Write();
+	hCase6_pthetacm->Write();
+	hCase6_pphicm->Write();
+	hCase6_a1vcm->Write();
+	hCase6_a1kecm->Write();
+	hCase6_a1thetacm->Write();
+	hCase6_a1phicm->Write();
+	hCase6_a2vcm->Write();
+	hCase6_a2kecm->Write();
+	hCase6_a2thetacm->Write();
+	hCase6_a2phicm->Write();
+	hCase6_ecm1->Write();
+	hCase6_ecm2->Write();
 
 	hAllCases_daughterIM->Write();
 	hAllCases_daughterExE->Write();
 	//hAllCases_daughterExE_gate->Write();
 	hAllCases_9BReconExE->Write();
-
 	hAllCases_9BReconExE_gated->Write();
+	hAllCases_daughtervcm->Write();
+	hAllCases_daughterkecm->Write();
+	hAllCases_daughterthetacm->Write();
+	hAllCases_daughterphicm->Write();
+	hAllCases_pvcm->Write();
+	hAllCases_pkecm->Write();
+	hAllCases_pthetacm->Write();
+	hAllCases_pphicm->Write();
+	hAllCases_a1vcm->Write();
+	hAllCases_a1kecm->Write();
+	hAllCases_a1thetacm->Write();
+	hAllCases_a1phicm->Write();
+	hAllCases_a2vcm->Write();
+	hAllCases_a2kecm->Write();
+	hAllCases_a2thetacm->Write();
+	hAllCases_a2phicm->Write();
+	hAllCases_ecm1->Write();
+	hAllCases_ecm2->Write();
 
 	outfile->Close();
 	std::cout << "\nProcessed " << count << " events.\nROOT file saved to " << output_rootfilename << "\n";
+
+}
+
+void tempscript(){
+
+	TH1::AddDirectory(kFALSE);
+
+	//this function is a temporary script that will run B10ha_3halfminus_manual2 for 6 test case files in both the correct and incorrect assumptions
+
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex0keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex0keV_test_CORRECTCASE.root", "8Be", 0.);
+	std::cout << "1/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex500keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex500keV_test_CORRECTCASE.root", "8Be", 0.5);
+	std::cout << "2/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex1000keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex1000keV_test_CORRECTCASE.root", "8Be", 1.);
+	std::cout << "3/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex0keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex0keV_test_WRONGCASE.root", "5Li", 0.);
+	std::cout << "4/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex500keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex500keV_test_WRONGCASE.root", "5Li", 0.5);
+	std::cout << "5/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex1000keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex1000keV_test_WRONGCASE.root", "5Li", 1.);
+	std::cout << "6/12\n";
+
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex0keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex0keV_test_CORRECTCASE.root", "5Li", 0.);
+	std::cout << "7/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex500keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex500keV_test_CORRECTCASE.root", "5Li", 0.5);
+	std::cout << "8/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex1000keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex1000keV_test_CORRECTCASE.root", "5Li", 1.);
+	std::cout << "9/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex0keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex0keV_test_WRONGCASE.root", "8Be", 0.);
+	std::cout << "10/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex500keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex500keV_test_WRONGCASE.root", "8Be", 0.5);
+	std::cout << "11/12\n";
+	B10ha_3halfminus_manual2("/mnt/e/SABREsim/sanitycheck/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex1000keV_test.det", "/mnt/e/SABREsim/sanitycheck/detPlotter/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex1000keV_test_WRONGCASE.root", "8Be", 1.);
+	std::cout << "12/12\n";
+
 
 }
 
