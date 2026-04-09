@@ -31,42 +31,6 @@ std::map<TString, std::map<TString, TH1D*>> hMap;
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void readSingleAngleMap(ifstream& infile, std::map<std::pair<int,int>,std::pair<double,double>>& map){
-	string header;
-	getline(infile,header);
-
-	int ringChannel, wedgeChannel;
-	double theta, phi;
-	while(infile >> ringChannel >> wedgeChannel >> theta >> phi){
-		map[{ringChannel,wedgeChannel}] = {theta,phi};
-		//cout << "theta = " << theta << ", phcount = " << phi << endl;
-	}
-}
-
-std::map<std::pair<int,int>,std::pair<double,double>> readAngleMaps(){
-	const vector<string> filenames = {
-		"/mnt/e/SABREsim/anglemaps/SABRE0_phi306_anglemap.txt",
-		"/mnt/e/SABREsim/anglemaps/SABRE1_phi18_anglemap.txt",
-		"/mnt/e/SABREsim/anglemaps/SABRE2_phi234_anglemap.txt",
-		"/mnt/e/SABREsim/anglemaps/SABRE3_phi162_anglemap.txt",
-		"/mnt/e/SABREsim/anglemaps/SABRE4_phi90_anglemap.txt"
-	};
-
-	std::map<std::pair<int,int>,std::pair<double,double>> retmap;
-
-	for(const auto& filename : filenames){
-		ifstream infile(filename);
-		if(!infile.is_open()){
-			cerr << "Error: Failed to open file " << filename << endl;
-			continue;
-		}
-		readSingleAngleMap(infile, retmap);
-		infile.close();
-	}
-
-	return retmap;
-}
-
 void B10ha(const char* input_filename, const char* output_filename, TString assumption="8Be"){
 
 	bool Be8, Li5;
@@ -88,7 +52,7 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 
 	TFile *outfile = new TFile(output_filename, "RECREATE");
-	std::vector<TString> caseNames = {"a1_p_a2", "a1_a2_p", "a2_p_a1", "a2_a1_p", "p_a1_a2", "p_a2_a1"};//update with proper assignments: paa, apa, aap, etc
+	std::vector<TString> caseNames = {"a1_p_a2", "a1_a2_p", "a2_p_a1", "a2_a1_p", "p_a1_a2", "p_a2_a1", "allCases"};//update with proper assignments: paa, apa, aap, etc
 
 
 	//prep the histograms in hMap
@@ -218,13 +182,17 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			TLorentzVector lv[3];
 			int indices[3] = {p.i, p.j, p.k};
 
+			double SRE[3] = {SRE1, SRE2, SRE3};
+			double Stheta[3] = {Stheta1, Stheta2, Stheta3};
+			double Sphi[3] = {Sphi1, Sphi2, Sphi3};
+
 			for(int n=0; n<3; n++){
 				int hitIdx = indices[n];//which sabre "hit" to use
 				double mass = masses[n];//which mass to assign it to
 				double mom = std::sqrt(2*mass*SRE[hitIdx]);
 				lv[n].SetPxPyPzE(
-					mom * std::sin(Stheta[hitIdx]*DEGRAD) * std::cos(sPhi[hitIdx]*DEGRAD),
-					mom * std::sin(Stheta[hitIdx]*DEGRAD) * std::sin(sPhi[hitIdx]*DEGRAD),
+					mom * std::sin(Stheta[hitIdx]*DEGRAD) * std::cos(Sphi[hitIdx]*DEGRAD),
+					mom * std::sin(Stheta[hitIdx]*DEGRAD) * std::sin(Sphi[hitIdx]*DEGRAD),
 					mom * std::cos(Stheta[hitIdx]*DEGRAD),
 					SRE[hitIdx] + mass
 				);
@@ -241,17 +209,157 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			hMap[name]["daughterIM"]->Fill(daughter.M());
 			hMap[name]["daughterExE"]->Fill(daughterEx);
 			hMap[name]["ReconExE"]->Fill(recoilEx);
+			hMap["allCases"]["daughterIM"]->Fill(daughter.M());
+			hMap["allCases"]["daughterExE"]->Fill(daughterEx);
+			hMap["allCases"]["ReconExE"]->Fill(recoilEx);
 
 			//add gated reconexe here eventually!
 
 
 			//sequential decay CM steps
+			//step 1 is 9B -> (8Be + p) || (5Li + a)
+			//analyze in CM frame of 9B
+			TVector3 boost1 = -recoil.BoostVector();
+			TVector3 boost2 = -daughter.BoostVector();
+
+			TLorentzVector bu1 = Be8 ? lv[1] : lv[0];
+			bu1.Boost(boost1);
+			daughter.Boost(boost1);
+
+			//daughter already assigned by case:
+			double daughtervcm = ((1/daughter.Energy())*daughter.Vect()).Mag();
+			double daughterkecm = 0.5*daughterMass*daughtervcm*daughtervcm;
+			double daughterthetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
+			double daughterphicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+
+			hMap[name]["daughtervcm"]->Fill(daughtervcm);
+			hMap[name]["daughterkecm"]->Fill(daughterkecm);
+			hMap[name]["daughterthetacm"]->Fill(daughterthetacm);
+			hMap[name]["daughterphicm"]->Fill(daughterphicm);
+
+			hMap["allCases"]["daughtervcm"]->Fill(daughtervcm);
+			hMap["allCases"]["daughterkecm"]->Fill(daughterkecm);
+			hMap["allCases"]["daughterthetacm"]->Fill(daughterthetacm);
+			hMap["allCases"]["daughterphicm"]->Fill(daughterphicm);
+
+			if(Be8){
+				//for Be8 case, proton is bu1
+				double pvcm = ((1/bu1.Energy())*bu1.Vect()).Mag();
+				double pkecm = 0.5*protonMass*pvcm*pvcm;
+				double pthetacm = RADDEG*acos(bu1.Vect().Z()/bu1.Vect().Mag());
+				double pphicm = RADDEG*atan2(bu1.Vect().Y(), bu1.Vect().X());
+
+				hMap[name]["pvcm"]->Fill(pvcm);
+				hMap[name]["pkecm"]->Fill(pkecm);
+				hMap[name]["pthetacm"]->Fill(pthetacm);
+				hMap[name]["pphicm"]->Fill(pphicm);
+
+				hMap["allCases"]["pvcm"]->Fill(pvcm);
+				hMap["allCases"]["pkecm"]->Fill(pkecm);
+				hMap["allCases"]["pthetacm"]->Fill(pthetacm);
+				hMap["allCases"]["pphicm"]->Fill(pphicm);
+
+				double ecm1 = pkecm + daughterkecm;
+				hMap[name]["ecm1"]->Fill(ecm1);
+				hMap["allCases"]["ecm1"]->Fill(ecm1);
+
+			} else {
+				//for Li5 case, alpha1 is bu1
+				double a1vcm = ((1/bu1.Energy())*bu1.Vect()).Mag();
+				double a1kecm = 0.5*alphaMass*a1vcm*a1vcm;
+				double a1thetacm = RADDEG*acos(bu1.Vect().Z()/bu1.Vect().Mag());
+				double a1phicm = RADDEG*atan2(bu1.Vect().Y(), bu1.Vect().X());
+
+				hMap[name]["a1vcm"]->Fill(a1vcm);
+				hMap[name]["a1kecm"]->Fill(a1kecm);
+				hMap[name]["a1thetacm"]->Fill(a1thetacm);
+				hMap[name]["a1phicm"]->Fill(a1phicm);
+
+				hMap["allCases"]["a1vcm"]->Fill(a1vcm);
+				hMap["allCases"]["a1kecm"]->Fill(a1kecm);
+				hMap["allCases"]["a1thetacm"]->Fill(a1thetacm);
+				hMap["allCases"]["a1phicm"]->Fill(a1phicm);
+
+				double ecm1 = a1kecm + daughterkecm;
+				hMap[name]["ecm1"]->Fill(ecm1);
+				hMap["allCases"]["ecm1"]->Fill(ecm1);
+
+			}
+
+			TLorentzVector bu2 = Be8 ? lv[0] : lv[1];
+			TLorentzVector bu3 = lv[2]; //bu3 always alpha2!
+			bu2.Boost(boost2);
+			bu3.Boost(boost2);
+
+			//since bu3 is always alpha2, let's fill that first:
+			double a2vcm = ((1/bu3.Energy())*bu3.Vect()).Mag();
+			double a2kecm = 0.5*alphaMass*a2vcm*a2vcm;
+			double a2thetacm = RADDEG*acos(bu3.Vect().Z()/bu3.Vect().Mag());
+			double a2phicm = RADDEG*atan2(bu3.Vect().Y(), bu3.Vect().X());
+
+			hMap[name]["a2vcm"]->Fill(a2vcm);
+			hMap[name]["a2kecm"]->Fill(a2kecm);
+			hMap[name]["a2thetacm"]->Fill(a2thetacm);
+			hMap[name]["a2phicm"]->Fill(a2phicm);
+
+			hMap["allCases"]["a2vcm"]->Fill(a2vcm);
+			hMap["allCases"]["a2kecm"]->Fill(a2kecm);
+			hMap["allCases"]["a2thetacm"]->Fill(a2thetacm);
+			hMap["allCases"]["a2phicm"]->Fill(a2phicm);
+
+			if(Be8){
+				//for Be8 case, bu2 is alpha1
+				double a1vcm = ((1/bu2.Energy())*bu2.Vect()).Mag();
+				double a1kecm = 0.5*alphaMass*a1vcm*a1vcm;
+				double a1thetacm = RADDEG*acos(bu2.Vect().Z()/bu2.Vect().Mag());
+				double a1phicm = RADDEG*atan2(bu2.Vect().Y(), bu2.Vect().X());
+
+				hMap[name]["a1vcm"]->Fill(a1vcm);
+				hMap[name]["a1kecm"]->Fill(a1kecm);
+				hMap[name]["a1thetacm"]->Fill(a1thetacm);
+				hMap[name]["a1phicm"]->Fill(a1phicm);
+
+				hMap["allCases"]["a1vcm"]->Fill(a1vcm);
+				hMap["allCases"]["a1kecm"]->Fill(a1kecm);
+				hMap["allCases"]["a1thetacm"]->Fill(a1thetacm);
+				hMap["allCases"]["a1phicm"]->Fill(a1phicm);
+
+				double ecm2 = a1kecm + a2kecm;
+				hMap[name]["ecm2"]->Fill(ecm2);
+				hMap["allCases"]["ecm2"]->Fill(ecm2);
+
+			} else {
+				//for Li5 case, bu2 is proton
+				double pvcm = ((1/bu2.Energy())*bu2.Vect()).Mag();
+				double pkecm = 0.5*protonMass*pvcm*pvcm;
+				double pthetacm = RADDEG*acos(bu2.Vect().Z()/bu2.Vect().Mag());
+				double pphicm = RADDEG*atan2(bu2.Vect().Y(), bu2.Vect().X());
+
+				hMap[name]["pvcm"]->Fill(pvcm);
+				hMap[name]["pkecm"]->Fill(pkecm);
+				hMap[name]["pthetacm"]->Fill(pthetacm);
+				hMap[name]["pphicm"]->Fill(pphicm);
+
+				hMap["allCases"]["pvcm"]->Fill(pvcm);
+				hMap["allCases"]["pkecm"]->Fill(pkecm);
+				hMap["allCases"]["pthetacm"]->Fill(pthetacm);
+				hMap["allCases"]["pphicm"]->Fill(pphicm);
+
+				double ecm2 = pkecm + a2kecm;
+				hMap[name]["ecm2"]->Fill(ecm2);
+				hMap["allCases"]["ecm2"]->Fill(ecm2);
+			}
+
 
 
 		}
 
 
 	}
+
+	outfile->Write();
+	outfile->Close();
+	std::cout << "Analysis finished! Results in " << output_filename << std::endl;
 
 
 }
