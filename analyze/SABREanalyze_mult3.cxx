@@ -54,7 +54,8 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 
 	TFile *outfile = new TFile(output_filename, "RECREATE");
-	std::vector<TString> caseNames = {"a1_p_a2", "a1_a2_p", "a2_p_a1", "a2_a1_p", "p_a1_a2", "p_a2_a1", "allCases"};//update with proper assignments: paa, apa, aap, etc
+	//std::vector<TString> caseNames = {"a1_p_a2", "a1_a2_p", "a2_p_a1", "a2_a1_p", "p_a1_a2", "p_a2_a1", "allCases"};//update with proper assignments: paa, apa, aap, etc
+	std::vector<TString> caseNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
 
 	//prep the histograms in hMap
@@ -116,26 +117,34 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 	alphaMass = fMassTable.GetNuclearMassMeV("He",4);
 	protonMass = fMassTable.GetNuclearMassMeV("H",1);
 
+	double masses[3];// = {alphaMass, protonMass, alphaMass};
+	struct Perm{ int i, j, k; };
+	std::map<TString, Perm> pMap = {
+		{"012", {0,1,2}},
+		{"021", {0,2,1}},
+		{"102", {1,0,2}},
+		{"120", {1,2,0}},
+		{"201", {2,0,1}},
+		{"210", {2,1,0}}
+	};
+
 	if(Be8){
 		daughterMass = fMassTable.GetNuclearMassMeV("Be",8);
 		gate = gate_Be8;
+
+		masses[0] = protonMass;
+		masses[1] = alphaMass;
+		masses[2] = alphaMass;
 	}
 
 	else if(Li5){
 		daughterMass = fMassTable.GetNuclearMassMeV("Li",5);
 		gate = gate_Li5;
-	}
 
-	double masses[3] = {alphaMass, protonMass, alphaMass};
-	struct Perm{ int i, j, k; };
-	std::map<TString, Perm> pMap = {
-		{"a1_p_a2", {0,1,2}},
-		{"a1_a2_p", {0,2,1}},
-		{"a2_p_a1", {2,1,0}},
-		{"a2_a1_p", {2,0,1}},
-		{"p_a1_a2", {1,0,2}},
-		{"p_a2_a1", {1,2,0}}
-	};
+		masses[0] = alphaMass;
+		masses[1] = protonMass;
+		masses[2] = alphaMass;
+	}
 
 	std::cout << "Procesing file " << input_filename << " with daughter assumption " << assumption << std::endl;
 
@@ -143,9 +152,9 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 	TTree *intree = (TTree*)infile->Get("mult3");
 
 	double SPSEnergy, SPSTheta, SPSPhi;
-	double SR1, SW1, SRE1, SWE1, Stheta1, Sphi1;
-	double SR2, SW2, SRE2, SWE2, Stheta2, Sphi2;
-	double SR3, SW3, SRE3, SWE3, Stheta3, Sphi3;
+	int SR1, SW1; double SRE1, SWE1, Stheta1, Sphi1;
+	int SR2, SW2; double SRE2, SWE2, Stheta2, Sphi2;
+	int SR3, SW3; double SRE3, SWE3, Stheta3, Sphi3;
 
 	intree->SetBranchAddress("SPSEnergy",&SPSEnergy);
 	intree->SetBranchAddress("SPSTheta",&SPSTheta);
@@ -199,8 +208,8 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			}
 
 			TLorentzVector daughter, recoil;
-			if(Be8) daughter = lv[0] + lv[2];//a1 + a2
-			else daughter = lv[1] + lv[2];//p + a2
+			if(Be8) daughter = lv[1] + lv[2];//a1 + a2
+			else daughter = lv[0] + lv[1];//p + a2
 			recoil = lv[0] + lv[1] + lv[2];
 
 			double daughterEx = daughter.M() - daughterMass;
@@ -222,7 +231,7 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			TVector3 boost1 = -recoil.BoostVector();
 			TVector3 boost2 = -daughter.BoostVector();
 
-			TLorentzVector bu1 = Be8 ? lv[1] : lv[0];
+			TLorentzVector bu1 = Be8 ? lv[0] : lv[2];
 			bu1.Boost(boost1);
 			daughter.Boost(boost1);
 
@@ -286,8 +295,8 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 			}
 
-			TLorentzVector bu2 = Be8 ? lv[0] : lv[1];
-			TLorentzVector bu3 = lv[2]; //bu3 always alpha2!
+			TLorentzVector bu2 = Be8 ? lv[1] : lv[0];
+			TLorentzVector bu3 = Be8 ? lv[2] : lv[1];
 			bu2.Boost(boost2);
 			bu3.Boost(boost2);
 
