@@ -9,9 +9,11 @@
 	it in the same format as the Rachel2Root data. 
 
 
-	NOTE: This code assumes that TMassTable is loaded into ROOT. This can be done by:
+	NOTE: This code assumes that TMassTable is loaded into ROOT. This can be done by doing one of the following:
 
 		i)		manually running '.L /path/to/masstable.cpp+' everytime you open root
+
+													OR
 
 		ii) 	creating/editing ~/rootlogon.C to include: 'gROOT->ProcessLine(".L /path/to/masstable.cpp+");'
 				so that it runs this automatically for you. Find masstable.cpp and associated header and dat file here:
