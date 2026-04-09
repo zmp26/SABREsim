@@ -124,8 +124,6 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 		gate = gate_Li5;
 	}
 
-	string line;
-
 	double masses[3] = {alphaMass, protonMass, alphaMass};
 	struct Perm{ int i, j, k; };
 	std::map<TString, Perm> pMap = {
