@@ -1,6 +1,9 @@
 #include "TFile.h"
 #include "TTree.h"
 #include <iostream>
+#include <random>
+#include <algorithm>
+#include <vector>
 
 std::string MakeOutputName(const char* infile, const std::string& suffix){
 	std::string name(infile);
@@ -13,7 +16,38 @@ std::string MakeOutputName(const char* infile, const std::string& suffix){
 	return name;
 }
 
-void SABREslicer(const char* infile, const char* intree = "SABREsim"){
+void SABREslicer(const char* infile, const char* intree = "SABREsim", int omniscienceSort=1){
+	/*
+	
+		SABREslicer arguments:
+
+		const char* infile 					path to ROOT file containing "SABREsim" TTree output from SABREsim/bin/SABREsim
+		const char* intree					name of TTree in ROOT file. Default value is "SABREsim" for SABREsim output
+		int omniscienceSort					int to decide whether to sort particle arrays by particle ID (1), randomize order(2), or keep same(0)
+
+
+
+		A note on omniscienceSort:
+
+			SABREsim det2/3/4mc classes currently iterate through the SABRE_Array object from SABRE0->SABRE4 and checks *all* particles
+			against that detector before moving on to the next detector in the array. As a consequence of this behavior, the output of
+			SABREsim is stored in a potentially different order when compared to the input of the kin2/3/4mc file. This means that the
+			results will be biased by the laboratory angles of the simulated break-up particles, with those more likely to be in SABRE0
+			to be near the front of the list and the others near the back of the list. If nothing is done about this, then our cases in
+			SABREsim/analyze/SABREanalyze_multX.cxx codes will have the distribution of events across the pre-defined cases biased in
+			the same fashion. There are two ways I can think of to get around this:
+
+				1) Sort the particles by particleID before saving to the output multiplicity TTrees. This preserves omniscience and lets
+				   us understand our cases a lot better for simulated data. Use omniscienceSort=1 for this option. (DEFAULT)
+
+				2) Randomize the particle orders before saving to the output multiplicity TTrees. This will prevent the aforementioned bias
+				   and *could* be more representative of the data since the experimental trigger was the SPS which just opened a coincidence
+				   window to record SABRE detections regardless of which specific detector they hit. Use omniscienceSort=2 for this option.
+
+			We may also keep the order as output by SABREsim. Use omniscienceSort=0 for this option, although any non-1 and non-2 integer works.
+			
+
+	*/
 	TFile *fin = new TFile(infile, "READ");
 	if(!fin || fin->IsZombie()){
 		std::cerr << "Error opening " << infile << std::endl;
@@ -25,9 +59,6 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim"){
 		std::cerr << "TTree " << intree << " not found in " << infile << std::endl;
 		return;
 	}
-
-	int numHits;
-	tin->SetBranchAddress("numHits", &numHits);
 
 	std::string out1 = MakeOutputName(infile, "_mult1");
 	std::string out2 = MakeOutputName(infile, "_mult2");
@@ -48,6 +79,13 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim"){
 	double SR1, SW1, SRE1, SWE1, Stheta1, Sphi1;
 	double SR2, SW2, SRE2, SWE2, Stheta2, Sphi2;
 	double SR3, SW3, SRE3, SWE3, Stheta3, Sphi3;
+
+	double* const SR[3]        = { &SR1, &SR2, &SR3 };
+	double* const SW[3]        = { &SW1, &SW2, &SW3 };
+	double* const SRE[3]       = { &SRE1, &SRE2, &SRE3 };
+	double* const SWE[3]       = { &SWE1, &SWE2, &SWE3 };
+	double* const Stheta[3]    = { &Stheta1, &Stheta2, &Stheta3 };
+	double* const Sphi[3]      = { &Sphi1, &Sphi2, &Sphi3 };
 
 	t1->Branch("eventnum", &eventnum, "eventnum/I");
 	t1->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
@@ -130,6 +168,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim"){
 	tin->SetBranchAddress("localx", tin_localx);
 	tin->SetBranchAddress("localy", tin_localy);
 
+	//random number generator for shuffling
+	std::random_device rd;
+	std::mt19937 g(rd());
+
 	//loop over input tree:
 	Long64_t nentries = tin->GetEntries();
 	for(Long64_t i=0; i<nentries; i++){
@@ -137,44 +179,56 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim"){
 		tin->GetEntry(i);
 
 		eventnum = (int) i;
-		ExEplaceholder = -666.666;
+		ExEplaceholder = -666.666; //this is to match output format of Rachel2Root for experimental data, but is not used. Vestigial branch.
+
+		for(int k=0; k<3; k++){
+			*SR[k] = -666.;
+			*SW[k] = -666.;
+			*SRE[k] = -666.;
+			*SWE[k] = -666.;
+			*Stheta[k] = -666.;
+			*Sphi[k] = -666.;
+		}
 
 		SPSEnergy = tin_kine[0];
 		SPSTheta = tin_kintheta[0];
 		SPSPhi = tin_kinphi[0];
 
-		SR1 = tin_localRing[0];
-		SW1 = tin_localWedge[0];
-		SRE1 = tin_ringEnergy[0];
-		SWE1 = tin_wedgeEnergy[0];
-		Stheta1 = tin_ringTheta[0];
-		Sphi1 = tin_wedgePhi[0];
+		//index list for shuffling/sorting:
+		int nParticles = std::min(tin_multiplicity,3);
+		std::vector<int> indices(nParticles);
+		for(int j=0; j<nParticles; j++) indices[j] = j;
 
-		SR2 = tin_localRing[1];
-		SW2 = tin_localWedge[1];
-		SRE2 = tin_ringEnergy[1];
-		SWE2 = tin_wedgeEnergy[1];
-		Stheta2 = tin_ringTheta[1];
-		Sphi2 = tin_wedgePhi[1];
+		//apply sorting randomization here:
+		if(omniscienceSort == 1){
+			std::sort(indices.begin(), indices.end(), [&](int a, int b){
+				return tin_particleID[a] < tin_particleID[b];
+			});
+		} else if(omniscienceSort == 2){
+			std::shuffle(indices.begin(), indices.end(), g);
+		}
 
-		SR3 = tin_localRing[2];
-		SW3 = tin_localWedge[2];
-		SRE3 = tin_ringEnergy[2];
-		SWE3 = tin_wedgeEnergy[2];
-		Stheta3 = tin_ringTheta[2];
-		Sphi3 = tin_wedgePhi[2];
+		for(int k=0; k<nParticles; k++){
+			int j = indices[k];
+			*SR[k] = tin_localRing[j];
+			*SW[k] = tin_localWedge[j];
+			*SRE[k] = tin_ringEnergy[j];
+			*SWE[k] = tin_wedgeEnergy[j];
+			*Stheta[k] = tin_ringTheta[j];
+			*Sphi[k] = tin_wedgePhi[j];
+		}
 
-		if(tin_multiplicity == 1){//SABRE multiplicity 1
+		if(nParticles == 1){//SABRE multiplicity 1
 
 			//simply fill the tree if the multiplicity is correct:
 			t1->Fill();
 
-		} else if(tin_multiplicity == 2){//SABRE multiplicity 2
+		} else if(nParticles == 2){//SABRE multiplicity 2
 
 			//simply fill the tree if the multiplicity is correct:
 			t2->Fill();
 
-		} else if(tin_multiplicity == 3){//SABRE multiplicity 3
+		} else if(nParticles == 3){//SABRE multiplicity 3
 
 			//simply fill the tree if the multiplicity is correct:
 			t3->Fill();
@@ -201,6 +255,11 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim"){
 			  << "\t" << out3 << "\n\n";
 
 	fin->Close();
+
+	delete f1;
+	delete f2;
+	delete f3;
+	delete fin;
 }
 
 
