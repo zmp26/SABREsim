@@ -119,6 +119,14 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 	double masses[3];// = {alphaMass, protonMass, alphaMass};
 	struct Perm{ int i, j, k; };
+	//perm tells us which hit indices to take from the event
+	//the 0th index is always the first decay particle from the reaction recoil
+	//the 1st and 2nd indices are always the breakup of the intermediate daughter produced from first decay
+	//so {0,1,2} means that for a given event in the TTree we pull out the 0th position data and assume it is the 
+	//first decay particle, we pull out the 1st position data and assume it is the second decay particle and
+	//the 2nd position data and assume it is the third decay particle. For {2,0,1} we take the 2nd position data to
+	//assume it is the first decay particle, the 0th and assume it is the second decay particle, and the 1st and assume
+	//the third decay particle. And so on.
 	std::map<TString, Perm> pMap = {
 		{"012", {0,1,2}},
 		{"021", {0,2,1}},
@@ -132,18 +140,18 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 		daughterMass = fMassTable.GetNuclearMassMeV("Be",8);
 		gate = gate_Be8;
 
-		masses[0] = protonMass;
-		masses[1] = alphaMass;
-		masses[2] = alphaMass;
+		masses[0] = protonMass;//p
+		masses[1] = alphaMass;//a1
+		masses[2] = alphaMass;//a2
 	}
 
 	else if(Li5){
 		daughterMass = fMassTable.GetNuclearMassMeV("Li",5);
 		gate = gate_Li5;
 
-		masses[0] = alphaMass;
-		masses[1] = protonMass;
-		masses[2] = alphaMass;
+		masses[0] = alphaMass;//a1
+		masses[1] = protonMass;//p
+		masses[2] = alphaMass;//a2
 	}
 
 	std::cout << "Procesing file " << input_filename << " with daughter assumption " << assumption << std::endl;
@@ -195,6 +203,8 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			double Stheta[3] = {Stheta1, Stheta2, Stheta3};
 			double Sphi[3] = {Sphi1, Sphi2, Sphi3};
 
+			//this loop iterates through indices (which contains our pMap permutation) and assigns lv[n]
+			//to indices[n] kinematic information
 			for(int n=0; n<3; n++){
 				int hitIdx = indices[n];//which sabre "hit" to use
 				double mass = masses[n];//which mass to assign it to
@@ -208,8 +218,10 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			}
 
 			TLorentzVector daughter, recoil;
-			if(Be8) daughter = lv[1] + lv[2];//a1 + a2
-			else daughter = lv[0] + lv[1];//p + a2
+			// if(Be8) daughter = lv[1] + lv[2];//a1 + a2
+			// else daughter = lv[0] + lv[1];//p + a2
+			// recoil = lv[0] + lv[1] + lv[2];
+			daughter = lv[1] + lv[2]; //we assume in both cases that lv[0] maps to first decay particle and lv[1], lv[2] to last decay particles
 			recoil = lv[0] + lv[1] + lv[2];
 
 			double daughterEx = daughter.M() - daughterMass;
@@ -231,7 +243,8 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			TVector3 boost1 = -recoil.BoostVector();
 			TVector3 boost2 = -daughter.BoostVector();
 
-			TLorentzVector bu1 = Be8 ? lv[0] : lv[2];
+			//TLorentzVector bu1 = Be8 ? lv[0] : lv[2];
+			TLorentzVector bu1 = lv[0];
 			bu1.Boost(boost1);
 			daughter.Boost(boost1);
 
@@ -240,6 +253,7 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			double daughterkecm = 0.5*daughterMass*daughtervcm*daughtervcm;
 			double daughterthetacm = RADDEG*acos(daughter.Vect().Z()/daughter.Vect().Mag());
 			double daughterphicm = RADDEG*atan2(daughter.Vect().Y(), daughter.Vect().X());
+			if(daughterphicm < 0) daughterphicm += 360.;
 
 			hMap[name]["daughtervcm"]->Fill(daughtervcm);
 			hMap[name]["daughterkecm"]->Fill(daughterkecm);
@@ -252,11 +266,13 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 			hMap["allCases"]["daughterphicm"]->Fill(daughterphicm);
 
 			if(Be8){
-				//for Be8 case, proton is bu1
+				//for Be8 case, proton is bu1 since 9B = p + 8Be
+				//so we fill the proton histograms using bu1 info
 				double pvcm = ((1/bu1.Energy())*bu1.Vect()).Mag();
 				double pkecm = 0.5*protonMass*pvcm*pvcm;
 				double pthetacm = RADDEG*acos(bu1.Vect().Z()/bu1.Vect().Mag());
 				double pphicm = RADDEG*atan2(bu1.Vect().Y(), bu1.Vect().X());
+				if(pphicm < 0) pphicm += 360.;
 
 				hMap[name]["pvcm"]->Fill(pvcm);
 				hMap[name]["pkecm"]->Fill(pkecm);
@@ -273,11 +289,13 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 				hMap["allCases"]["ecm1"]->Fill(ecm1);
 
 			} else {
-				//for Li5 case, alpha1 is bu1
+				//for Li5 case, alpha1 is bu1 since 9B = a + 5Li
+				//so we fill the alpha1 histograms using bu1 info
 				double a1vcm = ((1/bu1.Energy())*bu1.Vect()).Mag();
 				double a1kecm = 0.5*alphaMass*a1vcm*a1vcm;
 				double a1thetacm = RADDEG*acos(bu1.Vect().Z()/bu1.Vect().Mag());
 				double a1phicm = RADDEG*atan2(bu1.Vect().Y(), bu1.Vect().X());
+				if(a1phicm < 0) a1phicm += 360.;
 
 				hMap[name]["a1vcm"]->Fill(a1vcm);
 				hMap[name]["a1kecm"]->Fill(a1kecm);
@@ -295,16 +313,19 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 			}
 
-			TLorentzVector bu2 = Be8 ? lv[1] : lv[0];
-			TLorentzVector bu3 = Be8 ? lv[2] : lv[1];
+			//TLorentzVector bu2 = Be8 ? lv[1] : lv[0];
+			//TLorentzVector bu3 = Be8 ? lv[2] : lv[1];
+			TLorentzVector bu2 = lv[1];
+			TLorentzVector bu3 = lv[2];
 			bu2.Boost(boost2);
 			bu3.Boost(boost2);
 
-			//since bu3 is always alpha2, let's fill that first:
+			//since bu3 is always alpha2 in both the 8Be and the 5Li masses definitions, let's fill that first:
 			double a2vcm = ((1/bu3.Energy())*bu3.Vect()).Mag();
 			double a2kecm = 0.5*alphaMass*a2vcm*a2vcm;
 			double a2thetacm = RADDEG*acos(bu3.Vect().Z()/bu3.Vect().Mag());
 			double a2phicm = RADDEG*atan2(bu3.Vect().Y(), bu3.Vect().X());
+			if(a2phicm < 0) a2phicm += 360.;
 
 			hMap[name]["a2vcm"]->Fill(a2vcm);
 			hMap[name]["a2kecm"]->Fill(a2kecm);
@@ -318,10 +339,12 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 			if(Be8){
 				//for Be8 case, bu2 is alpha1
+				//this is because 9B-> p + 8Be -> a1 + a2
 				double a1vcm = ((1/bu2.Energy())*bu2.Vect()).Mag();
 				double a1kecm = 0.5*alphaMass*a1vcm*a1vcm;
 				double a1thetacm = RADDEG*acos(bu2.Vect().Z()/bu2.Vect().Mag());
 				double a1phicm = RADDEG*atan2(bu2.Vect().Y(), bu2.Vect().X());
+				if(a1phicm < 0) a1phicm += 360.;
 
 				hMap[name]["a1vcm"]->Fill(a1vcm);
 				hMap[name]["a1kecm"]->Fill(a1kecm);
@@ -339,10 +362,12 @@ void B10ha(const char* input_filename, const char* output_filename, TString assu
 
 			} else {
 				//for Li5 case, bu2 is proton
+				//this is because 9B -> a1 + 5Li + p + a2
 				double pvcm = ((1/bu2.Energy())*bu2.Vect()).Mag();
 				double pkecm = 0.5*protonMass*pvcm*pvcm;
 				double pthetacm = RADDEG*acos(bu2.Vect().Z()/bu2.Vect().Mag());
 				double pphicm = RADDEG*atan2(bu2.Vect().Y(), bu2.Vect().X());
+				if(pphicm < 0) pphicm += 360.;
 
 				hMap[name]["pvcm"]->Fill(pvcm);
 				hMap[name]["pkecm"]->Fill(pkecm);
