@@ -1,5 +1,7 @@
 #include "invmass_mult3.h"
 #include <iostream>
+#include <vector>
+#include <array>
 
 
 InvMass_Mult3::InvMass_Mult3()
@@ -83,8 +85,14 @@ void InvMass_Mult3::SetMasses(double mass_bu1, double mass_bu2, double mass_bu3,
 }
 
 //ProcessEvent assumes theta, phi in degrees and E in MeV
-void InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
+//update this to return reconstructed recoil excitation energy in MeV
+std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
 
+	ClearEventResults();
+
+	std::array<double,6> recoilExEs;
+
+	int counter = 0;
 	for(auto const& [name, p] : pMap){
 
 		TLorentzVector lv[3];
@@ -116,14 +124,19 @@ void InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
 		//calculate excitation energy:
 		double daughterEx = daughter.M() - daughterMass;
 		double recoilEx = recoil.M() - recoilMass;
+		recoilExEs[counter] = recoilEx;
+
+		caseResults[counter].daughterIM = daughter.M();
+		caseResults[counter].daughterExE = daughterEx;
+		caseResults[counter].reconExE = recoilEx;
 
 		//fill relevant histograms:
-		hMap[name]["daughterIM"]->Fill(daughter.M());
-		hMap[name]["daughterExE"]->Fill(daughterEx);
-		hMap[name]["ReconExE"]->Fill(recoilEx);
-		hMap["allCases"]["daughterIM"]->Fill(daughter.M());
-		hMap["allCases"]["daughterExE"]->Fill(daughterEx);
-		hMap["allCases"]["ReconExE"]->Fill(recoilEx);
+		// hMap[name]["daughterIM"]->Fill(daughter.M());
+		// hMap[name]["daughterExE"]->Fill(daughterEx);
+		// hMap[name]["ReconExE"]->Fill(recoilEx);
+		// hMap["allCases"]["daughterIM"]->Fill(daughter.M());
+		// hMap["allCases"]["daughterExE"]->Fill(daughterEx);
+		// hMap["allCases"]["ReconExE"]->Fill(recoilEx);
 
 		TVector3 boost1 = -recoil.BoostVector();
 		TVector3 boost2 = -daughter.BoostVector();
@@ -139,15 +152,20 @@ void InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
 		double daughterphicm = RADDEG*std::atan2(daughter.Vect().Y(), daughter.Vect().X());
 		if(daughterphicm < 0) daughterphicm += 360.;
 
-		hMap[name]["daughtervcm"]->Fill(daughtervcm);
-		hMap[name]["daughterkecm"]->Fill(daughterkecm);
-		hMap[name]["daughterthetacm"]->Fill(daughterthetacm);
-		hMap[name]["daughterphicm"]->Fill(daughterphicm);
+		caseResults[counter].daughtervcm = daughtervcm;
+		caseResults[counter].daughterkecm = daughterkecm;
+		caseResults[counter].daughterthetacm = daughterthetacm;
+		caseResults[counter].daughterphicm = daughterphicm;
 
-		hMap["allCases"]["daughtervcm"]->Fill(daughtervcm);
-		hMap["allCases"]["daughterkecm"]->Fill(daughterkecm);
-		hMap["allCases"]["daughterthetacm"]->Fill(daughterthetacm);
-		hMap["allCases"]["daughterphicm"]->Fill(daughterphicm);
+		// hMap[name]["daughtervcm"]->Fill(daughtervcm);
+		// hMap[name]["daughterkecm"]->Fill(daughterkecm);
+		// hMap[name]["daughterthetacm"]->Fill(daughterthetacm);
+		// hMap[name]["daughterphicm"]->Fill(daughterphicm);
+
+		// hMap["allCases"]["daughtervcm"]->Fill(daughtervcm);
+		// hMap["allCases"]["daughterkecm"]->Fill(daughterkecm);
+		// hMap["allCases"]["daughterthetacm"]->Fill(daughterthetacm);
+		// hMap["allCases"]["daughterphicm"]->Fill(daughterphicm);
 
 		double bu1vcm = ((1/bu1.Energy())*bu1.Vect()).Mag();
 		double bu1kecm = 0.5*masses[0]*bu1vcm*bu1vcm;
@@ -155,20 +173,26 @@ void InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
 		double bu1phicm = RADDEG*std::atan2(bu1.Vect().Y(), bu1.Vect().X());
 		if(bu1phicm < 0) bu1phicm += 360.;
 
-		hMap[name]["bu1vcm"]->Fill(bu1vcm);
-		hMap[name]["bu1kecm"]->Fill(bu1kecm);
-		hMap[name]["bu1thetacm"]->Fill(bu1thetacm);
-		hMap[name]["bu1phicm"]->Fill(bu1phicm);
+		caseResults[counter].bu1vcm = bu1vcm;
+		caseResults[counter].bu1kecm = bu1kecm;
+		caseResults[counter].bu1thetacm = bu1thetacm;
+		caseResults[counter].bu1phicm = bu1phicm;
 
-		hMap["allCases"]["bu1vcm"]->Fill(bu1vcm);
-		hMap["allCases"]["bu1kecm"]->Fill(bu1kecm);
-		hMap["allCases"]["bu1thetacm"]->Fill(bu1thetacm);
-		hMap["allCases"]["bu1phicm"]->Fill(bu1phicm);
+		// hMap[name]["bu1vcm"]->Fill(bu1vcm);
+		// hMap[name]["bu1kecm"]->Fill(bu1kecm);
+		// hMap[name]["bu1thetacm"]->Fill(bu1thetacm);
+		// hMap[name]["bu1phicm"]->Fill(bu1phicm);
+
+		// hMap["allCases"]["bu1vcm"]->Fill(bu1vcm);
+		// hMap["allCases"]["bu1kecm"]->Fill(bu1kecm);
+		// hMap["allCases"]["bu1thetacm"]->Fill(bu1thetacm);
+		// hMap["allCases"]["bu1phicm"]->Fill(bu1phicm);
 
 		//determine ecm1:
 		double ecm1 = daughterkecm + bu1kecm;
-		hMap[name]["ecm1"]->Fill(ecm1);
-		hMap["allCases"]["ecm1"]->Fill(ecm1);
+		// hMap[name]["ecm1"]->Fill(ecm1);
+		// hMap["allCases"]["ecm1"]->Fill(ecm1);
+		caseResults[counter].ecm1 = ecm1;
 
 
 		//begin analysis of second decay step: daughter -> bu2 + bu3
@@ -182,15 +206,20 @@ void InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
 		double bu2phicm = RADDEG*std::atan2(bu2.Vect().Y(), bu2.Vect().X());
 		if(bu2phicm < 0) bu2phicm += 360.;
 
-		hMap[name]["bu2vcm"]->Fill(bu2vcm);
-		hMap[name]["bu2kecm"]->Fill(bu2kecm);
-		hMap[name]["bu2thetacm"]->Fill(bu2thetacm);
-		hMap[name]["bu2phicm"]->Fill(bu2phicm);
+		caseResults[counter].bu2vcm = bu2vcm;
+		caseResults[counter].bu2kecm = bu2kecm;
+		caseResults[counter].bu2thetacm = bu2thetacm;
+		caseResults[counter].bu2phicm = bu2phicm;
 
-		hMap["allCases"]["bu2vcm"]->Fill(bu2vcm);
-		hMap["allCases"]["bu2kecm"]->Fill(bu2kecm);
-		hMap["allCases"]["bu2thetacm"]->Fill(bu2thetacm);
-		hMap["allCases"]["bu2phicm"]->Fill(bu2phicm);
+		// hMap[name]["bu2vcm"]->Fill(bu2vcm);
+		// hMap[name]["bu2kecm"]->Fill(bu2kecm);
+		// hMap[name]["bu2thetacm"]->Fill(bu2thetacm);
+		// hMap[name]["bu2phicm"]->Fill(bu2phicm);
+
+		// hMap["allCases"]["bu2vcm"]->Fill(bu2vcm);
+		// hMap["allCases"]["bu2kecm"]->Fill(bu2kecm);
+		// hMap["allCases"]["bu2thetacm"]->Fill(bu2thetacm);
+		// hMap["allCases"]["bu2phicm"]->Fill(bu2phicm);
 
 		double bu3vcm = ((1/bu3.Energy())*bu3.Vect()).Mag();
 		double bu3kecm = 0.5*masses[2]*bu3vcm*bu3vcm;
@@ -198,22 +227,85 @@ void InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
 		double bu3phicm = RADDEG*std::atan2(bu3.Vect().Y(), bu3.Vect().X());
 		if(bu3phicm < 0) bu3phicm += 360.;
 
-		hMap[name]["bu3vcm"]->Fill(bu3vcm);
-		hMap[name]["bu3kecm"]->Fill(bu3kecm);
-		hMap[name]["bu3thetacm"]->Fill(bu3thetacm);
-		hMap[name]["bu3phicm"]->Fill(bu3phicm);
+		caseResults[counter].bu3vcm = bu3vcm;
+		caseResults[counter].bu3kecm = bu3kecm;
+		caseResults[counter].bu3thetacm = bu3thetacm;
+		caseResults[counter].bu3phicm = bu3phicm;
 
-		hMap["allCases"]["bu3vcm"]->Fill(bu3vcm);
-		hMap["allCases"]["bu3kecm"]->Fill(bu3kecm);
-		hMap["allCases"]["bu3thetacm"]->Fill(bu3thetacm);
-		hMap["allCases"]["bu3phicm"]->Fill(bu3phicm);
+		// hMap[name]["bu3vcm"]->Fill(bu3vcm);
+		// hMap[name]["bu3kecm"]->Fill(bu3kecm);
+		// hMap[name]["bu3thetacm"]->Fill(bu3thetacm);
+		// hMap[name]["bu3phicm"]->Fill(bu3phicm);
+
+		// hMap["allCases"]["bu3vcm"]->Fill(bu3vcm);
+		// hMap["allCases"]["bu3kecm"]->Fill(bu3kecm);
+		// hMap["allCases"]["bu3thetacm"]->Fill(bu3thetacm);
+		// hMap["allCases"]["bu3phicm"]->Fill(bu3phicm);
 
 
 		//determine ecm2:
 		double ecm2 = bu2kecm + bu3kecm;
-		hMap[name]["ecm2"]->Fill(ecm2);
-		hMap["allCases"]["ecm2"]->Fill(ecm2);
+		// hMap[name]["ecm2"]->Fill(ecm2);
+		// hMap["allCases"]["ecm2"]->Fill(ecm2);
+		caseResults[counter].ecm2 = ecm2;
 
+	}
+
+	return recoilExEs;
+
+}
+
+void InvMass_Mult3::FillEventHistograms(){
+
+	for(int i=0; i<6; i++){
+		hMap[caseNames.at(i)]["daughterIM"]->Fill(caseResults[i].daughterIM);
+		hMap[caseNames.at(i)]["daughterExE"]->Fill(caseResults[i].daughterExE);
+		hMap[caseNames.at(i)]["ReconExE"]->Fill(caseResults[i].reconExE);
+		hMap["allCases"]["daughterIM"]->Fill(caseResults[i].daughterIM);
+		hMap["allCases"]["daughterExE"]->Fill(caseResults[i].daughterExE);
+		hMap["allCases"]["ReconExE"]->Fill(caseResults[i].reconExE);
+
+		hMap[caseNames.at(i)]["daughtervcm"]->Fill(caseResults[i].daughtervcm);
+		hMap[caseNames.at(i)]["daughterkecm"]->Fill(caseResults[i].daughterkecm);
+		hMap[caseNames.at(i)]["daughterthetacm"]->Fill(caseResults[i].daughterthetacm);
+		hMap[caseNames.at(i)]["daughterphicm"]->Fill(caseResults[i].daughterphicm);
+		hMap["allCases"]["daughtervcm"]->Fill(caseResults[i].daughtervcm);
+		hMap["allCases"]["daughterkecm"]->Fill(caseResults[i].daughterkecm);
+		hMap["allCases"]["daughterthetacm"]->Fill(caseResults[i].daughterthetacm);
+		hMap["allCases"]["daughterphicm"]->Fill(caseResults[i].daughterphicm);
+
+		hMap[caseNames.at(i)]["bu1vcm"]->Fill(caseResults[i].bu1vcm);
+		hMap[caseNames.at(i)]["bu1kecm"]->Fill(caseResults[i].bu1kecm);
+		hMap[caseNames.at(i)]["bu1thetacm"]->Fill(caseResults[i].bu1thetacm);
+		hMap[caseNames.at(i)]["bu1phicm"]->Fill(caseResults[i].bu1phicm);
+		hMap["allCases"]["bu1vcm"]->Fill(caseResults[i].bu1vcm);
+		hMap["allCases"]["bu1kecm"]->Fill(caseResults[i].bu1kecm);
+		hMap["allCases"]["bu1thetacm"]->Fill(caseResults[i].bu1thetacm);
+		hMap["allCases"]["bu1phicm"]->Fill(caseResults[i].bu1phicm);
+
+		hMap[caseNames.at(i)]["ecm1"]->Fill(caseResults[i].ecm1);
+		hMap["allCases"]["ecm1"]->Fill(caseResults[i].ecm1);
+
+		hMap[caseNames.at(i)]["bu2vcm"]->Fill(caseResults[i].bu2vcm);
+		hMap[caseNames.at(i)]["bu2kecm"]->Fill(caseResults[i].bu2kecm);
+		hMap[caseNames.at(i)]["bu2thetacm"]->Fill(caseResults[i].bu2thetacm);
+		hMap[caseNames.at(i)]["bu2phicm"]->Fill(caseResults[i].bu2phicm);
+		hMap["allCases"]["bu2vcm"]->Fill(caseResults[i].bu2vcm);
+		hMap["allCases"]["bu2kecm"]->Fill(caseResults[i].bu2kecm);
+		hMap["allCases"]["bu2thetacm"]->Fill(caseResults[i].bu2thetacm);
+		hMap["allCases"]["bu2phicm"]->Fill(caseResults[i].bu2phicm);
+
+		hMap[caseNames.at(i)]["bu3vcm"]->Fill(caseResults[i].bu3vcm);
+		hMap[caseNames.at(i)]["bu3kecm"]->Fill(caseResults[i].bu3kecm);
+		hMap[caseNames.at(i)]["bu3thetacm"]->Fill(caseResults[i].bu3thetacm);
+		hMap[caseNames.at(i)]["bu3phicm"]->Fill(caseResults[i].bu3phicm);
+		hMap["allCases"]["bu3vcm"]->Fill(caseResults[i].bu3vcm);
+		hMap["allCases"]["bu3kecm"]->Fill(caseResults[i].bu3kecm);
+		hMap["allCases"]["bu3thetacm"]->Fill(caseResults[i].bu3thetacm);
+		hMap["allCases"]["bu3phicm"]->Fill(caseResults[i].bu3phicm);
+
+		hMap[caseNames.at(i)]["ecm2"]->Fill(caseResults[i].ecm2);
+		hMap["allCases"]["ecm2"]->Fill(caseResults[i].ecm2);
 	}
 
 }
@@ -226,3 +318,8 @@ void InvMass_Mult3::CloseAndWrite(){
 
 }
 
+void InvMass_Mult3::ClearEventResults(){
+	for(int i=0; i<6; i++){
+		caseResults[i].Reset();
+	}
+}
