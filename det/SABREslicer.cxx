@@ -4,6 +4,7 @@
 #include <random>
 #include <algorithm>
 #include <vector>
+#include <cstring>
 
 std::string MakeOutputName(const char* infile, const std::string& suffix){
 	std::string name(infile);
@@ -75,6 +76,8 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 
 	//branch variables for new trees:
 	int eventnum;
+	double kine[4], kintheta[4], kinphi[4];
+	double reactionOrigin[3];
 	double ExEplaceholder, SPSEnergy, SPSTheta, SPSPhi;
 	int SR1, SW1; double SRE1, SWE1, Stheta1, Sphi1;
 	int SR2, SW2; double SRE2, SWE2, Stheta2, Sphi2;
@@ -88,6 +91,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	double* const Sphi[3]      = { &Sphi1, &Sphi2, &Sphi3 };
 
 	t1->Branch("eventnum", &eventnum, "eventnum/I");
+	t1->Branch("kin_e", kine, "kin_e[4]/D");
+	t1->Branch("kin_theta", kintheta, "kin_theta[4]/D");
+	t1->Branch("kin_phi", kinphi, "kin_phi[4]/D");
+	t1->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
 	t1->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
 	t1->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t1->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
@@ -101,6 +108,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 
 
 	t2->Branch("eventnum", &eventnum, "eventnum/I");
+	t2->Branch("kin_e", kine, "kin_e[4]/D");
+	t2->Branch("kin_theta", kintheta, "kin_theta[4]/D");
+	t2->Branch("kin_phi", kinphi, "kin_phi[4]/D");
+	t2->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
 	t2->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
 	t2->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t2->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
@@ -120,6 +131,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 
 
 	t3->Branch("eventnum", &eventnum, "eventnum/I");
+	t3->Branch("kin_e", kine, "kin_e[4]/D");
+	t3->Branch("kin_theta", kintheta, "kin_theta[4]/D");
+	t3->Branch("kin_phi", kinphi, "kin_phi[4]/D");
+	t3->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
 	t3->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
 	t3->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t3->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
@@ -189,6 +204,11 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 			*Stheta[k] = -666.;
 			*Sphi[k] = -666.;
 		}
+
+		memcpy(kine, tin_kine, sizeof(kine));
+		memcpy(kintheta, tin_kintheta, sizeof(kintheta));
+		memcpy(kinphi, tin_kinphi, sizeof(kinphi));
+		memcpy(reactionOrigin, tin_reactionOrigin, sizeof(reactionOrigin));
 
 		SPSEnergy = tin_kine[0];
 		SPSTheta = tin_kintheta[0];
