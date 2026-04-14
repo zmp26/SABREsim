@@ -92,9 +92,14 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename
 	for(long i=0; i<intree->GetEntries(); i++){
 		intree->GetEntry(i);
 		std::array<double,6> recoilEx = analysis.AnalyzeEvent(E,theta,phi);
-		if(recoilEx[0] > THRESHOLD && recoilEx[1] > THRESHOLD && recoilEx[2] > THRESHOLD && recoilEx[3] > THRESHOLD && recoilEx[4] > THRESHOLD && recoilEx[5]){
-			analysis.FillEventHistograms();
-		}
+		analysis.FillEventHistograms();
+		// double avgRecoilEx = 0;
+		// for(int j=0; j<6; j++) avgRecoilEx += recoilEx[j];
+		// avgRecoilEx = avgRecoilEx/6.;
+		// if(avgRecoilEx > THRESHOLD){
+		// 	analysis.FillEventHistograms();
+		// }
+		
 	}
 
 	analysis.CloseAndWrite();
@@ -162,9 +167,14 @@ void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename
 	for(long i=0; i<intree->GetEntries(); i++){
 		intree->GetEntry(i);
 		std::array<double,6> recoilEx = analysis.AnalyzeEvent(E,theta,phi);
-		if(recoilEx[0] > THRESHOLD && recoilEx[1] > THRESHOLD && recoilEx[2] > THRESHOLD && recoilEx[3] > THRESHOLD && recoilEx[4] > THRESHOLD && recoilEx[5]){
-			analysis.FillEventHistograms();
-		}
+		analysis.FillEventHistograms();
+		// double avgRecoilEx = 0;
+		// for(int j=0; j<6; j++) avgRecoilEx += recoilEx[j];
+		// avgRecoilEx = avgRecoilEx/6.;
+		// if(avgRecoilEx > THRESHOLD){
+		// 	analysis.FillEventHistograms();
+		// }
+
 	}
 
 	analysis.CloseAndWrite();
@@ -172,3 +182,7 @@ void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename
 
 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to " << output_filename << "\n" << std::endl;
 }
+
+// void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_filename, const char* output5Li_filename){
+// 	//this code will check threshold
+// }
