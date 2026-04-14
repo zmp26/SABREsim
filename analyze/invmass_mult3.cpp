@@ -44,27 +44,27 @@ void InvMass_Mult3::Init(const char* output_filename){
 		// 2. Kinematics Histograms (CM Frame)
 		// Particle bu1
 		hMap[cn]["bu1vcm"]             = new TH1D(cn + "_bu1vcm", "bu1 Velocity CM;c", 100, 0, 1);
-		hMap[cn]["bu1kecm"]            = new TH1D(cn + "_bu1kecm", "bu1 KE CM;MeV", 100, 0, 1);
-		hMap[cn]["bu1thetacm"]         = new TH1D(cn + "_bu1thetacm", "bu1 Theta CM;deg", 180, 0, 180);
-		hMap[cn]["bu1phicm"]           = new TH1D(cn + "_bu1phicm", "bu1 Phi CM;deg", 360, 0, 360);
+		hMap[cn]["bu1kecm"]            = new TH1D(cn + "_bu1kecm", "bu1 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["bu1thetacm"]         = new TH1D(cn + "_bu1thetacm", "bu1 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["bu1phicm"]           = new TH1D(cn + "_bu1phicm", "bu1 Phi CM;deg", 72, 0, 360);
 
 		// Particle bu2
 		hMap[cn]["bu2vcm"]            = new TH1D(cn + "_bu2vcm", "bu2 Velocity CM;c", 100, 0, 1);
-		hMap[cn]["bu2kecm"]           = new TH1D(cn + "_bu2kecm", "bu2 KE CM;MeV", 100, 0, 1);
-		hMap[cn]["bu2thetacm"]        = new TH1D(cn + "_bu2thetacm", "bu2 Theta CM;deg", 180, 0, 180);
-		hMap[cn]["bu2phicm"]          = new TH1D(cn + "_bu2phicm", "bu2 Phi CM;deg", 360, 0, 360);
+		hMap[cn]["bu2kecm"]           = new TH1D(cn + "_bu2kecm", "bu2 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["bu2thetacm"]        = new TH1D(cn + "_bu2thetacm", "bu2 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["bu2phicm"]          = new TH1D(cn + "_bu2phicm", "bu2 Phi CM;deg", 72, 0, 360);
 
 		// Particle bu3
 		hMap[cn]["bu3vcm"]            = new TH1D(cn + "_bu3vcm", "bu3 Velocity CM;c", 100, 0, 1);
-		hMap[cn]["bu3kecm"]           = new TH1D(cn + "_bu3kecm", "bu3 KE CM;MeV", 100, 0, 1);
-		hMap[cn]["bu3thetacm"]        = new TH1D(cn + "_bu3thetacm", "bu3 Theta CM;deg", 180, 0, 180);
-		hMap[cn]["bu3phicm"]          = new TH1D(cn + "_bu3phicm", "bu3 Phi CM;deg", 360, 0, 360);
+		hMap[cn]["bu3kecm"]           = new TH1D(cn + "_bu3kecm", "bu3 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["bu3thetacm"]        = new TH1D(cn + "_bu3thetacm", "bu3 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["bu3phicm"]          = new TH1D(cn + "_bu3phicm", "bu3 Phi CM;deg", 72, 0, 360);
 
 		// Daughter specific CM
 		hMap[cn]["daughtervcm"]      = new TH1D(cn + "_daughtervcm", "Daughter Velocity CM;c", 100, 0, 1);
-		hMap[cn]["daughterkecm"]     = new TH1D(cn + "_daughterkecm", "Daughter KE CM;MeV", 100, 0, 1);
-		hMap[cn]["daughterthetacm"]  = new TH1D(cn + "_daughterthetacm", "Daughter Theta CM;deg", 180, 0, 180);
-		hMap[cn]["daughterphicm"]    = new TH1D(cn + "_daughterphicm", "Daughter Phi CM;deg", 360, 0, 360);
+		hMap[cn]["daughterkecm"]     = new TH1D(cn + "_daughterkecm", "Daughter KE CM;MeV", 500, 0, 5);
+		hMap[cn]["daughterthetacm"]  = new TH1D(cn + "_daughterthetacm", "Daughter Theta CM;deg", 36, 0, 180);
+		hMap[cn]["daughterphicm"]    = new TH1D(cn + "_daughterphicm", "Daughter Phi CM;deg", 72, 0, 360);
 
 		// Sequential Decay Energies
 		hMap[cn]["ecm1"]             = new TH1D(cn + "_ecm1", "E_{cm} Decay 1;MeV", 200, 0, 20);
@@ -248,6 +248,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		// hMap[name]["ecm2"]->Fill(ecm2);
 		// hMap["allCases"]["ecm2"]->Fill(ecm2);
 		caseResults[counter].ecm2 = ecm2;
+
+		//increment counter here!
+		counter += 1;
 
 	}
 
