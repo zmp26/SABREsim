@@ -186,3 +186,89 @@ void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename
 // void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_filename, const char* output5Li_filename){
 // 	//this code will check threshold
 // }
+
+void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_filename, const char* output5Li_filename){
+
+	/*
+	HYPOTHESES:
+		9B -> p + 8Be -> a + a 			(S_p(9B) = -0.185 MeV --> https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+		9B -> a + 5Li -> p + a 			(S_a(9B) = 1.69 MeV --> https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+
+	FINAL STATE: 1p, 2a
+	*/
+
+	double PROTON_THRESHOLD = -0.185;
+	double ALPHA_THRESHOLD = 1.69;
+
+	TFile *infile = new TFile(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult3");
+	long numentries = intree->GetEntries();
+	if(!intree){
+		std::cerr << "Could not get TTree from " << input_filename << std::endl;
+		return;
+	} else if(numentries == 0){
+		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
+		return;
+	} else {
+		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
+	}
+
+	//prepare mass table
+	TMassTable fMassTable;
+	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+
+	//prepare analysis tools
+	InvMass_Mult3 analysis8Be, analysis5Li;
+	
+	analysis8Be.Init(output8Be_filename);
+	analysis8Be.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
+					   fMassTable.GetNuclearMassMeV("He",4),//bu2
+					   fMassTable.GetNuclearMassMeV("He",4),//bu3
+					   fMassTable.GetNuclearMassMeV("B",9),//recoil
+					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
+					  );
+
+	analysis5Li.Init(output_filename);
+	analysis5Li.SetMasses(
+						fMassTable.GetNuclearMassMeV("He",4),//bu1
+						fMassTable.GetNuclearMassMeV("H",1),//bu2
+						fMassTable.GetNuclearMassMeV("He",4),//bu3
+						fMassTable.GetNuclearMassMeV("B",9),//recoil
+						fMassTable.GetNuclearMassMeV("Li",5)//daughter
+					  );
+
+	double E[3], theta[3], phi[3];
+	//hit1
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	//hit2
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+	//hit3
+	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+	for(long i=0; i<numentries; i++){
+		intree->GetEntry(i);
+		std::array<double,6> recoilEx_8Be = analysis8Be.AnalyzeEvent(E,theta,phi);
+		std::array<double,6> recoilEx_5Li = analysis5Li.AnalyzeEvent(E,theta,phi);
+
+		//now we can compare results and choose what to fill
+		//(eventually, I will adjust invmass_mult3 to allow multiple hypotheses per output file to cut down on bulk)
+
+	}
+
+	analysis8Be.CloseAndWrite();
+	analysis5Li.CloseAndWrite();
+	infile->Close();
+
+	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to:\n\t" << output8Be_filename << "\n\t" << output5Li_filename << "\n" << std::endl;
+}
