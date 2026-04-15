@@ -336,12 +336,12 @@ std::pair<int,int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, do
 	Vec3 shifted = hitpoint - detectorPoint;
 	Vec3 relativeHit = m_YRot.GetInverse()*(m_ZRot.GetInverse()*shifted);
 
-	if(theta*rad2deg < 100.){
-		std::cout << "DEBUG: Particle theta: " << theta*rad2deg
-							<< " | Hit Z: " << hitpoint.GetZ()
-							<< " | Det Z: " << m_translation.GetZ()
-							<< " | t_hit: " << t_hit << std::endl;
-	}
+	// if(theta*rad2deg < 100.){
+	// 	std::cout << "DEBUG: Particle theta: " << theta*rad2deg
+	// 						<< " | Hit Z: " << hitpoint.GetZ()
+	// 						<< " | Det Z: " << m_translation.GetZ()
+	// 						<< " | t_hit: " << t_hit << std::endl;
+	// }
 
 	double x = relativeHit.GetX();
 	double y = relativeHit.GetY();
