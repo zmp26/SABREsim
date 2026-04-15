@@ -704,7 +704,7 @@ void SABREsim::PrintSummary() const {
 	}
 	if (kinX_ == 4) {
 		std::cout << "Events with ejectile in SABRE: " << hitej_
-				  << " (" << float(hit1_)*100.0f / float(nevents_) << "%)\n";
+				  << " (" << float(hitej_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "1‑particle events: " << onePartHits_ << "\n";
 		std::cout << "2‑particle events: " << twoPartHits_ << "\n";
 		std::cout << "3‑particle events: " << threePartHits_ << "\n";
