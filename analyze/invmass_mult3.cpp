@@ -7,15 +7,15 @@
 InvMass_Mult3::InvMass_Mult3()
 	: outfile(nullptr), intermediateMass(0), recoilMass(0){
 
-		permNames = {"012", "021", "102", "120", "210", "201", "allCases"};
+		permNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
 		pMap = {
 			{"012",{0,1,2}},
 			{"021",{0,2,1}},
 			{"102",{1,0,2}},
 			{"120",{1,2,0}},
-			{"210",{2,1,0}},
-			{"201",{2,0,1}}
+			{"201",{2,0,1}},
+			{"210",{2,1,0}}
 		};
 	}
 
@@ -29,6 +29,18 @@ InvMass_Mult3::~InvMass_Mult3(){
 void InvMass_Mult3::Init(const char* output_filename){
 	
 	outfile = new TFile(output_filename, "RECREATE");
+	outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
+
+	TString leaflist = "imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:"
+					   "f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:"
+					   "f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:"
+					   "f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:"
+					   "ecm1/D:ecm2/D";
+
+	for(int i=0; i<6; i++){
+		//create a branch for each permutation
+		outtree->Branch(permNames[i], &caseResults[i], leaflist);
+	}
 
 	for(auto &cn : permNames){
 		TDirectory *dir = outfile->mkdir(cn);
@@ -207,6 +219,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 //FillEventHistograms calls FillSelectCaseHistograms for 0-5. Good for filling histograms regardless of results.
 void InvMass_Mult3::FillEventHistograms(){
 	for(int i=0; i<6; i++) FillSelectCaseHistograms(i);
+
+	if(outtree) outtree->Fill();
 }
 
 //FillSelectCaseHistograms fills a single case histograms for caseNum = 0-5. Good for checking results conditionals before filling histograms.

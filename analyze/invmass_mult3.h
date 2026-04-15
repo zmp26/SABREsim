@@ -25,6 +25,7 @@ private:
 	const double RADDEG = 180. / M_PI;
 
 	TFile *outfile;
+	TTree *outtree;
 
 	//define a "results" struct here:
 	struct Results {
