@@ -55,7 +55,6 @@ public:
 		   TargetAngularStraggler* straggler_par3,
 		   TargetAngularStraggler* straggler_par4);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot4mc* RootPlotter, SimConfig* config);
 	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot4mc* RootPlotter, SimConfig* config);
 
 	/*
@@ -144,6 +143,8 @@ private:
 	Beamspot* beamspot_;
 
 	static const std::pair<int, int> offsets[];
+
+	bool ProcessParticle(Particle& p, const Vec3& origin, EventRecorder* rec, plot4mc* plotter, SimConfig* config, std::ostringstream& ss);
 
 };
 
