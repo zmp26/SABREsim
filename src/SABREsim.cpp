@@ -678,11 +678,9 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 void SABREsim::PrintSummary() const {
 	std::cout << "\nProcessed " << nevents_ << " kin" << kinX_ << "mc events.\n";
 
-	if (kinX_ == 2 || kinX_ == 3 || kinX_ == 4) {
+	if (kinX_ == 2) {
 		std::cout << "Events with ejectile in SABRE: " << hit1_
 				  << " (" << float(hit1_)*100.0f / float(nevents_) << "%)\n";
-	}
-	if (kinX_ == 2) {
 		std::cout << "Events with recoil in SABRE: " << hit2_
 				  << " (" << float(hit2_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "Only ejectile: " << hit1Only_
@@ -693,6 +691,8 @@ void SABREsim::PrintSummary() const {
 				  << " (" << float(hitBoth_)*100.0f / float(nevents_) << "%)\n";
 	}
 	if (kinX_ == 3) {
+		std::cout << "Events with ejectile in SABRE: " << hit1_
+				  << " (" << float(hit1_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "At least bu1: " << hit3_ << "\n";
 		std::cout << "At least bu2: " << hit4_ << "\n";
 		std::cout << "Only bu1: " << hitOnly3_
@@ -703,6 +703,8 @@ void SABREsim::PrintSummary() const {
 				  << " (" << float(hit34_)*100.0f / float(nevents_) << "%)\n";
 	}
 	if (kinX_ == 4) {
+		std::cout << "Events with ejectile in SABRE: " << hitej_
+				  << " (" << float(hit1_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "1‑particle events: " << onePartHits_ << "\n";
 		std::cout << "2‑particle events: " << twoPartHits_ << "\n";
 		std::cout << "3‑particle events: " << threePartHits_ << "\n";

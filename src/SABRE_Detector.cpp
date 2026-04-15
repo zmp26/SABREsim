@@ -311,13 +311,17 @@ std::pair<int,int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, do
 	Vec3 detectorNormal = GetNormTilted();
 	Vec3 detectorPoint = m_translation;
 
+	if((m_translation.GetZ() < 0 && direction.GetZ() > 0) || (m_translation.GetZ() > 0 && direction.GetZ() < 0)){
+		return std::make_pair(-1,-1);
+	}
+
 	//parameterize intersection and calculate t
 	Vec3 delta = offset - detectorPoint;
 	double numerator = -delta.Dot(detectorNormal);
 	double denominator = direction.Dot(detectorNormal);
 
-	if(std::fabs(denominator) < 1e-6){
-		return std::make_pair(-1,-1);//parallel
+	if(std::fabs(denominator) < 1e-6 || denominator >= 0){
+		return std::make_pair(-1,-1);//parallel or striking back of detector plane
 	}
 
 	double t_hit = numerator/denominator;
@@ -331,6 +335,13 @@ std::pair<int,int> SABRE_Detector::GetOffsetTrajectoryRingWedge(double theta, do
 						 offset.GetZ() + t_hit*direction.GetZ());
 	Vec3 shifted = hitpoint - detectorPoint;
 	Vec3 relativeHit = m_YRot.GetInverse()*(m_ZRot.GetInverse()*shifted);
+
+	if(theta*rad2deg < 100.){
+		std::cout << "DEBUG: Particle theta: " << theta*rad2deg
+							<< " | Hit Z: " << hitpoint.GetZ()
+							<< " | Det Z: " << m_translation.GetZ()
+							<< " | t_hit: " << t_hit << std::endl;
+	}
 
 	double x = relativeHit.GetX();
 	double y = relativeHit.GetY();
