@@ -6,6 +6,9 @@
 #include "TVector3.h"
 #include "SABRE_Detector.h"
 #include "SABRE_AngleMap.h"
+#include "TargetAngularStraggler.h"
+#include "TargetEnergyLoss.h"
+#include "SABRE_DeadLayerModel.h"
 #include <string>
 #include <vector>
 
@@ -243,6 +246,24 @@ struct Hit{
 		  localRing(lRing), localWedge(lWedge), ringEnergy(rEnergy), wedgeEnergy(wEnergy),
 		  ringTheta(rTheta), wedgePhi(wPhi), localx(lx), localy(ly)
 	{}
+};
+
+struct Particle{
+	int id;
+	double energy, theta, phi;
+
+	//results
+	bool detected = false;
+	double smearedERing = 0.;
+	double smearedEWedge = 0.;
+	double theta_meas = 0.;
+	double phi_meas = 0.;
+
+	//models
+	TargetEnergyLoss* tLoss;
+	SABRE_DeadLayerModel* dLoss;
+	TargetAngularStraggler* strag;
+
 };
 
 // struct SABRE_Array {
