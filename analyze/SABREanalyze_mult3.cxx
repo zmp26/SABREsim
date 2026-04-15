@@ -19,6 +19,8 @@
 				so that it runs this automatically for you. Find masstable.cpp and associated header and dat file here:
 				https://github.com/zmp26/masstable
 
+	Alternatively just remove the dependency and hardcode masses instead.
+
 */
 
 #include <map>
@@ -233,7 +235,7 @@ void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_file
 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
 					  );
 
-	analysis5Li.Init(output_filename);
+	analysis5Li.Init(output5Li_filename);
 	analysis5Li.SetMasses(
 						fMassTable.GetNuclearMassMeV("He",4),//bu1
 						fMassTable.GetNuclearMassMeV("H",1),//bu2

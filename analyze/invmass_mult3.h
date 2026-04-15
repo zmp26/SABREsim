@@ -72,13 +72,13 @@ private:
 	void ClearEventResults();
 
 	//expected CM constants:
-	struct ExpectedCM {
-		double Ecm1, Ecm2;
-		double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;
-		double vkecm_frag1, vkecm_frag2, vkecm_frag3, vkecm_intermediate;
-	};
-	ExpectedCM expectedCMValues;
-	void SetExpectedCMValues();//called automatically at end of SetMasses()
+	// struct ExpectedCM {
+	// 	double Ecm1, Ecm2;
+	// 	double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;
+	// 	double vkecm_frag1, vkecm_frag2, vkecm_frag3, vkecm_intermediate;
+	// };
+	// ExpectedCM expectedCMValues;
+	// void SetExpectedCMValues();//called automatically at end of SetMasses()
 
 public:
 	InvMass_Mult3();
@@ -89,7 +89,7 @@ public:
 
 	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3]);
 	void FillEventHistograms();//fills all 6 cases together for the event
-	void FillSelectCaseHistograms();//selectively fills a single case for the event
+	void FillSelectCaseHistograms(int caseNum);//selectively fills a single case for the event
 
 	void CloseAndWrite();
 

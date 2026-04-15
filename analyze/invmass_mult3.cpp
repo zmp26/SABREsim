@@ -128,14 +128,6 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].intermediateEx = intermediateEx;
 		caseResults[permIndex].reconEx = recoilEx;
 
-		//fill relevant histograms:
-		// hMap[name]["intermediateIM"]->Fill(intermediate.M());
-		// hMap[name]["intermediateEx"]->Fill(intermediateEx);
-		// hMap[name]["ReconEx"]->Fill(recoilEx);
-		// hMap["allCases"]["intermediateIM"]->Fill(intermediate.M());
-		// hMap["allCases"]["intermediateEx"]->Fill(intermediateEx);
-		// hMap["allCases"]["ReconEx"]->Fill(recoilEx);
-
 		TVector3 boost1 = -recoil.BoostVector();
 		TVector3 boost2 = -intermediate.BoostVector();
 
@@ -155,16 +147,6 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].intermediatethetacm = intermediatethetacm;
 		caseResults[permIndex].intermediatephicm = intermediatephicm;
 
-		// hMap[name]["intermediatevcm"]->Fill(intermediatevcm);
-		// hMap[name]["intermediatekecm"]->Fill(intermediatekecm);
-		// hMap[name]["intermediatethetacm"]->Fill(intermediatethetacm);
-		// hMap[name]["intermediatephicm"]->Fill(intermediatephicm);
-
-		// hMap["allCases"]["intermediatevcm"]->Fill(intermediatevcm);
-		// hMap["allCases"]["intermediatekecm"]->Fill(intermediatekecm);
-		// hMap["allCases"]["intermediatethetacm"]->Fill(intermediatethetacm);
-		// hMap["allCases"]["intermediatephicm"]->Fill(intermediatephicm);
-
 		double frag1vcm = ((1/frag1.Energy())*frag1.Vect()).Mag();
 		double frag1kecm = 0.5*masses[0]*frag1vcm*frag1vcm;
 		double frag1thetacm = RADDEG*std::acos(frag1.Vect().Z()/frag1.Vect().Mag());
@@ -175,16 +157,6 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag1kecm = frag1kecm;
 		caseResults[permIndex].frag1thetacm = frag1thetacm;
 		caseResults[permIndex].frag1phicm = frag1phicm;
-
-		// hMap[name]["frag1vcm"]->Fill(frag1vcm);
-		// hMap[name]["frag1kecm"]->Fill(frag1kecm);
-		// hMap[name]["frag1thetacm"]->Fill(frag1thetacm);
-		// hMap[name]["frag1phicm"]->Fill(frag1phicm);
-
-		// hMap["allCases"]["frag1vcm"]->Fill(frag1vcm);
-		// hMap["allCases"]["frag1kecm"]->Fill(frag1kecm);
-		// hMap["allCases"]["frag1thetacm"]->Fill(frag1thetacm);
-		// hMap["allCases"]["frag1phicm"]->Fill(frag1phicm);
 
 		//determine ecm1:
 		double ecm1 = intermediatekecm + frag1kecm;
@@ -209,16 +181,6 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag2thetacm = frag2thetacm;
 		caseResults[permIndex].frag2phicm = frag2phicm;
 
-		// hMap[name]["frag2vcm"]->Fill(frag2vcm);
-		// hMap[name]["frag2kecm"]->Fill(frag2kecm);
-		// hMap[name]["frag2thetacm"]->Fill(frag2thetacm);
-		// hMap[name]["frag2phicm"]->Fill(frag2phicm);
-
-		// hMap["allCases"]["frag2vcm"]->Fill(frag2vcm);
-		// hMap["allCases"]["frag2kecm"]->Fill(frag2kecm);
-		// hMap["allCases"]["frag2thetacm"]->Fill(frag2thetacm);
-		// hMap["allCases"]["frag2phicm"]->Fill(frag2phicm);
-
 		double frag3vcm = ((1/frag3.Energy())*frag3.Vect()).Mag();
 		double frag3kecm = 0.5*masses[2]*frag3vcm*frag3vcm;
 		double frag3thetacm = RADDEG*std::acos(frag3.Vect().Z()/frag3.Vect().Mag());
@@ -230,21 +192,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag3thetacm = frag3thetacm;
 		caseResults[permIndex].frag3phicm = frag3phicm;
 
-		// hMap[name]["frag3vcm"]->Fill(frag3vcm);
-		// hMap[name]["frag3kecm"]->Fill(frag3kecm);
-		// hMap[name]["frag3thetacm"]->Fill(frag3thetacm);
-		// hMap[name]["frag3phicm"]->Fill(frag3phicm);
-
-		// hMap["allCases"]["frag3vcm"]->Fill(frag3vcm);
-		// hMap["allCases"]["frag3kecm"]->Fill(frag3kecm);
-		// hMap["allCases"]["frag3thetacm"]->Fill(frag3thetacm);
-		// hMap["allCases"]["frag3phicm"]->Fill(frag3phicm);
-
-
 		//determine ecm2:
 		double ecm2 = frag2kecm + frag3kecm;
-		// hMap[name]["ecm2"]->Fill(ecm2);
-		// hMap["allCases"]["ecm2"]->Fill(ecm2);
 		caseResults[permIndex].ecm2 = ecm2;
 
 		//increment permIndex here!
