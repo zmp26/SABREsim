@@ -27,6 +27,8 @@ private:
 	TFile *outfile;
 	TTree *outtree;
 
+	double daughterEx, daughterExGate; //this holds the hypothesis of the daughter/intermediate Ex and the gate (+/- due to width)
+
 	//define a "results" struct here:
 	struct Results {
 		double intermediateIM, intermediateEx, reconEx;
@@ -93,6 +95,11 @@ public:
 	void FillSelectCaseHistograms(int caseNum);//selectively fills a single case for the event
 
 	void CloseAndWrite();
+
+	void SetDaughterEx(double Ex){ daughterEx = Ex; }
+	void SetDaughterExGate(double ExGate){ daughterExGate = ExGate; }
+	double GetDaughterEx() { return daughterEx; }
+	double GetDaughterExGate() { return daughterExGate; }
 
 };
 

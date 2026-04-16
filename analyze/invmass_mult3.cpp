@@ -5,7 +5,7 @@
 
 
 InvMass_Mult3::InvMass_Mult3()
-	: outfile(nullptr), intermediateMass(0), recoilMass(0){
+	: outfile(nullptr), intermediateMass(0), recoilMass(0), daughterEx(0), daughterExGate(0){
 
 		permNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
@@ -50,7 +50,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 		hMap[cn]["intermediateIM"]       = new TH1D(cn + "_intermediateIM", "Intermediate Invariant Mass;MeV/c^{2}", 29000, 4600, 7500);
 		hMap[cn]["intermediateEx"]      = new TH1D(cn + "_intermediateEx", "Intermediate Ex;MeV", 525, -1, 20);
 		hMap[cn]["ReconEx"]         = new TH1D(cn + "_ReconEx", "Recon Ex;MeV", 525, -1, 20);
-		hMap[cn]["ReconEx_gated"]   = new TH1D(cn + "_ReconEx_gated", "Gated Recon Ex;MeV", 525, -1, 20);
+		hMap[cn]["ReconEx_gated"]   = new TH1D(cn + "_ReconEx_gated", "Gated Recon Ex;MeV", 525, -1, 20);//gated on DaughterEx!
 
 		// 2. Kinematics Histograms (CM Frame)
 		// Particle frag1
@@ -172,8 +172,6 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 
 		//determine ecm1:
 		double ecm1 = intermediatekecm + frag1kecm;
-		// hMap[name]["ecm1"]->Fill(ecm1);
-		// hMap["allCases"]["ecm1"]->Fill(ecm1);
 		caseResults[permIndex].ecm1 = ecm1;
 
 
@@ -237,6 +235,11 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	hMap["allCases"]["intermediateIM"]->Fill(caseResults[caseNum].intermediateIM);
 	hMap["allCases"]["intermediateEx"]->Fill(caseResults[caseNum].intermediateEx);
 	hMap["allCases"]["ReconEx"]->Fill(caseResults[caseNum].reconEx);
+
+	if( std::abs(caseResults[caseNum].intermediateEx - daughterEx) <= daughterExGate ){
+		hMap[permNames.at(caseNum)]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
+		hMap["allCases"]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
+	}
 
 	hMap[permNames.at(caseNum)]["intermediatevcm"]->Fill(caseResults[caseNum].intermediatevcm);
 	hMap[permNames.at(caseNum)]["intermediatekecm"]->Fill(caseResults[caseNum].intermediatekecm);
