@@ -20,35 +20,6 @@
 #include "plot2mc.h"
 #include "plot3mc.h"
 
-// SABREsim::SABREsim(int kinX,
-// 				   const std::string& kinInputFilename,
-// 				   const std::string& detOutputFilename)
-// 	: kinX_(kinX),
-// 	  kinInputFilename_(kinInputFilename),
-// 	  detOutputFilename_(detOutputFilename),
-// 	  targetLoss_6Li_in_LiF_(nullptr),
-// 	  targetLoss_alpha_in_LiF_(nullptr),
-// 	  targetLoss_deuteron_in_LiF_(nullptr),
-// 	  targetLoss_none_(nullptr),
-// 	  targetLoss_alpha_in_10B_(nullptr),
-// 	  targetLoss_proton_in_10B_(nullptr),
-// 	  deadLayerLoss_6Li_(nullptr),
-// 	  deadLayerLoss_alpha_(nullptr),
-// 	  deadLayerLoss_deuteron_(nullptr),
-// 	  deadLayerLoss_proton_(nullptr),
-// 	  deadLayerLoss_none_(nullptr),
-// 	  RootWriter_(nullptr),
-// 	  nevents_(0),
-// 	  detectorHits_(5,0),
-// 	  hit1_(0), hit2_(0), hit3_(0), hit4_(0),
-//       hit34_(0), hitOnly3_(0), hitOnly4_(0),
-//       hit1Only_(0), hit2Only_(0), hitBoth_(0),
-//       onePartHits_(0), twoPartHits_(0), threePartHits_(0), fourPartHits_(0)
-// {
-// 	srand(static_cast<unsigned>(time(nullptr)));
-
-// }
-
 SABREsim::SABREsim(const std::string& configFilename)
 	: kinX_(0),
 	  kinInputFilename_(""),
@@ -120,8 +91,7 @@ SABREsim::~SABREsim(){
 }
 
 void SABREsim::CleanUp(){
-	// for (auto d : SABRE_Array_) delete d;
-	// SABRE_Array_.clear();
+
 	SABRE_Array_->Clear();
 
 	for(auto m : SABREARRAY_EnergyResolutionModels_) delete m;
@@ -185,13 +155,8 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 	for(size_t i=0; i<PHI.size(); i++){
 		SABRE_Detector* det = new SABRE_Detector(INNER_R, OUTER_R, PHI_COVERAGE*DEG2RAD, PHI[i]*DEG2RAD, TILT*DEG2RAD, ZDIST);
 		SABRE_Array_->push_back(det);
-		// std::cout << "Created SABRE_Detector[" << i << "] at phi = " << PHI[i]
-		//           << " norm = (" << det->GetNormTilted.GetX()
-		//           << ", " << det->GetNormTilted().GetY()
-		//           << ", " << det->GetNormTilted().GetZ() << ")\n";
+
 		Vec3 normtilted = det->GetNormTilted();
-		//TString outline = Form("Created SABRE_Detector[%zu] at phi = %f norm = (%f, %f, %f)\n",i,PHI[i],normtilted.GetX(),normtilted.GetY(),normtilted.GetZ());
-		//ConsoleColorizer::PrintGreen(outline.Data());
 
 		if(WriteCornersToFile){
 
@@ -210,11 +175,7 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 
 	}
 
-
-
-
 	std::cout << "\n";
-
 }
 
 bool SABREsim::InitializeModels(){
@@ -312,29 +273,10 @@ bool SABREsim::InitializeModels(){
 	straggler_par3_ = GetTargetStraggler(config_->GetTargetStraggler(3));
 	straggler_par4_ = GetTargetStraggler(config_->GetTargetStraggler(4));
 
-	//set angular straggling parameters here:
-	// double mu = config_->GetStraggleMu();
-	// double sigma = config_->GetStraggleSigma();
-	// double lambda = config_->GetStraggleLambda();
-	// straggler_ = new TargetAngularStraggler(std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda));
-
 	return true;
 }
 
 void SABREsim::InitializeBeamspot(){
-	//eventually interface with file read in so no need to remake when changing!
-
-	//profile_ = new GaussianProfile(0.001, 0.001);//meters, 0.001m = 1mm
-	//profile_ = new GaussianProfile(0.002, 0.002);//meters, 0.002m = 2mm
-	//profile_ = new GaussianProfile(0.003, 0.003);//meters, 0.003m = 3mm
-	//profile_ = new GaussianProfile(0.004, 0.004);
-	//profile_ = new GaussianProfile(0.005, 0.005);
-	//profile_ = new GaussianProfile(0.006, 0.006);
-	//profile_ = new GaussianProfile(0.007, 0.007);
-	//profile_ = new GaussianProfile(0.008,0.008);
-	//profile_ = new GaussianProfile(0.009,0.009);
-	//profile_ = new GaussianProfile(0.010,0.010);
-	//profile_ = new FixedPointProfile();
 
 	if(config_->GetBeamProfile() == "gaussian" || config_->GetBeamProfile() == "gaus"){
 		profile_ = new GaussianProfile(config_->GetBeamParX(),config_->GetBeamParY());
@@ -382,9 +324,6 @@ void SABREsim::Run(){
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 2 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(2) ? "true" : "false", config_->GetStraggle(2).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
-		// std::cout << "Beamspot profile xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
-		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate2body(infile, outfile);
 	} else if(kinX_ == 3){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
@@ -397,9 +336,6 @@ void SABREsim::Run(){
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 4 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(4) ? "true" : "false", config_->GetStraggle(4).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
-		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
-		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate3body(infile,outfile);
 	} else if(kinX_ == 4){
 		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
@@ -412,13 +348,9 @@ void SABREsim::Run(){
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 4 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(4) ? "true" : "false", config_->GetStraggle(4).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
-		// std::cout << "Beamspot profile is: " << profile_->ToString() << std::endl;
-		// std::cout << "Beamspot xPar = " << profile_->GetParX() << "\typar = " << profile_->GetParY() << std::endl;
-		// std::cout << "Beamspot xOffset = " << beamspot_->GetXOffset() << "\tyOffset = " << beamspot_->GetYOffset() << "\n" << std::endl;
 		Simulate4body(infile,outfile);
 	} else if(kinX_ == 0){ 
-		//temporarily test Beamspot here!
-
+		//kinX_ == 0 is a "debug" mode to check beam profile sampling w/o running kinXmc events --> can likely be removed
 		/* Establish beamspots here */
 		Beamspot uniformbeam, gaussianbeam;
 
@@ -496,18 +428,6 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
-	
-	//										7Li(3He,4He)6Li
-	// targetLoss_par1_ = targetLoss_alpha_in_LiF_; //can be set to none, but ejectile is an alpha
-	// targetLoss_par2_ = targetLoss_6Li_in_LiF_;
-	// targetLoss_par3_ = targetLoss_none_;
-	// targetLoss_par4_ = targetLoss_none_;
-
-	// deadLayerLoss_par1_ = deadLayerLoss_alpha_; //can be set to none, but ejectile is an alpha
-	// deadLayerLoss_par2_ = deadLayerLoss_6Li_;
-	// deadLayerLoss_par3_ = deadLayerLoss_none_;
-	// deadLayerLoss_par4_ = deadLayerLoss_none_;
 	//------------------------------------------------------------------------------------------------
 
 	det2mc det2mcProcessor(SABRE_Array_,
@@ -520,12 +440,8 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",det2mcProcessor.GetToString_TargetLoss1().data(),det2mcProcessor.GetToString_TargetLoss2().data(),det2mcProcessor.GetToString_DeadLayerLoss1().data(),det2mcProcessor.GetToString_DeadLayerLoss2().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
 
-
-	//det2mc det2mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
-
 	plot2mc *RootPlotter = new plot2mc(config_->GetHistoFile());
 
-	//det2mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_->GetStraggleEnabled(1), config_->GetStraggleEnabled(2));
 	det2mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
 	nevents_ = det2mcProcessor.GetNumEvents();
@@ -540,7 +456,6 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 }
 
 void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
-	//std::cout << "passing..." << std::endl;
 
 	if(!infile.is_open()){
 		ConsoleColorizer::PrintRed("Error: Cannot open input file!\n");
@@ -552,20 +467,7 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
-
-	//							7Li(3He,4He)6Li (3+)	6Li-> 4He + d
-	// targetLoss_par1_ = targetLoss_alpha_in_LiF_; 	//can be set to none, but ejectile is an alpha
-	// targetLoss_par2_ = targetLoss_alpha_in_LiF_; 	//breakup1 is alpha
-	// targetLoss_par3_ = targetLoss_deuteron_in_LiF_; //breakup2 is deuteron
-	// targetLoss_par4_ = targetLoss_none_; 			//no particle 4
-
-	// deadLayerLoss_par1_ = deadLayerLoss_alpha_; 		//can be set to none, but ejectile is an alpha
-	// deadLayerLoss_par2_ = deadLayerLoss_alpha_;		//breakup1 is alpha
-	// deadLayerLoss_par3_ = deadLayerLoss_deuteron_;		//breakup2 is deuteron
-	// deadLayerLoss_par4_ = deadLayerLoss_none_;			//no particle 4
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 	det3mc det3mcProcessor(SABRE_Array_,
 						   SABREARRAY_EnergyResolutionModels_,
@@ -574,13 +476,11 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 						   beamspot_,
 						   straggler_par1_, straggler_par2_, straggler_par3_, straggler_par4_);
 
-	//det3mc det3mcProcessor(SABRE_Array_, SABREARRAY_EnergyResolutionModels_, targetLoss_, deadLayerLoss_, beamspot_);
 	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det3mcProcessor.GetToString_TargetLoss1().data(),det3mcProcessor.GetToString_TargetLoss2().data(),det3mcProcessor.GetToString_TargetLoss3().data(),det3mcProcessor.GetToString_TargetLoss4().data(),det3mcProcessor.GetToString_DeadLayerLoss1().data(),det3mcProcessor.GetToString_DeadLayerLoss2().data(),det3mcProcessor.GetToString_DeadLayerLoss3().data(),det3mcProcessor.GetToString_DeadLayerLoss4().data());
 	ConsoleColorizer::PrintGreen(outline.Data());
 
 	plot3mc *RootPlotter = new plot3mc(config_->GetHistoFile());
 
-	//det3mcProcessor.Run(infile, outfile, RootWriter_, RootPlotter, config_);
 	det3mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
 	nevents_ = det3mcProcessor.GetNumEvents();
@@ -610,30 +510,6 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 		return;
 	}
 
-	//set current targetLoss and deadLayerLoss pointers here! (eventually, this should be done by a config file to avoid remaking every time! In the mean time, we just print out so it is obvious what we are using each time we run!)
-
-	//							10B(3He,4He)9B		9B -> p + 8Be,	8Be -> 4He + 4He
-	// targetLoss_par1_ = targetLoss_alpha_in_10B_; 		//can be set to none, but ejectile is an alpha
-	// targetLoss_par2_ = targetLoss_proton_in_10B_; 		//breakup1 is proton
-	// targetLoss_par3_ = targetLoss_alpha_in_10B_; 		//breakup2 is alpha
-	// targetLoss_par4_ = targetLoss_alpha_in_10B_;		//breakup3/final daughter is alpha
-
-	// deadLayerLoss_par1_ = deadLayerLoss_alpha_; 			//can be set to none, but ejectile is an alpha
-	// deadLayerLoss_par2_ = deadLayerLoss_proton_;			//breakup1 is proton
-	// deadLayerLoss_par3_ = deadLayerLoss_alpha_;			//breakup2 is alpha
-	// deadLayerLoss_par4_ = deadLayerLoss_alpha_;			//breakup3/final daughter is alpha
-	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	//							10B(3He,4He)9B		9B -> 4He + 5Li,	5Li -> p + 4He
-	// targetLoss_par1_ = targetLoss_alpha_in_10B_; 	//can be set to none, but ejectile is an alpha
-	// targetLoss_par2_ = targetLoss_alpha_in_10B_; 	//breakup1 is alpha
-	// targetLoss_par3_ = targetLoss_proton_in_10B_; 	//breakup2 is proton
-	// targetLoss_par4_ = targetLoss_alpha_in_10B_; 	//breakup3/final daughter is alpha
-
-	// targetLoss_par1_ = deadLayerLoss_alpha_; 		//can be set to none, but ejectile is an alpha
-	// targetLoss_par2_ = deadLayerLoss_proton_;		//breakup1 is alpha
-	// targetLoss_par3_ = deadLayerLoss_alpha_;			//breakup2 is proton
-	// targetLoss_par4_ = deadLayerLoss_alpha_;			//breakup3/final daughter is alpha
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	det4mc det4mcProcessor(SABRE_Array_,
@@ -649,7 +525,6 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 	std::cout << "histofile: " << config_->GetHistoFile() << std::endl;
 	plot4mc *RootPlotter = new plot4mc(config_->GetHistoFile());
 
-	// det4mcProcessor.Run(infile,outfile,RootWriter_, RootPlotter, config_);
 	det4mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
 	nevents_ = det4mcProcessor.GetNumEvents();

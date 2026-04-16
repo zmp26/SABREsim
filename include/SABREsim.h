@@ -20,9 +20,6 @@
 
 class SABREsim {
 public:
-	// SABREsim(int kinX,
-	// 		 const std::string& kinInputFilename,s
-	// 		 const std::string& detOutputFilename);
 
 	SABREsim(const std::string& configFilename);
 
@@ -49,7 +46,6 @@ private:
 	std::string treeFilename_;
 	std::string histoFilename_;
 
-	//std::vector<SABRE_Detector*> SABRE_Array_;
 	SABRE_Array *SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels_;
 
@@ -73,7 +69,6 @@ private:
 	TargetEnergyLoss* targetLoss_alpha_in_10B_;//NEED TO MAKE THIS CONFIG FILE AND FIT STILL!!!!!!!!!!!!!!!*****************************************************************<=======
 	TargetEnergyLoss* targetLoss_proton_in_10B_;//NEED TO MAKE THIS CONFIG FILE AND FIT STILL!!!!!!!!!!!!!!!*****************************************************************<=======
 
-	//TargetEnergyLoss* targetLoss_; //pointer to current TargetEnergyLoss in use!
 
 	/*
 			BELOW:
@@ -121,8 +116,6 @@ private:
 	SABRE_DeadLayerModel* deadLayerLoss_deuteron_;
 	SABRE_DeadLayerModel* deadLayerLoss_proton_;//NEED TO MAKE THIS CONFIG FILE AND FIT STILL!!!!!!!!!!!!!!!*****************************************************************<=======
 	SABRE_DeadLayerModel* deadLayerLoss_none_;
-
-	//SABRE_DeadLayerModel* deadLayerLoss_; //pointer to current SABRE_DeadLayerModel in use!
 
 	/*
 			BELOW:
