@@ -36,7 +36,7 @@ const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
 //test functions for invmass_mult3.cpp/h:
-void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename){
+void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename, double daughterEx=0., double daughterExGate=0.05){
 
 	//HYPOTHESIS: 9B -> p + 8Be -> a + a
 	//FINAL STATE = p + a + a
@@ -76,6 +76,8 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename
 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
 					  );
+	analysis.SetDaughterEx(daughterEx);
+	analysis.SetDaughterExGate(daughterExGate);
 
 	double E[3], theta[3], phi[3];
 	//hit1
@@ -110,7 +112,7 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename
 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to " << output_filename << "\n" << std::endl;
 }
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename, double daughterEx=0., double daughterExGate=0.05){
 
 	//HYPOTHESIS: 9B -> p + 8Be -> a + a
 	//FINAL STATE = p + a + a
@@ -150,6 +152,8 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
 					  );
+	SABRE_analysis.SetDaughterEx(daughterEx);
+	SABRE_analysis.SetDaughterExGate(daughterExGate);
 
 	//prepare kin4mc analysis tool
 	InvMass_Mult3 kin4mc_analysis;
@@ -160,6 +164,8 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
 					  );
+	kin4mc_analysis.SetDaughterEx(daughterEx);
+	kin4mc_analysis.SetDaughterExGate(daughterExGate);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	//kin4mc output
@@ -207,7 +213,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nkin4mc output saved to " << kin4mc_output_filename << "\nSABREsim output saved to " << SABRE_output_filename << std::endl;
 }
 
-void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename){
+void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename, double daughterEx=0., double daughterExGate=0.){//update w/ appropriate  values
 
 	//HYPOTHESIS: 9B -> a + 5Li -> p + a
 	//FINAL STATE = a + p + a
@@ -248,6 +254,8 @@ void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename
 						fMassTable.GetNuclearMassMeV("B",9),//recoil
 						fMassTable.GetNuclearMassMeV("Li",5)//daughter
 					  );
+	analysis.SetDaughterEx(daughterEx);
+	analysis.SetDaughterExGate(daughterExGate);
 
 	double E[3], theta[3], phi[3];
 	//hit1
