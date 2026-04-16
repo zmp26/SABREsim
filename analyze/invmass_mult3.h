@@ -74,7 +74,7 @@ private:
 
 	void ClearEventResults();
 
-	//expected CM constants:
+	// //expected CM constants:
 	// struct ExpectedCM {
 	// 	double Ecm1, Ecm2;
 	// 	double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;

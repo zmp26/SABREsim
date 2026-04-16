@@ -345,10 +345,10 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 		hMap["allCases"]["frag3thetacm_gated"]->Fill(caseResults[caseNum].frag3thetacm);
 		hMap["allCases"]["frag3phicm_gated"]->Fill(caseResults[caseNum].frag3phicm);
 
-		hMap[permNames.at(caseNum)]["ecm1"]->Fill(caseResults[caseNum].ecm1);
-		hMap[permNames.at(caseNum)]["ecm2"]->Fill(caseResults[caseNum].ecm2);
-		hMap["allCases"]["ecm1"]->Fill(caseResults[caseNum].ecm1);
-		hMap["allCases"]["ecm2"]->Fill(caseResults[caseNum].ecm2);
+		hMap[permNames.at(caseNum)]["ecm1_gated"]->Fill(caseResults[caseNum].ecm1);
+		hMap[permNames.at(caseNum)]["ecm2_gated"]->Fill(caseResults[caseNum].ecm2);
+		hMap["allCases"]["ecm1_gated"]->Fill(caseResults[caseNum].ecm1);
+		hMap["allCases"]["ecm2_gated"]->Fill(caseResults[caseNum].ecm2);
 	}
 }
 
@@ -361,10 +361,9 @@ void InvMass_Mult3::CloseAndWrite(){
 
 // void InvMass_Mult3::SetExpectedCMValues(){
 // 	//update expectedCMValues to have expected CM values
-// 	expectedCMValues.Ecm1 = recoilMass - masses[0] - intermediateMass;
-// 	expectedCMValues.Ecm2 = intermediateMass - masses[1] - masses[2];
 
-// 	vcm_frag1 = sqrt(2*);
+// 	double m_recoil_star = recoilMass + recoil
+
 // }
 
 void InvMass_Mult3::ClearEventResults(){
