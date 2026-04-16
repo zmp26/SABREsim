@@ -50,36 +50,63 @@ void InvMass_Mult3::Init(const char* output_filename){
 		hMap[cn]["intermediateIM"]       = new TH1D(cn + "_intermediateIM", "Intermediate Invariant Mass;MeV/c^{2}", 29000, 4600, 7500);
 		hMap[cn]["intermediateEx"]      = new TH1D(cn + "_intermediateEx", "Intermediate Ex;MeV", 525, -1, 20);
 		hMap[cn]["ReconEx"]         = new TH1D(cn + "_ReconEx", "Recon Ex;MeV", 525, -1, 20);
-		hMap[cn]["ReconEx_gated"]   = new TH1D(cn + "_ReconEx_gated", "Gated Recon Ex;MeV", 525, -1, 20);//gated on DaughterEx!
 
 		// 2. Kinematics Histograms (CM Frame)
-		// Particle frag1
-		hMap[cn]["frag1vcm"]             = new TH1D(cn + "_frag1vcm", "frag1 Velocity CM;c", 100, 0, 1);
-		hMap[cn]["frag1kecm"]            = new TH1D(cn + "_frag1kecm", "frag1 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag1thetacm"]         = new TH1D(cn + "_frag1thetacm", "frag1 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag1phicm"]           = new TH1D(cn + "_frag1phicm", "frag1 Phi CM;deg", 72, 0, 360);
 
-		// Particle frag2
-		hMap[cn]["frag2vcm"]            = new TH1D(cn + "_frag2vcm", "frag2 Velocity CM;c", 100, 0, 1);
-		hMap[cn]["frag2kecm"]           = new TH1D(cn + "_frag2kecm", "frag2 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag2thetacm"]        = new TH1D(cn + "_frag2thetacm", "frag2 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag2phicm"]          = new TH1D(cn + "_frag2phicm", "frag2 Phi CM;deg", 72, 0, 360);
-
-		// Particle frag3
-		hMap[cn]["frag3vcm"]            = new TH1D(cn + "_frag3vcm", "frag3 Velocity CM;c", 100, 0, 1);
-		hMap[cn]["frag3kecm"]           = new TH1D(cn + "_frag3kecm", "frag3 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag3thetacm"]        = new TH1D(cn + "_frag3thetacm", "frag3 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag3phicm"]          = new TH1D(cn + "_frag3phicm", "frag3 Phi CM;deg", 72, 0, 360);
-
-		// Intermediate specific CM
+		// Intermediate CM
 		hMap[cn]["intermediatevcm"]      = new TH1D(cn + "_intermediatevcm", "Intermediate Velocity CM;c", 100, 0, 1);
 		hMap[cn]["intermediatekecm"]     = new TH1D(cn + "_intermediatekecm", "Intermediate KE CM;MeV", 500, 0, 5);
 		hMap[cn]["intermediatethetacm"]  = new TH1D(cn + "_intermediatethetacm", "Intermediate Theta CM;deg", 36, 0, 180);
 		hMap[cn]["intermediatephicm"]    = new TH1D(cn + "_intermediatephicm", "Intermediate Phi CM;deg", 72, 0, 360);
 
+		// frag1
+		hMap[cn]["frag1vcm"]             = new TH1D(cn + "_frag1vcm", "frag1 Velocity CM;c", 100, 0, 1);
+		hMap[cn]["frag1kecm"]            = new TH1D(cn + "_frag1kecm", "frag1 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["frag1thetacm"]         = new TH1D(cn + "_frag1thetacm", "frag1 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["frag1phicm"]           = new TH1D(cn + "_frag1phicm", "frag1 Phi CM;deg", 72, 0, 360);
+
+		// frag2
+		hMap[cn]["frag2vcm"]            = new TH1D(cn + "_frag2vcm", "frag2 Velocity CM;c", 100, 0, 1);
+		hMap[cn]["frag2kecm"]           = new TH1D(cn + "_frag2kecm", "frag2 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["frag2thetacm"]        = new TH1D(cn + "_frag2thetacm", "frag2 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["frag2phicm"]          = new TH1D(cn + "_frag2phicm", "frag2 Phi CM;deg", 72, 0, 360);
+
+		// frag3
+		hMap[cn]["frag3vcm"]            = new TH1D(cn + "_frag3vcm", "frag3 Velocity CM;c", 100, 0, 1);
+		hMap[cn]["frag3kecm"]           = new TH1D(cn + "_frag3kecm", "frag3 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["frag3thetacm"]        = new TH1D(cn + "_frag3thetacm", "frag3 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["frag3phicm"]          = new TH1D(cn + "_frag3phicm", "frag3 Phi CM;deg", 72, 0, 360);
+
 		// Sequential Decay Energies
 		hMap[cn]["ecm1"]             = new TH1D(cn + "_ecm1", "E_{cm} Decay 1;MeV", 200, 0, 20);
 		hMap[cn]["ecm2"]             = new TH1D(cn + "_ecm2", "E_{cm} Decay 2;MeV", 200, 0, 20);
+
+
+		//gated histograms (gated on Ex of daughter/intermediate)
+		hMap[cn]["ReconEx_gated"]   = new TH1D(cn + "_ReconEx_gated", "Gated Recon Ex;MeV", 525, -1, 20);//gated on DaughterEx!
+
+		hMap[cn]["intermediatevcm_gated"]      = new TH1D(cn + "_intermediatevcm_gated", "Intermediate Velocity CM;c", 100, 0, 1);
+		hMap[cn]["intermediatekecm_gated"]     = new TH1D(cn + "_intermediatekecm_gated", "Intermediate KE CM;MeV", 500, 0, 5);
+		hMap[cn]["intermediatethetacm_gated"]  = new TH1D(cn + "_intermediatethetacm_gated", "Intermediate Theta CM;deg", 36, 0, 180);
+		hMap[cn]["intermediatephicm_gated"]    = new TH1D(cn + "_intermediatephicm_gated", "Intermediate Phi CM;deg", 72, 0, 360);
+
+		hMap[cn]["frag1vcm_gated"]             = new TH1D(cn + "_frag1vcm_gated", "frag1 Velocity CM;c", 100, 0, 1);
+		hMap[cn]["frag1kecm_gated"]            = new TH1D(cn + "_frag1kecm_gated", "frag1 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["frag1thetacm_gated"]         = new TH1D(cn + "_frag1thetacm_gated", "frag1 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["frag1phicm_gated"]           = new TH1D(cn + "_frag1phicm_gated", "frag1 Phi CM;deg", 72, 0, 360);
+
+		hMap[cn]["frag2vcm_gated"]             = new TH1D(cn + "_frag2vcm_gated", "frag2 Velocity CM;c", 100, 0, 1);
+		hMap[cn]["frag2kecm_gated"]            = new TH1D(cn + "_frag2kecm_gated", "frag2 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["frag2thetacm_gated"]         = new TH1D(cn + "_frag2thetacm_gated", "frag2 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["frag2phicm_gated"]           = new TH1D(cn + "_frag2phicm_gated", "frag2 Phi CM;deg", 72, 0, 360);
+
+		hMap[cn]["frag3vcm_gated"]             = new TH1D(cn + "_frag3vcm_gated", "frag3 Velocity CM;c", 100, 0, 1);
+		hMap[cn]["frag3kecm_gated"]            = new TH1D(cn + "_frag3kecm_gated", "frag3 KE CM;MeV", 500, 0, 5);
+		hMap[cn]["frag3thetacm_gated"]         = new TH1D(cn + "_frag3thetacm_gated", "frag3 Theta CM;deg", 36, 0, 180);
+		hMap[cn]["frag3phicm_gated"]           = new TH1D(cn + "_frag3phicm_gated", "frag3 Phi CM;deg", 72, 0, 360);
+
+		hMap[cn]["ecm1_gated"]             = new TH1D(cn + "_ecm1_gated", "E_{cm} Decay 1;MeV", 200, 0, 20);
+		hMap[cn]["ecm2_gated"]             = new TH1D(cn + "_ecm2_gated", "E_{cm} Decay 2;MeV", 200, 0, 20);
 
 		outfile->cd();
 	}
@@ -236,11 +263,6 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	hMap["allCases"]["intermediateEx"]->Fill(caseResults[caseNum].intermediateEx);
 	hMap["allCases"]["ReconEx"]->Fill(caseResults[caseNum].reconEx);
 
-	if( std::abs(caseResults[caseNum].intermediateEx - daughterEx) <= daughterExGate ){
-		hMap[permNames.at(caseNum)]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
-		hMap["allCases"]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
-	}
-
 	hMap[permNames.at(caseNum)]["intermediatevcm"]->Fill(caseResults[caseNum].intermediatevcm);
 	hMap[permNames.at(caseNum)]["intermediatekecm"]->Fill(caseResults[caseNum].intermediatekecm);
 	hMap[permNames.at(caseNum)]["intermediatethetacm"]->Fill(caseResults[caseNum].intermediatethetacm);
@@ -282,6 +304,52 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 
 	hMap[permNames.at(caseNum)]["ecm2"]->Fill(caseResults[caseNum].ecm2);
 	hMap["allCases"]["ecm2"]->Fill(caseResults[caseNum].ecm2);
+
+	if( std::abs(caseResults[caseNum].intermediateEx - daughterEx) <= daughterExGate ){
+		hMap[permNames.at(caseNum)]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
+		hMap["allCases"]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
+
+		hMap[permNames.at(caseNum)]["intermediatevcm_gated"]->Fill(caseResults[caseNum].intermediatevcm);
+		hMap[permNames.at(caseNum)]["intermediatekecm_gated"]->Fill(caseResults[caseNum].intermediatekecm);
+		hMap[permNames.at(caseNum)]["intermediatethetacm_gated"]->Fill(caseResults[caseNum].intermediatethetacm);
+		hMap[permNames.at(caseNum)]["intermediatephicm_gated"]->Fill(caseResults[caseNum].intermediatephicm);
+		hMap["allCases"]["intermediatevcm_gated"]->Fill(caseResults[caseNum].intermediatevcm);
+		hMap["allCases"]["intermediatekecm_gated"]->Fill(caseResults[caseNum].intermediatekecm);
+		hMap["allCases"]["intermediatethetacm_gated"]->Fill(caseResults[caseNum].intermediatethetacm);
+		hMap["allCases"]["intermediatephicm_gated"]->Fill(caseResults[caseNum].intermediatephicm);
+
+		hMap[permNames.at(caseNum)]["frag1vcm_gated"]->Fill(caseResults[caseNum].frag1vcm);
+		hMap[permNames.at(caseNum)]["frag1kecm_gated"]->Fill(caseResults[caseNum].frag1kecm);
+		hMap[permNames.at(caseNum)]["frag1thetacm_gated"]->Fill(caseResults[caseNum].frag1thetacm);
+		hMap[permNames.at(caseNum)]["frag1phicm_gated"]->Fill(caseResults[caseNum].frag1phicm);
+		hMap["allCases"]["frag1vcm_gated"]->Fill(caseResults[caseNum].frag1vcm);
+		hMap["allCases"]["frag1kecm_gated"]->Fill(caseResults[caseNum].frag1kecm);
+		hMap["allCases"]["frag1thetacm_gated"]->Fill(caseResults[caseNum].frag1thetacm);
+		hMap["allCases"]["frag1phicm_gated"]->Fill(caseResults[caseNum].frag1phicm);
+
+		hMap[permNames.at(caseNum)]["frag2vcm_gated"]->Fill(caseResults[caseNum].frag2vcm);
+		hMap[permNames.at(caseNum)]["frag2kecm_gated"]->Fill(caseResults[caseNum].frag2kecm);
+		hMap[permNames.at(caseNum)]["frag2thetacm_gated"]->Fill(caseResults[caseNum].frag2thetacm);
+		hMap[permNames.at(caseNum)]["frag2phicm_gated"]->Fill(caseResults[caseNum].frag2phicm);
+		hMap["allCases"]["frag2vcm_gated"]->Fill(caseResults[caseNum].frag2vcm);
+		hMap["allCases"]["frag2kecm_gated"]->Fill(caseResults[caseNum].frag2kecm);
+		hMap["allCases"]["frag2thetacm_gated"]->Fill(caseResults[caseNum].frag2thetacm);
+		hMap["allCases"]["frag2phicm_gated"]->Fill(caseResults[caseNum].frag2phicm);
+
+		hMap[permNames.at(caseNum)]["frag3vcm_gated"]->Fill(caseResults[caseNum].frag3vcm);
+		hMap[permNames.at(caseNum)]["frag3kecm_gated"]->Fill(caseResults[caseNum].frag3kecm);
+		hMap[permNames.at(caseNum)]["frag3thetacm_gated"]->Fill(caseResults[caseNum].frag3thetacm);
+		hMap[permNames.at(caseNum)]["frag3phicm_gated"]->Fill(caseResults[caseNum].frag3phicm);
+		hMap["allCases"]["frag3vcm_gated"]->Fill(caseResults[caseNum].frag3vcm);
+		hMap["allCases"]["frag3kecm_gated"]->Fill(caseResults[caseNum].frag3kecm);
+		hMap["allCases"]["frag3thetacm_gated"]->Fill(caseResults[caseNum].frag3thetacm);
+		hMap["allCases"]["frag3phicm_gated"]->Fill(caseResults[caseNum].frag3phicm);
+
+		hMap[permNames.at(caseNum)]["ecm1"]->Fill(caseResults[caseNum].ecm1);
+		hMap[permNames.at(caseNum)]["ecm2"]->Fill(caseResults[caseNum].ecm2);
+		hMap["allCases"]["ecm1"]->Fill(caseResults[caseNum].ecm1);
+		hMap["allCases"]["ecm2"]->Fill(caseResults[caseNum].ecm2);
+	}
 }
 
 void InvMass_Mult3::CloseAndWrite(){
