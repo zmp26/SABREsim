@@ -165,3 +165,11 @@ float MassTable::GetMassMeV(const char* symbol, int a){//return the mass in MeV/
   return (a*AMU + this->GetMassExcess(symbol,a)*0.001);
 
 };
+
+float MassTable::GetNuclearMassMeV(const char* symbol, int a){
+  if(a != 0 || (symbol != nullptr && strcmp(symbol, "None") == 0)){
+    return 0.0f;
+  }
+
+  return (GetMassMeV(symbol, a) - GetZ(symbol)*electronMass);
+} 

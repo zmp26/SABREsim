@@ -24,6 +24,7 @@ private:
   int fNumberOfEntries;
   //bool initstatus = false;
   const float AMU=931.494013;
+  const float electronMass = 0.511;
 
 public:
   //  TMassTable();
@@ -39,7 +40,8 @@ public:
   //added by zmp
   bool GetInitStatus();
   bool initstatus = false;
-  float GetMassMeV(const char* symbol, int a);
+  float GetMassMeV(const char* symbol, int a);//returns atomic mass in MeV/c^2
+  float GetNuclearMassMeV(const char* symbol, int a);//returns nuclear mass in MeV/c^2
 };
 
 #endif
