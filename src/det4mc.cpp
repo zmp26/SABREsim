@@ -167,6 +167,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 		}
 
+		EventRecorder->UpdateSPS(EjInSPS,SPS_E,SPS_Theta,SPS_Phi);
+
 
 		for(int i=0; i<4; i++){
 			particles[i].detected = false;
