@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <cmath>
 #include "SABRE_Detector.h"
 #include "SABRE_EnergyResolutionModel.h"
 #include "TargetEnergyLoss.h"
@@ -19,6 +20,7 @@
 #include "SimConfig.h"
 #include "EventRecorder.h"
 #include "SABRE_Array.h"
+#include "SPS_Aperture.h"
 
 class det4mc{
 public:
@@ -39,7 +41,7 @@ public:
 	// 	   TargetAngularStraggler* straggler_par3,
 	// 	   TargetAngularStraggler* straggler_par4);
 
-	det4mc(SABRE_Array* SABRE_Array_,
+	det4mc(SABRE_Array* SABRE_Array_, SPS_Aperture* SPS_Aperture_,
 		   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 		   TargetEnergyLoss* targetLoss_par1,
 		   TargetEnergyLoss* targetLoss_par2,
@@ -97,7 +99,11 @@ public:
 	std::string GetToString_DeadLayerLoss4() { return deadLayerLoss_par4_->ToString(); }
 
 private:
-	//std::vector<SABRE_Detector*> SABRE_Array_;
+
+	double DEGRAD = M_PI / 180.;
+	double RADDEG = 180. / M_PI;
+	
+	SPS_Aperture* SPS_Aperture_;
 	SABRE_Array* SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
 

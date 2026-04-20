@@ -17,13 +17,13 @@ const std::pair<int,int> det4mc::offsets[] = {
 		{48,0}		//detector4 {ringOffset,wedgeOffset}
 	};
 
-det4mc::det4mc(SABRE_Array* SABRE_Array_,
+det4mc::det4mc(SABRE_Array* SABRE_Array, SPS_Aperture* SPS_Aperture,
 			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
 			   TargetEnergyLoss* targetLoss_par1, TargetEnergyLoss* targetLoss_par2, TargetEnergyLoss* targetLoss_par3, TargetEnergyLoss* targetLoss_par4,
 			   SABRE_DeadLayerModel* deadLayerLoss_par1, SABRE_DeadLayerModel* deadLayerLoss_par2, SABRE_DeadLayerModel* deadLayerLoss_par3, SABRE_DeadLayerModel* deadLayerLoss_par4,
 			   Beamspot* beamspot,
 			   TargetAngularStraggler* straggler_par1, TargetAngularStraggler* straggler_par2, TargetAngularStraggler* straggler_par3, TargetAngularStraggler* straggler_par4)
-	: SABRE_Array_(SABRE_Array_),
+	: SABRE_Array_(SABRE_Array), SPS_Aperture_(SPS_Aperture),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_par1_(targetLoss_par1), targetLoss_par2_(targetLoss_par2), targetLoss_par3_(targetLoss_par3), targetLoss_par4_(targetLoss_par4),
 	  deadLayerLoss_par1_(deadLayerLoss_par1), deadLayerLoss_par2_(deadLayerLoss_par2), deadLayerLoss_par3_(deadLayerLoss_par3), deadLayerLoss_par4_(deadLayerLoss_par4),
@@ -33,7 +33,7 @@ det4mc::det4mc(SABRE_Array* SABRE_Array_,
 	  hitBoth23_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
 	  hitOnly12_(0), hitOnly23_(0), hitOnly13_(0), hitOnly123_(0),
 	  onePartHits_(0), twoPartHits_(0), threePartHits_(0), fourPartHits_(0),
-	  detectorHits_(SABRE_Array_->size()),
+	  detectorHits_(SABRE_Array->size()),
 	  beamspot_(beamspot)
 	{
 
@@ -143,6 +143,30 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 		std::ostringstream ss;
 		uint8_t hitMask = 0; //empty mask
 		int totalHits = 0;
+
+		//begin by explicitly checking particles[0] in SPS aperture
+		bool EjInSPS = false;
+		double SPS_E, SPS_Theta, SPS_Phi;
+		Vec3 ejTraj;
+		ejTraj.SetVectorSpherical(1.0, particles[0].theta*DEGRAD, particles[0].phi*DEGRAD);
+		if(SPS_Aperture_->IsDetected(ejTraj, reactionOrigin)){
+
+			EjInSPS = true;
+
+			SPS_E = SPS_Aperture_->GetSmearedEnergy(particles[0].energy);
+			SPS_Theta = SPS_Aperture_->GetSmearedTheta(particles[0].theta);
+			SPS_Phi = SPS_Aperture_->GetSmearedPhi(particles[0].phi);
+
+		} else {
+
+			EjInSPS = false;
+
+			SPS_E = -666.;
+			SPS_Theta = -666.;
+			SPS_Phi = -666.;
+
+		}
+
 
 		for(int i=0; i<4; i++){
 			particles[i].detected = false;
