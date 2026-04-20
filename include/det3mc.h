@@ -39,7 +39,7 @@ public:
 		   TargetAngularStraggler* straggler_par3,
 		   TargetAngularStraggler* straggler_par4);
 
-	void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, SimConfig* config);
+	//void Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* RootWriter, plot3mc* RootPlotter, SimConfig* config);
 	void Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* EventRecorder, plot3mc* RootPlotter, SimConfig* config);
 
 	//after Run(), these functions can be called to query for statistics:
