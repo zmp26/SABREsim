@@ -106,50 +106,50 @@ bool SimConfig::Parse(){
 			else if(key == "beam_energy") beam_energy_ = std::stod(val);
 			else if(key == "recoil_excitation_energy") recoil_excitation_energy_ = std::stod(val);
 		}
-		else if(section == "IMMMA"){
+		// else if(section == "IMMMA"){
 
-			auto parseNucleus = [&](const std::string& prefix, NucleusConfig& nuc){
+		// 	auto parseNucleus = [&](const std::string& prefix, NucleusConfig& nuc){
 
-				if(key == prefix + "_A"){
-					nuc.A = std::stoi(val);
+		// 		if(key == prefix + "_A"){
+		// 			nuc.A = std::stoi(val);
 
-				}
-				else if(key == prefix + "_symbol"){
-					nuc.symbol = val;
+		// 		}
+		// 		else if(key == prefix + "_symbol"){
+		// 			nuc.symbol = val;
 
-				}
-				else if(key == prefix + "_mass"){
-					nuc.mass = std::stod(val);
-				}
+		// 		}
+		// 		else if(key == prefix + "_mass"){
+		// 			nuc.mass = std::stod(val);
+		// 		}
 
-				//if(prefix == "ejectile" && nuc.A > 0 && nuc.mass > 0) std::cout << prefix << "\t A = " << nuc.A << "\tsym = " << nuc.symbol << "\tmass = " << nuc.mass << std::endl;
-			};
+		// 		//if(prefix == "ejectile" && nuc.A > 0 && nuc.mass > 0) std::cout << prefix << "\t A = " << nuc.A << "\tsym = " << nuc.symbol << "\tmass = " << nuc.mass << std::endl;
+		// 	};
 
-			parseNucleus("beam",beam_);
-			parseNucleus("target",target_);
-			parseNucleus("ejectile",ejectile_);
-			parseNucleus("recoil", recoil_);
+		// 	parseNucleus("beam",beam_);
+		// 	parseNucleus("target",target_);
+		// 	parseNucleus("ejectile",ejectile_);
+		// 	parseNucleus("recoil", recoil_);
 
-			if(key.rfind("breakup", 0) == 0){
-				size_t idxStart = std::string("breakup").size();
-				size_t underscore = key.find('_', idxStart);
-				if(underscore == std::string::npos) continue;
+		// 	if(key.rfind("breakup", 0) == 0){
+		// 		size_t idxStart = std::string("breakup").size();
+		// 		size_t underscore = key.find('_', idxStart);
+		// 		if(underscore == std::string::npos) continue;
 
-				int index = std::stoi(key.substr(idxStart, underscore - idxStart)) - 1;
-				std::string field = key.substr(underscore + 1);
-				if(index < 0) continue;
+		// 		int index = std::stoi(key.substr(idxStart, underscore - idxStart)) - 1;
+		// 		std::string field = key.substr(underscore + 1);
+		// 		if(index < 0) continue;
 
-				if(breakups_.size() <= static_cast<size_t>(index)) breakups_.resize(index+1);
+		// 		if(breakups_.size() <= static_cast<size_t>(index)) breakups_.resize(index+1);
 
-				NucleusConfig& nuc = breakups_[index];
+		// 		NucleusConfig& nuc = breakups_[index];
 
-				if(field == "A") nuc.A = std::stoi(val);
-				else if(field == "symbol") nuc.symbol = val;
-				else if(field == "mass") nuc.mass = std::stod(val);
+		// 		if(field == "A") nuc.A = std::stoi(val);
+		// 		else if(field == "symbol") nuc.symbol = val;
+		// 		else if(field == "mass") nuc.mass = std::stod(val);
 
-			} 
+		// 	} 
 
-		}
+		// }
 	}
 
 
