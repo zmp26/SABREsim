@@ -19,6 +19,7 @@
 #include "GaussianProfileY_FixedPointX.h"
 #include "plot2mc.h"
 #include "plot3mc.h"
+#include "plot4mc.h"
 
 SABREsim::SABREsim(const std::string& configFilename)
 	: kinX_(0),
