@@ -89,11 +89,12 @@ void EventRecorder::SetReactionOrigin(double x, double y, double z){
 	reactionOrigin_[2] = z;
 }
 
-void EventRecorder::UpdateSPS(bool EjectileInSPS, double SPSE, double SPSTh, double SPSPh){
+void EventRecorder::UpdateSPS(bool EjectileInSPS, double SPSE, double SPSTh, double SPSPh, double SPS_RecoilEx){
 	EjInSPS = EjectileInSPS;
 	SPSEnergy = SPSE;
 	SPSTheta = SPSTh;
 	SPSPhi = SPSPh;
+	SPS_RecoilEx = SPS_RecoilEx;
 }
 
 void EventRecorder::AddHit(const Hit& hit){
