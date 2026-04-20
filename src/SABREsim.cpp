@@ -538,6 +538,7 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 
 	nevents_ = det4mcProcessor.GetNumEvents();
 	detectorHits_ = det4mcProcessor.GetDetectorHits();
+	hitejSPS_ = det4mcProcessor.GetHitEjSPS();
 	hitej_ = det4mcProcessor.GetHitEj();
 	hit1_ = det4mcProcessor.GetHit1();
 	hit2_ = det4mcProcessor.GetHit2();
@@ -587,8 +588,8 @@ void SABREsim::PrintSummary() const {
 				  << " (" << float(hit34_)*100.0f / float(nevents_) << "%)\n";
 	}
 	if (kinX_ == 4) {
-		std::cout << "Events with ejectile in SABRE: " << hitej_
-				  << " (" << float(hitej_)*100.0f / float(nevents_) << "%)\n";
+		std::cout << "Events with ejectile in SPS: " << hitejSPS_ << " (" << float(hitejSPS_)*100.0 / float(nevents_) << "%)\n";
+		std::cout << "Events with ejectile in SABRE: " << hitej_ << " (" << float(hitej_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "1‑particle events: " << onePartHits_ << "\n";
 		std::cout << "2‑particle events: " << twoPartHits_ << "\n";
 		std::cout << "3‑particle events: " << threePartHits_ << "\n";

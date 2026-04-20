@@ -9,6 +9,9 @@ SPS_Aperture::SPS_Aperture(double r,
 {
 	std::random_device rd;
 	gen.seed(rd());
+
+	std::cout << "Theta range: [" << thetaMin << ", " << thetaMax << "]\n";
+	std::cout << "Phi range: [" << phiMin << ", " << phiMax << "]\n";
 }
 
 SPS_Aperture::~SPS_Aperture() {}
@@ -55,11 +58,14 @@ bool SPS_Aperture::IsDetected(const  Vec3& traj, const Vec3& origin) const {
 
 	Vec3 intersectPoint = origin + (d*t);
 
-	double theta = intersectPoint.GetTheta();
-	double phi = intersectPoint.GetPhi();
-	if(phi < 0.) phi += 360.;
+	double pointTheta = intersectPoint.GetTheta()*RADDEG;
+	double pointPhi = intersectPoint.GetPhi()*RADDEG;
+	//if(pointPhi < 0.) pointPhi += 360.;
 
-	if(theta >= thetaMin && theta <= thetaMax && phi >= phiMin && phi <= phiMax){
+	// std::cout << "intersectPoint: X = " << intersectPoint.GetX() << ", Y = " << intersectPoint.GetY() << ", Z = " << intersectPoint.GetZ() << "\n" 
+	// 		  << "			  Theta = " << pointTheta << ", Phi = " << pointPhi << "\n\n";
+
+	if( pointTheta >= thetaMin && pointTheta <= thetaMax && ((pointPhi >= 0. && pointPhi < phiMax) || (pointPhi <= 0. && pointPhi > phiMin)) ){
 		return true;
 	}
 

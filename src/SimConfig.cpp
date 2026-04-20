@@ -11,7 +11,11 @@ SimConfig::SimConfig(const std::string& filename)
 	  detmc_version_(0),
 	  beam_parX_(0.), beam_parY_(0.),
 	  beam_offsetX_(0.), beam_offsetY_(0.),
-	  beam_energy_(0.), recoil_excitation_energy_(0.)
+	  beam_energy_(0.), recoil_excitation_energy_(0.),
+	  SPS_ThetaMin(0.), SPS_ThetaMax(0.),
+	  SPS_PhiMin(0.), SPS_PhiMax(0.),
+	  SPS_SigmaE(0.), SPS_SigmaTheta(0.), SPS_SigmaPhi(0.),
+	  SPS_ApertureDist(0.)
 {
 
 	targetLoss_par_.resize(4, "none");

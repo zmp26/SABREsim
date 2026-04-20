@@ -26,7 +26,11 @@ public:
 	void SetPhiResolution(double sigma) { sigmaPhi = sigma; }
 
 private:
+	const double DEGRAD = M_PI / 180.;
+	const double RADDEG = 180. / M_PI;
+
 	double ApplyGaussian(double value, double sigma) const;
+
 
 	double radius, thetaMin, thetaMax, phiMin, phiMax;
 
