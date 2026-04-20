@@ -25,7 +25,7 @@ public:
 	inline double GetTheta() const { return Atan2(GetRho(), GetZ()); };
 	inline double GetPhi() const {
 		double phi = Atan2(GetY(), GetX());
-		if(phi < 0) phi += M_PI*2.0;
+		//if(phi < 0) phi += M_PI*2.0;
 		return phi;
 	};
 
