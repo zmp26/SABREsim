@@ -6,12 +6,13 @@
 #include <unordered_map>
 #include "MassTable.h"
 #include "TString.h"
+#include "structs.h"
 
-struct NucleusConfig {
-	int A = 0;
-	TString symbol = "";
-	double mass = 0.0;
-};
+// struct Nucleus {
+// 	int A = 0;
+// 	TString symbol = "";
+// 	double mass = 0.0;
+// };
 
 class SimConfig{
 public:
@@ -42,10 +43,10 @@ public:
 	bool GetStraggleEnabled(int i) const { return enableStraggle_par_.at(i-1); }
 	std::string GetStraggle(int i) const { return targetStraggle_par_.at(i-1); }
 
-	const NucleusConfig& GetBeam() const { return beam_; }
-	const NucleusConfig& GetTarget() const { return target_; }
-	const NucleusConfig& GetEjectile() const { return ejectile_; }
-	const NucleusConfig& GetRecoil() const { return recoil_; }
+	const Nucleus& GetBeam() const { return beam_; }
+	const Nucleus& GetTarget() const { return target_; }
+	const Nucleus& GetEjectile() const { return ejectile_; }
+	const Nucleus& GetRecoil() const { return recoil_; }
 
 	const double GetSPSThetaMin() const { return SPS_ThetaMin; }
 	const double GetSPSThetaMax() const { return SPS_ThetaMax; }
@@ -82,10 +83,10 @@ private:
 
 	std::string Trim(const std::string& s);
 
-	NucleusConfig beam_;
-	NucleusConfig target_;
-	NucleusConfig ejectile_;
-	NucleusConfig recoil_;
+	Nucleus beam_;
+	Nucleus target_;
+	Nucleus ejectile_;
+	Nucleus recoil_;
 
 	double SPS_ThetaMin, SPS_ThetaMax, SPS_PhiMin, SPS_PhiMax;
 	double SPS_SigmaE, SPS_SigmaTheta, SPS_SigmaPhi;

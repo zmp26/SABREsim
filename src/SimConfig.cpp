@@ -64,6 +64,38 @@ bool SimConfig::Parse(){
 			else if(key == "treefile") treefile_ = val;
 			else if(key == "histofile") histofile_ = val;
 		}
+		else if(section == "Kinematics"){
+			if(key == "beam"){
+				std::stringstream ss(val);
+				if(ss >> beam_.A >> beam_.symbol){
+					//use mass table to set mass here
+					beam_.massMeV = -666.;
+				}
+			}
+			else if(key == "target"){
+				std::stringstream ss(val);
+				if(ss >> target_.A >> target_.symbol){
+					//use mass table to set mass here
+					target_.massMeV = -666.;
+				}
+			}
+			else if(key == "recoil"){
+				std::stringstream ss(val);
+				if(ss >> recoil_.A >> recoil_.symbol){
+					//use mass table to set mass here
+					recoil_.massMeV = -666.;
+				}
+			}
+			else if(key == "ejectile"){
+				std::stringstream ss(val);
+				if(ss >> ejectile_.A >> ejectile_.symbol){
+					//use mass table to set mass here
+					ejectile_.massMeV = -666.;
+				}
+			}
+			else if(key == "beam_energy") beam_energy_ = std::stod(val);
+			else if(key == "recoil_excitation_energy") recoil_excitation_energy_ = std::stod(val);
+		}
 		else if(section == "TargetLosses"){
 			if(key.rfind("targetLoss_par",0) == 0){
 				int idx = key.back() - '0';
@@ -111,11 +143,11 @@ bool SimConfig::Parse(){
 			else if(key == "SigmaPhi") SPS_SigmaPhi = std::stod(val);
 			else if(key == "ApertureDist") SPS_ApertureDist = std::stod(val);
 		}
-		else if(section == "MetaData"){
-			if(key == "reaction") reaction_ = val;
-			else if(key == "beam_energy") beam_energy_ = std::stod(val);
-			else if(key == "recoil_excitation_energy") recoil_excitation_energy_ = std::stod(val);
-		}
+		// else if(section == "MetaData"){
+		// 	//if(key == "reaction") reaction_ = val;
+		// 	if(key == "beam_energy") beam_energy_ = std::stod(val);
+		// 	else if(key == "recoil_excitation_energy") recoil_excitation_energy_ = std::stod(val);
+		// }
 		// else if(section == "IMMMA"){
 
 		// 	auto parseNucleus = [&](const std::string& prefix, NucleusConfig& nuc){
@@ -162,6 +194,7 @@ bool SimConfig::Parse(){
 		// }
 	}
 
+	reaction_ << target_.A << target_.symbol << "(" << beam_.A << beam_.symbol << "," << ejectile_.A << ejectile_.symbol << ")" << recoil_.A << recoil_.symbol;
 
 	std::cout << "beam\t A = " << beam_.A << "\tsymbol = " << beam_.symbol << "\tmass = " << beam_.mass << std::endl;
 	std::cout << "target\t A = " << target_.A << "\tsymbol = " << target_.symbol << "\tmass = " << target_.mass << std::endl;
