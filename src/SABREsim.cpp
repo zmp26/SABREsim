@@ -73,7 +73,7 @@ SABREsim::SABREsim(const std::string& configFilename)
 										config_->GetSPSApertureDist(),
 										config_->GetSPSThetaMin(), config_->GetSPSThetaMax(),
 										config_->GetSPSPhiMin(), config_->GetSPSPhiMax(),
-										config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi();
+										config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi()
 									);
 
 	RootWriter_ = new RootWriter(treeFilename_);
@@ -521,7 +521,7 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	det4mc det4mcProcessor(SABRE_Array_,
+	det4mc det4mcProcessor(SABRE_Array_, sps,
 						   SABREARRAY_EnergyResolutionModels_,
 						   targetLoss_par1_, targetLoss_par2_, targetLoss_par3_, targetLoss_par4_,
 						   deadLayerLoss_par1_, deadLayerLoss_par2_, deadLayerLoss_par3_, deadLayerLoss_par4_,
