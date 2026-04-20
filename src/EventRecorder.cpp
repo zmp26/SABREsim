@@ -20,6 +20,7 @@ EventRecorder::EventRecorder(const std::string& filename)
 	tree_->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	tree_->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	tree_->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
+	tree_->Branch("ExE", &SPS_RecoilEx, "ExE/D");
 
 	tree_->Branch("numHits", &numHits_, "numHits/I");
 	tree_->Branch("particleID", particleID_, "particleID[4]/I");
@@ -55,6 +56,7 @@ void EventRecorder::ResetEvent(){
 	SPSEnergy = -666.;
 	SPSTheta = -666.;
 	SPSPhi = -666.;
+	SPS_RecoilEx = -666.;
 
 	std::fill_n(particleID_, 4, -666);
 	std::fill_n(detectorID_, 4, -666);
