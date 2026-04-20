@@ -103,8 +103,8 @@ private:
 	double DEGRAD = M_PI / 180.;
 	double RADDEG = 180. / M_PI;
 	
-	SPS_Aperture* SPS_Aperture_;
 	SABRE_Array* SABRE_Array_;
+	SPS_Aperture* SPS_Aperture_;
 	std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels_;
 
 

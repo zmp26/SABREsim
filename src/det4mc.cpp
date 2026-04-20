@@ -4,8 +4,8 @@
 #include "TH2.h"
 #include "TFile.h"
 #include "plot4mc.h"
-#include "IMMMA_Tool_4.h"
 #include <optional>
+#include "TLorentzVector.h"
 
 static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
 
@@ -146,7 +146,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 		//begin by explicitly checking particles[0] in SPS aperture
 		bool EjInSPS = false;
-		double SPS_E, SPS_Theta, SPS_Phi;
+		double SPS_E, SPS_Theta, SPS_Phi, SPS_RecoilEx;
 		Vec3 ejTraj;
 		ejTraj.SetVectorSpherical(1.0, particles[0].theta*DEGRAD, particles[0].phi*DEGRAD);
 		if(SPS_Aperture_->IsDetected(ejTraj, reactionOrigin)){
@@ -157,6 +157,17 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 			SPS_Theta = SPS_Aperture_->GetSmearedTheta(particles[0].theta);
 			SPS_Phi = SPS_Aperture_->GetSmearedPhi(particles[0].phi);
 
+			TLorentzVector beam(0., 0., std::sqrt(2*config->GetBeam().massMeV*config->GetBeamEnergy()), config->GetBeam().massMeV*config->GetBeamEnergy());
+			TLorentzVector target(0., 0., 0., config->GetTarget().massMeV);
+			double Pej = std::sqrt(2*config->GetEjectile().massMeV*SPS_E);
+			TLorentzVector ejectile(Pej*std::sin(SPS_Theta*DEGRAD)*std::cos(SPS_Phi*DEGRAD),
+									Pej*std::sin(SPS_Theta*DEGRAD)*std::sin(SPS_Phi*DEGRAD),
+									Pej*std::cos(SPS_Theta*DEGRAD),
+									config->GetEjectile().massMeV + SPS_E);
+
+			TLorentzVector recoil = beam + target - ejectile;
+			SPS_RecoilEx = recoil.M() - config->GetRecoil().massMeV;
+
 		} else {
 
 			EjInSPS = false;
@@ -165,9 +176,11 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 			SPS_Theta = -666.;
 			SPS_Phi = -666.;
 
+			SPS_RecoilEx = -666.;
+
 		}
 
-		EventRecorder->UpdateSPS(EjInSPS,SPS_E,SPS_Theta,SPS_Phi);
+		EventRecorder->UpdateSPS(EjInSPS,SPS_E,SPS_Theta,SPS_Phi,SPS_RecoilEx);
 
 
 		for(int i=0; i<4; i++){
