@@ -41,7 +41,7 @@ bool SPS_Aperture::IsDetected(const  Vec3& traj, const Vec3& origin) const {
 
 	Vec3 d = traj.Unit();
 
-	double A = d.Mag2(d); // = 1 because d is unit vector
+	double A = d.Mag2(); // = 1 because d is unit vector
 	double B = 2. * origin.Dot(d);
 	double C = origin.Mag2() - radius*radius;
 
@@ -78,7 +78,7 @@ double SPS_Aperture::GetSmearedPhi(double phi) const {
 	return ApplyGaussian(phi, sigmaPhi);
 }
 
-double SPS_Aperture::ApplyGaussian(souble value, double sigma) const {
+double SPS_Aperture::ApplyGaussian(double value, double sigma) const {
 	if(sigma <= 0.) return value;
 
 	std::normal_distribution<double> dist(value,sigma);
