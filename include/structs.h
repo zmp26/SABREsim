@@ -32,11 +32,11 @@ struct SABREDATA { int detectorIndex=-666, particleIndex=-666; double theta, phi
 
 struct Nucleus {
 	int A = -666;
-	TString sym = "";
+	std::string sym = "";
 	double massMeV = -666;
 
 	Nucleus() = default;
-	Nucleus(int a, const TString& s, double m) : A(a), sym(s), massMeV(m) {}
+	Nucleus(int a, std::string s, double m) : A(a), sym(std::move(s)), massMeV(m) {}
 
 	Nucleus(const Nucleus&) = default;
 
@@ -45,18 +45,18 @@ struct Nucleus {
 	Nucleus& operator=(const Nucleus&) = default;
 
 	bool Filled() const {
-		return (A != -666 && sym != "" && massMeV != -666);
+		return (A != -666 && !sym.empty() && massMeV != -666);
 	}
 
-	TString ToString() const {
-		return Form("%d%s", A, sym.Data());
+	std::string ToString() const {
+		return std::to_string(A) + sym;
 	}
 
 	void SetA(int newA){
 		A = newA;
 	}
 
-	void SetSym(TString newsym){
+	void SetSym(const std::string& newsym){
 		sym = newsym;
 	}
 
@@ -64,10 +64,10 @@ struct Nucleus {
 		massMeV = newmassMeV;
 	}
 
-	void SetAll(int newA, TString newsym, double newmassMeV){
-		SetA(newA);
-		SetSym(newsym);
-		SetMassMeV(newmassMeV);
+	void SetAll(int newA, std::string newsym, double newmassMeV){
+		A = newA;
+		sym = std::move(newsym);
+		massMeV = newmassMeV;
 	}
 };
 
@@ -81,7 +81,7 @@ struct Reaction2{
 	double recoilExE=0.;
 
 	TString ToString(){
-		TString retval = Form("%d%s(%d%s,%d%s)%d%s at E=%f to ExE=%f",target.A,target.sym.Data(),beam.A,beam.sym.Data(),ejectile.A,ejectile.sym.Data(),recoil.A,recoil.sym.Data(),beamEnergy,recoilExE);
+		TString retval = Form("%d%s(%d%s,%d%s)%d%s at E=%f to ExE=%f",target.A,target.sym.data(),beam.A,beam.sym.data(),ejectile.A,ejectile.sym.data(),recoil.A,recoil.sym.data(),beamEnergy,recoilExE);
 		return retval;
 	};
 };
@@ -98,7 +98,7 @@ struct Reaction3{
 	double recoilExE=0.;
 
 	TString ToString(){
-		TString retval = Form("%d%s(%d%s,%d%s)%d%s at E=%f to ExE=%f",target.A,target.sym.Data(),beam.A,beam.sym.Data(),ejectile.A,ejectile.sym.Data(),recoil.A,recoil.sym.Data(),beamEnergy,recoilExE);
+		TString retval = Form("%d%s(%d%s,%d%s)%d%s at E=%f to ExE=%f",target.A,target.sym.data(),beam.A,beam.sym.data(),ejectile.A,ejectile.sym.data(),recoil.A,recoil.sym.data(),beamEnergy,recoilExE);
 		return retval;
 	};
 };
