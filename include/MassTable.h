@@ -34,7 +34,7 @@ public:
   float GetMassExcess(int n, int z, int a);
   float GetMassExcess(const char* symbol, int a);
   const char* GetSymbol(int z);
-  int GetZ(char* symbol);
+  int GetZ(const char* symbol);
   void Print(void);
   void PrintEntry(int);
   //added by zmp

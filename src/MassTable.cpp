@@ -135,7 +135,7 @@ const char* MassTable::GetSymbol(int z=0)
   return (returnvalue);
 };
 
-int MassTable::GetZ(char *symbol)
+int MassTable::GetZ(const char *symbol)
 {
   char test[3];
   sprintf(test,"%s",symbol);
