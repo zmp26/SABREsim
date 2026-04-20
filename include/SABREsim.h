@@ -17,6 +17,7 @@
 #include "SimConfig.h"
 #include "TargetAngularStraggler.h"
 #include "SABRE_Array.h"
+#include "SPS_Aperture.h"
 
 class SABREsim {
 public:
@@ -45,6 +46,8 @@ private:
 	std::string detOutputFilename_;
 	std::string treeFilename_;
 	std::string histoFilename_;
+
+	SPS_Aperture *sps;
 
 	SABRE_Array *SABRE_Array_;
 	std::vector<SABRE_EnergyResolutionModel*> SABREARRAY_EnergyResolutionModels_;

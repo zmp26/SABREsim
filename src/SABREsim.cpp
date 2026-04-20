@@ -20,6 +20,7 @@
 #include "plot2mc.h"
 #include "plot3mc.h"
 #include "plot4mc.h"
+#include "SPS_Aperture.h"
 
 SABREsim::SABREsim(const std::string& configFilename)
 	: kinX_(0),
@@ -68,6 +69,12 @@ SABREsim::SABREsim(const std::string& configFilename)
 	histoFilename_ = config_->GetHistoFile();
 
 	SABRE_Array_ = new SABRE_Array();
+	sps = new SPS_Aperture(
+										config_->GetSPSApertureDist(),
+										config_->GetSPSThetaMin(), config_->GetSPSThetaMax(),
+										config_->GetSPSPhiMin(), config_->GetSPSPhiMax(),
+										config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi();
+									);
 
 	RootWriter_ = new RootWriter(treeFilename_);
 	RootWriter_->SetReaction(config_->GetReaction());
@@ -93,6 +100,7 @@ SABREsim::~SABREsim(){
 
 void SABREsim::CleanUp(){
 
+	delete sps;
 	SABRE_Array_->Clear();
 
 	for(auto m : SABREARRAY_EnergyResolutionModels_) delete m;
