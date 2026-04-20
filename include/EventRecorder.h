@@ -15,6 +15,7 @@ public:
 	void ResetEvent();
 	void SetKinematics(int index, double e, double theta, double phi);
 	void SetReactionOrigin(double x, double y, double z);
+	void UpdateSPS(bool EjInSPS, double SPSE, double SPSTh, double SPSPh);
 	void AddHit(const Hit& hit);
 	void FillEvent();
 
@@ -38,6 +39,9 @@ private:
 	double kin_theta_[4];
 	double kin_phi_[4];
 	double reactionOrigin_[3];
+
+	bool EjInSPS;
+	double SPSEnergy, SPSTheta, SPSPhi;
 
 	int numHits_;
 	int particleID_[4];

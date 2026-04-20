@@ -16,6 +16,11 @@ EventRecorder::EventRecorder(const std::string& filename)
 	tree_->Branch("kin_phi", kin_phi_, "kin_phi[4]/D");
 	tree_->Branch("reactionOrigin", reactionOrigin_, "reactionOrigin[3]/D");
 
+	tree_->Branch("EjInSPS", &EjInSPS, "EjInSPS/O");
+	tree_->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
+	tree_->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
+	tree_->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
+
 	tree_->Branch("numHits", &numHits_, "numHits/I");
 	tree_->Branch("particleID", particleID_, "particleID[4]/I");
 	tree_->Branch("detectorID", detectorID_, "detectorID[4]/I");
@@ -45,6 +50,11 @@ void EventRecorder::ResetEvent(){
 	std::fill_n(kin_theta_, 4, -666.);
 	std::fill_n(kin_phi_, 4, -666.);
 	std::fill_n(reactionOrigin_, 3, -666.);
+
+	EjInSPS = false;
+	SPSEnergy = -666.;
+	SPSTheta = -666.;
+	SPSPhi = -666.;
 
 	std::fill_n(particleID_, 4, -666);
 	std::fill_n(detectorID_, 4, -666);
@@ -77,11 +87,20 @@ void EventRecorder::SetReactionOrigin(double x, double y, double z){
 	reactionOrigin_[2] = z;
 }
 
+void EventRecorder::UpdateSPS(bool EjectileInSPS, double SPSE, double SPSTh, double SPSPh){
+	EjInSPS = EjectileInSPS;
+	SPSEnergy = SPSE;
+	SPSTheta = SPSTh;
+	SPSPhi = SPSPh;
+}
+
 void EventRecorder::AddHit(const Hit& hit){
 	hits_.push_back(hit);
 }
 
 void EventRecorder::FillEvent(){
+
+
 	int n = std::min((int)hits_.size(), 4);
 	for(int i=0; i<n; i++){
 		const Hit& h = hits_[i];
