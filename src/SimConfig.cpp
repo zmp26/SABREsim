@@ -67,30 +67,30 @@ bool SimConfig::Parse(){
 		else if(section == "Kinematics"){
 			if(key == "beam"){
 				std::stringstream ss(val);
-				if(ss >> beam_.A >> beam_.symbol){
+				if(ss >> beam_.A >> beam_.sym){
 					//use mass table to set mass here
-					beam_.massMeV = masstable->GetNuclearMassMeV(beam_.symbol, beam_.A);
+					beam_.massMeV = masstable->GetNuclearMassMeV(beam_.sym.data(), beam_.A);
 				}
 			}
 			else if(key == "target"){
 				std::stringstream ss(val);
-				if(ss >> target_.A >> target_.symbol){
+				if(ss >> target_.A >> target_.sym){
 					//use mass table to set mass here
-					target_.massMeV = masstable->GetNuclearMassMeV(target_.symbol, target_.A);
+					target_.massMeV = masstable->GetNuclearMassMeV(target_.sym.data(), target_.A);
 				}
 			}
 			else if(key == "recoil"){
 				std::stringstream ss(val);
-				if(ss >> recoil_.A >> recoil_.symbol){
+				if(ss >> recoil_.A >> recoil_.sym){
 					//use mass table to set mass here
-					recoil_.massMeV = masstable->GetNuclearMassMeV(recoil_.symbol, recoil_.A);
+					recoil_.massMeV = masstable->GetNuclearMassMeV(recoil_.sym.data(), recoil_.A);
 				}
 			}
 			else if(key == "ejectile"){
 				std::stringstream ss(val);
-				if(ss >> ejectile_.A >> ejectile_.symbol){
+				if(ss >> ejectile_.A >> ejectile_.sym){
 					//use mass table to set mass here
-					ejectile_.massMeV = masstable->GetNuclearMassMeV(ejectile_.symbol, ejectile_.A);
+					ejectile_.massMeV = masstable->GetNuclearMassMeV(ejectile_.sym.data(), ejectile_.A);
 				}
 			}
 			else if(key == "beam_energy") beam_energy_ = std::stod(val);
@@ -156,15 +156,15 @@ bool SimConfig::Parse(){
 		// 			nuc.A = std::stoi(val);
 
 		// 		}
-		// 		else if(key == prefix + "_symbol"){
-		// 			nuc.symbol = val;
+		// 		else if(key == prefix + "_sym"){
+		// 			nuc.sym = val;
 
 		// 		}
 		// 		else if(key == prefix + "_mass"){
 		// 			nuc.mass = std::stod(val);
 		// 		}
 
-		// 		//if(prefix == "ejectile" && nuc.A > 0 && nuc.mass > 0) std::cout << prefix << "\t A = " << nuc.A << "\tsym = " << nuc.symbol << "\tmass = " << nuc.mass << std::endl;
+		// 		//if(prefix == "ejectile" && nuc.A > 0 && nuc.mass > 0) std::cout << prefix << "\t A = " << nuc.A << "\tsym = " << nuc.sym << "\tmass = " << nuc.mass << std::endl;
 		// 	};
 
 		// 	parseNucleus("beam",beam_);
@@ -186,7 +186,7 @@ bool SimConfig::Parse(){
 		// 		NucleusConfig& nuc = breakups_[index];
 
 		// 		if(field == "A") nuc.A = std::stoi(val);
-		// 		else if(field == "symbol") nuc.symbol = val;
+		// 		else if(field == "sym") nuc.sym = val;
 		// 		else if(field == "mass") nuc.mass = std::stod(val);
 
 		// 	} 
@@ -194,12 +194,12 @@ bool SimConfig::Parse(){
 		// }
 	}
 
-	reaction_ << target_.A << target_.symbol << "(" << beam_.A << beam_.symbol << "," << ejectile_.A << ejectile_.symbol << ")" << recoil_.A << recoil_.symbol;
+	reaction_ = target_.ToString() + "(" + beam_.ToString() + "," + ejectile_.ToString() + ")" + recoil_.ToString();
 
-	std::cout << "beam\t A = " << beam_.A << "\tsymbol = " << beam_.symbol << "\tmass = " << beam_.mass << std::endl;
-	std::cout << "target\t A = " << target_.A << "\tsymbol = " << target_.symbol << "\tmass = " << target_.mass << std::endl;
-	std::cout << "ejectile\t A = " << ejectile_.A << "\tsymbol = " << ejectile_.symbol << "\tmass = " << ejectile_.mass << std::endl;
-	std::cout << "recoil\t A = " << recoil_.A << "\tsymbol = " << recoil_.symbol << "\tmass = " << recoil_.mass << std::endl; 
+	std::cout << "beam\t A = " << beam_.A << "\tsym = " << beam_.sym << "\tmass = " << beam_.massMeV << std::endl;
+	std::cout << "target\t A = " << target_.A << "\tsym = " << target_.sym << "\tmass = " << target_.massMeV << std::endl;
+	std::cout << "ejectile\t A = " << ejectile_.A << "\tsym = " << ejectile_.sym << "\tmass = " << ejectile_.massMeV << std::endl;
+	std::cout << "recoil\t A = " << recoil_.A << "\tsym = " << recoil_.sym << "\tmass = " << recoil_.massMeV << std::endl; 
 
 	infile.close();
 	return true;
