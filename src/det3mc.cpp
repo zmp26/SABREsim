@@ -129,9 +129,10 @@ void det3mc::Run(std::ifstream& infile, std::ofstream& outfile, RootWriter* Root
 	// immmaTool.SetBreakup2(bu2.A, bu2.symbol, bu2.mass);
 
 	std::vector<Nucleus> breakups;
-	for(const auto& cfg : config->GetBreakups()){
-		breakups.emplace_back(cfg.A, cfg.symbol, cfg.mass);
-	}
+	//commented out 04/20/2026 --> make sure to remove immma stuff in rewrite to match det4mc
+	// for(const auto& cfg : config->GetBreakups()){
+	// 	breakups.emplace_back(cfg.A, cfg.symbol, cfg.mass);
+	// }
 	immmaTool.SetBreakupNuclei(breakups);
 
 	immmaTool.SetBeamEnergyMeV(config->GetBeamEnergy());
