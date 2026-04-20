@@ -47,7 +47,14 @@ public:
 	const NucleusConfig& GetEjectile() const { return ejectile_; }
 	const NucleusConfig& GetRecoil() const { return recoil_; }
 
-	const std::vector<NucleusConfig>& GetBreakups() const { return breakups_; }
+	const double GetSPSThetaMin() const { return SPS_ThetaMin; }
+	const double GetSPSThetaMax() const { return SPS_ThetaMax; }
+	const double GetSPSPhiMin() const { return SPS_PhiMin; }
+	const double GetSPSPhiMax() const { return SPS_PhiMax; }
+	const double GetSPSSigmaE() const { return SPS_SigmaE; }
+	const double GetSPSSigmaTheta() const { return SPS_SigmaTheta; }
+	const double GetSPSSigmaPhi() const { return SPS_SigmaPhi; }
+	const double GetSPSApertureDist() const { return SPS_ApertureDist; }
 
 private:
 	MassTable *masstable;
@@ -79,7 +86,11 @@ private:
 	NucleusConfig target_;
 	NucleusConfig ejectile_;
 	NucleusConfig recoil_;
-	std::vector<NucleusConfig> breakups_;
+
+	double SPS_ThetaMin, SPS_ThetaMax, SPS_PhiMin, SPS_PhiMax;
+	double SPS_SigmaE, SPS_SigmaTheta, SPS_SigmaPhi;
+	double SPS_ApertureDist;
+
 };
 
 

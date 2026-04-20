@@ -101,6 +101,16 @@ bool SimConfig::Parse(){
 			else if(key == "beam_offsetX") beam_offsetX_ = std::stod(val);
 			else if(key == "beam_offsetY") beam_offsetY_ = std::stod(val);
 		}
+		else if(section == "SPS"){
+			if(key == "ThetaMin") SPS_ThetaMin = std::stod(val);
+			else if(key == "ThetaMax") SPS_ThetaMax = std::stod(val);
+			else if(key == "PhiMin") SPS_PhiMin = std::stod(val);
+			else if(key == "PhiMax") SPS_PhiMax = std::stod(val);
+			else if(key == "SigmaE") SPS_SigmaE = std::stod(val);
+			else if(key == "SigmaTheta") SPS_SigmaTheta = std::stod(val);
+			else if(key == "SigmaPhi") SPS_SigmaPhi = std::stod(val);
+			else if(key == "ApertureDist") SPS_ApertureDist = std::stod(val);
+		}
 		else if(section == "MetaData"){
 			if(key == "reaction") reaction_ = val;
 			else if(key == "beam_energy") beam_energy_ = std::stod(val);
