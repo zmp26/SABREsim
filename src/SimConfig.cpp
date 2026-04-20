@@ -69,28 +69,28 @@ bool SimConfig::Parse(){
 				std::stringstream ss(val);
 				if(ss >> beam_.A >> beam_.symbol){
 					//use mass table to set mass here
-					beam_.massMeV = -666.;
+					beam_.massMeV = masstable->GetNuclearMassMeV(beam_.symbol, beam_.A);
 				}
 			}
 			else if(key == "target"){
 				std::stringstream ss(val);
 				if(ss >> target_.A >> target_.symbol){
 					//use mass table to set mass here
-					target_.massMeV = -666.;
+					target_.massMeV = masstable->GetNuclearMassMeV(target_.symbol, target_.A);
 				}
 			}
 			else if(key == "recoil"){
 				std::stringstream ss(val);
 				if(ss >> recoil_.A >> recoil_.symbol){
 					//use mass table to set mass here
-					recoil_.massMeV = -666.;
+					recoil_.massMeV = masstable->GetNuclearMassMeV(recoil_.symbol, recoil_.A);
 				}
 			}
 			else if(key == "ejectile"){
 				std::stringstream ss(val);
 				if(ss >> ejectile_.A >> ejectile_.symbol){
 					//use mass table to set mass here
-					ejectile_.massMeV = -666.;
+					ejectile_.massMeV = masstable->GetNuclearMassMeV(ejectile_.symbol, ejectile_.A);
 				}
 			}
 			else if(key == "beam_energy") beam_energy_ = std::stod(val);
