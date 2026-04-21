@@ -30,456 +30,552 @@
 #include "TString.h"
 #include "TDirectory.h"
 #include "invmass_mult3.h"
-#include "invmass_mult3.cpp"
+#include "invmass_mult3.cpp"//including .cpp for simple root macro purposes
 
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=0.05){
+	TMassTable fMassTable;
+	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+
+	Hypothesis4 b9gs_be8gs_hypothesis;
+	b9gs_be8gs_hypothesis.name = "B10ha_8BeHypothesis";
+
+	b9gs_be8gs_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	b9gs_be8gs_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	b9gs_be8gs_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	b9gs_be8gs_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+	b9gs_be8gs_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+	b9gs_be8gs_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	b9gs_be8gs_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	b9gs_be8gs_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+	b9gs_be8gs_hypothesis.recoilEx = recoilEx;
+	b9gs_be8gs_hypothesis.intermediateEx = intermediateEx;
+	b9gs_be8gs_hypothesis.intermediateExGate = intermediateExGate;
+
+	TFile *infile = new TFile(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult3");
+	if(!intree){
+		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+		return;
+	}
+
+	long numentries = intree->GetEntries();
+
+	InvMass_Mult3 SABRE_analysis;;
+	SABRE_analysis.Init(SABRE_output_filename);
+	SABRE_analysis.SetHypothesis(b9gs_be8gs_hypothesis);
+
+	InvMass_Mult3 kin4mc_analysis;
+	kin4mc_analysis.Init(kin4mc_output_filename);
+	kin4mc_analysis.SetHypothesis(b9gs_be8gs_hypothesis);
+
+	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+	intree->SetBranchAddress("kin_e", kinmc_e);
+	intree->SetBranchAddress("kin_theta", kinmc_theta);
+	intree->SetBranchAddress("kin_phi", kinmc_phi);
+
+	double E[3], theta[3], phi[3];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+	for(long i=0; i<numentries; i++){
+
+		intree->GetEntry(i);
+
+		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+		for(int j=0; j<3; j++){
+			kinmc_bue[j] = kinmc_e[j+1];
+			kinmc_butheta[j] = kinmc_theta[j+1];
+			kinmc_buphi[j] = kinmc_phi[j+1];
+		}
+
+		SABRE_analysis.AnalyzeEvent(E, theta, phi);
+		SABRE_analysis.FillEventHistograms();
+
+		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
+		kin4mc_analysis.FillEventHistograms();
+
+		if(i % 1000 == 0){
+			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+			fflush(stdout);
+		}
+
+	}
+
+	SABRE_analysis.CloseAndWrite();
+	kin4mc_analysis.CloseAndWrite();
+	infile->Close();
+
+	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+	std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
+
+}
+
+
 //test functions for invmass_mult3.cpp/h:
-void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename, double daughterEx=0., double daughterExGate=0.05){
+// void B10ha_8BeHypothesis(const char* input_filename, const char* output_filename, double daughterEx=0., double daughterExGate=0.05){
 
-	//HYPOTHESIS: 9B -> p + 8Be -> a + a
-	//FINAL STATE = p + a + a
+// 	//HYPOTHESIS: 9B -> p + 8Be -> a + a
+// 	//FINAL STATE = p + a + a
 
-	//THRESHOLD = -0.185 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
-	double THRESHOLD = -0.185;
+// 	//THRESHOLD = -0.185 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+// 	double THRESHOLD = -0.185;
 
-	//first things first, let's make sure input_filename is real:
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
+// 	//first things first, let's make sure input_filename is real:
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
 
-	TTree *intree = (TTree*)infile->Get("mult3");
-	long numentries = intree->GetEntries();
-	if(!intree){
-		std::cerr << "Could not get TTree from " << input_filename << std::endl;
-		return;
-	} else if(numentries == 0){
-		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
-		return;
-	} else {
-		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
-	}
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	long numentries = intree->GetEntries();
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree from " << input_filename << std::endl;
+// 		return;
+// 	} else if(numentries == 0){
+// 		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
+// 		return;
+// 	} else {
+// 		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
+// 	}
 
-	//prepare mass table
-	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+// 	//prepare mass table
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/mnt/e/masstable/masstable.dat");
 
-	//prepare analysis tool
-	InvMass_Mult3 analysis;
-	analysis.Init(output_filename);
-	analysis.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
-					   fMassTable.GetNuclearMassMeV("He",4),//bu2
-					   fMassTable.GetNuclearMassMeV("He",4),//bu3
-					   fMassTable.GetNuclearMassMeV("B",9),//recoil
-					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
-					  );
-	analysis.SetDaughterEx(daughterEx);
-	analysis.SetDaughterExGate(daughterExGate);
+// 	//prepare analysis tool
+// 	InvMass_Mult3 analysis;
+// 	analysis.Init(output_filename);
+// 	analysis.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu2
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
+// 					  );
+// 	analysis.SetDaughterEx(daughterEx);
+// 	analysis.SetDaughterExGate(daughterExGate);
 
-	double E[3], theta[3], phi[3];
-	//hit1
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-	//hit2
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-	//hit3
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
+// 	double E[3], theta[3], phi[3];
+// 	//hit1
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+// 	//hit2
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+// 	//hit3
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 
-	for(long i=0; i<intree->GetEntries(); i++){
-		intree->GetEntry(i);
-		std::array<double,6> recoilEx = analysis.AnalyzeEvent(E,theta,phi);
-		analysis.FillEventHistograms();
-		// double avgRecoilEx = 0;
-		// for(int j=0; j<6; j++) avgRecoilEx += recoilEx[j];
-		// avgRecoilEx = avgRecoilEx/6.;
-		// if(avgRecoilEx > THRESHOLD){
-		// 	analysis.FillEventHistograms();
-		// }
+// 	for(long i=0; i<intree->GetEntries(); i++){
+// 		intree->GetEntry(i);
+// 		std::array<double,6> recoilEx = analysis.AnalyzeEvent(E,theta,phi);
+// 		analysis.FillEventHistograms();
+// 		// double avgRecoilEx = 0;
+// 		// for(int j=0; j<6; j++) avgRecoilEx += recoilEx[j];
+// 		// avgRecoilEx = avgRecoilEx/6.;
+// 		// if(avgRecoilEx > THRESHOLD){
+// 		// 	analysis.FillEventHistograms();
+// 		// }
 		
-	}
+// 	}
 
-	analysis.CloseAndWrite();
-	infile->Close();
+// 	analysis.CloseAndWrite();
+// 	infile->Close();
 
-	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to " << output_filename << "\n" << std::endl;
-}
+// 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to " << output_filename << "\n" << std::endl;
+// }
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename, double daughterEx=0., double daughterExGate=0.05){
+// void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename, double daughterEx=0., double daughterExGate=0.05){
 
-	//HYPOTHESIS: 9B -> p + 8Be -> a + a
-	//FINAL STATE = p + a + a
+// 	//HYPOTHESIS: 9B -> p + 8Be -> a + a
+// 	//FINAL STATE = p + a + a
 
-	//THRESHOLD = -0.185 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
-	double THRESHOLD = -0.185;
+// 	//THRESHOLD = -0.185 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+// 	double THRESHOLD = -0.185;
 
-	//first things first, let's make sure input_filename is real:
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
+// 	//first things first, let's make sure input_filename is real:
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
 
-	TTree *intree = (TTree*)infile->Get("mult3");
-	long numentries = intree->GetEntries();
-	if(!intree){
-		std::cerr << "Could not get TTree from " << input_filename << std::endl;
-		return;
-	} else if(numentries == 0){
-		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
-		return;
-	} else {
-		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
-	}
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	long numentries = intree->GetEntries();
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree from " << input_filename << std::endl;
+// 		return;
+// 	} else if(numentries == 0){
+// 		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
+// 		return;
+// 	} else {
+// 		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
+// 	}
 
-	//prepare mass table
-	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+// 	//prepare mass table
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/mnt/e/masstable/masstable.dat");
 
-	//prepare SABREsim analysis tool
-	InvMass_Mult3 SABRE_analysis;
-	SABRE_analysis.Init(SABRE_output_filename);
-	SABRE_analysis.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
-					   fMassTable.GetNuclearMassMeV("He",4),//bu2
-					   fMassTable.GetNuclearMassMeV("He",4),//bu3
-					   fMassTable.GetNuclearMassMeV("B",9),//recoil
-					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
-					  );
-	SABRE_analysis.SetDaughterEx(daughterEx);
-	SABRE_analysis.SetDaughterExGate(daughterExGate);
+// 	//prepare SABREsim analysis tool
+// 	InvMass_Mult3 SABRE_analysis;
+// 	SABRE_analysis.Init(SABRE_output_filename);
+// 	SABRE_analysis.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu2
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
+// 					  );
+// 	SABRE_analysis.SetDaughterEx(daughterEx);
+// 	SABRE_analysis.SetDaughterExGate(daughterExGate);
 
-	//prepare kin4mc analysis tool
-	InvMass_Mult3 kin4mc_analysis;
-	kin4mc_analysis.Init(kin4mc_output_filename);
-	kin4mc_analysis.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
-					   fMassTable.GetNuclearMassMeV("He",4),//bu2
-					   fMassTable.GetNuclearMassMeV("He",4),//bu3
-					   fMassTable.GetNuclearMassMeV("B",9),//recoil
-					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
-					  );
-	kin4mc_analysis.SetDaughterEx(daughterEx);
-	kin4mc_analysis.SetDaughterExGate(daughterExGate);
+// 	//prepare kin4mc analysis tool
+// 	InvMass_Mult3 kin4mc_analysis;
+// 	kin4mc_analysis.Init(kin4mc_output_filename);
+// 	kin4mc_analysis.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu2
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
+// 					  );
+// 	kin4mc_analysis.SetDaughterEx(daughterEx);
+// 	kin4mc_analysis.SetDaughterExGate(daughterExGate);
 
-	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
-	//kin4mc output
-	intree->SetBranchAddress("kin_e", kinmc_e);
-	intree->SetBranchAddress("kin_theta", kinmc_theta);
-	intree->SetBranchAddress("kin_phi", kinmc_phi);
+// 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+// 	//kin4mc output
+// 	intree->SetBranchAddress("kin_e", kinmc_e);
+// 	intree->SetBranchAddress("kin_theta", kinmc_theta);
+// 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double E[3], theta[3], phi[3];
-	//hit1
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-	//hit2
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-	//hit3
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
+// 	double E[3], theta[3], phi[3];
+// 	//hit1
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+// 	//hit2
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+// 	//hit3
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 
-	for(long i=0; i<numentries; i++){
-		//get entry:
-		intree->GetEntry(i);
+// 	for(long i=0; i<numentries; i++){
+// 		//get entry:
+// 		intree->GetEntry(i);
 
-		//convert to format without ejectile info:
-		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
-		for(int j=0; j<3; j++){
-			kinmc_bue[j] = kinmc_e[j+1];
-			kinmc_butheta[j] = kinmc_theta[j+1];
-			kinmc_buphi[j] = kinmc_phi[j+1];
-		}
+// 		//convert to format without ejectile info:
+// 		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+// 		for(int j=0; j<3; j++){
+// 			kinmc_bue[j] = kinmc_e[j+1];
+// 			kinmc_butheta[j] = kinmc_theta[j+1];
+// 			kinmc_buphi[j] = kinmc_phi[j+1];
+// 		}
 
-		std::array<double,6> recoilEx_SABRE = SABRE_analysis.AnalyzeEvent(E,theta,phi);
-		std::array<double,6> recoilEx_kin4mc = kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
-		SABRE_analysis.FillEventHistograms();
-		kin4mc_analysis.FillEventHistograms();
+// 		std::array<double,6> recoilEx_SABRE = SABRE_analysis.AnalyzeEvent(E,theta,phi);
+// 		std::array<double,6> recoilEx_kin4mc = kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
+// 		SABRE_analysis.FillEventHistograms();
+// 		kin4mc_analysis.FillEventHistograms();
 		
-	}
+// 	}
 
-	SABRE_analysis.CloseAndWrite();
-	kin4mc_analysis.CloseAndWrite();
-	infile->Close();
+// 	SABRE_analysis.CloseAndWrite();
+// 	kin4mc_analysis.CloseAndWrite();
+// 	infile->Close();
 
-	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nkin4mc output saved to " << kin4mc_output_filename << "\nSABREsim output saved to " << SABRE_output_filename << std::endl;
-}
+// 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nkin4mc output saved to " << kin4mc_output_filename << "\nSABREsim output saved to " << SABRE_output_filename << std::endl;
+// }
 
-void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename, double daughterEx=0., double daughterExGate=0.){//update w/ appropriate  values
+// void B10ha_5LiHypothesis(const char* input_filename, const char* output_filename, double daughterEx=0., double daughterExGate=0.){//update w/ appropriate  values
 
-	//HYPOTHESIS: 9B -> a + 5Li -> p + a
-	//FINAL STATE = a + p + a
+// 	//HYPOTHESIS: 9B -> a + 5Li -> p + a
+// 	//FINAL STATE = a + p + a
 
-	//THRESHOLD = 1.69 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
-	double THRESHOLD = 1.69;
+// 	//THRESHOLD = 1.69 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+// 	double THRESHOLD = 1.69;
 
-	//check if input_filename is real
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
+// 	//check if input_filename is real
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
 
-	TTree *intree = (TTree*)infile->Get("mult3");
-	long numentries = intree->GetEntries();
-	if(!intree){
-		std::cerr << "Could not get TTree from " << input_filename << std::endl;
-		return;
-	} else if(numentries == 0){
-		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
-		return;
-	} else {
-		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
-	}
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	long numentries = intree->GetEntries();
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree from " << input_filename << std::endl;
+// 		return;
+// 	} else if(numentries == 0){
+// 		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
+// 		return;
+// 	} else {
+// 		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
+// 	}
 
-	//prepare mass table
-	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+// 	//prepare mass table
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/mnt/e/masstable/masstable.dat");
 
-	//prepare analysis tool
-	InvMass_Mult3 analysis;
-	analysis.Init(output_filename);
-	analysis.SetMasses(
-						fMassTable.GetNuclearMassMeV("He",4),//bu1
-						fMassTable.GetNuclearMassMeV("H",1),//bu2
-						fMassTable.GetNuclearMassMeV("He",4),//bu3
-						fMassTable.GetNuclearMassMeV("B",9),//recoil
-						fMassTable.GetNuclearMassMeV("Li",5)//daughter
-					  );
-	analysis.SetDaughterEx(daughterEx);
-	analysis.SetDaughterExGate(daughterExGate);
+// 	//prepare analysis tool
+// 	InvMass_Mult3 analysis;
+// 	analysis.Init(output_filename);
+// 	analysis.SetMasses(
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu1
+// 						fMassTable.GetNuclearMassMeV("H",1),//bu2
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 						fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 						fMassTable.GetNuclearMassMeV("Li",5)//daughter
+// 					  );
+// 	analysis.SetDaughterEx(daughterEx);
+// 	analysis.SetDaughterExGate(daughterExGate);
 
-	double E[3], theta[3], phi[3];
-	//hit1
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-	//hit2
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-	//hit3
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
+// 	double E[3], theta[3], phi[3];
+// 	//hit1
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+// 	//hit2
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+// 	//hit3
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 
-	for(long i=0; i<intree->GetEntries(); i++){
-		intree->GetEntry(i);
-		std::array<double,6> recoilEx = analysis.AnalyzeEvent(E,theta,phi);
-		analysis.FillEventHistograms();
-		// double avgRecoilEx = 0;
-		// for(int j=0; j<6; j++) avgRecoilEx += recoilEx[j];
-		// avgRecoilEx = avgRecoilEx/6.;
-		// if(avgRecoilEx > THRESHOLD){
-		// 	analysis.FillEventHistograms();
-		// }
+// 	for(long i=0; i<intree->GetEntries(); i++){
+// 		intree->GetEntry(i);
+// 		std::array<double,6> recoilEx = analysis.AnalyzeEvent(E,theta,phi);
+// 		analysis.FillEventHistograms();
+// 		// double avgRecoilEx = 0;
+// 		// for(int j=0; j<6; j++) avgRecoilEx += recoilEx[j];
+// 		// avgRecoilEx = avgRecoilEx/6.;
+// 		// if(avgRecoilEx > THRESHOLD){
+// 		// 	analysis.FillEventHistograms();
+// 		// }
 
-	}
+// 	}
 
-	analysis.CloseAndWrite();
-	infile->Close();
+// 	analysis.CloseAndWrite();
+// 	infile->Close();
 
-	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to " << output_filename << "\n" << std::endl;
-}
+// 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to " << output_filename << "\n" << std::endl;
+// }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename, double daughterEx=0., double daughterExGate=1.0){
+// void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* SABRE_output_filename, const char* kin4mc_output_filename, double daughterEx=0., double daughterExGate=1.0){
 
-	//HYPOTHESIS: 9B -> a + 5Li -> p + a
-	//FINAL STATE = a + p + a
+// 	//HYPOTHESIS: 9B -> a + 5Li -> p + a
+// 	//FINAL STATE = a + p + a
 
-	//THRESHOLD = 1.69 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
-	double THRESHOLD = 1.69;
+// 	//THRESHOLD = 1.69 MeV (Source: https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+// 	double THRESHOLD = 1.69;
 
-	//first things first, let's make sure input_filename is real:
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
+// 	//first things first, let's make sure input_filename is real:
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
 
-	TTree *intree = (TTree*)infile->Get("mult3");
-	long numentries = intree->GetEntries();
-	if(!intree){
-		std::cerr << "Could not get TTree from " << input_filename << std::endl;
-		return;
-	} else if(numentries == 0){
-		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
-		return;
-	} else {
-		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
-	}
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	long numentries = intree->GetEntries();
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree from " << input_filename << std::endl;
+// 		return;
+// 	} else if(numentries == 0){
+// 		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
+// 		return;
+// 	} else {
+// 		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
+// 	}
 
-	//prepare mass table
-	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+// 	//prepare mass table
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/mnt/e/masstable/masstable.dat");
 
-	//prepare SABREsim analysis tool
-	InvMass_Mult3 SABRE_analysis;
-	SABRE_analysis.Init(SABRE_output_filename);
-	SABRE_analysis.SetMasses(
-						fMassTable.GetNuclearMassMeV("He",4),//bu1
-						fMassTable.GetNuclearMassMeV("H",1),//bu2
-						fMassTable.GetNuclearMassMeV("He",4),//bu3
-						fMassTable.GetNuclearMassMeV("B",9),//recoil
-						fMassTable.GetNuclearMassMeV("Li",5)//daughter
-					  );
-	SABRE_analysis.SetDaughterEx(daughterEx);
-	SABRE_analysis.SetDaughterExGate(daughterExGate);
+// 	//prepare SABREsim analysis tool
+// 	InvMass_Mult3 SABRE_analysis;
+// 	SABRE_analysis.Init(SABRE_output_filename);
+// 	SABRE_analysis.SetMasses(
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu1
+// 						fMassTable.GetNuclearMassMeV("H",1),//bu2
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 						fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 						fMassTable.GetNuclearMassMeV("Li",5)//daughter
+// 					  );
+// 	SABRE_analysis.SetDaughterEx(daughterEx);
+// 	SABRE_analysis.SetDaughterExGate(daughterExGate);
 
-	//prepare kin4mc analysis tool
-	InvMass_Mult3 kin4mc_analysis;
-	kin4mc_analysis.Init(kin4mc_output_filename);
-	kin4mc_analysis.SetMasses(
-						fMassTable.GetNuclearMassMeV("He",4),//bu1
-						fMassTable.GetNuclearMassMeV("H",1),//bu2
-						fMassTable.GetNuclearMassMeV("He",4),//bu3
-						fMassTable.GetNuclearMassMeV("B",9),//recoil
-						fMassTable.GetNuclearMassMeV("Li",5)//daughter
-					  );
-	kin4mc_analysis.SetDaughterEx(daughterEx);
-	kin4mc_analysis.SetDaughterExGate(daughterExGate);
+// 	//prepare kin4mc analysis tool
+// 	InvMass_Mult3 kin4mc_analysis;
+// 	kin4mc_analysis.Init(kin4mc_output_filename);
+// 	kin4mc_analysis.SetMasses(
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu1
+// 						fMassTable.GetNuclearMassMeV("H",1),//bu2
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 						fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 						fMassTable.GetNuclearMassMeV("Li",5)//daughter
+// 					  );
+// 	kin4mc_analysis.SetDaughterEx(daughterEx);
+// 	kin4mc_analysis.SetDaughterExGate(daughterExGate);
 
-	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
-	//kin4mc output
-	intree->SetBranchAddress("kin_e", kinmc_e);
-	intree->SetBranchAddress("kin_theta", kinmc_theta);
-	intree->SetBranchAddress("kin_phi", kinmc_phi);
+// 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+// 	//kin4mc output
+// 	intree->SetBranchAddress("kin_e", kinmc_e);
+// 	intree->SetBranchAddress("kin_theta", kinmc_theta);
+// 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double E[3], theta[3], phi[3];
-	//hit1
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-	//hit2
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-	//hit3
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
+// 	double E[3], theta[3], phi[3];
+// 	//hit1
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+// 	//hit2
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+// 	//hit3
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 
-	for(long i=0; i<numentries; i++){
-		//get entry:
-		intree->GetEntry(i);
+// 	for(long i=0; i<numentries; i++){
+// 		//get entry:
+// 		intree->GetEntry(i);
 
-		//convert to format without ejectile info:
-		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
-		for(int j=0; j<3; j++){
-			kinmc_bue[j] = kinmc_e[j+1];
-			kinmc_butheta[j] = kinmc_theta[j+1];
-			kinmc_buphi[j] = kinmc_phi[j+1];
-		}
+// 		//convert to format without ejectile info:
+// 		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+// 		for(int j=0; j<3; j++){
+// 			kinmc_bue[j] = kinmc_e[j+1];
+// 			kinmc_butheta[j] = kinmc_theta[j+1];
+// 			kinmc_buphi[j] = kinmc_phi[j+1];
+// 		}
 
-		std::array<double,6> recoilEx_SABRE = SABRE_analysis.AnalyzeEvent(E,theta,phi);
-		std::array<double,6> recoilEx_kin4mc = kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
-		SABRE_analysis.FillEventHistograms();
-		kin4mc_analysis.FillEventHistograms();
+// 		std::array<double,6> recoilEx_SABRE = SABRE_analysis.AnalyzeEvent(E,theta,phi);
+// 		std::array<double,6> recoilEx_kin4mc = kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
+// 		SABRE_analysis.FillEventHistograms();
+// 		kin4mc_analysis.FillEventHistograms();
 		
-	}
+// 	}
 
-	SABRE_analysis.CloseAndWrite();
-	kin4mc_analysis.CloseAndWrite();
-	infile->Close();
+// 	SABRE_analysis.CloseAndWrite();
+// 	kin4mc_analysis.CloseAndWrite();
+// 	infile->Close();
 
-	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nkin4mc output saved to " << kin4mc_output_filename << "\nSABREsim output saved to " << SABRE_output_filename << std::endl;
+// 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nkin4mc output saved to " << kin4mc_output_filename << "\nSABREsim output saved to " << SABRE_output_filename << std::endl;
 
-}
+// }
 
 // void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_filename, const char* output5Li_filename){
 // 	//this code will check threshold
 // }
 
-void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_filename, const char* output5Li_filename){
+// void B10ha_bothHypotheses(const char* input_filename, const char* output8Be_filename, const char* output5Li_filename){
 
-	/*
-	HYPOTHESES:
-		9B -> p + 8Be -> a + a 			(S_p(9B) = -0.185 MeV --> https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
-		9B -> a + 5Li -> p + a 			(S_a(9B) = 1.69 MeV --> https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+// 	/*
+// 	HYPOTHESES:
+// 		9B -> p + 8Be -> a + a 			(S_p(9B) = -0.185 MeV --> https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
+// 		9B -> a + 5Li -> p + a 			(S_a(9B) = 1.69 MeV --> https://nucldata.tunl.duke.edu/nucldata/figures/09figs/09_05_2004.pdf )
 
-	FINAL STATE: 1p, 2a
-	*/
+// 	FINAL STATE: 1p, 2a
+// 	*/
 
-	double PROTON_THRESHOLD = -0.185;
-	double ALPHA_THRESHOLD = 1.69;
+// 	double PROTON_THRESHOLD = -0.185;
+// 	double ALPHA_THRESHOLD = 1.69;
 
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
 
-	TTree *intree = (TTree*)infile->Get("mult3");
-	long numentries = intree->GetEntries();
-	if(!intree){
-		std::cerr << "Could not get TTree from " << input_filename << std::endl;
-		return;
-	} else if(numentries == 0){
-		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
-		return;
-	} else {
-		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
-	}
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	long numentries = intree->GetEntries();
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree from " << input_filename << std::endl;
+// 		return;
+// 	} else if(numentries == 0){
+// 		std::cerr << "Retrieved TTree has numEntries = 0" << std::endl;
+// 		return;
+// 	} else {
+// 		std::cout << "\nRetrieved TTree with " << numentries << " entries from input file " << input_filename << "\n" << std::endl;
+// 	}
 
-	//prepare mass table
-	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+// 	//prepare mass table
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/mnt/e/masstable/masstable.dat");
 
-	//prepare analysis tools
-	InvMass_Mult3 analysis8Be, analysis5Li;
+// 	//prepare analysis tools
+// 	InvMass_Mult3 analysis8Be, analysis5Li;
 	
-	analysis8Be.Init(output8Be_filename);
-	analysis8Be.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
-					   fMassTable.GetNuclearMassMeV("He",4),//bu2
-					   fMassTable.GetNuclearMassMeV("He",4),//bu3
-					   fMassTable.GetNuclearMassMeV("B",9),//recoil
-					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
-					  );
+// 	analysis8Be.Init(output8Be_filename);
+// 	analysis8Be.SetMasses(fMassTable.GetNuclearMassMeV("H",1),//bu1
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu2
+// 					   fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 					   fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 					   fMassTable.GetNuclearMassMeV("Be",8)//daughter
+// 					  );
 
-	analysis5Li.Init(output5Li_filename);
-	analysis5Li.SetMasses(
-						fMassTable.GetNuclearMassMeV("He",4),//bu1
-						fMassTable.GetNuclearMassMeV("H",1),//bu2
-						fMassTable.GetNuclearMassMeV("He",4),//bu3
-						fMassTable.GetNuclearMassMeV("B",9),//recoil
-						fMassTable.GetNuclearMassMeV("Li",5)//daughter
-					  );
+// 	analysis5Li.Init(output5Li_filename);
+// 	analysis5Li.SetMasses(
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu1
+// 						fMassTable.GetNuclearMassMeV("H",1),//bu2
+// 						fMassTable.GetNuclearMassMeV("He",4),//bu3
+// 						fMassTable.GetNuclearMassMeV("B",9),//recoil
+// 						fMassTable.GetNuclearMassMeV("Li",5)//daughter
+// 					  );
 
-	double E[3], theta[3], phi[3];
-	//hit1
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-	//hit2
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-	//hit3
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
+// 	double E[3], theta[3], phi[3];
+// 	//hit1
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+// 	//hit2
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+// 	//hit3
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 
-	for(long i=0; i<numentries; i++){
-		intree->GetEntry(i);
-		std::array<double,6> recoilEx_8Be = analysis8Be.AnalyzeEvent(E,theta,phi);
-		std::array<double,6> recoilEx_5Li = analysis5Li.AnalyzeEvent(E,theta,phi);
+// 	for(long i=0; i<numentries; i++){
+// 		intree->GetEntry(i);
+// 		std::array<double,6> recoilEx_8Be = analysis8Be.AnalyzeEvent(E,theta,phi);
+// 		std::array<double,6> recoilEx_5Li = analysis5Li.AnalyzeEvent(E,theta,phi);
 
-		//now we can compare results and choose what to fill
-		//(eventually, I will adjust invmass_mult3 to allow multiple hypotheses per output file to cut down on bulk)
+// 		//now we can compare results and choose what to fill
+// 		//(eventually, I will adjust invmass_mult3 to allow multiple hypotheses per output file to cut down on bulk)
 
-	}
+// 	}
 
-	analysis8Be.CloseAndWrite();
-	analysis5Li.CloseAndWrite();
-	infile->Close();
+// 	analysis8Be.CloseAndWrite();
+// 	analysis5Li.CloseAndWrite();
+// 	infile->Close();
 
-	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to:\n\t" << output8Be_filename << "\n\t" << output5Li_filename << "\n" << std::endl;
-}
+// 	std::cout << "\nProcessed " << numentries << " entries from " << input_filename << ".\nOutput saved to:\n\t" << output8Be_filename << "\n\t" << output5Li_filename << "\n" << std::endl;
+// }
