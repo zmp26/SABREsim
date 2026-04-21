@@ -78,7 +78,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	int eventnum;
 	double kine[4], kintheta[4], kinphi[4];
 	double reactionOrigin[3];
-	double ExEplaceholder, SPSEnergy, SPSTheta, SPSPhi;
+
+	bool EjInSPS;
+	double SPSEnergy, SPSTheta, SPSPhi, ExE;
+
 	int SR1, SW1; double SRE1, SWE1, Stheta1, Sphi1;
 	int SR2, SW2; double SRE2, SWE2, Stheta2, Sphi2;
 	int SR3, SW3; double SRE3, SWE3, Stheta3, Sphi3;
@@ -95,7 +98,13 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t1->Branch("kin_theta", kintheta, "kin_theta[4]/D");
 	t1->Branch("kin_phi", kinphi, "kin_phi[4]/D");
 	t1->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
-	t1->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
+
+	t1->Branch("EjInSPS", &EjInSPS, "EjInSPS/O");
+	t1->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
+	t1->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
+	t1->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
+
+	t1->Branch("ExE", &ExE, "ExE/D");
 	t1->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t1->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	t1->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
@@ -112,7 +121,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t2->Branch("kin_theta", kintheta, "kin_theta[4]/D");
 	t2->Branch("kin_phi", kinphi, "kin_phi[4]/D");
 	t2->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
-	t2->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
+	t2->Branch("ExE", &ExE, "ExE/D");
 	t2->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t2->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	t2->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
@@ -135,7 +144,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t3->Branch("kin_theta", kintheta, "kin_theta[4]/D");
 	t3->Branch("kin_phi", kinphi, "kin_phi[4]/D");
 	t3->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
-	t3->Branch("ExEPlaceHolder", &ExEplaceholder, "ExEPlaceHolder/D");
+	t3->Branch("ExE", &ExE, "ExE/D");
 	t3->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t3->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	t3->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
@@ -161,6 +170,8 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	//prepare variables to read value of tin entry
 	double tin_kine[4], tin_kintheta[4], tin_kinphi[4];
 	double tin_reactionOrigin[3];
+	bool tin_EjInSPS;
+	double tin_SPSEnergy, tin_SPSTheta, tin_SPSPhi, tin_ExE;
 	int tin_multiplicity;
 	int tin_particleID[4], tin_detectorID[4], tin_ringChannel[4], tin_wedgeChannel[4], tin_localRing[4], tin_localWedge[4];
 	double tin_ringEnergy[4], tin_wedgeEnergy[4], tin_ringTheta[4], tin_wedgePhi[4], tin_localx[4], tin_localy[4];
@@ -169,6 +180,11 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	tin->SetBranchAddress("kin_theta", tin_kintheta);
 	tin->SetBranchAddress("kin_phi", tin_kinphi);
 	tin->SetBranchAddress("reactionOrigin", tin_reactionOrigin);
+	tin->SetBranchAddress("EjInSPS", &tin_EjInSPS);
+	tin->SetBranchAddress("SPSEnergy", &tin_SPSEnergy);
+	tin->SetBranchAddress("SPSTheta", &tin_SPSTheta);
+	tin->SetBranchAddress("SPSPhi", &tin_SPSPhi);
+	tin->SetBranchAddress("ExE", &tin_ExE);
 	tin->SetBranchAddress("numHits", &tin_multiplicity);
 	tin->SetBranchAddress("particleID", tin_particleID);
 	tin->SetBranchAddress("detectorID", tin_detectorID);
@@ -194,7 +210,8 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 		tin->GetEntry(i);
 
 		eventnum = (int) i;
-		ExEplaceholder = -666.666; //this is to match output format of Rachel2Root for experimental data, but is not used. Vestigial branch.
+		//ExE = -666.666; //this is to match output format of Rachel2Root for experimental data, but is not used. Vestigial branch.
+		ExE = tin_ExE;
 
 		for(int k=0; k<3; k++){
 			*SR[k] = -666.;
@@ -210,9 +227,12 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 		memcpy(kinphi, tin_kinphi, sizeof(kinphi));
 		memcpy(reactionOrigin, tin_reactionOrigin, sizeof(reactionOrigin));
 
-		SPSEnergy = tin_kine[0];
-		SPSTheta = tin_kintheta[0];
-		SPSPhi = tin_kinphi[0];
+		// SPSEnergy = tin_kine[0];
+		// SPSTheta = tin_kintheta[0];
+		// SPSPhi = tin_kinphi[0];
+		SPSEnergy = tin_SPSEnergy;
+		SPSTheta = tin_SPSTheta;
+		SPSPhi = tin_SPSPhi;
 
 		//index list for shuffling/sorting:
 		int nParticles = std::min(tin_multiplicity,3);
