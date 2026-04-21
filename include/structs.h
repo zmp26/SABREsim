@@ -266,33 +266,4 @@ struct Particle{
 
 };
 
-// struct SABRE_Array {
-	
-// 	std::vector<SABRE_Detector*> SABRE_Array_;
-// 	const std::vector<std::string> filenames = {
-// 		"anglemaps/SABRE0_phi306_anglemap.txt",
-// 		"anglemaps/SABRE1_phi18_anglemap.txt",
-// 		"anglemaps/SABRE2_phi234_anglemap.txt",
-// 		"anglemaps/SABRE3_phi162_anglemap.txt",
-// 		"anglemaps/SABRE4_phi90_anglemap.txt"
-// 	};
-// 	SABRE_AngleMap *anglemap = new SABRE_AngleMap(filenames);
-
-// 	void Clear(){
-// 		SABRE_Array_.clear();
-// 	}
-
-// 	void push_back(SABRE_Detector* det){
-// 		SABRE_Array_.push_back(det);
-// 	}
-
-// 	size_t size(){
-// 		return SABRE_Array_.size();
-// 	}
-
-// 	SABRE_Detector* at(int i){
-// 		return SABRE_Array_.at(i);
-// 	}
-// };
-
 #endif//STRUCTS_H
