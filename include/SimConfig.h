@@ -48,6 +48,7 @@ public:
 	const Nucleus& GetEjectile() const { return ejectile_; }
 	const Nucleus& GetRecoil() const { return recoil_; }
 
+	const bool GetSPSCoincidence() const { return SPS_coinc; }
 	const double GetSPSThetaMin() const { return SPS_ThetaMin; }
 	const double GetSPSThetaMax() const { return SPS_ThetaMax; }
 	const double GetSPSPhiMin() const { return SPS_PhiMin; }
@@ -88,6 +89,7 @@ private:
 	Nucleus ejectile_;
 	Nucleus recoil_;
 
+	bool SPS_coinc;
 	double SPS_ThetaMin, SPS_ThetaMax, SPS_PhiMin, SPS_PhiMax;
 	double SPS_SigmaE, SPS_SigmaTheta, SPS_SigmaPhi;
 	double SPS_ApertureDist;

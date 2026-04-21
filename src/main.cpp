@@ -79,7 +79,7 @@ int main(int argc, char * argv[]){
 	TString msg = Form("Kin%dmc selected!\n\n",sim.GetKinX());
 	ConsoleColorizer::PrintGreen(msg.Data());
 
-	msg = Form("phys file:\t%s\n\n", sim.GetKinInputFilename().c_str());
+	msg = Form("phys file:\t%s\n", sim.GetKinInputFilename().c_str());
 	ConsoleColorizer::PrintGreen(msg.Data());
 
 	msg = Form("det file:\t%s\n", sim.GetDetOutputFilename().c_str());

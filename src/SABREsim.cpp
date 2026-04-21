@@ -184,7 +184,7 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 
 	}
 
-	std::cout << "\n";
+	//std::cout << "\n";
 }
 
 bool SABREsim::InitializeModels(){
@@ -327,15 +327,37 @@ void SABREsim::Run(){
 	}
 
 	if(kinX_ == 2){
-		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		TString outline = Form("Reaction: %s\n", config_->GetReaction().data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Beam energy: %f\n", config_->GetBeamEnergy());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Recoil Ex: %f\n\n", config_->GetRecoilExcitationEnergy());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 1 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(1) ? "true" : "false", config_->GetStraggle(1).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 2 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(2) ? "true" : "false", config_->GetStraggle(2).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",config_->GetTargetStraggler(1).data(),config_->GetTargetStraggler(2).data(),config_->GetDeadLayerLoss(1).data(),config_->GetDeadLayerLoss(1).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS Coincidence Mode: %s\n", config_->GetSPSCoincidence() ? "true" : "false");
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS ThetaMin = %f\tSPS ThetaMax = %f\n", config_->GetSPSThetaMin(), config_->GetSPSThetaMax());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS PhiMin = %f\tSPS PhiMax = %f\n", config_->GetSPSPhiMin(), config_->GetSPSPhiMax());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS SigmaE = %f\tSPS SigmaTheta = %f\tSPS SigmaPhi = %f\n", config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		Simulate2body(infile, outfile);
 	} else if(kinX_ == 3){
-		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		TString outline = Form("Reaction: %s\n", config_->GetReaction().data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Beam energy: %f\n", config_->GetBeamEnergy());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Recoil Ex: %f\n\n", config_->GetRecoilExcitationEnergy());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 1 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(1) ? "true" : "false", config_->GetStraggle(1).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
@@ -344,10 +366,26 @@ void SABREsim::Run(){
 		outline = Form("\nTargetAngularStraggler 3 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(3) ? "true" : "false", config_->GetStraggle(3).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 4 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(4) ? "true" : "false", config_->GetStraggle(4).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",config_->GetTargetStraggler(1).data(),config_->GetTargetStraggler(2).data(),config_->GetTargetStraggler(3).data(),config_->GetTargetStraggler(4).data(),config_->GetDeadLayerLoss(1).data(),config_->GetDeadLayerLoss(2).data(),config_->GetDeadLayerLoss(3).data(),config_->GetDeadLayerLoss(4).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS Coincidence Mode: %s\n", config_->GetSPSCoincidence() ? "true" : "false");
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS ThetaMin = %f\tSPS ThetaMax = %f\n", config_->GetSPSThetaMin(), config_->GetSPSThetaMax());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS PhiMin = %f\tSPS PhiMax = %f\n", config_->GetSPSPhiMin(), config_->GetSPSPhiMax());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSPS SigmaE = %f\tSPS SigmaTheta = %f\tSPS SigmaPhi = %f\n", config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		Simulate3body(infile,outfile);
 	} else if(kinX_ == 4){
-		TString outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
+		TString outline = Form("Reaction: %s\n", config_->GetReaction().data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Beam energy: %f\n", config_->GetBeamEnergy());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Recoil Ex: %f\n\n", config_->GetRecoilExcitationEnergy());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("Beamspot profile is: %s\nBeamspot profile xPar = %f\tyPar = %f\nBeamspot xOffset = %f\tyOffset = %f\n",profile_->ToString().Data(),profile_->GetParX(),profile_->GetParY(),beamspot_->GetXOffset(),beamspot_->GetYOffset());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 1 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(1) ? "true" : "false", config_->GetStraggle(1).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
@@ -356,6 +394,16 @@ void SABREsim::Run(){
 		outline = Form("\nTargetAngularStraggler 3 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(3) ? "true" : "false", config_->GetStraggle(3).data());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nTargetAngularStraggler 4 Details:\n\tstraggleEnabled = %s\n\tstraggle = %s\n", config_->GetStraggleEnabled(4) ? "true" : "false", config_->GetStraggle(4).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",config_->GetTargetStraggler(1).data(),config_->GetTargetStraggler(2).data(),config_->GetTargetStraggler(3).data(),config_->GetTargetStraggler(4).data(),config_->GetDeadLayerLoss(1).data(),config_->GetDeadLayerLoss(2).data(),config_->GetDeadLayerLoss(3).data(),config_->GetDeadLayerLoss(4).data());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("SPS Coincidence Mode: %s\n", config_->GetSPSCoincidence() ? "true" : "false");
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("SPS ThetaMin = %f\tSPS ThetaMax = %f\n", config_->GetSPSThetaMin(), config_->GetSPSThetaMax());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("SPS PhiMin = %f\tSPS PhiMax = %f\n", config_->GetSPSPhiMin(), config_->GetSPSPhiMax());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("SPS SigmaE = %f\tSPS SigmaTheta = %f\tSPS SigmaPhi = %f\n\n", config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		Simulate4body(infile,outfile);
 	} else if(kinX_ == 0){ 
@@ -446,8 +494,8 @@ void SABREsim::Simulate2body(std::ifstream& infile, std::ofstream& outfile){
 						   beamspot_,
 						   straggler_par1_, straggler_par2_);
 
-	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",det2mcProcessor.GetToString_TargetLoss1().data(),det2mcProcessor.GetToString_TargetLoss2().data(),det2mcProcessor.GetToString_DeadLayerLoss1().data(),det2mcProcessor.GetToString_DeadLayerLoss2().data());
-	ConsoleColorizer::PrintGreen(outline.Data());
+	// TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\n\n",det2mcProcessor.GetToString_TargetLoss1().data(),det2mcProcessor.GetToString_TargetLoss2().data(),det2mcProcessor.GetToString_DeadLayerLoss1().data(),det2mcProcessor.GetToString_DeadLayerLoss2().data());
+	// ConsoleColorizer::PrintGreen(outline.Data());
 
 	plot2mc *RootPlotter = new plot2mc(config_->GetHistoFile());
 
@@ -485,8 +533,8 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 						   beamspot_,
 						   straggler_par1_, straggler_par2_, straggler_par3_, straggler_par4_);
 
-	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det3mcProcessor.GetToString_TargetLoss1().data(),det3mcProcessor.GetToString_TargetLoss2().data(),det3mcProcessor.GetToString_TargetLoss3().data(),det3mcProcessor.GetToString_TargetLoss4().data(),det3mcProcessor.GetToString_DeadLayerLoss1().data(),det3mcProcessor.GetToString_DeadLayerLoss2().data(),det3mcProcessor.GetToString_DeadLayerLoss3().data(),det3mcProcessor.GetToString_DeadLayerLoss4().data());
-	ConsoleColorizer::PrintGreen(outline.Data());
+	// TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det3mcProcessor.GetToString_TargetLoss1().data(),det3mcProcessor.GetToString_TargetLoss2().data(),det3mcProcessor.GetToString_TargetLoss3().data(),det3mcProcessor.GetToString_TargetLoss4().data(),det3mcProcessor.GetToString_DeadLayerLoss1().data(),det3mcProcessor.GetToString_DeadLayerLoss2().data(),det3mcProcessor.GetToString_DeadLayerLoss3().data(),det3mcProcessor.GetToString_DeadLayerLoss4().data());
+	// ConsoleColorizer::PrintGreen(outline.Data());
 
 	plot3mc *RootPlotter = new plot3mc(config_->GetHistoFile());
 
@@ -528,10 +576,10 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 						   beamspot_,
 						   straggler_par1_, straggler_par2_, straggler_par3_, straggler_par4_);
 
-	TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det4mcProcessor.GetToString_TargetLoss1().data(),det4mcProcessor.GetToString_TargetLoss2().data(),det4mcProcessor.GetToString_TargetLoss3().data(),det4mcProcessor.GetToString_TargetLoss4().data(),det4mcProcessor.GetToString_DeadLayerLoss1().data(),det4mcProcessor.GetToString_DeadLayerLoss2().data(),det4mcProcessor.GetToString_DeadLayerLoss3().data(),det4mcProcessor.GetToString_DeadLayerLoss4().data());
-	ConsoleColorizer::PrintGreen(outline.Data());
+	// TString outline = Form("\nPar 1 Target Loss = %s\nPar 2 Target Loss = %s\n\nPar 3 Target Loss = %s\nPar 4 Target Loss = %s\n\nPar 1 Dead Layer Loss = %s\nPar 2 Dead Layer Loss = %s\nPar 3 Dead Layer Loss = %s\nPar 4 Dead Layer Loss = %s\n\n",det4mcProcessor.GetToString_TargetLoss1().data(),det4mcProcessor.GetToString_TargetLoss2().data(),det4mcProcessor.GetToString_TargetLoss3().data(),det4mcProcessor.GetToString_TargetLoss4().data(),det4mcProcessor.GetToString_DeadLayerLoss1().data(),det4mcProcessor.GetToString_DeadLayerLoss2().data(),det4mcProcessor.GetToString_DeadLayerLoss3().data(),det4mcProcessor.GetToString_DeadLayerLoss4().data());
+	// ConsoleColorizer::PrintGreen(outline.Data());
 
-	std::cout << "histofile: " << config_->GetHistoFile() << std::endl;
+	//std::cout << "histofile: " << config_->GetHistoFile() << std::endl;
 	plot4mc *RootPlotter = new plot4mc(config_->GetHistoFile());
 
 	det4mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);

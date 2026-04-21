@@ -12,6 +12,7 @@ SimConfig::SimConfig(const std::string& filename)
 	  beam_parX_(0.), beam_parY_(0.),
 	  beam_offsetX_(0.), beam_offsetY_(0.),
 	  beam_energy_(0.), recoil_excitation_energy_(0.),
+	  SPS_coinc(true),
 	  SPS_ThetaMin(0.), SPS_ThetaMax(0.),
 	  SPS_PhiMin(0.), SPS_PhiMax(0.),
 	  SPS_SigmaE(0.), SPS_SigmaTheta(0.), SPS_SigmaPhi(0.),
@@ -138,7 +139,8 @@ bool SimConfig::Parse(){
 			else if(key == "beam_offsetY") beam_offsetY_ = std::stod(val);
 		}
 		else if(section == "SPS"){
-			if(key == "ThetaMin") SPS_ThetaMin = std::stod(val);
+			if(key == "Coincidence") std::istringstream(val) >> std::boolalpha >> SPS_coinc;
+			else if(key == "ThetaMin") SPS_ThetaMin = std::stod(val);
 			else if(key == "ThetaMax") SPS_ThetaMax = std::stod(val);
 			else if(key == "PhiMin") SPS_PhiMin = std::stod(val);
 			else if(key == "PhiMax") SPS_PhiMax = std::stod(val);
@@ -147,63 +149,14 @@ bool SimConfig::Parse(){
 			else if(key == "SigmaPhi") SPS_SigmaPhi = std::stod(val);
 			else if(key == "ApertureDist") SPS_ApertureDist = std::stod(val);
 		}
-		// else if(section == "MetaData"){
-		// 	//if(key == "reaction") reaction_ = val;
-		// 	if(key == "beam_energy") beam_energy_ = std::stod(val);
-		// 	else if(key == "recoil_excitation_energy") recoil_excitation_energy_ = std::stod(val);
-		// }
-		// else if(section == "IMMMA"){
-
-		// 	auto parseNucleus = [&](const std::string& prefix, NucleusConfig& nuc){
-
-		// 		if(key == prefix + "_A"){
-		// 			nuc.A = std::stoi(val);
-
-		// 		}
-		// 		else if(key == prefix + "_sym"){
-		// 			nuc.sym = val;
-
-		// 		}
-		// 		else if(key == prefix + "_mass"){
-		// 			nuc.mass = std::stod(val);
-		// 		}
-
-		// 		//if(prefix == "ejectile" && nuc.A > 0 && nuc.mass > 0) std::cout << prefix << "\t A = " << nuc.A << "\tsym = " << nuc.sym << "\tmass = " << nuc.mass << std::endl;
-		// 	};
-
-		// 	parseNucleus("beam",beam_);
-		// 	parseNucleus("target",target_);
-		// 	parseNucleus("ejectile",ejectile_);
-		// 	parseNucleus("recoil", recoil_);
-
-		// 	if(key.rfind("breakup", 0) == 0){
-		// 		size_t idxStart = std::string("breakup").size();
-		// 		size_t underscore = key.find('_', idxStart);
-		// 		if(underscore == std::string::npos) continue;
-
-		// 		int index = std::stoi(key.substr(idxStart, underscore - idxStart)) - 1;
-		// 		std::string field = key.substr(underscore + 1);
-		// 		if(index < 0) continue;
-
-		// 		if(breakups_.size() <= static_cast<size_t>(index)) breakups_.resize(index+1);
-
-		// 		NucleusConfig& nuc = breakups_[index];
-
-		// 		if(field == "A") nuc.A = std::stoi(val);
-		// 		else if(field == "sym") nuc.sym = val;
-		// 		else if(field == "mass") nuc.mass = std::stod(val);
-
-		// 	} 
-
-		// }
 	}
 
 	reaction_ = target_.ToString() + "(" + beam_.ToString() + "," + ejectile_.ToString() + ")" + recoil_.ToString();
 
-	std::cout << "beam\t A = " << beam_.A << "\tsym = " << beam_.sym << "\tmass = " << beam_.massMeV << std::endl;
-	std::cout << "target\t A = " << target_.A << "\tsym = " << target_.sym << "\tmass = " << target_.massMeV << std::endl;
-	std::cout << "ejectile\t A = " << ejectile_.A << "\tsym = " << ejectile_.sym << "\tmass = " << ejectile_.massMeV << std::endl;
-	std::cout << "recoil\t A = " << recoil_.A << "\tsym = " << recoil_.sym << "\tmass = " << recoil_.massMeV << std::endl; 
+	// std::cout << "beam\t A = " << beam_.A << "\tsym = " << beam_.sym << "\tmass = " << beam_.massMeV << std::endl;
+	// std::cout << "target\t A = " << target_.A << "\tsym = " << target_.sym << "\tmass = " << target_.massMeV << std::endl;
+	// std::cout << "ejectile\t A = " << ejectile_.A << "\tsym = " << ejectile_.sym << "\tmass = " << ejectile_.massMeV << std::endl;
+	// std::cout << "recoil\t A = " << recoil_.A << "\tsym = " << recoil_.sym << "\tmass = " << recoil_.massMeV << std::endl; 
 
 	infile.close();
 	return true;

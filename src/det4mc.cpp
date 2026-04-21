@@ -185,18 +185,35 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 		EventRecorder->UpdateSPS(EjInSPS,SPS_E,SPS_Theta,SPS_Phi,SPS_RecoilEx);
 
-
 		for(int i=0; i<4; i++){
 			particles[i].detected = false;
 			EventRecorder->SetKinematics(i, particles[i].energy, particles[i].theta, particles[i].phi);
-
 			ss << particles[i].energy << "\t" << particles[i].theta << "\t" << particles[i].phi;
 			if(i != 3) ss << "\t";
 			else ss << "\n";
+		}
 
-			if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
-				hitMask |= (1 << i);//set bit corresponding to particle index
-				totalHits += 1;
+
+		if(config->GetSPSCoincidence()){
+
+			if(EjInSPS){
+				for(int i=1; i<4; i++){
+
+					if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
+						hitMask |= (1 << i);//set bit corresponding to particle index
+						totalHits += 1;
+					}
+				}
+			}
+
+		} else {
+			for(int i=0; i<4; i++){
+				if(EjInSPS) i++;//skip ejectile if we already detected it in the SPS
+
+				if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
+					hitMask |= (1 << i);//set bit corresponding to particle index
+					totalHits += 1;
+				}
 			}
 		}
 

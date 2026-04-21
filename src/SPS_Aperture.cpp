@@ -1,4 +1,5 @@
 #include "SPS_Aperture.h"
+#include "ConsoleColorizer.h"
 
 SPS_Aperture::SPS_Aperture(double r,
 						   double thetaMin, double thetaMax,
@@ -10,8 +11,8 @@ SPS_Aperture::SPS_Aperture(double r,
 	std::random_device rd;
 	gen.seed(rd());
 
-	std::cout << "Theta range: [" << thetaMin << ", " << thetaMax << "]\n";
-	std::cout << "Phi range: [" << phiMin << ", " << phiMax << "]\n";
+	// std::cout << "Theta range: [" << thetaMin << ", " << thetaMax << "]\n";
+	// std::cout << "Phi range: [" << phiMin << ", " << phiMax << "]\n";
 }
 
 SPS_Aperture::~SPS_Aperture() {}
