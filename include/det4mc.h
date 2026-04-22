@@ -68,8 +68,9 @@ public:
 	*/
 
 	//after Run(), these functions can be called to query for statistics:
-	long GetNumEvents() const;
-	long GetNoHitSPS() const;								//number of input events where ejectile does not intersect SPS region
+	long GetNumEvents() const;								//number of events considered by simulation (e.g. does not count events w/o EjInSPS if coincidence = true)
+	long GetNumKinEvents() const;							//number of kinematic events in input file
+	long GetNoHitEjSPS() const;								//number of input events where ejectile does not intersect SPS region
 	long GetHitEjSPS() const;								//ejectile in SPS
 	long GetHitEj() const;									//ejectile in SABRE				(b)
 	long GetHit1() const;									//at least decay 1 				(c)
@@ -127,9 +128,10 @@ private:
 	TargetAngularStraggler* straggler_par4_;
 
 	//counters for statistics:
+	long nkinevents_;
 	long nevents_;
 	long hitejSPS_;
-	long nohitSPS_;
+	long nohitejSPS_;
 	long hitej_;
 	long hit1_;
 	long hit2_;

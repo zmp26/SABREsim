@@ -75,6 +75,9 @@ bool SimConfig::Parse(){
 				if(ss >> beam_.A >> beam_.sym){
 					//use mass table to set mass here
 					beam_.massMeV = masstable->GetNuclearMassMeV(beam_.sym.data(), beam_.A);
+					std::cout << "beam mass = " << masstable->GetNuclearMassMeV(beam_.sym.data(), beam_.A) << std::endl;
+				} else {
+					std:: cout << "issues reading beam, check formatting" << std::endl; 
 				}
 			}
 			else if(key == "target"){
@@ -82,6 +85,9 @@ bool SimConfig::Parse(){
 				if(ss >> target_.A >> target_.sym){
 					//use mass table to set mass here
 					target_.massMeV = masstable->GetNuclearMassMeV(target_.sym.data(), target_.A);
+					std::cout << "target mass = " << masstable->GetNuclearMassMeV(target_.sym.data(), target_.A) << std::endl;
+				} else {
+					std:: cout << "issues reading target, check formatting" << std::endl; 
 				}
 			}
 			else if(key == "recoil"){
@@ -89,6 +95,9 @@ bool SimConfig::Parse(){
 				if(ss >> recoil_.A >> recoil_.sym){
 					//use mass table to set mass here
 					recoil_.massMeV = masstable->GetNuclearMassMeV(recoil_.sym.data(), recoil_.A);
+					std::cout << "recoil mass = " << masstable->GetNuclearMassMeV(recoil_.sym.data(), recoil_.A) << std::endl;
+				} else {
+					std:: cout << "issues reading recoil, check formatting" << std::endl; 
 				}
 			}
 			else if(key == "ejectile"){
@@ -96,6 +105,9 @@ bool SimConfig::Parse(){
 				if(ss >> ejectile_.A >> ejectile_.sym){
 					//use mass table to set mass here
 					ejectile_.massMeV = masstable->GetNuclearMassMeV(ejectile_.sym.data(), ejectile_.A);
+					std::cout << "ejectile mass = " << masstable->GetNuclearMassMeV(ejectile_.sym.data(), ejectile_.A) << std::endl;
+				} else {
+					std:: cout << "issues reading ejectile, check formatting" << std::endl; 
 				}
 			}
 			else if(key == "beam_energy") beam_energy_ = std::stod(val);

@@ -28,7 +28,7 @@ det4mc::det4mc(SABRE_Array* SABRE_Array, SPS_Aperture* SPS_Aperture,
 	  targetLoss_par1_(targetLoss_par1), targetLoss_par2_(targetLoss_par2), targetLoss_par3_(targetLoss_par3), targetLoss_par4_(targetLoss_par4),
 	  deadLayerLoss_par1_(deadLayerLoss_par1), deadLayerLoss_par2_(deadLayerLoss_par2), deadLayerLoss_par3_(deadLayerLoss_par3), deadLayerLoss_par4_(deadLayerLoss_par4),
 	  straggler_par1_(straggler_par1),straggler_par2_(straggler_par2),straggler_par3_(straggler_par3),straggler_par4_(straggler_par4),
-	  nevents_(0), hitejSPS_(0), nohitSPS_(0),
+	  nkinevents_(0), nevents_(0), hitejSPS_(0), nohitejSPS_(0),
 	  hitej_(0), hit1_(0), hit2_(0), hit3_(0),
 	  hitBoth23_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
 	  hitOnly12_(0), hitOnly23_(0), hitOnly13_(0), hitOnly123_(0),
@@ -135,8 +135,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 				 >> particles[2].energy >> particles[2].theta >> particles[2].phi
 				 >> particles[3].energy >> particles[3].theta >> particles[3].phi){
 
-		nevents_ += 1;
-		if(nevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nevents_) + " events...\n");
+		nkinevents_ += 1;
+		if(nkinevents_ % 50000 == 0) ConsoleColorizer::PrintBlue("Processed " + std::to_string(nkinevents_) + " events...\n");
 
 		Vec3 reactionOrigin = beamspot_->GeneratePoint();
 		EventRecorder->SetReactionOrigin(reactionOrigin.GetX(),reactionOrigin.GetY(),reactionOrigin.GetZ());
@@ -158,7 +158,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 			SPS_Theta = SPS_Aperture_->GetSmearedTheta(particles[0].theta);
 			SPS_Phi = SPS_Aperture_->GetSmearedPhi(particles[0].phi);
 
-			TLorentzVector beam(0., 0., std::sqrt(2*config->GetBeam().massMeV*config->GetBeamEnergy()), config->GetBeam().massMeV*config->GetBeamEnergy());
+			TLorentzVector beam(0., 0., std::sqrt(2*config->GetBeam().massMeV*config->GetBeamEnergy()), config->GetBeam().massMeV + config->GetBeamEnergy());
 			TLorentzVector target(0., 0., 0., config->GetTarget().massMeV);
 			double Pej = std::sqrt(2*config->GetEjectile().massMeV*SPS_E);
 			TLorentzVector ejectile(Pej*std::sin(SPS_Theta*DEGRAD)*std::cos(SPS_Phi*DEGRAD),
@@ -168,6 +168,10 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 			TLorentzVector recoil = beam + target - ejectile;
 			SPS_RecoilEx = recoil.M() - config->GetRecoil().massMeV;
+			// if(nkinevents_%100 == 0){
+			// 	std::cout << "beam energy = " << config->GetBeamEnergy() << "\n";
+			// 	std::cout << "recoil.M() - config->GetRecoil().massMeV = " << recoil.M() << " - " << config->GetRecoil().massMeV << " = " << recoil.M() - config->GetRecoil().massMeV << "\n\n";
+			// }
 
 			hitejSPS_ += 1;
 
@@ -202,10 +206,11 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 					if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
 						hitMask |= (1 << i);//set bit corresponding to particle index
 						totalHits += 1;
+						nevents_++;
 					}
 				}
 			} else {
-				nohitSPS_++;
+				nohitejSPS_++;
 			}
 
 		} else {
@@ -215,6 +220,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 				if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
 					hitMask |= (1 << i);//set bit corresponding to particle index
 					totalHits += 1;
+					nevents_++;
 				}
 			}
 		}
@@ -246,17 +252,33 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 		//finalize event
 		ss << eoev;
 		outfile << ss.str() << "\n";
-		RootPlotter->ProcessTXTOutput(ss.str());
-		EventRecorder->FillEvent();
+
+		//in coincidence mode, we should only write output if the ejectile is in the SPS
+		if(config->GetSPSCoincidence() && EjInSPS){
+			RootPlotter->ProcessTXTOutput(ss.str());
+			EventRecorder->FillEvent();
+		}
+		else if(config->GetSPSCoincidence() && !EjInSPS){
+			EventRecorder->ResetEvent();
+		}
+		//if coincidence mode disabled, we should write all output regardless of ejectile being in SPS
+		else if(!config->GetSPSCoincidence()){
+			RootPlotter->ProcessTXTOutput(ss.str());
+			EventRecorder->FillEvent();
+		}
 	}
+}
+
+long det4mc::GetNumKinEvents() const {
+	return nkinevents_;
 }
 
 long det4mc::GetNumEvents() const {
 	return nevents_;
 }
 
-long det4mc::GetNoHitSPS() const {
-	return nohitSPS_;
+long det4mc::GetNoHitEjSPS() const {
+	return nohitejSPS_;
 }
 
 long det4mc::GetHitEjSPS() const {

@@ -584,9 +584,11 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 
 	det4mcProcessor.Run(infile, outfile, EventRecorder_, RootPlotter, config_);
 
-	nevents_ = det4mcProcessor.GetNumEvents();
+	nevents_ = det4mcProcessor.GetNumEvents();//total considered events (e.g. does not count events w/o EjInSPS if Coincidence = true)
+	nkinevents_ = det4mcProcessor.GetNumKinEvents();//total input events
 	detectorHits_ = det4mcProcessor.GetDetectorHits();
 	hitejSPS_ = det4mcProcessor.GetHitEjSPS();
+	nohitejSPS_ = det4mcProcessor.GetNoHitEjSPS();
 	hitej_ = det4mcProcessor.GetHitEj();
 	hit1_ = det4mcProcessor.GetHit1();
 	hit2_ = det4mcProcessor.GetHit2();
@@ -609,7 +611,7 @@ void SABREsim::Simulate4body(std::ifstream& infile, std::ofstream& outfile){
 }
 
 void SABREsim::PrintSummary() const {
-	std::cout << "\nProcessed " << nevents_ << " kin" << kinX_ << "mc events.\n";
+	std::cout << "\nProcessed " << nkinevents_ << " kin" << kinX_ << "mc events.\n";
 
 	if (kinX_ == 2) {
 		std::cout << "Events with ejectile in SABRE: " << hit1_
@@ -636,12 +638,15 @@ void SABREsim::PrintSummary() const {
 				  << " (" << float(hit34_)*100.0f / float(nevents_) << "%)\n";
 	}
 	if (kinX_ == 4) {
-		std::cout << "Events with ejectile in SPS: " << hitejSPS_ << " (" << float(hitejSPS_)*100.0 / float(nevents_) << "%)\n";
+		std::cout << "SABRE-SPS Coincidence Mode: " << (config_->GetSPSCoincidence() ? "On" : "Off") << "\n";
+		std::cout << "Total kinematics events in input file: " << nkinevents_ << "\n";
+		std::cout << "Events with ejectile in SPS: " << hitejSPS_ << " (" << float(hitejSPS_)*100.0 / float(nkinevents_) << "%)\n";
+		std::cout << "Events without ejectile in SPS: " << nohitejSPS_ << " (" << float(nohitejSPS_)*100./float(nkinevents_) << "%)\n\n";
 		std::cout << "Events with ejectile in SABRE: " << hitej_ << " (" << float(hitej_)*100.0f / float(nevents_) << "%)\n";
-		std::cout << "1‑particle events: " << onePartHits_ << "\n";
-		std::cout << "2‑particle events: " << twoPartHits_ << "\n";
-		std::cout << "3‑particle events: " << threePartHits_ << "\n";
-		std::cout << "4‑particle events: " << fourPartHits_ << "\n";
+		std::cout << "1-particle events: " << onePartHits_ << "\n";
+		std::cout << "2-particle events: " << twoPartHits_ << "\n";
+		std::cout << "3-particle events: " << threePartHits_ << "\n";
+		std::cout << "4-particle events: " << fourPartHits_ << "\n";
 		std::cout << "Only bu1: " << hitOnly1_ << " (" << float(hitOnly1_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "Only bu2: " << hitOnly2_ << " (" << float(hitOnly2_)*100.0f / float(nevents_) << "%)\n";
 		std::cout << "Only bu3: " << hitOnly3_ << " (" << float(hitOnly3_)*100.0f / float(nevents_) << "%)\n";

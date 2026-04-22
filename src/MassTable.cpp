@@ -158,18 +158,21 @@ bool MassTable::GetInitStatus(){//return true for initialized, false otherwise
 float MassTable::GetMassMeV(const char* symbol, int a){//return the mass in MeV/c^2 instead of mass excess - simpler for the end user! (its me im the end user)
   //return (a*AMU + this->GetMassExcess(symbol,a)*0.001);
 
-  if(a != 0 || (symbol != nullptr && strcmp(symbol, "None") == 0)){
-    return 0.0f;
-  }
+  // if(a != 0 || (symbol != nullptr && strcmp(symbol, "None") == 0)){
+  //   return 0.0f;
+  // }
 
-  return (a*AMU + this->GetMassExcess(symbol,a)*0.001);
+  // return (a*AMU + this->GetMassExcess(symbol,a)*0.001);
+
+  return (a*AMU + GetMassExcess(symbol,a)*0.001);
 
 };
 
 float MassTable::GetNuclearMassMeV(const char* symbol, int a){
-  if(a != 0 || (symbol != nullptr && strcmp(symbol, "None") == 0)){
-    return 0.0f;
-  }
+  // if(a != 0 || (symbol != nullptr && strcmp(symbol, "None") == 0)){
+  //   return 0.0f;
+  // }
 
+  // return (GetMassMeV(symbol, a) - GetZ(symbol)*electronMass);
   return (GetMassMeV(symbol, a) - GetZ(symbol)*electronMass);
 } 
