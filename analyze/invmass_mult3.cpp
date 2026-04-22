@@ -73,7 +73,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 
 		// decay1
 		hMap[cn]["ecm1"]            	   	   = new TH1D(cn + "_ecm1", "E_{cm} Decay 1;MeV", 600, -1, 5);
-		hMap[cn]["ecm1_delta"]             	   = new TH1D(cn + "_ecm1_delta", "E_{cm} Decay 1 (meas - expect);MeV", 600, -1, 5);
+		hMap[cn]["ecm1_delta"]             	   = new TH1D(cn + "_ecm1_delta", "E_{cm} Decay 1 (meas - expect);MeV", 1000, -5, 5);
 		hMap[cn]["intermediatevcmVSfrag1vcm"]  = new TH2D(cn + "_intermediatevcmVSfrag1vcm", "Intermediate Vcm VS frag1 Vcm", 250, 0, 0.25, 250, 0, 0.25);
 		hMap[cn]["intermediatekecmVSfrag1kecm"]= new TH2D(cn + "_intermediatekecmVSfrag1kecm", "Intermediate KEcm VS frag1 KEcm", 500, 0, 5, 500, 0, 5);
 
@@ -97,13 +97,13 @@ void InvMass_Mult3::Init(const char* output_filename){
 
 		// decay2
 		hMap[cn]["ecm2"]             	   	   = new TH1D(cn + "_ecm2", "E_{cm} Decay 2;MeV", 600, -1, 5);
-		hMap[cn]["ecm2_delta"]             	   = new TH1D(cn + "_ecm2_delta", "E_{cm} Decay 2 (meas - expect);MeV", 600, -1, 5);
+		hMap[cn]["ecm2_delta"]             	   = new TH1D(cn + "_ecm2_delta", "E_{cm} Decay 2 (meas - expect);MeV", 1000, -5, 5);
 		hMap[cn]["frag2vcmVSfrag3vcm"]  	   = new TH2D(cn + "_frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 250, 0, 0.25, 250, 0, 0.25);
 		hMap[cn]["frag2kecmVSfrag3kecm"]	   = new TH2D(cn + "_frag2kecmVSfrag3kecm", "frag2 KEcm VS frag3 KEcm", 500, 0, 5, 500, 0, 5);
 
 		// Sequential Decay Energies
 		hMap[cn]["ecm1VSecm2"]				   = new TH2D(cn + "_ecm1VSecm2", "ECM1 vs ECM2;E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 600, -1, 5, 600, -1, 5);
-		hMap[cn]["ecm1deltaVSecm2delta"]	   = new TH2D(cn + "_ecm1deltaVSecm2delta", "ECM1 delta vs ECM2 delta;E_{cm} Decay 2 (meas - expect); E_{CM} Decay 1 (meas - expect)", 600, -1, 5, 600, -1, 5);
+		hMap[cn]["ecm1deltaVSecm2delta"]	   = new TH2D(cn + "_ecm1deltaVSecm2delta", "ECM1 delta vs ECM2 delta;E_{cm} Decay 2 (meas - expect); E_{CM} Decay 1 (meas - expect)", 1000, -5, 5, 1000, -5, 5);
 
 
 		//gated histograms (gated on Ex of intermediate/intermediate)
@@ -152,9 +152,9 @@ void InvMass_Mult3::Init(const char* output_filename){
 		hMap[cn]["ecm1_gated"]             	   = new TH1D(cn + "_ecm1_gated", "E_{cm} Decay 1;MeV", 600, -1, 5);
 		hMap[cn]["ecm2_gated"]             	   = new TH1D(cn + "_ecm2_gated", "E_{cm} Decay 2;MeV", 600, -1, 5);
 		hMap[cn]["ecm1VSecm2_gated"]				   = new TH2D(cn + "_ecm1VSecm2_gated", "ECM1 vs ECM2;E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 600, -1, 5, 600, -1, 5);
-		hMap[cn]["ecm1_delta_gated"]           = new TH1D(cn + "_ecm1_delta_gated", "E_{cm} Decay 1 (meas - expect);MeV", 600, -1, 5);
-		hMap[cn]["ecm2_delta_gated"]           = new TH1D(cn + "_ecm2_delta_gated", "E_{cm} Decay 2 (meas - expect);MeV", 600, -1, 5);
-		hMap[cn]["ecm1deltaVSecm2delta_gated"]	   = new TH2D(cn + "_ecm1deltaVSecm2delta_gated", "ECM1 delta vs ECM2 delta;E_{cm} Decay 2 (meas - expect); E_{CM} Decay 1 (meas - expect)", 600, -1, 5, 600, -1, 5);
+		hMap[cn]["ecm1_delta_gated"]           = new TH1D(cn + "_ecm1_delta_gated", "E_{cm} Decay 1 (meas - expect);MeV", 1000, -5, 5);
+		hMap[cn]["ecm2_delta_gated"]           = new TH1D(cn + "_ecm2_delta_gated", "E_{cm} Decay 2 (meas - expect);MeV", 1000, -5, 5);
+		hMap[cn]["ecm1deltaVSecm2delta_gated"]	   = new TH2D(cn + "_ecm1deltaVSecm2delta_gated", "ECM1 delta vs ECM2 delta;E_{cm} Decay 2 (meas - expect); E_{CM} Decay 1 (meas - expect)", 1000, -5, 5, 1000, -5, 5);
 		
 
 
@@ -171,6 +171,7 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 	intermediateMass = hypo.mass_intermediate;
 	intermediateEx = hypo.intermediateEx;
 	intermediateExGate = hypo.intermediateExGate;
+	recoilEx = hypo.recoilEx;
 
 	SetExpectedCMValues();
 }
@@ -214,12 +215,12 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 
 		//calculate excitation energy:
 		double intermediateEx = intermediate.M() - intermediateMass;
-		double recoilEx = recoil.M() - recoilMass;
-		recoilExs[permIndex] = recoilEx;
+		double Ex = recoil.M() - recoilMass;
+		recoilExs[permIndex] = Ex;
 
 		caseResults[permIndex].intermediateIM = intermediate.M();
 		caseResults[permIndex].intermediateEx = intermediateEx;
-		caseResults[permIndex].reconEx = recoilEx;
+		caseResults[permIndex].reconEx = Ex;
 
 		TVector3 boost1 = -recoil.BoostVector();
 		TVector3 boost2 = -intermediate.BoostVector();
@@ -524,6 +525,10 @@ void InvMass_Mult3::SetExpectedCMValues(){
 		expectedCMValues.vcm_frag2 = std::sqrt(2.0 * expectedCMValues.kecm_frag2 / masses[1]);
 		expectedCMValues.vcm_frag3 = std::sqrt(2.0 * expectedCMValues.kecm_frag3 / masses[2]);
 	}
+
+	std::cout << "Masses:\n\tfrag1 = " << masses[0] << "\tfrag2 = " << masses[1] << "\tfrag3 = " << masses[2] << "\n";
+	std::cout << "\tRecoil = " << recoilMass << " + " << recoilEx << " = " << m_recoil << "\n";
+	std::cout << "\tIntermediate = " << intermediateMass << " + " << intermediateEx << " = " << m_inter << "\n";
 
 	std::cout << "Decay 1 constants:" << std::endl;
 	std::cout << "\tEcm1 = " << expectedCMValues.Ecm1 << std::endl;
