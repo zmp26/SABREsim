@@ -208,7 +208,7 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 		} else {
 			for(int i=0; i<4; i++){
-				if(EjInSPS) i++;//skip ejectile if we already detected it in the SPS
+				if(EjInSPS && i<1) i++;//skip ejectile if we already detected it in the SPS
 
 				if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
 					hitMask |= (1 << i);//set bit corresponding to particle index
