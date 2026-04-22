@@ -69,6 +69,7 @@ public:
 
 	//after Run(), these functions can be called to query for statistics:
 	long GetNumEvents() const;
+	long GetNoHitSPS() const;								//number of input events where ejectile does not intersect SPS region
 	long GetHitEjSPS() const;								//ejectile in SPS
 	long GetHitEj() const;									//ejectile in SABRE				(b)
 	long GetHit1() const;									//at least decay 1 				(c)
@@ -128,6 +129,7 @@ private:
 	//counters for statistics:
 	long nevents_;
 	long hitejSPS_;
+	long nohitSPS_;
 	long hitej_;
 	long hit1_;
 	long hit2_;

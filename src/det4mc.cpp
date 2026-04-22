@@ -28,7 +28,7 @@ det4mc::det4mc(SABRE_Array* SABRE_Array, SPS_Aperture* SPS_Aperture,
 	  targetLoss_par1_(targetLoss_par1), targetLoss_par2_(targetLoss_par2), targetLoss_par3_(targetLoss_par3), targetLoss_par4_(targetLoss_par4),
 	  deadLayerLoss_par1_(deadLayerLoss_par1), deadLayerLoss_par2_(deadLayerLoss_par2), deadLayerLoss_par3_(deadLayerLoss_par3), deadLayerLoss_par4_(deadLayerLoss_par4),
 	  straggler_par1_(straggler_par1),straggler_par2_(straggler_par2),straggler_par3_(straggler_par3),straggler_par4_(straggler_par4),
-	  nevents_(0), hitejSPS_(0),
+	  nevents_(0), hitejSPS_(0), nohitSPS_(0),
 	  hitej_(0), hit1_(0), hit2_(0), hit3_(0),
 	  hitBoth23_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
 	  hitOnly12_(0), hitOnly23_(0), hitOnly13_(0), hitOnly123_(0),
@@ -204,6 +204,8 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 						totalHits += 1;
 					}
 				}
+			} else {
+				nohitSPS_++;
 			}
 
 		} else {
@@ -251,6 +253,10 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 long det4mc::GetNumEvents() const {
 	return nevents_;
+}
+
+long det4mc::GetNoHitSPS() const {
+	return nohitSPS_;
 }
 
 long det4mc::GetHitEjSPS() const {
