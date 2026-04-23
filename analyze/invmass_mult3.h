@@ -11,6 +11,7 @@
 #include "TString.h"
 #include "TDirectory.h"
 #include "TLorentzVector.h"
+#include "permHisto.h"
 
 //Hypothesis4 struct to use in In
 struct Hypothesis4 {
@@ -46,6 +47,9 @@ private:
 
 	TFile *outfile;
 	TTree *outtree;
+
+	std::map<TString, permHisto*> groups_ungated;
+	std::map<TString, permHisto*> groups_gated;
 
 	double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
 

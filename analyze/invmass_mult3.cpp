@@ -43,120 +43,14 @@ void InvMass_Mult3::Init(const char* output_filename){
 	}
 
 	for(auto &cn : permNames){
-		TDirectory *dir = outfile->mkdir(cn);
-		dir->cd();
+		TDirectory *permdir = outfile->mkdir(cn);
+		//dir->cd();
 
-		// 1. Invariant Mass & Excitation Energy Histograms
-		hMap[cn]["intermediateIM"]       = new TH1D(cn + "_intermediateIM", "Intermediate Invariant Mass;MeV/c^{2}", 29000, 4600, 7500);
-		hMap[cn]["intermediateEx"]      = new TH1D(cn + "_intermediateEx", "Intermediate Ex;MeV", 525, -1, 20);
-		hMap[cn]["ReconEx"]         = new TH1D(cn + "_ReconEx", "Recon Ex;MeV", 525, -1, 20);
+		TDirectory *ungateDir = permdir->mkdir("ungated");
+		TDirectory *gateDir = permdir->mkdir("gated");
 
-		// 2. Kinematics Histograms (CM Frame)
-
-		// Intermediate CM
-		hMap[cn]["intermediatevcm"]      	   = new TH1D(cn + "_intermediatevcm", "Intermediate Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["intermediatekecm"]     	   = new TH1D(cn + "_intermediatekecm", "Intermediate KE CM;MeV", 500, 0, 5);
-		hMap[cn]["intermediatethetacm"]  	   = new TH1D(cn + "_intermediatethetacm", "Intermediate Theta CM;deg", 36, 0, 180);
-		hMap[cn]["intermediatephicm"]    	   = new TH1D(cn + "_intermediatephicm", "Intermediate Phi CM;deg", 72, 0, 360);
-		hMap[cn]["intermediatethetacmvsphicm"]  = new TH2D(cn + "_intermediatethetacmvsphicm", "Intermediate ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["intermediatevcm_delta"]             = new TH1D(cn + "_intermediatevcm_delta", "intermediate Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["intermediatekecm_delta"]            = new TH1D(cn + "_intermediatekecm_delta", "intermediate KE CM (meas - expect);MeV", 1000, -5, 5);
-
-		// frag1
-		hMap[cn]["frag1vcm"]             	   = new TH1D(cn + "_frag1vcm", "frag1 Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["frag1kecm"]            	   = new TH1D(cn + "_frag1kecm", "frag1 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag1thetacm"]        	   = new TH1D(cn + "_frag1thetacm", "frag1 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag1phicm"]           	   = new TH1D(cn + "_frag1phicm", "frag1 Phi CM;deg", 72, 0, 360);
-		hMap[cn]["frag1thetacmvsphicm"]        = new TH2D(cn + "_frag1thetacmvsphicm", "frag1 ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["frag1vcm_delta"]             = new TH1D(cn + "_frag1vcm_delta", "frag1 Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["frag1kecm_delta"]            = new TH1D(cn + "_frag1kecm_delta", "frag1 KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		// decay1
-		hMap[cn]["ecm1"]            	   	   = new TH1D(cn + "_ecm1", "E_{cm} Decay 1;MeV", 600, -1, 5);
-		hMap[cn]["ecm1_delta"]             	   = new TH1D(cn + "_ecm1_delta", "E_{cm} Decay 1 (meas - expect);MeV", 1000, -5, 5);
-		hMap[cn]["intermediatevcmVSfrag1vcm"]  = new TH2D(cn + "_intermediatevcmVSfrag1vcm", "Intermediate Vcm VS frag1 Vcm", 250, 0, 0.25, 250, 0, 0.25);
-		hMap[cn]["intermediatekecmVSfrag1kecm"]= new TH2D(cn + "_intermediatekecmVSfrag1kecm", "Intermediate KEcm VS frag1 KEcm", 500, 0, 5, 500, 0, 5);
-
-		// frag2
-		hMap[cn]["frag2vcm"]        	       = new TH1D(cn + "_frag2vcm", "frag2 Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["frag2kecm"]        	       = new TH1D(cn + "_frag2kecm", "frag2 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag2thetacm"]      		   = new TH1D(cn + "_frag2thetacm", "frag2 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag2phicm"]        		   = new TH1D(cn + "_frag2phicm", "frag2 Phi CM;deg", 72, 0, 360);
-		hMap[cn]["frag2thetacmvsphicm"]        = new TH2D(cn + "_frag2thetacmvsphicm", "frag2 ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["frag2vcm_delta"]             = new TH1D(cn + "_frag2vcm_delta", "frag2 Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["frag2kecm_delta"]            = new TH1D(cn + "_frag2kecm_delta", "frag2 KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		// frag3
-		hMap[cn]["frag3vcm"]           		   = new TH1D(cn + "_frag3vcm", "frag3 Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["frag3kecm"]         	   	   = new TH1D(cn + "_frag3kecm", "frag3 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag3thetacm"]      	  	   = new TH1D(cn + "_frag3thetacm", "frag3 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag3phicm"]      	       = new TH1D(cn + "_frag3phicm", "frag3 Phi CM;deg", 72, 0, 360);
-		hMap[cn]["frag3thetacmvsphicm"]        = new TH2D(cn + "_frag3thetacmvsphicm", "frag3 ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["frag3vcm_delta"]             = new TH1D(cn + "_frag3vcm_delta", "frag3 Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["frag3kecm_delta"]            = new TH1D(cn + "_frag3kecm_delta", "frag3 KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		// decay2
-		hMap[cn]["ecm2"]             	   	   = new TH1D(cn + "_ecm2", "E_{cm} Decay 2;MeV", 600, -1, 5);
-		hMap[cn]["ecm2_delta"]             	   = new TH1D(cn + "_ecm2_delta", "E_{cm} Decay 2 (meas - expect);MeV", 1000, -5, 5);
-		hMap[cn]["frag2vcmVSfrag3vcm"]  	   = new TH2D(cn + "_frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 250, 0, 0.25, 250, 0, 0.25);
-		hMap[cn]["frag2kecmVSfrag3kecm"]	   = new TH2D(cn + "_frag2kecmVSfrag3kecm", "frag2 KEcm VS frag3 KEcm", 500, 0, 5, 500, 0, 5);
-
-		// Sequential Decay Energies
-		hMap[cn]["ecm1VSecm2"]				   = new TH2D(cn + "_ecm1VSecm2", "ECM1 vs ECM2;E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 600, -1, 5, 600, -1, 5);
-		hMap[cn]["ecm1deltaVSecm2delta"]	   = new TH2D(cn + "_ecm1deltaVSecm2delta", "ECM1 delta vs ECM2 delta;E_{cm} Decay 2 (meas - expect); E_{CM} Decay 1 (meas - expect)", 1000, -5, 5, 1000, -5, 5);
-
-
-		//gated histograms (gated on Ex of intermediate/intermediate)
-		hMap[cn]["ReconEx_gated"]   = new TH1D(cn + "_ReconEx_gated", "Gated Recon Ex;MeV", 525, -1, 20);//gated on DaughterEx!
-
-		hMap[cn]["intermediatevcm_gated"]      = new TH1D(cn + "_intermediatevcm_gated", "Intermediate Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["intermediatekecm_gated"]     = new TH1D(cn + "_intermediatekecm_gated", "Intermediate KE CM;MeV", 500, 0, 5);
-		hMap[cn]["intermediatethetacm_gated"]  = new TH1D(cn + "_intermediatethetacm_gated", "Intermediate Theta CM;deg", 36, 0, 180);
-		hMap[cn]["intermediatephicm_gated"]    = new TH1D(cn + "_intermediatephicm_gated", "Intermediate Phi CM;deg", 72, 0, 360);
-		hMap[cn]["intermediatethetacmvsphicm_gated"]  = new TH2D(cn + "_intermediatethetacmvsphicm_gated", "intermediate ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["intermediatevcm_delta_gated"]             = new TH1D(cn + "_intermediatevcm_delta_gated", "intermediate Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["intermediatekecm_delta_gated"]            = new TH1D(cn + "_intermediatekecm_delta_gated", "intermediate KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		hMap[cn]["frag1vcm_gated"]             = new TH1D(cn + "_frag1vcm_gated", "frag1 Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["frag1kecm_gated"]            = new TH1D(cn + "_frag1kecm_gated", "frag1 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag1thetacm_gated"]         = new TH1D(cn + "_frag1thetacm_gated", "frag1 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag1phicm_gated"]           = new TH1D(cn + "_frag1phicm_gated", "frag1 Phi CM;deg", 72, 0, 360);
-		hMap[cn]["frag1thetacmvsphicm_gated"]  = new TH2D(cn + "_frag1thetacmvsphicm_gated", "frag1 ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["frag1vcm_delta_gated"]       = new TH1D(cn + "_frag1vcm_delta_gated", "frag1 Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["frag1kecm_delta_gated"]      = new TH1D(cn + "_frag1kecm_delta_gated", "frag1 KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		hMap[cn]["intermediatevcmVSfrag1vcm_gated"]  = new TH2D(cn + "_intermediatevcmVSfrag1vcm_gated", "Intermediate Vcm VS frag1 Vcm", 250, 0, 0.25, 250, 0, 0.25);
-		hMap[cn]["intermediatekecmVSfrag1kecm_gated"]= new TH2D(cn + "_intermediatekecmVSfrag1kecm_gated", "Intermediate KEcm VS frag1 KEcm", 500, 0, 5, 500, 0, 5);
-
-		hMap[cn]["frag2vcm_gated"]             = new TH1D(cn + "_frag2vcm_gated", "frag2 Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["frag2kecm_gated"]            = new TH1D(cn + "_frag2kecm_gated", "frag2 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag2thetacm_gated"]         = new TH1D(cn + "_frag2thetacm_gated", "frag2 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag2phicm_gated"]           = new TH1D(cn + "_frag2phicm_gated", "frag2 Phi CM;deg", 72, 0, 360);
-		hMap[cn]["frag2thetacmvsphicm_gated"]  = new TH2D(cn + "_frag2thetacmvsphicm_gated", "frag2 ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["frag2vcm_delta_gated"]       = new TH1D(cn + "_frag2vcm_delta_gated", "frag2 Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["frag2kecm_delta_gated"]      = new TH1D(cn + "_frag2kecm_delta_gated", "frag2 KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		hMap[cn]["frag3vcm_gated"]             = new TH1D(cn + "_frag3vcm_gated", "frag3 Velocity CM;c", 250, 0, 0.25);
-		hMap[cn]["frag3kecm_gated"]            = new TH1D(cn + "_frag3kecm_gated", "frag3 KE CM;MeV", 500, 0, 5);
-		hMap[cn]["frag3thetacm_gated"]         = new TH1D(cn + "_frag3thetacm_gated", "frag3 Theta CM;deg", 36, 0, 180);
-		hMap[cn]["frag3phicm_gated"]           = new TH1D(cn + "_frag3phicm_gated", "frag3 Phi CM;deg", 72, 0, 360);
-		hMap[cn]["frag3thetacmvsphicm_gated"]  = new TH2D(cn + "_frag3thetacmvsphicm_gated", "frag3 ThetaCM vs PhiCM;deg;deg", 72, 0, 360, 36, 0, 180);
-		hMap[cn]["frag3vcm_delta_gated"]       = new TH1D(cn + "_frag3vcm_delta_gated", "frag3 Velocity CM (meas - expect);c", 500, -0.25, 0.25);
-		hMap[cn]["frag3kecm_delta_gated"]      = new TH1D(cn + "_frag3kecm_delta_gated", "frag3 KE CM;MeV (meas - expect)", 1000, -5, 5);
-
-		hMap[cn]["frag2vcmVSfrag3vcm_gated"]  	   = new TH2D(cn + "_frag2vcmVSfrag3vcm_gated", "frag2 Vcm VS frag3 Vcm", 250, 0, 0.25, 250, 0, 0.25);
-		hMap[cn]["frag2kecmVSfrag3kecm_gated"]	   = new TH2D(cn + "_frag2kecmVSfrag3kecm_gated", "frag2 KEcm VS frag3 KEcm", 500, 0, 5, 500, 0, 5);
-
-
-
-		hMap[cn]["ecm1_gated"]             	   = new TH1D(cn + "_ecm1_gated", "E_{cm} Decay 1;MeV", 600, -1, 5);
-		hMap[cn]["ecm2_gated"]             	   = new TH1D(cn + "_ecm2_gated", "E_{cm} Decay 2;MeV", 600, -1, 5);
-		hMap[cn]["ecm1VSecm2_gated"]				   = new TH2D(cn + "_ecm1VSecm2_gated", "ECM1 vs ECM2;E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 600, -1, 5, 600, -1, 5);
-		hMap[cn]["ecm1_delta_gated"]           = new TH1D(cn + "_ecm1_delta_gated", "E_{cm} Decay 1 (meas - expect);MeV", 1000, -5, 5);
-		hMap[cn]["ecm2_delta_gated"]           = new TH1D(cn + "_ecm2_delta_gated", "E_{cm} Decay 2 (meas - expect);MeV", 1000, -5, 5);
-		hMap[cn]["ecm1deltaVSecm2delta_gated"]	   = new TH2D(cn + "_ecm1deltaVSecm2delta_gated", "ECM1 delta vs ECM2 delta;E_{cm} Decay 2 (meas - expect); E_{CM} Decay 1 (meas - expect)", 1000, -5, 5, 1000, -5, 5);
-		
-
+		groups_ungated[cn] = new permHisto(cn + "_ungated", ungateDir);
+		groups_gated[cn] = new permHisto(cn + "_gated", gateDir);
 
 		outfile->cd();
 	}
@@ -303,196 +197,143 @@ void InvMass_Mult3::FillEventHistograms(){
 	if(outtree) outtree->Fill();
 }
 
-//FillSelectCaseHistograms fills a single case histograms for caseNum = 0-5. Good for checking results conditionals before filling histograms.
 void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
-	//caseNum should be 0-5
 	if(caseNum < 0 || caseNum > 5){
-		std::cerr << "caseNum out of range (caseNum = " << caseNum << ", shuold be 0-5)\n";
+		std::cerr << "caseNum out of range (" << caseNum << ")\n";
 		return;
 	}
 
-	hMap[permNames.at(caseNum)]["intermediateIM"]->Fill(caseResults[caseNum].intermediateIM);
-	hMap[permNames.at(caseNum)]["intermediateEx"]->Fill(caseResults[caseNum].intermediateEx);
-	hMap[permNames.at(caseNum)]["ReconEx"]->Fill(caseResults[caseNum].reconEx);
-	hMap["allCases"]["intermediateIM"]->Fill(caseResults[caseNum].intermediateIM);
-	hMap["allCases"]["intermediateEx"]->Fill(caseResults[caseNum].intermediateEx);
-	hMap["allCases"]["ReconEx"]->Fill(caseResults[caseNum].reconEx);
+	TString cn = permNames.at(caseNum);
+	auto& res = caseResults[caseNum];
 
-	hMap[permNames.at(caseNum)]["intermediatevcm"]->Fill(caseResults[caseNum].intermediatevcm);
-	hMap[permNames.at(caseNum)]["intermediatekecm"]->Fill(caseResults[caseNum].intermediatekecm);
-	hMap[permNames.at(caseNum)]["intermediatevcm_delta"]->Fill(caseResults[caseNum].intermediatevcm - expectedCMValues.vcm_intermediate);
-	hMap[permNames.at(caseNum)]["intermediatekecm_delta"]->Fill(caseResults[caseNum].intermediatekecm - expectedCMValues.kecm_intermediate);
-	hMap[permNames.at(caseNum)]["intermediatethetacm"]->Fill(caseResults[caseNum].intermediatethetacm);
-	hMap[permNames.at(caseNum)]["intermediatephicm"]->Fill(caseResults[caseNum].intermediatephicm);
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["intermediatethetacmvsphicm"])->Fill(caseResults[caseNum].intermediatephicm, caseResults[caseNum].intermediatethetacm);
-	hMap["allCases"]["intermediatevcm"]->Fill(caseResults[caseNum].intermediatevcm);
-	hMap["allCases"]["intermediatekecm"]->Fill(caseResults[caseNum].intermediatekecm);
-	hMap["allCases"]["intermediatevcm_delta"]->Fill(caseResults[caseNum].intermediatevcm - expectedCMValues.vcm_intermediate);
-	hMap["allCases"]["intermediatekecm_delta"]->Fill(caseResults[caseNum].intermediatekecm - expectedCMValues.kecm_intermediate);
-	hMap["allCases"]["intermediatethetacm"]->Fill(caseResults[caseNum].intermediatethetacm);
-	hMap["allCases"]["intermediatephicm"]->Fill(caseResults[caseNum].intermediatephicm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["intermediatethetacmvsphicm"])->Fill(caseResults[caseNum].intermediatephicm, caseResults[caseNum].intermediatethetacm);
+	//lambdas to fill both specific permutation and "allCases"
+	auto fillAll = [&](TString key, double x){
+		groups_ungated[cn]->Fill(key, x);
+		groups_ungated["allCases"]->Fill(key, x);
+	};
 
-	hMap[permNames.at(caseNum)]["frag1vcm"]->Fill(caseResults[caseNum].frag1vcm);
-	hMap[permNames.at(caseNum)]["frag1kecm"]->Fill(caseResults[caseNum].frag1kecm);
-	hMap[permNames.at(caseNum)]["frag1vcm_delta"]->Fill(caseResults[caseNum].frag1vcm - expectedCMValues.vcm_frag1);
-	hMap[permNames.at(caseNum)]["frag1kecm_delta"]->Fill(caseResults[caseNum].frag1kecm - expectedCMValues.kecm_frag1);
-	hMap[permNames.at(caseNum)]["frag1thetacm"]->Fill(caseResults[caseNum].frag1thetacm);
-	hMap[permNames.at(caseNum)]["frag1phicm"]->Fill(caseResults[caseNum].frag1phicm);
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag1thetacmvsphicm"])->Fill(caseResults[caseNum].frag1phicm, caseResults[caseNum].frag1thetacm);
-	hMap["allCases"]["frag1vcm"]->Fill(caseResults[caseNum].frag1vcm);
-	hMap["allCases"]["frag1kecm"]->Fill(caseResults[caseNum].frag1kecm);
-	hMap["allCases"]["frag1vcm_delta"]->Fill(caseResults[caseNum].frag1vcm - expectedCMValues.vcm_frag1);
-	hMap["allCases"]["frag1kecm_delta"]->Fill(caseResults[caseNum].frag1kecm - expectedCMValues.kecm_frag1);
-	hMap["allCases"]["frag1thetacm"]->Fill(caseResults[caseNum].frag1thetacm);
-	hMap["allCases"]["frag1phicm"]->Fill(caseResults[caseNum].frag1phicm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["frag1thetacmvsphicm"])->Fill(caseResults[caseNum].frag1phicm, caseResults[caseNum].frag1thetacm);
+	auto fillAll2D = [&](TString key, double x, double y){
+		groups_ungated[cn]->Fill(key, x, y);
+		groups_ungated["allCases"]->Fill(key, x, y);
+	};
 
-	hMap[permNames.at(caseNum)]["ecm1"]->Fill(caseResults[caseNum].ecm1);
-	hMap[permNames.at(caseNum)]["ecm1_delta"]->Fill(caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
-	hMap["allCases"]["ecm1"]->Fill(caseResults[caseNum].ecm1);
-	hMap["allCases"]["ecm1_delta"]->Fill(caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
+	//invariant mass and excitation energy histograms:
+	fillAll("intermediateIM", res.intermediateIM);
+	fillAll("intermediateEx", res.intermediateEx);
+	fillAll("ReconEx", res.reconEx);
 
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["intermediatevcmVSfrag1vcm"])->Fill(caseResults[caseNum].frag1vcm, caseResults[caseNum].intermediatevcm);
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["intermediatekecmVSfrag1kecm"])->Fill(caseResults[caseNum].frag1kecm, caseResults[caseNum].intermediatekecm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["intermediatevcmVSfrag1vcm"])->Fill(caseResults[caseNum].frag1vcm, caseResults[caseNum].intermediatevcm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["intermediatekecmVSfrag1kecm"])->Fill(caseResults[caseNum].frag1kecm, caseResults[caseNum].intermediatekecm);
+	//intermediate CM
+	fillAll("intermediatevcm_meas", res.intermediatevcm);
+	fillAll("intermediatevcm_expect", expectedCMValues.vcm_intermediate);
+	fillAll("intermediatevcm_delta", res.intermediatevcm - expectedCMValues.vcm_intermediate);
 
-	hMap[permNames.at(caseNum)]["frag2vcm"]->Fill(caseResults[caseNum].frag2vcm);
-	hMap[permNames.at(caseNum)]["frag2kecm"]->Fill(caseResults[caseNum].frag2kecm);
-	hMap[permNames.at(caseNum)]["frag2vcm_delta"]->Fill(caseResults[caseNum].frag2vcm - expectedCMValues.vcm_frag2);
-	hMap[permNames.at(caseNum)]["frag2kecm_delta"]->Fill(caseResults[caseNum].frag2kecm - expectedCMValues.kecm_frag2);
-	hMap[permNames.at(caseNum)]["frag2thetacm"]->Fill(caseResults[caseNum].frag2thetacm);
-	hMap[permNames.at(caseNum)]["frag2phicm"]->Fill(caseResults[caseNum].frag2phicm);
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag2thetacmvsphicm"])->Fill(caseResults[caseNum].frag2phicm, caseResults[caseNum].frag2thetacm);
-	hMap["allCases"]["frag2vcm"]->Fill(caseResults[caseNum].frag2vcm);
-	hMap["allCases"]["frag2kecm"]->Fill(caseResults[caseNum].frag2kecm);
-	hMap["allCases"]["frag2vcm_delta"]->Fill(caseResults[caseNum].frag2vcm - expectedCMValues.vcm_frag2);
-	hMap["allCases"]["frag2kecm_delta"]->Fill(caseResults[caseNum].frag2kecm - expectedCMValues.kecm_frag2);
-	hMap["allCases"]["frag2thetacm"]->Fill(caseResults[caseNum].frag2thetacm);
-	hMap["allCases"]["frag2phicm"]->Fill(caseResults[caseNum].frag2phicm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["frag2thetacmvsphicm"])->Fill(caseResults[caseNum].frag2phicm, caseResults[caseNum].frag2thetacm);
+	fillAll("intermediatekecm_meas", res.intermediatekecm);
+	fillAll("intermediatekecm_expect", expectedCMValues.kecm_intermediate);
+	fillAll("intermediatekecm_delta", res.intermediatekecm - expectedCMValues.kecm_intermediate);
 
-	hMap[permNames.at(caseNum)]["frag3vcm"]->Fill(caseResults[caseNum].frag3vcm);
-	hMap[permNames.at(caseNum)]["frag3kecm"]->Fill(caseResults[caseNum].frag3kecm);
-	hMap[permNames.at(caseNum)]["frag3vcm_delta"]->Fill(caseResults[caseNum].frag3vcm - expectedCMValues.vcm_frag3);
-	hMap[permNames.at(caseNum)]["frag3kecm_delta"]->Fill(caseResults[caseNum].frag3kecm - expectedCMValues.kecm_frag3);
-	hMap[permNames.at(caseNum)]["frag3thetacm"]->Fill(caseResults[caseNum].frag3thetacm);
-	hMap[permNames.at(caseNum)]["frag3phicm"]->Fill(caseResults[caseNum].frag3phicm);
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag3thetacmvsphicm"])->Fill(caseResults[caseNum].frag3phicm, caseResults[caseNum].frag3thetacm);
-	hMap["allCases"]["frag3vcm"]->Fill(caseResults[caseNum].frag3vcm);
-	hMap["allCases"]["frag3kecm"]->Fill(caseResults[caseNum].frag3kecm);
-	hMap["allCases"]["frag3vcm_delta"]->Fill(caseResults[caseNum].frag3vcm - expectedCMValues.vcm_frag3);
-	hMap["allCases"]["frag3kecm_delta"]->Fill(caseResults[caseNum].frag3kecm - expectedCMValues.kecm_frag3);
-	hMap["allCases"]["frag3thetacm"]->Fill(caseResults[caseNum].frag3thetacm);
-	hMap["allCases"]["frag3phicm"]->Fill(caseResults[caseNum].frag3phicm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["frag3thetacmvsphicm"])->Fill(caseResults[caseNum].frag3phicm, caseResults[caseNum].frag3thetacm);
+	fillAll("intermediatethetacm", res.intermediatethetacm);
+	fillAll("intermediatephicm", res.intermediatephicm);
+	fillAll2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
 
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag2vcmVSfrag3vcm"])->Fill(caseResults[caseNum].frag3vcm, caseResults[caseNum].frag2vcm);
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag2kecmVSfrag3kecm"])->Fill(caseResults[caseNum].frag3kecm, caseResults[caseNum].frag2kecm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["frag2vcmVSfrag3vcm"])->Fill(caseResults[caseNum].frag3vcm, caseResults[caseNum].frag2vcm);
-	dynamic_cast<TH2D*>(hMap["allCases"]["frag2kecmVSfrag3kecm"])->Fill(caseResults[caseNum].frag3kecm, caseResults[caseNum].frag2kecm);
+	//fill frag1-3
+	auto fillFrag = [&](int i, double vcm, double kecm, double theta, double phi, double expV, double expK){
+		TString f = Form("frag%d",i);
+		fillAll(f+"vcm_meas",vcm);
+		fillAll(f+"vcm_expect",expV);
+		fillAll(f+"vcm_delta",vcm-expV);
 
-	hMap[permNames.at(caseNum)]["ecm2"]->Fill(caseResults[caseNum].ecm2);
-	hMap[permNames.at(caseNum)]["ecm2_delta"]->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2);
-	hMap["allCases"]["ecm2"]->Fill(caseResults[caseNum].ecm2);
-	hMap["allCases"]["ecm2_delta"]->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2);
+		fillAll(f+"kecm_meas",kecm);
+		fillAll(f+"kecm_expect",expK);
+		fillAll(f+"kecm_delta",kecm-expK);
 
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["ecm1VSecm2"])->Fill(caseResults[caseNum].ecm2, caseResults[caseNum].ecm1);
-	dynamic_cast<TH2D*>(hMap["allCases"]["ecm1VSecm2"])->Fill(caseResults[caseNum].ecm2, caseResults[caseNum].ecm1);
+		fillAll(f+"thetacm",theta);
+		fillAll(f+"phicm",phi);
+		fillAll2D(f+"thetacmvsphicm",phi,theta);
+	};
+	fillFrag(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, expectedCMValues.vcm_frag1, expectedCMValues.kecm_frag1);
+	fillFrag(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, expectedCMValues.vcm_frag2, expectedCMValues.kecm_frag2);
+	fillFrag(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, expectedCMValues.vcm_frag3, expectedCMValues.kecm_frag3);
 
-	dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["ecm1deltaVSecm2delta"])->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2, caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
-	dynamic_cast<TH2D*>(hMap["allCases"]["ecm1deltaVSecm2delta"])->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2, caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
+	//decays
+	fillAll("ecm1_meas", res.ecm1);
+	fillAll("ecm1_expect", expectedCMValues.Ecm1);
+	fillAll("ecm1_delta", res.ecm1 - expectedCMValues.Ecm1);
+	fillAll("ecm2_meas", res.ecm2);
+	fillAll("ecm2_expect", expectedCMValues.Ecm2);
+	fillAll("ecm2_delta", res.ecm2 - expectedCMValues.Ecm2);
 
-	if( std::abs(caseResults[caseNum].intermediateEx - intermediateEx) <= intermediateExGate ){
-		hMap[permNames.at(caseNum)]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
-		hMap["allCases"]["ReconEx_gated"]->Fill(caseResults[caseNum].reconEx);
+	fillAll2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
+	fillAll2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
+	fillAll2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
+	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
+	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
+	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - expectedCMValues.Ecm2, res.ecm1 - expectedCMValues.Ecm1);
 
-		hMap[permNames.at(caseNum)]["intermediatevcm_gated"]->Fill(caseResults[caseNum].intermediatevcm);
-		hMap[permNames.at(caseNum)]["intermediatekecm_gated"]->Fill(caseResults[caseNum].intermediatekecm);
-		hMap[permNames.at(caseNum)]["intermediatevcm_delta_gated"]->Fill(caseResults[caseNum].intermediatevcm - expectedCMValues.vcm_intermediate);
-		hMap[permNames.at(caseNum)]["intermediatekecm_delta_gated"]->Fill(caseResults[caseNum].intermediatekecm - expectedCMValues.kecm_intermediate);
-		hMap[permNames.at(caseNum)]["intermediatethetacm_gated"]->Fill(caseResults[caseNum].intermediatethetacm);
-		hMap[permNames.at(caseNum)]["intermediatephicm_gated"]->Fill(caseResults[caseNum].intermediatephicm);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["intermediatethetacmvsphicm_gated"])->Fill(caseResults[caseNum].intermediatephicm, caseResults[caseNum].intermediatethetacm);
-		hMap["allCases"]["intermediatevcm_gated"]->Fill(caseResults[caseNum].intermediatevcm);
-		hMap["allCases"]["intermediatekecm_gated"]->Fill(caseResults[caseNum].intermediatekecm);
-		hMap["allCases"]["intermediatevcm_delta_gated"]->Fill(caseResults[caseNum].intermediatevcm - expectedCMValues.vcm_intermediate);
-		hMap["allCases"]["intermediatekecm_delta_gated"]->Fill(caseResults[caseNum].intermediatekecm - expectedCMValues.kecm_intermediate);
-		hMap["allCases"]["intermediatethetacm_gated"]->Fill(caseResults[caseNum].intermediatethetacm);
-		hMap["allCases"]["intermediatephicm_gated"]->Fill(caseResults[caseNum].intermediatephicm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["intermediatethetacmvsphicm_gated"])->Fill(caseResults[caseNum].intermediatephicm, caseResults[caseNum].intermediatethetacm);
+	if( std::abs(res.intermediateEx - intermediateEx) <= intermediateExGate ){
+		//lambdas to fill both specific permutation and "allCases"
+		auto fillGated = [&](TString key, double x){
+			groups_gated[cn]->Fill(key, x);
+			groups_gated["allCases"]->Fill(key, x);
+		};
 
-		hMap[permNames.at(caseNum)]["frag1vcm_gated"]->Fill(caseResults[caseNum].frag1vcm);
-		hMap[permNames.at(caseNum)]["frag1kecm_gated"]->Fill(caseResults[caseNum].frag1kecm);
-		hMap[permNames.at(caseNum)]["frag1vcm_delta_gated"]->Fill(caseResults[caseNum].frag1vcm - expectedCMValues.vcm_frag1);
-		hMap[permNames.at(caseNum)]["frag1kecm_delta_gated"]->Fill(caseResults[caseNum].frag1kecm - expectedCMValues.kecm_frag1);
-		hMap[permNames.at(caseNum)]["frag1thetacm_gated"]->Fill(caseResults[caseNum].frag1thetacm);
-		hMap[permNames.at(caseNum)]["frag1phicm_gated"]->Fill(caseResults[caseNum].frag1phicm);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag1thetacmvsphicm_gated"])->Fill(caseResults[caseNum].frag1phicm, caseResults[caseNum].frag1thetacm);
-		hMap["allCases"]["frag1vcm_gated"]->Fill(caseResults[caseNum].frag1vcm);
-		hMap["allCases"]["frag1kecm_gated"]->Fill(caseResults[caseNum].frag1kecm);
-		hMap["allCases"]["frag1vcm_delta_gated"]->Fill(caseResults[caseNum].frag1vcm - expectedCMValues.vcm_frag1);
-		hMap["allCases"]["frag1kecm_delta_gated"]->Fill(caseResults[caseNum].frag1kecm - expectedCMValues.kecm_frag1);
-		hMap["allCases"]["frag1thetacm_gated"]->Fill(caseResults[caseNum].frag1thetacm);
-		hMap["allCases"]["frag1phicm_gated"]->Fill(caseResults[caseNum].frag1phicm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["frag1thetacmvsphicm_gated"])->Fill(caseResults[caseNum].frag1phicm, caseResults[caseNum].frag1thetacm);
+		auto fillGated2D = [&](TString key, double x, double y){
+			groups_gated[cn]->Fill(key, x, y);
+			groups_gated["allCases"]->Fill(key, x, y);
+		};
 
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["intermediatevcmVSfrag1vcm_gated"])->Fill(caseResults[caseNum].frag1vcm, caseResults[caseNum].intermediatevcm);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["intermediatekecmVSfrag1kecm_gated"])->Fill(caseResults[caseNum].frag1kecm, caseResults[caseNum].intermediatekecm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["intermediatevcmVSfrag1vcm_gated"])->Fill(caseResults[caseNum].frag1vcm, caseResults[caseNum].intermediatevcm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["intermediatekecmVSfrag1kecm_gated"])->Fill(caseResults[caseNum].frag1kecm, caseResults[caseNum].intermediatekecm);
+		//invariant mass and excitation energy histograms:
+		fillGated("intermediateIM", res.intermediateIM);
+		fillGated("intermediateEx", res.intermediateEx);
+		fillGated("ReconEx", res.reconEx);
 
-		hMap[permNames.at(caseNum)]["frag2vcm_gated"]->Fill(caseResults[caseNum].frag2vcm);
-		hMap[permNames.at(caseNum)]["frag2kecm_gated"]->Fill(caseResults[caseNum].frag2kecm);
-		hMap[permNames.at(caseNum)]["frag2vcm_delta_gated"]->Fill(caseResults[caseNum].frag2vcm - expectedCMValues.vcm_frag2);
-		hMap[permNames.at(caseNum)]["frag2kecm_delta_gated"]->Fill(caseResults[caseNum].frag2kecm - expectedCMValues.kecm_frag2);
-		hMap[permNames.at(caseNum)]["frag2thetacm_gated"]->Fill(caseResults[caseNum].frag2thetacm);
-		hMap[permNames.at(caseNum)]["frag2phicm_gated"]->Fill(caseResults[caseNum].frag2phicm);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag2thetacmvsphicm_gated"])->Fill(caseResults[caseNum].frag2phicm, caseResults[caseNum].frag2thetacm);
-		hMap["allCases"]["frag2vcm_gated"]->Fill(caseResults[caseNum].frag2vcm);
-		hMap["allCases"]["frag2kecm_gated"]->Fill(caseResults[caseNum].frag2kecm);
-		hMap["allCases"]["frag2vcm_delta_gated"]->Fill(caseResults[caseNum].frag2vcm - expectedCMValues.vcm_frag2);
-		hMap["allCases"]["frag2kecm_delta_gated"]->Fill(caseResults[caseNum].frag2kecm - expectedCMValues.kecm_frag2);
-		hMap["allCases"]["frag2thetacm_gated"]->Fill(caseResults[caseNum].frag2thetacm);
-		hMap["allCases"]["frag2phicm_gated"]->Fill(caseResults[caseNum].frag2phicm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["frag2thetacmvsphicm_gated"])->Fill(caseResults[caseNum].frag2phicm, caseResults[caseNum].frag2thetacm);
+		//intermediate CM
+		fillGated("intermediatevcm_meas", res.intermediatevcm);
+		fillGated("intermediatevcm_expect", expectedCMValues.vcm_intermediate);
+		fillGated("intermediatevcm_delta", res.intermediatevcm - expectedCMValues.vcm_intermediate);
 
-		hMap[permNames.at(caseNum)]["frag3vcm_gated"]->Fill(caseResults[caseNum].frag3vcm);
-		hMap[permNames.at(caseNum)]["frag3kecm_gated"]->Fill(caseResults[caseNum].frag3kecm);
-		hMap[permNames.at(caseNum)]["frag3vcm_delta_gated"]->Fill(caseResults[caseNum].frag3vcm - expectedCMValues.vcm_frag3);
-		hMap[permNames.at(caseNum)]["frag3kecm_delta_gated"]->Fill(caseResults[caseNum].frag3kecm - expectedCMValues.kecm_frag3);
-		hMap[permNames.at(caseNum)]["frag3thetacm_gated"]->Fill(caseResults[caseNum].frag3thetacm);
-		hMap[permNames.at(caseNum)]["frag3phicm_gated"]->Fill(caseResults[caseNum].frag3phicm);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag3thetacmvsphicm_gated"])->Fill(caseResults[caseNum].frag3phicm, caseResults[caseNum].frag3thetacm);
-		hMap["allCases"]["frag3vcm_gated"]->Fill(caseResults[caseNum].frag3vcm);
-		hMap["allCases"]["frag3kecm_gated"]->Fill(caseResults[caseNum].frag3kecm);
-		hMap["allCases"]["frag3vcm_delta_gated"]->Fill(caseResults[caseNum].frag3vcm - expectedCMValues.vcm_frag3);
-		hMap["allCases"]["frag3kecm_delta_gated"]->Fill(caseResults[caseNum].frag3kecm - expectedCMValues.kecm_frag3);
-		hMap["allCases"]["frag3thetacm_gated"]->Fill(caseResults[caseNum].frag3thetacm);
-		hMap["allCases"]["frag3phicm_gated"]->Fill(caseResults[caseNum].frag3phicm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["frag3thetacmvsphicm_gated"])->Fill(caseResults[caseNum].frag3phicm, caseResults[caseNum].frag3thetacm);
+		fillGated("intermediatekecm_meas", res.intermediatekecm);
+		fillGated("intermediatekecm_expect", expectedCMValues.kecm_intermediate);
+		fillGated("intermediatekecm_delta", res.intermediatekecm - expectedCMValues.kecm_intermediate);
 
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag2vcmVSfrag3vcm_gated"])->Fill(caseResults[caseNum].frag3vcm, caseResults[caseNum].frag2vcm);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["frag2kecmVSfrag3kecm_gated"])->Fill(caseResults[caseNum].frag3kecm, caseResults[caseNum].frag2kecm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["frag2vcmVSfrag3vcm_gated"])->Fill(caseResults[caseNum].frag3vcm, caseResults[caseNum].frag2vcm);
-		dynamic_cast<TH2D*>(hMap["allCases"]["frag2kecmVSfrag3kecm_gated"])->Fill(caseResults[caseNum].frag3kecm, caseResults[caseNum].frag2kecm);
+		fillGated("intermediatethetacm", res.intermediatethetacm);
+		fillGated("intermediatephicm", res.intermediatephicm);
+		fillGated2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
 
-		hMap[permNames.at(caseNum)]["ecm1_gated"]->Fill(caseResults[caseNum].ecm1);
-		hMap[permNames.at(caseNum)]["ecm1_delta_gated"]->Fill(caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
-		hMap[permNames.at(caseNum)]["ecm2_gated"]->Fill(caseResults[caseNum].ecm2);
-		hMap[permNames.at(caseNum)]["ecm2_delta_gated"]->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2);
-		hMap["allCases"]["ecm1_gated"]->Fill(caseResults[caseNum].ecm1);
-		hMap["allCases"]["ecm1_delta_gated"]->Fill(caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
-		hMap["allCases"]["ecm2_gated"]->Fill(caseResults[caseNum].ecm2);
-		hMap["allCases"]["ecm2_delta_gated"]->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2);
+		//fill frag1-3
+		auto fillFragGated = [&](int i, double vcm, double kecm, double theta, double phi, double expV, double expK){
+			TString f = Form("frag%d",i);
+			fillGated(f+"vcm_meas",vcm);
+			fillGated(f+"vcm_expect",expV);
+			fillGated(f+"vcm_delta",vcm-expV);
 
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["ecm1VSecm2_gated"])->Fill(caseResults[caseNum].ecm2, caseResults[caseNum].ecm1);
-		dynamic_cast<TH2D*>(hMap["allCases"]["ecm1VSecm2_gated"])->Fill(caseResults[caseNum].ecm2, caseResults[caseNum].ecm1);
-		dynamic_cast<TH2D*>(hMap[permNames.at(caseNum)]["ecm1deltaVSecm2delta_gated"])->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2, caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
-		dynamic_cast<TH2D*>(hMap["allCases"]["ecm1deltaVSecm2delta_gated"])->Fill(caseResults[caseNum].ecm2 - expectedCMValues.Ecm2, caseResults[caseNum].ecm1 - expectedCMValues.Ecm1);
+			fillGated(f+"kecm_meas",kecm);
+			fillGated(f+"kecm_expect",expK);
+			fillGated(f+"kecm_delta",kecm-expK);
 
+			fillGated(f+"thetacm",theta);
+			fillGated(f+"phicm",phi);
+			fillGated2D(f+"thetacmvsphicm",phi,theta);
+		};
+		fillFragGated(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, expectedCMValues.vcm_frag1, expectedCMValues.kecm_frag1);
+		fillFragGated(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, expectedCMValues.vcm_frag2, expectedCMValues.kecm_frag2);
+		fillFragGated(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, expectedCMValues.vcm_frag3, expectedCMValues.kecm_frag3);
+
+		//decays
+		fillGated("ecm1_meas", res.ecm1);
+		fillGated("ecm1_expect", expectedCMValues.Ecm1);
+		fillGated("ecm1_delta", res.ecm1 - expectedCMValues.Ecm1);
+		fillGated("ecm2_meas", res.ecm2);
+		fillGated("ecm2_expect", expectedCMValues.Ecm2);
+		fillGated("ecm2_delta", res.ecm2 - expectedCMValues.Ecm2);
+
+		fillGated2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
+		fillGated2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
+		fillGated2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
+		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
+		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
+		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - expectedCMValues.Ecm2, res.ecm1 - expectedCMValues.Ecm1);
 	}
+
 }
 
 void InvMass_Mult3::CloseAndWrite(){
