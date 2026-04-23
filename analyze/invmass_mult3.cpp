@@ -173,7 +173,7 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 	intermediateExGate = hypo.intermediateExGate;
 	recoilEx = hypo.recoilEx;
 
-	SetExpectedCMValues();
+	SetExpectedCMValues(true);
 }
 
 //AnalyzeEvent assumes theta, phi in degrees and E in MeV
@@ -502,7 +502,7 @@ void InvMass_Mult3::CloseAndWrite(){
 	}
 }
 
-void InvMass_Mult3::SetExpectedCMValues(){
+void InvMass_Mult3::SetExpectedCMValues(bool verbose){
 	double m_recoil = recoilMass + recoilEx;
 	double m_inter = intermediateMass + intermediateEx;
 
@@ -526,19 +526,22 @@ void InvMass_Mult3::SetExpectedCMValues(){
 		expectedCMValues.vcm_frag3 = std::sqrt(2.0 * expectedCMValues.kecm_frag3 / masses[2]);
 	}
 
-	std::cout << "Masses:\n\tfrag1 = " << masses[0] << "\tfrag2 = " << masses[1] << "\tfrag3 = " << masses[2] << "\n";
-	std::cout << "\tRecoil = " << recoilMass << " + " << recoilEx << " = " << m_recoil << "\n";
-	std::cout << "\tIntermediate = " << intermediateMass << " + " << intermediateEx << " = " << m_inter << "\n";
+	if(verbose){
+		std::cout << "Masses:\n\tfrag1 = " << masses[0] << "\tfrag2 = " << masses[1] << "\tfrag3 = " << masses[2] << "\n";
+		std::cout << "\tRecoil = " << recoilMass << " + " << recoilEx << " = " << m_recoil << "\n";
+		std::cout << "\tIntermediate = " << intermediateMass << " + " << intermediateEx << " = " << m_inter << "\n";
 
-	std::cout << "Decay 1 constants:" << std::endl;
-	std::cout << "\tEcm1 = " << expectedCMValues.Ecm1 << std::endl;
-	std::cout << "\tVcm  frag1 = " << expectedCMValues.vcm_frag1  << "\tKEcm frag1 = " << expectedCMValues.kecm_frag1 << std::endl;
-	std::cout << "\tVcm  intermediate = " << expectedCMValues.vcm_intermediate  << "\tKEcm intermediate = " << expectedCMValues.kecm_intermediate << std::endl;
+		std::cout << "Decay 1 constants:" << std::endl;
+		std::cout << "\tEcm1 = " << expectedCMValues.Ecm1 << std::endl;
+		std::cout << "\tVcm  frag1 = " << expectedCMValues.vcm_frag1  << "\tKEcm frag1 = " << expectedCMValues.kecm_frag1 << std::endl;
+		std::cout << "\tVcm  intermediate = " << expectedCMValues.vcm_intermediate  << "\tKEcm intermediate = " << expectedCMValues.kecm_intermediate << std::endl;
 
-	std::cout << "\nDecay 2 constants:" << std::endl;
-	std::cout << "\tEcm2 = " << expectedCMValues.Ecm2 << std::endl;
-	std::cout << "\tVcm frag2 = " << expectedCMValues.vcm_frag2 << "\tKEcm frag2 = " << expectedCMValues.kecm_frag2 << std::endl;
-	std::cout << "\tVcm frag3 = " << expectedCMValues.vcm_frag3 << "\tKEcm frag3 = " << expectedCMValues.kecm_frag3 << std::endl;
+		std::cout << "\nDecay 2 constants:" << std::endl;
+		std::cout << "\tEcm2 = " << expectedCMValues.Ecm2 << std::endl;
+		std::cout << "\tVcm frag2 = " << expectedCMValues.vcm_frag2 << "\tKEcm frag2 = " << expectedCMValues.kecm_frag2 << std::endl;
+		std::cout << "\tVcm frag3 = " << expectedCMValues.vcm_frag3 << "\tKEcm frag3 = " << expectedCMValues.kecm_frag3 << std::endl;
+	}
+
 }
 
 void InvMass_Mult3::ClearEventResults(){

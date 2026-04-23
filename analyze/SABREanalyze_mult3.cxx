@@ -93,6 +93,9 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
+	double Ex;
+	intree->SetBranchAddress("ExE", &Ex);
+
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
@@ -116,6 +119,15 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 			kinmc_bue[j] = kinmc_e[j+1];
 			kinmc_butheta[j] = kinmc_theta[j+1];
 			kinmc_buphi[j] = kinmc_phi[j+1];
+		}
+
+		//pass along SPS-informed recoil Ex if enabled:
+		if(updateRecoilEx){
+			SABRE_analysis.SetRecoilEx(Ex);
+			//SABRE_analysis.SetExpectedCMValues();
+
+			kin4mc_analysis.SetRecoilEx(Ex);
+			//kin4mc_analysis.SetExpectedCMValues();
 		}
 
 		SABRE_analysis.AnalyzeEvent(E, theta, phi);
@@ -198,6 +210,9 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
+	double Ex;
+	intree->SetBranchAddress("ExE", &Ex);
+
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
@@ -222,6 +237,15 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 			kinmc_bue[j] = kinmc_e[j+1];
 			kinmc_butheta[j] = kinmc_theta[j+1];
 			kinmc_buphi[j] = kinmc_phi[j+1];
+		}
+
+		//pass along SPS-informed recoil Ex if enabled:
+		if(updateRecoilEx){
+			SABRE_analysis.SetRecoilEx(Ex);
+			//SABRE_analysis.SetExpectedCMValues();
+
+			kin4mc_analysis.SetRecoilEx(Ex);
+			//kin4mc_analysis.SetExpectedCMValues();
 		}
 
 		SABRE_analysis.AnalyzeEvent(E, theta, phi);

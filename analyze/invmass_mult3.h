@@ -102,7 +102,7 @@ private:
 	};
 
 	ExpectedCM expectedCMValues;
-	void SetExpectedCMValues();//called automatically at end of SetHypothesis()
+	void SetExpectedCMValues(bool verbose=false);//called automatically at end of SetHypothesis()
 
 public:
 	InvMass_Mult3();
@@ -118,8 +118,8 @@ public:
 
 	void CloseAndWrite();
 
-	void SetRecoilEx(double Ex) { recoilEx = Ex; hypothesis.recoilEx = Ex; }
-	void SetDaughterEx(double Ex) { intermediateEx = Ex; hypothesis.intermediateEx = Ex; }
+	void SetRecoilEx(double Ex) { recoilEx = Ex; hypothesis.recoilEx = Ex; SetExpectedCMValues(); }
+	void SetDaughterEx(double Ex) { intermediateEx = Ex; hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
 	void SetDaughterExGate(double ExGate) { intermediateExGate = ExGate; hypothesis.intermediateExGate = ExGate; }
 	double GetDaughterEx() { return intermediateEx; }
 	double GetDaughterExGate() { return intermediateExGate; }
