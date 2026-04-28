@@ -16,9 +16,9 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register1D(permName, "RecoilEx", "Recoil Ex;MeV", 525, -1, 20);
 
 	for(const auto& p : particles){
-		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 250, 0, 0.25);
-		Register1D(permName, p+"vcm_expect", p+" Velocity CM (expect);c", 250, 0, 0.25);
-		Register1D(permName, p+"vcm_delta", p+" Velocity CM (meas - expect);c", 500, -0.25, 0.25);
+		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 2500, 0, 0.25);
+		Register1D(permName, p+"vcm_expect", p+" Velocity CM (expect);c", 2500, 0, 0.25);
+		Register1D(permName, p+"vcm_delta", p+" Velocity CM (meas - expect);c", 5000, -0.25, 0.25);
 
 		Register1D(permName, p+"kecm_meas", p+" KE CM (meas); MeV", 500, 0, 5);
 		Register1D(permName, p+"kecm_expect", p+" KE CM (expect);MeV", 500, 0, 5);
@@ -33,6 +33,8 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register1D(permName, "ecm1_meas", "E_{cm} Decay 1 (meas);MeV", 600, -1, 5);
 	Register1D(permName, "ecm1_expect", "E_{cm} Decay 1 (expect);MeV", 600, -1, 5);
 	Register1D(permName, "ecm1_delta", "E_{cm} Decay 1 (meas - expect);MeV", 1000, -5, 5);
+	Register1D(permName, "decay1_thetaCMsum", "decay1 Theta CM Sum", 72, 0, 360);
+	Register1D(permName, "decay1_phiCMdiff", "decay1 Phi CM Diff", 72, 0, 360);
 	Register2D(permName, "intermediatevcmVSfrag1vcm", "intermediate Vcm VS frag1 Vcm", 250, 0, 0.25, 250, 0, 0.25);
 	Register2D(permName, "intermediatekecmVSfrag1kecm", "intermediate KEcm VS frag1 KEcm", 600, -1, 5, 600, -1, 5);
 
@@ -40,6 +42,8 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register1D(permName, "ecm2_meas", "E_{cm} Decay 2 (meas);MeV", 600, -1, 5);
 	Register1D(permName, "ecm2_expect", "E_{cm} Decay 2 (expect);MeV", 600, -1, 5);
 	Register1D(permName, "ecm2_delta", "E_{cm} Decay 2 (meas - expect);MeV", 1000, -5, 5);
+	Register1D(permName, "decay2_thetaCMsum", "decay2 Theta CM Sum", 72, 0, 360);
+	Register1D(permName, "decay2_phiCMdiff", "decay2 Phi CM Diff", 72, 0, 360);
 	Register2D(permName, "frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 250, 0, 0.25, 250, 0, 0.25);
 	Register2D(permName, "frag2kecmVSfrag3kecm", "frag2 KEcm VS frag3 KEcm", 600, -1, 5, 600, -1, 5);
 
