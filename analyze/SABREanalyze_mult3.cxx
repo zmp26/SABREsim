@@ -32,11 +32,12 @@
 #include "TDirectory.h"
 #include "invmass_mult3.h"
 #include "invmass_mult3.cpp"//including .cpp for simple root macro purposes
+#include "permHisto.cpp"//" above "
 
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=0.05, bool updateRecoilEx = false){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=0.05, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
@@ -130,10 +131,10 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 			//kin4mc_analysis.SetExpectedCMValues();
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi);
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 		SABRE_analysis.FillEventHistograms();
 
-		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
+		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
 		kin4mc_analysis.FillEventHistograms();
 
 		if(i % 1000 == 0){
@@ -153,7 +154,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 
 }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=1.0, bool updateRecoilEx = false){
+void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=1.0, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
@@ -248,10 +249,10 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 			//kin4mc_analysis.SetExpectedCMValues();
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi);
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 		SABRE_analysis.FillEventHistograms();
 
-		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi);
+		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
 		kin4mc_analysis.FillEventHistograms();
 
 		if(i % 1000 == 0){

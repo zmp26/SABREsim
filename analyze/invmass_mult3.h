@@ -53,6 +53,13 @@ private:
 
 	double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
 
+	//expected CM constants:
+	struct ExpectedCM {
+		double Ecm1, Ecm2;
+		double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;
+		double kecm_frag1, kecm_frag2, kecm_frag3, kecm_intermediate;
+	};
+
 	//define a "results" struct here:
 	struct Results {
 		double intermediateIM, intermediateEx, reconEx;
@@ -63,6 +70,8 @@ private:
 		double frag3vcm, frag3kecm, frag3thetacm, frag3phicm;
 
 		double ecm1, ecm2;
+
+		ExpectedCM expected;
 
 		void Reset(){
 			intermediateIM = -666.;
@@ -91,19 +100,23 @@ private:
 
 			ecm1 = -666.;
 			ecm2 = -666.;
+
+			expected.Ecm1 = -666.;
+			expected.Ecm2 = -666.;
+			expected.vcm_intermediate = -666.;
+			expected.vcm_frag1 = -666.;
+			expected.vcm_frag2 = -666.;
+			expected.vcm_frag3 = -666.;
+			expected.kecm_intermediate = -666.;
+			expected.kecm_frag1 = -666.;
+			expected.kecm_frag2 = -666.;
+			expected.kecm_frag3 = -666.;
 		};
 	};
 
 	Results caseResults[6];
 
 	void ClearEventResults();
-
-	//expected CM constants:
-	struct ExpectedCM {
-		double Ecm1, Ecm2;
-		double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;
-		double kecm_frag1, kecm_frag2, kecm_frag3, kecm_intermediate;
-	};
 
 	ExpectedCM expectedCMValues;
 	void SetExpectedCMValues(bool verbose=false);//called automatically at end of SetHypothesis()
@@ -116,15 +129,15 @@ public:
 	//void SetMasses(double mass_frag1, double mass_frag2, double mass_frag3, double mass_recoil, double mass_intermediate);
 	void SetHypothesis(const Hypothesis4& hypo);
 
-	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3]);
+	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx=false);
 	void FillEventHistograms();//fills all 6 cases together for the event
 	void FillSelectCaseHistograms(int caseNum);//selectively fills a single case for the event
 
 	void CloseAndWrite();
 
 	void SetRecoilEx(double Ex) { recoilEx = Ex; hypothesis.recoilEx = Ex; SetExpectedCMValues(); }
-	void SetDaughterEx(double Ex) { intermediateEx = Ex; hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
-	void SetDaughterExGate(double ExGate) { intermediateExGate = ExGate; hypothesis.intermediateExGate = ExGate; }
+	void SetIntermediateEx(double Ex) { intermediateEx = Ex; hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
+	void SetIntermediateExGate(double ExGate) { intermediateExGate = ExGate; hypothesis.intermediateExGate = ExGate; }
 	double GetDaughterEx() { return intermediateEx; }
 	double GetDaughterExGate() { return intermediateExGate; }
 

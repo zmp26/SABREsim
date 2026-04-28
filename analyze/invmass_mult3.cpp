@@ -35,7 +35,10 @@ void InvMass_Mult3::Init(const char* output_filename){
 					   "f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:"
 					   "f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:"
 					   "f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:"
-					   "ecm1/D:ecm2/D";
+					   "ecm1/D:ecm2/D:"
+					   "exp_ecm1/D:exp_ecm2/D:exp_imVCM/D:exp_imKECM/D:exp_imTHCM/D:exp_imPHCM/D:"
+					   "exp_f1VCM/D:exp_f1KECM/D:exp_f2VCM/D:exp_f2KECM/D:"
+					   "exp_f3VCM/D:exp_f3KECM/D";
 
 	for(int i=0; i<6; i++){
 		//create a branch for each permutation
@@ -72,7 +75,7 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 
 //AnalyzeEvent assumes theta, phi in degrees and E in MeV
 //update this to return reconstructed recoil excitation energy in MeV
-std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3]){
+std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx){
 
 	ClearEventResults();
 
@@ -112,6 +115,14 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		double Ex = recoil.M() - recoilMass;
 		recoilExs[permIndex] = Ex;
 
+		//let's check if we should update CM variables by using the IM-calcualted intermediate excitation energy:
+		if(updateIntermediateEx){
+			SetIntermediateEx(intermediateEx);
+			//test for dynamic4:
+			//SetRecoilEx(Ex);
+		}
+		caseResults[permIndex].expected = expectedCMValues;
+
 		caseResults[permIndex].intermediateIM = intermediate.M();
 		caseResults[permIndex].intermediateEx = intermediateEx;
 		caseResults[permIndex].reconEx = Ex;
@@ -125,6 +136,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		frag1.Boost(boost1);
 
 		double intermediatevcm = ((1/intermediate.Energy())*intermediate.Vect()).Mag();
+		//double intermediatevcm = intermediate.BoostVector().Mag();
 		double intermediatekecm = 0.5*intermediateMass*intermediatevcm*intermediatevcm;
 		double intermediatethetacm = RADDEG*std::acos(intermediate.Vect().Z()/intermediate.Vect().Mag());
 		double intermediatephicm = RADDEG*std::atan2(intermediate.Vect().Y(), intermediate.Vect().X());
@@ -136,6 +148,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].intermediatephicm = intermediatephicm;
 
 		double frag1vcm = ((1/frag1.Energy())*frag1.Vect()).Mag();
+		//double frag1vcm = frag1.BoostVector().Mag();
 		double frag1kecm = 0.5*masses[0]*frag1vcm*frag1vcm;
 		double frag1thetacm = RADDEG*std::acos(frag1.Vect().Z()/frag1.Vect().Mag());
 		double frag1phicm = RADDEG*std::atan2(frag1.Vect().Y(), frag1.Vect().X());
@@ -147,7 +160,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag1phicm = frag1phicm;
 
 		//determine ecm1:
-		double ecm1 = intermediatekecm + frag1kecm;
+		double ecm1 = intermediatekecm + frag1kecm + intermediateEx;
 		caseResults[permIndex].ecm1 = ecm1;
 
 
@@ -157,6 +170,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		frag3.Boost(boost2);
 
 		double frag2vcm = ((1/frag2.Energy())*frag2.Vect()).Mag();
+		//double frag2vcm = frag2.BoostVector().Mag();
 		double frag2kecm = 0.5*masses[1]*frag2vcm*frag2vcm;
 		double frag2thetacm = RADDEG*std::acos(frag2.Vect().Z()/frag2.Vect().Mag());
 		double frag2phicm = RADDEG*std::atan2(frag2.Vect().Y(), frag2.Vect().X());
@@ -168,6 +182,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag2phicm = frag2phicm;
 
 		double frag3vcm = ((1/frag3.Energy())*frag3.Vect()).Mag();
+		//double frag3vcm = frag3.BoostVector().Mag();
 		double frag3kecm = 0.5*masses[2]*frag3vcm*frag3vcm;
 		double frag3thetacm = RADDEG*std::acos(frag3.Vect().Z()/frag3.Vect().Mag());
 		double frag3phicm = RADDEG*std::atan2(frag3.Vect().Y(), frag3.Vect().X());
@@ -220,16 +235,16 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	//invariant mass and excitation energy histograms:
 	fillAll("intermediateIM", res.intermediateIM);
 	fillAll("intermediateEx", res.intermediateEx);
-	fillAll("ReconEx", res.reconEx);
+	fillAll("RecoilEx", res.reconEx);
 
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
-	fillAll("intermediatevcm_expect", expectedCMValues.vcm_intermediate);
-	fillAll("intermediatevcm_delta", res.intermediatevcm - expectedCMValues.vcm_intermediate);
+	fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
+	fillAll("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
 
 	fillAll("intermediatekecm_meas", res.intermediatekecm);
-	fillAll("intermediatekecm_expect", expectedCMValues.kecm_intermediate);
-	fillAll("intermediatekecm_delta", res.intermediatekecm - expectedCMValues.kecm_intermediate);
+	fillAll("intermediatekecm_expect", res.expected.kecm_intermediate);
+	fillAll("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
 	fillAll("intermediatethetacm", res.intermediatethetacm);
 	fillAll("intermediatephicm", res.intermediatephicm);
@@ -250,24 +265,24 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 		fillAll(f+"phicm",phi);
 		fillAll2D(f+"thetacmvsphicm",phi,theta);
 	};
-	fillFrag(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, expectedCMValues.vcm_frag1, expectedCMValues.kecm_frag1);
-	fillFrag(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, expectedCMValues.vcm_frag2, expectedCMValues.kecm_frag2);
-	fillFrag(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, expectedCMValues.vcm_frag3, expectedCMValues.kecm_frag3);
+	fillFrag(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
+	fillFrag(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
+	fillFrag(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
 	//decays
 	fillAll("ecm1_meas", res.ecm1);
-	fillAll("ecm1_expect", expectedCMValues.Ecm1);
-	fillAll("ecm1_delta", res.ecm1 - expectedCMValues.Ecm1);
+	fillAll("ecm1_expect", res.expected.Ecm1);
+	fillAll("ecm1_delta", res.ecm1 - res.expected.Ecm1);
 	fillAll("ecm2_meas", res.ecm2);
-	fillAll("ecm2_expect", expectedCMValues.Ecm2);
-	fillAll("ecm2_delta", res.ecm2 - expectedCMValues.Ecm2);
+	fillAll("ecm2_expect", res.expected.Ecm2);
+	fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
 
 	fillAll2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
 	fillAll2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
 	fillAll2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
 	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
-	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - expectedCMValues.Ecm2, res.ecm1 - expectedCMValues.Ecm1);
+	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
 	if( std::abs(res.intermediateEx - intermediateEx) <= intermediateExGate ){
 		//lambdas to fill both specific permutation and "allCases"
@@ -284,16 +299,16 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 		//invariant mass and excitation energy histograms:
 		fillGated("intermediateIM", res.intermediateIM);
 		fillGated("intermediateEx", res.intermediateEx);
-		fillGated("ReconEx", res.reconEx);
+		fillGated("RecoilEx", res.reconEx);
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);
-		fillGated("intermediatevcm_expect", expectedCMValues.vcm_intermediate);
-		fillGated("intermediatevcm_delta", res.intermediatevcm - expectedCMValues.vcm_intermediate);
+		fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
+		fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
 
 		fillGated("intermediatekecm_meas", res.intermediatekecm);
-		fillGated("intermediatekecm_expect", expectedCMValues.kecm_intermediate);
-		fillGated("intermediatekecm_delta", res.intermediatekecm - expectedCMValues.kecm_intermediate);
+		fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
+		fillGated("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
 		fillGated("intermediatethetacm", res.intermediatethetacm);
 		fillGated("intermediatephicm", res.intermediatephicm);
@@ -314,26 +329,25 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 			fillGated(f+"phicm",phi);
 			fillGated2D(f+"thetacmvsphicm",phi,theta);
 		};
-		fillFragGated(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, expectedCMValues.vcm_frag1, expectedCMValues.kecm_frag1);
-		fillFragGated(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, expectedCMValues.vcm_frag2, expectedCMValues.kecm_frag2);
-		fillFragGated(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, expectedCMValues.vcm_frag3, expectedCMValues.kecm_frag3);
+		fillFragGated(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
+		fillFragGated(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
+		fillFragGated(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
 		//decays
 		fillGated("ecm1_meas", res.ecm1);
-		fillGated("ecm1_expect", expectedCMValues.Ecm1);
-		fillGated("ecm1_delta", res.ecm1 - expectedCMValues.Ecm1);
+		fillGated("ecm1_expect", res.expected.Ecm1);
+		fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
 		fillGated("ecm2_meas", res.ecm2);
-		fillGated("ecm2_expect", expectedCMValues.Ecm2);
-		fillGated("ecm2_delta", res.ecm2 - expectedCMValues.Ecm2);
+		fillGated("ecm2_expect", res.expected.Ecm2);
+		fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
 
 		fillGated2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
 		fillGated2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
 		fillGated2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
 		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
-		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - expectedCMValues.Ecm2, res.ecm1 - expectedCMValues.Ecm1);
+		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 	}
-
 }
 
 void InvMass_Mult3::CloseAndWrite(){

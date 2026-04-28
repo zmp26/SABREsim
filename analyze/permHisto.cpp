@@ -53,7 +53,7 @@ void permHisto::Register1D(TString name, TString key, TString title, int xbins, 
 	hMap[key] = new TH1D(name + "_" + key, title, xbins, xmin, xmax);
 }
 
-void permHisto::Register2D(TString name, TString key, TString title, int xbins, double xmin, double xmax, int ybins, int ymin, int ymax){
+void permHisto::Register2D(TString name, TString key, TString title, int xbins, double xmin, double xmax, int ybins, double ymin, double ymax){
 	hMap[key] = new TH2D(name + "_" + key, title, xbins, xmin, xmax, ybins, ymin, ymax);
 }
 
