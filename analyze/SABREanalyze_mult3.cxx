@@ -154,6 +154,17 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 
 }
 
+void tempDoAll_8BeHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
+	std::vector<int> intExs = {0, 500, 1000};
+	for(auto const &intEx : intExs){
+		TString filename = Form("may01/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
+		double recoilEx = 3.0;
+		double intermediateEx = intEx / 1000.;
+		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 0.05, updateRecoilEx, updateIntermediateEx);
+		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
+	}
+}
+
 void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=1.0, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -270,6 +281,17 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
 	std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
 
+}
+
+void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
+	std::vector<int> intExs = {0, 500, 1000};
+	for(auto const &intEx : intExs){
+		TString filename = Form("may01/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
+		double recoilEx = 4.0;
+		double intermediateEx = intEx / 1000.;
+		B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 1.0, updateRecoilEx, updateIntermediateEx);
+		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
+	}
 }
 
 //test functions for invmass_mult3.cpp/h:

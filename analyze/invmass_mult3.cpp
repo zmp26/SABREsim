@@ -130,6 +130,14 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TVector3 boost1 = -recoil.BoostVector();
 		TVector3 boost2 = -intermediate.BoostVector();
 
+		caseResults[permIndex].boost1[0] = boost1.X();
+		caseResults[permIndex].boost1[1] = boost1.Y();
+		caseResults[permIndex].boost1[2] = boost1.Z();
+
+		caseResults[permIndex].boost2[0] = boost2.X();
+		caseResults[permIndex].boost2[1] = boost2.Y();
+		caseResults[permIndex].boost2[2] = boost2.Z();
+
 		//begin analysis of first decay step: recoil -> frag1 + intermediate
 		//boost the lab-measured intermediate and frag1 into the frame of the recoil:
 		intermediate.Boost(boost1);
@@ -146,6 +154,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].intermediatekecm = intermediatekecm;
 		caseResults[permIndex].intermediatethetacm = intermediatethetacm;
 		caseResults[permIndex].intermediatephicm = intermediatephicm;
+		for(int i=0; i<3; i++) caseResults[permIndex].intermediateComp[i] = (-intermediate.BoostVector())(i);
 
 		double frag1vcm = ((1/frag1.Energy())*frag1.Vect()).Mag();
 		//double frag1vcm = frag1.BoostVector().Mag();
@@ -158,6 +167,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag1kecm = frag1kecm;
 		caseResults[permIndex].frag1thetacm = frag1thetacm;
 		caseResults[permIndex].frag1phicm = frag1phicm;
+		for(int i=0; i<3; i++) caseResults[permIndex].frag1Comp[i] = (-frag1.BoostVector())(i);
 
 		//determine ecm1:
 		double ecm1 = intermediatekecm + frag1kecm + intermediateEx;
@@ -180,6 +190,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag2kecm = frag2kecm;
 		caseResults[permIndex].frag2thetacm = frag2thetacm;
 		caseResults[permIndex].frag2phicm = frag2phicm;
+		for(int i=0; i<3; i++) caseResults[permIndex].frag2Comp[i] = (-frag2.BoostVector())(i);
 
 		double frag3vcm = ((1/frag3.Energy())*frag3.Vect()).Mag();
 		//double frag3vcm = frag3.BoostVector().Mag();
@@ -192,6 +203,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag3kecm = frag3kecm;
 		caseResults[permIndex].frag3thetacm = frag3thetacm;
 		caseResults[permIndex].frag3phicm = frag3phicm;
+		for(int i=0; i<3; i++) caseResults[permIndex].frag3Comp[i] = (-frag3.BoostVector())(i);
 
 		//determine ecm2:
 		double ecm2 = frag2kecm + frag3kecm;
@@ -241,21 +253,26 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
 	fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
 	fillAll("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
+	fillAll2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
 	fillAll("intermediatekecm_meas", res.intermediatekecm);
 	fillAll("intermediatekecm_expect", res.expected.kecm_intermediate);
 	fillAll("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
+
 	fillAll("intermediatethetacm", res.intermediatethetacm);
 	fillAll("intermediatephicm", res.intermediatephicm);
 	fillAll2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
+	fillAll2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
+	fillAll2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
 
 	//fill frag1-3
-	auto fillFrag = [&](int i, double vcm, double kecm, double theta, double phi, double expV, double expK){
+	auto fillFrag = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
 		TString f = Form("frag%d",i);
 		fillAll(f+"vcm_meas",vcm);
 		fillAll(f+"vcm_expect",expV);
 		fillAll(f+"vcm_delta",vcm-expV);
+		fillAll2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 		fillAll(f+"kecm_meas",kecm);
 		fillAll(f+"kecm_expect",expK);
@@ -264,20 +281,35 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 		fillAll(f+"thetacm",theta);
 		fillAll(f+"phicm",phi);
 		fillAll2D(f+"thetacmvsphicm",phi,theta);
+
+		fillAll2D(f+"vcmVSthetacm",theta,vcm);
+		fillAll2D(f+"kecmVSthetacm",theta,kecm);
 	};
-	fillFrag(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
-	fillFrag(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
-	fillFrag(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
+	fillFrag(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
+	fillFrag(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
+	fillFrag(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
 	//decays
 	fillAll("ecm1_meas", res.ecm1);
 	fillAll("ecm1_expect", res.expected.Ecm1);
 	fillAll("ecm1_delta", res.ecm1 - res.expected.Ecm1);
+	fillAll2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
+	fillAll2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
+	fillAll2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
+	fillAll2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
+	fillAll("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
+	fillAll2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
 	fillAll("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
 	fillAll("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
 	fillAll("ecm2_meas", res.ecm2);
 	fillAll("ecm2_expect", res.expected.Ecm2);
 	fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
+	fillAll2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
+	fillAll2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
+	fillAll2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
+	fillAll2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
+	fillAll("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
+	fillAll2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
 	fillAll("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
 	fillAll("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
 
@@ -309,6 +341,7 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 		fillGated("intermediatevcm_meas", res.intermediatevcm);
 		fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
 		fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
+		fillGated2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
 		fillGated("intermediatekecm_meas", res.intermediatekecm);
 		fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
@@ -318,12 +351,16 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 		fillGated("intermediatephicm", res.intermediatephicm);
 		fillGated2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
 
+		fillGated2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
+		fillGated2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
+
 		//fill frag1-3
-		auto fillFragGated = [&](int i, double vcm, double kecm, double theta, double phi, double expV, double expK){
+		auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
 			TString f = Form("frag%d",i);
 			fillGated(f+"vcm_meas",vcm);
 			fillGated(f+"vcm_expect",expV);
 			fillGated(f+"vcm_delta",vcm-expV);
+			fillGated2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 			fillGated(f+"kecm_meas",kecm);
 			fillGated(f+"kecm_expect",expK);
@@ -332,20 +369,35 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 			fillGated(f+"thetacm",theta);
 			fillGated(f+"phicm",phi);
 			fillGated2D(f+"thetacmvsphicm",phi,theta);
+
+			fillGated2D(f+"vcmVSthetacm",theta,vcm);
+			fillGated2D(f+"kecmVSthetacm",theta,kecm);
 		};
-		fillFragGated(1, res.frag1vcm, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
-		fillFragGated(2, res.frag2vcm, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
-		fillFragGated(3, res.frag3vcm, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
+		fillFragGated(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
+		fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
+		fillFragGated(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
 		//decays
 		fillGated("ecm1_meas", res.ecm1);
 		fillGated("ecm1_expect", res.expected.Ecm1);
 		fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
+		fillGated2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
+		fillGated2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
+		fillGated2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
+		fillGated2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
+		fillGated("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
+		fillGated2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
 		fillGated("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
 		fillGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
 		fillGated("ecm2_meas", res.ecm2);
 		fillGated("ecm2_expect", res.expected.Ecm2);
 		fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
+		fillGated2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
+		fillGated2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
+		fillGated2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
+		fillGated2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
+		fillGated("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
+		fillGated2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
 		fillGated("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
 		fillGated("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
 

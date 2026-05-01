@@ -65,11 +65,17 @@ private:
 		double intermediateIM, intermediateEx, reconEx;
 
 		double intermediatevcm, intermediatekecm, intermediatethetacm, intermediatephicm;
+		double intermediateComp[3];
 		double frag1vcm, frag1kecm, frag1thetacm, frag1phicm;
+		double frag1Comp[3];
 		double frag2vcm, frag2kecm, frag2thetacm, frag2phicm;
+		double frag2Comp[3];
 		double frag3vcm, frag3kecm, frag3thetacm, frag3phicm;
+		double frag3Comp[3];
 
 		double ecm1, ecm2;
+
+		double boost1[3], boost2[3];
 
 		ExpectedCM expected;
 
@@ -100,6 +106,15 @@ private:
 
 			ecm1 = -666.;
 			ecm2 = -666.;
+
+			for(int i=0; i<3; i++){
+				boost1[i] = -666.;
+				boost2[i] = -666.;
+				intermediateComp[i] = -666.;
+				frag1Comp[i] = -666.;
+				frag2Comp[i] = -666.;
+				frag3Comp[i] = -666.;
+			}
 
 			expected.Ecm1 = -666.;
 			expected.Ecm2 = -666.;
