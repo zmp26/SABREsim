@@ -13,7 +13,7 @@
 #include "TLorentzVector.h"
 #include "permHisto.h"
 
-//Hypothesis4 struct to use in In
+//Hypothesis4 struct
 struct Hypothesis4 {
 	std::string name;
 
@@ -25,9 +25,9 @@ struct Hypothesis4 {
 
 	double masses[3];//masses[0] = frag1, masses[1] = frag2, masses[2] = frag3
 
-	double recoilEx;
-	double intermediateEx;
-	double intermediateExGate;
+	// double recoilEx;
+	// double intermediateEx;
+	// double intermediateExGate;
 };
 
 class InvMass_Mult3{
@@ -51,7 +51,8 @@ private:
 	std::map<TString, permHisto*> groups_ungated;
 	std::map<TString, permHisto*> groups_gated;
 
-	double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
+	//double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
+	double intermediateEx, intermediateEmin, intermediateEmax;
 
 	//expected CM constants:
 	struct ExpectedCM {
@@ -150,11 +151,13 @@ public:
 
 	void CloseAndWrite();
 
-	void SetRecoilEx(double Ex) { recoilEx = Ex; hypothesis.recoilEx = Ex; SetExpectedCMValues(); }
-	void SetIntermediateEx(double Ex) { intermediateEx = Ex; hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
-	void SetIntermediateExGate(double ExGate) { intermediateExGate = ExGate; hypothesis.intermediateExGate = ExGate; }
-	double GetDaughterEx() { return intermediateEx; }
-	double GetDaughterExGate() { return intermediateExGate; }
+	void SetRecoilEx(double Ex) { recoilEx = Ex; SetExpectedCMValues(); }// hypothesis.recoilEx = Ex; SetExpectedCMValues(); }
+	void SetIntermediateEx(double Ex) { intermediateEx = Ex; SetExpectedCMValues(); }// hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
+	void SetIntermediateEmin(double Emin) { intermediateEmin = Emin; }
+	void SetIntermediateEmax(double Emax) { intermediateEmax = Emax; }
+	//void SetIntermediateExGate(double ExGate) { intermediateExGate = ExGate; }// hypothesis.intermediateExGate = ExGate; }
+	// double GetIntermediateEx() { return intermediateEx; }
+	// double GetIntermediateExGate() { return intermediateExGate; }
 
 };
 

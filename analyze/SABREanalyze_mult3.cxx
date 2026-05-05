@@ -37,7 +37,7 @@
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=0.05, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double intermediateEmin, double intermediateEmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
@@ -63,9 +63,9 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
 
-	b9_be8_hypothesis.recoilEx = recoilEx;
-	b9_be8_hypothesis.intermediateEx = intermediateEx;
-	b9_be8_hypothesis.intermediateExGate = intermediateExGate;
+	// b9_be8_hypothesis.recoilEx = recoilEx;
+	// b9_be8_hypothesis.intermediateEx = intermediateEx;
+	// b9_be8_hypothesis.intermediateExGate = intermediateExGate;
 
 	TFile *infile = new TFile(input_filename, "READ");
 	if(!infile || infile->IsZombie()){
@@ -84,10 +84,14 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
+	SABRE_analysis.SetIntermediateEmin(intermediateEmin);
+	SABRE_analysis.SetIntermediateEmax(intermediateEmax);
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
 	kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
+	kin4mc_analysis.SetIntermediateEmin(intermediateEmin);
+	kin4mc_analysis.SetIntermediateEmax(intermediateEmax);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
@@ -154,18 +158,20 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double rec
 
 }
 
-void tempDoAll_8BeHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void tempDoAll_8BeHypothesis(bool updateRecoilEx = true, bool updateIntermediateEx = true){
 	std::vector<int> intExs = {0, 500, 1000};
+
 	for(auto const &intEx : intExs){
-		TString filename = Form("may01/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
-		double recoilEx = 3.0;
-		double intermediateEx = intEx / 1000.;
-		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 0.05, updateRecoilEx, updateIntermediateEx);
+		TString filename = Form("may05/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
+		// double recoilEx = 3.0;
+		// double intermediateEx = intEx / 1000.;
+		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 0.05, updateRecoilEx, updateIntermediateEx);
+		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-0.05, (intEx/1000.)+0.05, updateRecoilEx, updateIntermediateEx);
 		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
 	}
 }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double recoilEx=0., double intermediateEx=0., double intermediateExGate=1.0, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double intermediateEmin, double intermediateEmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
@@ -191,9 +197,9 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
 
-	b9_li5_hypothesis.recoilEx = recoilEx;
-	b9_li5_hypothesis.intermediateEx = intermediateEx;
-	b9_li5_hypothesis.intermediateExGate = intermediateExGate;
+	// b9_li5_hypothesis.recoilEx = recoilEx;
+	// b9_li5_hypothesis.intermediateEx = intermediateEx;
+	// b9_li5_hypothesis.intermediateExGate = intermediateExGate;
 
 	TFile *infile = new TFile(input_filename, "READ");
 	if(!infile || infile->IsZombie()){
@@ -212,10 +218,14 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
+	SABRE_analysis.SetIntermediateEmin(intermediateEmin);
+	SABRE_analysis.SetIntermediateEmax(intermediateEmax);
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
 	kin4mc_analysis.SetHypothesis(b9_li5_hypothesis);
+	kin4mc_analysis.SetIntermediateEmin(intermediateEmin);
+	kin4mc_analysis.SetIntermediateEmax(intermediateEmax);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
@@ -286,10 +296,11 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double rec
 void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
 	std::vector<int> intExs = {0, 500, 1000};
 	for(auto const &intEx : intExs){
-		TString filename = Form("may01/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
-		double recoilEx = 4.0;
-		double intermediateEx = intEx / 1000.;
-		B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 1.0, updateRecoilEx, updateIntermediateEx);
+		TString filename = Form("may05/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
+		// double recoilEx = 4.0;
+		// double intermediateEx = intEx / 1000.;
+		//B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 1.0, updateRecoilEx, updateIntermediateEx);
+		B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-1.0, (intEx/1000.)+1.0, updateRecoilEx, updateIntermediateEx);
 		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
 	}
 }

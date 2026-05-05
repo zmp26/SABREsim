@@ -5,7 +5,7 @@
 
 
 InvMass_Mult3::InvMass_Mult3()
-	: outfile(nullptr), intermediateMass(0), recoilMass(0), intermediateEx(0), intermediateExGate(0){
+	: outfile(nullptr), intermediateMass(0), recoilMass(0), intermediateEx(0), intermediateEmin(0), intermediateEmax(0){
 
 		permNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
@@ -66,11 +66,11 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 
 	recoilMass = hypo.mass_recoil;
 	intermediateMass = hypo.mass_intermediate;
-	intermediateEx = hypo.intermediateEx;
-	intermediateExGate = hypo.intermediateExGate;
-	recoilEx = hypo.recoilEx;
+	//intermediateEx = hypo.intermediateEx;
+	//intermediateExGate = hypo.intermediateExGate;
+	//recoilEx = hypo.recoilEx;
 
-	SetExpectedCMValues(true);
+	//SetExpectedCMValues();
 }
 
 //AnalyzeEvent assumes theta, phi in degrees and E in MeV
@@ -320,7 +320,8 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
 	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
-	if( std::abs(res.intermediateEx - intermediateEx) <= intermediateExGate ){
+	//if( std::abs(res.intermediateEx - intermediateEx) <= intermediateExGate ){
+	if(res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax){
 		//lambdas to fill both specific permutation and "allCases"
 		auto fillGated = [&](TString key, double x){
 			groups_gated[cn]->Fill(key, x);
