@@ -16,10 +16,10 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register1D(permName, "RecoilEx", "Recoil Ex;MeV", 525, -1, 20);
 
 	for(const auto& p : particles){
-		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 2500, 0, 0.25);
-		Register1D(permName, p+"vcm_expect", p+" Velocity CM (expect);c", 2500, 0, 0.25);
-		Register1D(permName, p+"vcm_delta", p+" Velocity CM (meas - expect);c", 5000, -0.25, 0.25);
-		Register2D(permName, p+"vcm_TransverseVSLongitudinal", p+" Velocity CM Transverse vs Longitudinal;c;c",250,0,0.25,250,0,0.25);
+		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 1000, 0, 0.10);
+		Register1D(permName, p+"vcm_expect", p+" Velocity CM (expect);c", 1000, 0, 0.10);
+		Register1D(permName, p+"vcm_delta", p+" Velocity CM (meas - expect);c", 2000, -0.1, 0.1);
+		Register2D(permName, p+"vcm_TransverseVSLongitudinal", p+" Velocity CM Transverse vs Longitudinal;c;c", 1000, 0, 0.10, 1000, 0, 0.10);
 
 		Register1D(permName, p+"kecm_meas", p+" KE CM (meas); MeV", 500, 0, 5);
 		Register1D(permName, p+"kecm_expect", p+" KE CM (expect);MeV", 500, 0, 5);
@@ -42,7 +42,7 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register2D(permName, "ecm1measVSfrag2thetacm", "E_{cm} Decay 1 (meas) vs frag2 ThetaCM;MeV;deg", 360, 0, 180, 600, -1, 5);
 	Register2D(permName, "ecm1measVSfrag3thetacm", "E_{cm} Decay 1 (meas) vs frag3 ThetaCM;MeV;deg", 360, 0, 180, 600, -1, 5);
 	Register1D(permName, "decay1_VCM", "VCM Decay 1;c", 250, 0, 0.25);
-	Register2D(permName, "decay1_VCM_TransverseVSLongitudinal", "Decay 1 VCM Transverse Vs Longitudinal", 250, 0, 0.25, 250, 0, 0.25);
+	Register2D(permName, "decay1_VCM_TransverseVSLongitudinal", "Decay 1 VCM Transverse Vs Longitudinal", 1000, 0, 0.10, 1000, 0, 0.10);
 	Register1D(permName, "decay1_thetaCMsum", "decay1 Theta CM Sum", 720, 0, 360);
 	Register1D(permName, "decay1_phiCMdiff", "decay1 Phi CM Diff", 720, 0, 360);
 	Register2D(permName, "intermediatevcmVSfrag1vcm", "intermediate Vcm VS frag1 Vcm", 250, 0, 0.25, 250, 0, 0.25);
@@ -57,7 +57,7 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register2D(permName, "ecm2measVSfrag2thetacm", "E_{cm} Decay 2 (meas) vs frag2 ThetaCM;MeV;deg", 360, 0, 180, 600, -1, 5);
 	Register2D(permName, "ecm2measVSfrag3thetacm", "E_{cm} Decay 2 (meas) vs frag3 ThetaCM;MeV;deg", 360, 0, 180, 600, -1, 5);
 	Register1D(permName, "decay2_VCM", "VCM Decay 2;c", 250, 0, 0.25);
-	Register2D(permName, "decay2_VCM_TransverseVSLongitudinal", "Decay 2 VCM Transverse Vs Longitudinal", 250, 0, 0.25, 250, 0, 0.25);
+	Register2D(permName, "decay2_VCM_TransverseVSLongitudinal", "Decay 2 VCM Transverse Vs Longitudinal",  1000, 0, 0.10, 1000, 0, 0.10);
 	Register1D(permName, "decay2_thetaCMsum", "decay2 Theta CM Sum", 720, 0, 360);
 	Register1D(permName, "decay2_phiCMdiff", "decay2 Phi CM Diff", 720, 0, 360);
 	Register2D(permName, "frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 250, 0, 0.25, 250, 0, 0.25);

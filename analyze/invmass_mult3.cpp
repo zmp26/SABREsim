@@ -320,94 +320,101 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
 	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
+	bool intermediateExCheck = (res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax);
+	bool intermediateVcmCheck = (res.intermediatevcm >= 0.0092 && res.intermediatevcm <= 0.0102);
+	bool frag1VcmCheck = (res.frag1vcm >= 0.0735 && res.frag1vcm <= 0.0795);
+
 	//if( std::abs(res.intermediateEx - intermediateEx) <= intermediateExGate ){
-	if(res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax){
-		//lambdas to fill both specific permutation and "allCases"
-		auto fillGated = [&](TString key, double x){
-			groups_gated[cn]->Fill(key, x);
-			groups_gated["allCases"]->Fill(key, x);
-		};
+	//if(res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax){
+	if(intermediateExCheck){
+		if(intermediateVcmCheck){
+			//lambdas to fill both specific permutation and "allCases"
+			auto fillGated = [&](TString key, double x){
+				groups_gated[cn]->Fill(key, x);
+				groups_gated["allCases"]->Fill(key, x);
+			};
 
-		auto fillGated2D = [&](TString key, double x, double y){
-			groups_gated[cn]->Fill(key, x, y);
-			groups_gated["allCases"]->Fill(key, x, y);
-		};
+			auto fillGated2D = [&](TString key, double x, double y){
+				groups_gated[cn]->Fill(key, x, y);
+				groups_gated["allCases"]->Fill(key, x, y);
+			};
 
-		//invariant mass and excitation energy histograms:
-		fillGated("intermediateIM", res.intermediateIM);
-		fillGated("intermediateEx", res.intermediateEx);
-		fillGated("RecoilEx", res.reconEx);
+			//invariant mass and excitation energy histograms:
+			fillGated("intermediateIM", res.intermediateIM);
+			fillGated("intermediateEx", res.intermediateEx);
+			fillGated("RecoilEx", res.reconEx);
 
-		//intermediate CM
-		fillGated("intermediatevcm_meas", res.intermediatevcm);
-		fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
-		fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
-		fillGated2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
+			//intermediate CM
+			fillGated("intermediatevcm_meas", res.intermediatevcm);
+			fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
+			fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
+			fillGated2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
-		fillGated("intermediatekecm_meas", res.intermediatekecm);
-		fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
-		fillGated("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
+			fillGated("intermediatekecm_meas", res.intermediatekecm);
+			fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
+			fillGated("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
-		fillGated("intermediatethetacm", res.intermediatethetacm);
-		fillGated("intermediatephicm", res.intermediatephicm);
-		fillGated2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
+			fillGated("intermediatethetacm", res.intermediatethetacm);
+			fillGated("intermediatephicm", res.intermediatephicm);
+			fillGated2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
 
-		fillGated2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
-		fillGated2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
+			fillGated2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
+			fillGated2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
 
-		//fill frag1-3
-		auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
-			TString f = Form("frag%d",i);
-			fillGated(f+"vcm_meas",vcm);
-			fillGated(f+"vcm_expect",expV);
-			fillGated(f+"vcm_delta",vcm-expV);
-			fillGated2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
+			//fill frag1-3
+			auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
+				TString f = Form("frag%d",i);
+				fillGated(f+"vcm_meas",vcm);
+				fillGated(f+"vcm_expect",expV);
+				fillGated(f+"vcm_delta",vcm-expV);
+				fillGated2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
-			fillGated(f+"kecm_meas",kecm);
-			fillGated(f+"kecm_expect",expK);
-			fillGated(f+"kecm_delta",kecm-expK);
+				fillGated(f+"kecm_meas",kecm);
+				fillGated(f+"kecm_expect",expK);
+				fillGated(f+"kecm_delta",kecm-expK);
 
-			fillGated(f+"thetacm",theta);
-			fillGated(f+"phicm",phi);
-			fillGated2D(f+"thetacmvsphicm",phi,theta);
+				fillGated(f+"thetacm",theta);
+				fillGated(f+"phicm",phi);
+				fillGated2D(f+"thetacmvsphicm",phi,theta);
 
-			fillGated2D(f+"vcmVSthetacm",theta,vcm);
-			fillGated2D(f+"kecmVSthetacm",theta,kecm);
-		};
-		fillFragGated(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
-		fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
-		fillFragGated(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
+				fillGated2D(f+"vcmVSthetacm",theta,vcm);
+				fillGated2D(f+"kecmVSthetacm",theta,kecm);
+			};
+			fillFragGated(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
+			fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
+			fillFragGated(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
-		//decays
-		fillGated("ecm1_meas", res.ecm1);
-		fillGated("ecm1_expect", res.expected.Ecm1);
-		fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
-		fillGated2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
-		fillGated2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
-		fillGated2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
-		fillGated2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
-		fillGated("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
-		fillGated2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
-		fillGated("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
-		fillGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
-		fillGated("ecm2_meas", res.ecm2);
-		fillGated("ecm2_expect", res.expected.Ecm2);
-		fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
-		fillGated2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
-		fillGated2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
-		fillGated2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
-		fillGated2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
-		fillGated("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
-		fillGated2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
-		fillGated("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
-		fillGated("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
+			//decays
+			fillGated("ecm1_meas", res.ecm1);
+			fillGated("ecm1_expect", res.expected.Ecm1);
+			fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
+			fillGated2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
+			fillGated2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
+			fillGated2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
+			fillGated2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
+			fillGated("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
+			fillGated2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
+			fillGated("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
+			fillGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
+			fillGated("ecm2_meas", res.ecm2);
+			fillGated("ecm2_expect", res.expected.Ecm2);
+			fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
+			fillGated2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
+			fillGated2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
+			fillGated2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
+			fillGated2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
+			fillGated("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
+			fillGated2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
+			fillGated("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
+			fillGated("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
 
-		fillGated2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
-		fillGated2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
-		fillGated2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
-		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
-		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
-		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+			fillGated2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
+			fillGated2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
+			fillGated2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
+			fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
+			fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
+			fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+		}
 	}
 }
 
