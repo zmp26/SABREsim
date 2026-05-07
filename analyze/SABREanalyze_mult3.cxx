@@ -26,6 +26,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include "TFile.h"
 #include "TH1D.h"
 #include "TString.h"
@@ -37,7 +38,8 @@
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double intermediateEmin, double intermediateEmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
@@ -84,14 +86,18 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double int
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
-	SABRE_analysis.SetIntermediateEmin(intermediateEmin);
-	SABRE_analysis.SetIntermediateEmax(intermediateEmax);
+	SABRE_analysis.SetGate1(gate1index);
+	SABRE_analysis.SetGate1MinMax(gate1minmax);
+	SABRE_analysis.SetGate2(gate2index);
+	SABRE_analysis.SetGate2MinMax(gate2minmax);
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
 	kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
-	kin4mc_analysis.SetIntermediateEmin(intermediateEmin);
-	kin4mc_analysis.SetIntermediateEmax(intermediateEmax);
+	kin4mc_analysis.SetGate1(gate1index);
+	kin4mc_analysis.SetGate1MinMax(gate1minmax);
+	kin4mc_analysis.SetGate2(gate2index);
+	kin4mc_analysis.SetGate2MinMax(gate2minmax);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
@@ -158,20 +164,66 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, double int
 
 }
 
-void tempDoAll_8BeHypothesis(bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void tempDoAll_8BeHypothesis(int gate1index, int gate2index, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 	std::vector<int> intExs = {0, 500, 1000};
+	std::vector<std::pair<double,double>> intEminmax = {{-0.08, 0.08}, {0.28, 0.68}, {0.76, 1.2}};//MeV
+	std::vector<std::pair<double,double>> intVCMminmax = {{0.0092, 0.0102}, {0.0084, 0.0093}, {0.0076, 0.0085}};//c
+	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.0735, 0.0795}, {0.0675, 0.0733}, {0.0601, 0.0666}};//c
 
-	for(auto const &intEx : intExs){
-		TString filename = Form("may06/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
+	std::pair<double,double> minmax1, minmax2;
+
+	//for(auto const &intEx : intExs){
+	for(size_t i=0; i<intExs.size(); i++){
+		int intEx = intExs.at(i);
+		TString filename = Form("may07/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
+
+		switch(gate1index){
+			case NOCHECK:
+				minmax1 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax1 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax1 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax1 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax1 = {0., 0.};
+				break;
+		}
+
+		switch(gate2index){
+			case NOCHECK:
+				minmax2 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax2 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax2 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax2 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax2 = {0., 0.};
+				break;
+		}
+
 		// double recoilEx = 3.0;
 		// double intermediateEx = intEx / 1000.;
 		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 0.05, updateRecoilEx, updateIntermediateEx);
-		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-0.05, (intEx/1000.)+0.05, updateRecoilEx, updateIntermediateEx);
+		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-0.05, (intEx/1000.)+0.05, updateRecoilEx, updateIntermediateEx);
+		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), gate1index, minmax1, gate2index, minmax2, updateRecoilEx, updateIntermediateEx);
 		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
 	}
 }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double intermediateEmin, double intermediateEmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
@@ -218,14 +270,18 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double int
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
-	SABRE_analysis.SetIntermediateEmin(intermediateEmin);
-	SABRE_analysis.SetIntermediateEmax(intermediateEmax);
+	SABRE_analysis.SetGate1(gate1index);
+	SABRE_analysis.SetGate1MinMax(gate1minmax);
+	SABRE_analysis.SetGate2(gate2index);
+	SABRE_analysis.SetGate2MinMax(gate2minmax);
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
 	kin4mc_analysis.SetHypothesis(b9_li5_hypothesis);
-	kin4mc_analysis.SetIntermediateEmin(intermediateEmin);
-	kin4mc_analysis.SetIntermediateEmax(intermediateEmax);
+	kin4mc_analysis.SetGate1(gate1index);
+	kin4mc_analysis.SetGate1MinMax(gate1minmax);
+	kin4mc_analysis.SetGate2(gate2index);
+	kin4mc_analysis.SetGate2MinMax(gate2minmax);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
@@ -293,14 +349,59 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, double int
 
 }
 
-void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void tempDoAll_5LiHypothesis(int gate1index, int gate2index, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 	std::vector<int> intExs = {0, 500, 1000};
-	for(auto const &intEx : intExs){
-		TString filename = Form("may06/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
+	std::vector<std::pair<double,double>> intEminmax = {{0,0}, {0,0}, {0,0}};//{{-0.08, 0.08}, {0.28, 0.68}, {0.76, 1.2}};//MeV
+	std::vector<std::pair<double,double>> intVCMminmax = {{0,0}, {0,0}, {0,0}};//{{0.0092, 0.0102}, {0.0084, 0.0093}, {0.0076, 0.0085}};//c
+	std::vector<std::pair<double,double>> frag1VCMminmax = {{0,0}, {0,0}, {0,0}};//{{0.0735, 0.0795}, {0.0675, 0.0733}, {0.0601, 0.0666}};//c
+	//update above values for 5Li case (just copied from 8Be)
+	std::pair<double,double> minmax1, minmax2;
+
+	//for(auto const &intEx : intExs){
+	for(size_t i=0; i<intExs.size(); i++){
+		int intEx = intExs.at(i);
+		TString filename = Form("may07/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
+
+		switch(gate1index){
+			case NOCHECK:
+				minmax1 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax1 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax1 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax1 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax1 = {0., 0.};
+				break;
+		}
+
+		switch(gate2index){
+			case NOCHECK:
+				minmax2 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax2 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax2 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax2 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax2 = {0., 0.};
+				break;
+		}
 		// double recoilEx = 4.0;
 		// double intermediateEx = intEx / 1000.;
 		//B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 1.0, updateRecoilEx, updateIntermediateEx);
-		B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-1.0, (intEx/1000.)+1.0, updateRecoilEx, updateIntermediateEx);
+		//B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-1.0, (intEx/1000.)+1.0, updateRecoilEx, updateIntermediateEx);
+		B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), gate1index, minmax1, gate2index, minmax2, updateRecoilEx, updateIntermediateEx);
 		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
 	}
 }
