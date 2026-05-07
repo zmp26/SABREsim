@@ -5,7 +5,7 @@
 
 
 InvMass_Mult3::InvMass_Mult3()
-	: outfile(nullptr), intermediateMass(0), recoilMass(0), intermediateEx(0), intermediateEmin(0), intermediateEmax(0){
+	: outfile(nullptr), intermediateMass(0), recoilMass(0), intermediateEx(0){
 
 		permNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
@@ -320,14 +320,58 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
 	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
-	bool intermediateExCheck = (res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax);
-	bool intermediateVcmCheck = (res.intermediatevcm >= 0.0092 && res.intermediatevcm <= 0.0102);
-	bool frag1VcmCheck = (res.frag1vcm >= 0.0735 && res.frag1vcm <= 0.0795);
+	// bool intermediateExCheck = (res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax);
+	// bool intermediateVcmCheck = (res.intermediatevcm >= 0.0092 && res.intermediatevcm <= 0.0102);
+	// bool frag1VcmCheck = (res.frag1vcm >= 0.0735 && res.frag1vcm <= 0.0795);
+
+	bool gate1 = false;
+	bool gate2 = false;
+
+	switch(gate1_index){
+		case NOCHECK:
+			gate1 = true;
+			break;
+		case INTEXCHECK:
+			//gate1 = intermediateExCheck;
+			gate1 = (res.intermediateEx >= gate1minmax.first && res.intermediateEx <= gate1minmax.second);
+			break;
+		case INTVCMCHECK:
+			//gate1 = intermediateVcmCheck;
+			gate1 = (res.intermediatevcm >= gate1minmax.first && res.intermediatevcm <= gate1minmax.second);
+			break;
+		case FRAG1VCMCHECK:
+			gate1 = (res.frag1vcm >= gate1minmax.first && res.frag1vcm <= gate1minmax.second);
+			break;
+		default:
+			gate1 = false;
+			break;
+	}
+
+	switch(gate2_index){
+		case NOCHECK:
+			gate2 = true;
+			break;
+		case INTEXCHECK:
+			//gate2 = intermediateExCheck;
+			gate2 = (res.intermediateEx >= gate2minmax.first && res.intermediateEx <= gate2minmax.second);
+			break;
+		case INTVCMCHECK:
+			//gate2 = intermediateVcmCheck;
+			gate2 = (res.intermediatevcm >= gate2minmax.first && res.intermediatevcm <= gate2minmax.second);
+			break;
+		case FRAG1VCMCHECK:
+			//gate2 = frag1VcmCheck;
+			gate2 = (res.frag1vcm >= gate2minmax.first && res.frag1vcm <= gate2minmax.second);
+			break;
+		default:
+			gate2 = false;
+			break;
+	}
 
 	//if( std::abs(res.intermediateEx - intermediateEx) <= intermediateExGate ){
 	//if(res.intermediateEx >= intermediateEmin && res.intermediateEx <= intermediateEmax){
-	if(intermediateExCheck){
-		if(intermediateVcmCheck){
+	if(gate1){
+		if(gate2){
 			//lambdas to fill both specific permutation and "allCases"
 			auto fillGated = [&](TString key, double x){
 				groups_gated[cn]->Fill(key, x);

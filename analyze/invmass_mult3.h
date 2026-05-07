@@ -30,6 +30,15 @@ struct Hypothesis4 {
 	// double intermediateExGate;
 };
 
+enum gateIndices {
+	NOCHECK,
+	FIRSTVALID = NOCHECK,
+	INTEXCHECK,
+	INTVCMCHECK,
+	FRAG1VCMCHECK,
+	LASTVALID = FRAG1VCMCHECK
+};
+
 class InvMass_Mult3{
 private:
 	std::map<TString, std::map<TString,TH1*>> hMap;
@@ -48,11 +57,31 @@ private:
 	TFile *outfile;
 	TTree *outtree;
 
+	/*
+		gate1/2_index mapping:
+			0 	=	no gate check (just pass true to if statement)
+			1	=	intermediateExCheck
+			2	=	intermediateVcmCheck
+			3 	=	frag1VcmCheck
+
+		Default is gate1_index = 1, gate2_index = 0 for basic intermediateEx gate
+
+		This should be set via invmass_mult3::SetGate1/2() before beginning analysis of events
+
+		**SEE ENUM DECLARED OUTSIDE OF CLASS AT TOP OF FILE**
+	*/
+
+	int gate1_index;
+	int gate2_index;
+
+	std::pair<double,double> gate1minmax;
+	std::pair<double,double> gate2minmax;
+
 	std::map<TString, permHisto*> groups_ungated;
 	std::map<TString, permHisto*> groups_gated;
 
 	//double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
-	double intermediateEx, intermediateEmin, intermediateEmax;
+	double intermediateEx;//, intermediateEmin, intermediateEmax;
 
 	//expected CM constants:
 	struct ExpectedCM {
@@ -153,11 +182,13 @@ public:
 
 	void SetRecoilEx(double Ex) { recoilEx = Ex; SetExpectedCMValues(); }// hypothesis.recoilEx = Ex; SetExpectedCMValues(); }
 	void SetIntermediateEx(double Ex) { intermediateEx = Ex; SetExpectedCMValues(); }// hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
-	void SetIntermediateEmin(double Emin) { intermediateEmin = Emin; }
-	void SetIntermediateEmax(double Emax) { intermediateEmax = Emax; }
 	//void SetIntermediateExGate(double ExGate) { intermediateExGate = ExGate; }// hypothesis.intermediateExGate = ExGate; }
 	// double GetIntermediateEx() { return intermediateEx; }
 	// double GetIntermediateExGate() { return intermediateExGate; }
+	void SetGate1(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate1_index = index; }
+	void SetGate2(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate2_index = index; }
+	void SetGate1MinMax(std::pair<double,double> minmax) { gate1minmax = minmax; }
+	void SetGate2MinMax(std::pair<double,double> minmax) { gate2minmax = minmax; }
 
 };
 
