@@ -185,7 +185,7 @@ void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, boo
 	//for(auto const &intEx : intExs){
 	for(size_t i=0; i<intExs.size(); i++){
 		int intEx = intExs.at(i);
-		TString filename = Form("may11/det/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
+		TString filename = Form("may11/detRand/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
 
 		switch(gate1index){
 			case NOCHECK:
@@ -396,7 +396,7 @@ void tempDoAll_5LiHypothesis(int gate1index, int gate2index, int gate3index, boo
 	//for(auto const &intEx : intExs){
 	for(size_t i=0; i<intExs.size(); i++){
 		int intEx = intExs.at(i);
-		TString filename = Form("may11/det/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
+		TString filename = Form("may11/detRand/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
 
 		switch(gate1index){
 			case NOCHECK:
