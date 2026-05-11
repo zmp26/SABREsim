@@ -32,7 +32,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 
 			SABREsim det2/3/4mc classes currently iterate through the SABRE_Array object from SABRE0->SABRE4 and checks *all* particles
 			against that detector before moving on to the next detector in the array. As a consequence of this behavior, the output of
-			SABREsim is stored in a potentially different order when compared to the input of the kin2/3/4mc file. This means that the
+			SABREsim is stored in a potentially different order when compared to the input of the kin2/3/4mc (kinXmc) file. This means that the
 			results will be biased by the laboratory angles of the simulated break-up particles, with those more likely to be in SABRE0
 			to be near the front of the list and the others near the back of the list. If nothing is done about this, then our cases in
 			SABREsim/analyze/SABREanalyze_multX.cxx codes will have the distribution of events across the pre-defined cases biased in
@@ -46,6 +46,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 				   window to record SABRE detections regardless of which specific detector they hit. Use omniscienceSort=2 for this option.
 
 			We may also keep the order as output by SABREsim. Use omniscienceSort=0 for this option, although any non-1 and non-2 integer works.
+
+			Note that a "key" branch is generated regardless of choice of omniscienceSort. This will always hold the key that can translate the
+			event's current particle ordering to the original kinXmc ordering (particle ID order). This way, analysis methods can be checked by
+			removing the omniscience-bias of the ordering of particles but omniscience is still preserved.
 			
 
 	*/
@@ -93,18 +97,16 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	double* const Stheta[3]    = { &Stheta1, &Stheta2, &Stheta3 };
 	double* const Sphi[3]      = { &Sphi1, &Sphi2, &Sphi3 };
 
+	int key[3];
+
 	t1->Branch("eventnum", &eventnum, "eventnum/I");
 	t1->Branch("kin_e", kine, "kin_e[4]/D");
 	t1->Branch("kin_theta", kintheta, "kin_theta[4]/D");
 	t1->Branch("kin_phi", kinphi, "kin_phi[4]/D");
 	t1->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
 
-	t1->Branch("EjInSPS", &EjInSPS, "EjInSPS/O");
-	t1->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
-	t1->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
-	t1->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
-
 	t1->Branch("ExE", &ExE, "ExE/D");
+	t1->Branch("EjInSPS", &EjInSPS, "EjInSPS/O");
 	t1->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t1->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	t1->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
@@ -114,6 +116,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t1->Branch("SabreWedgeEnergy_hit1", &SWE1, "SabreWedgeEnergy_hit1/D");
 	t1->Branch("thetalab_hit1", &Stheta1, "thetalab_hit1/D");
 	t1->Branch("philab_hit1", &Sphi1, "philab_hit1/D");
+	t1->Branch("key_hit1", &key[0], "key_hit1/I");
 
 
 	t2->Branch("eventnum", &eventnum, "eventnum/I");
@@ -122,6 +125,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t2->Branch("kin_phi", kinphi, "kin_phi[4]/D");
 	t2->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
 	t2->Branch("ExE", &ExE, "ExE/D");
+	t2->Branch("EjInSPS", &EjInSPS, "EjInSPS/O");
 	t2->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t2->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	t2->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
@@ -131,12 +135,15 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t2->Branch("SabreWedgeEnergy_hit1", &SWE1, "SabreWedgeEnergy_hit1/D");
 	t2->Branch("thetalab_hit1", &Stheta1, "thetalab_hit1/D");
 	t2->Branch("philab_hit1", &Sphi1, "philab_hit1/D");
+	t2->Branch("key_hit1", &key[0], "key_hit1/I");
 	t2->Branch("SabreRing_hit2", &SR2, "SabreRing_hit2/I");
 	t2->Branch("SabreWedge_hit2", &SW2, "SabreWedge_hit2/I");
 	t2->Branch("SabreRingEnergy_hit2", &SRE2, "SabreRingEnergy_hit2/D");
 	t2->Branch("SabreWedgeEnergy_hit2", &SWE2, "SabreWedgeEnergy_hit2/D");
 	t2->Branch("thetalab_hit2", &Stheta2, "thetalab_hit2/D");
 	t2->Branch("philab_hit2", &Sphi2, "philab_hit2/D");
+	t2->Branch("key_hit2", &key[1], "key_hit2/I");
+
 
 
 	t3->Branch("eventnum", &eventnum, "eventnum/I");
@@ -145,6 +152,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t3->Branch("kin_phi", kinphi, "kin_phi[4]/D");
 	t3->Branch("reactionOrigin", reactionOrigin, "reactionOrigin[3]/D");
 	t3->Branch("ExE", &ExE, "ExE/D");
+	t3->Branch("EjInSPS", &EjInSPS, "EjInSPS/O");
 	t3->Branch("SPSEnergy", &SPSEnergy, "SPSEnergy/D");
 	t3->Branch("SPSTheta", &SPSTheta, "SPSTheta/D");
 	t3->Branch("SPSPhi", &SPSPhi, "SPSPhi/D");
@@ -154,18 +162,21 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t3->Branch("SabreWedgeEnergy_hit1", &SWE1, "SabreWedgeEnergy_hit1/D");
 	t3->Branch("thetalab_hit1", &Stheta1, "thetalab_hit1/D");
 	t3->Branch("philab_hit1", &Sphi1, "philab_hit1/D");
+	t3->Branch("key_hit1", &key[0], "key_hit1/I");
 	t3->Branch("SabreRing_hit2", &SR2, "SabreRing_hit2/I");
 	t3->Branch("SabreWedge_hit2", &SW2, "SabreWedge_hit2/I");
 	t3->Branch("SabreRingEnergy_hit2", &SRE2, "SabreRingEnergy_hit2/D");
 	t3->Branch("SabreWedgeEnergy_hit2", &SWE2, "SabreWedgeEnergy_hit2/D");
 	t3->Branch("thetalab_hit2", &Stheta2, "thetalab_hit2/D");
 	t3->Branch("philab_hit2", &Sphi2, "philab_hit2/D");
+	t3->Branch("key_hit2", &key[1], "key_hit2/I");
 	t3->Branch("SabreRing_hit3", &SR3, "SabreRing_hit3/I");
 	t3->Branch("SabreWedge_hit3", &SW3, "SabreWedge_hit3/I");
 	t3->Branch("SabreRingEnergy_hit3", &SRE3, "SabreRingEnergy_hit3/D");
 	t3->Branch("SabreWedgeEnergy_hit3", &SWE3, "SabreWedgeEnergy_hit3/D");
 	t3->Branch("thetalab_hit3", &Stheta3, "thetalab_hit3/D");
 	t3->Branch("philab_hit3", &Sphi3, "philab_hit3/D");
+	t3->Branch("key_hit3", &key[2], "key_hit3/I");
 
 	//prepare variables to read value of tin entry
 	double tin_kine[4], tin_kintheta[4], tin_kinphi[4];
@@ -220,6 +231,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 			*SWE[k] = -666.;
 			*Stheta[k] = -666.;
 			*Sphi[k] = -666.;
+			key[k] = -666;
 		}
 
 		memcpy(kine, tin_kine, sizeof(kine));
@@ -245,11 +257,17 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 				return tin_particleID[a] < tin_particleID[b];
 			});
 		} else if(omniscienceSort == 2){
+			std::sort(indices.begin(), indices.end(), [&](int a, int b){
+				return tin_particleID[a] < tin_particleID[b];
+			});
 			std::shuffle(indices.begin(), indices.end(), g);
 		}
 
 		for(int k=0; k<nParticles; k++){
 			int j = indices[k];
+
+			key[k] = j;//key[k] holds the index that particle k USED to have in the input (0 = f1, 1 = f2, 2 = f3) to match the 012/021/102/120/201/210 naming scheme from my IM analysis
+
 			*SR[k] = tin_localRing[j];
 			*SW[k] = tin_localWedge[j];
 			*SRE[k] = tin_ringEnergy[j];
