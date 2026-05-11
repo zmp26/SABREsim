@@ -73,9 +73,11 @@ private:
 
 	int gate1_index;
 	int gate2_index;
+	int gate3_index;
 
 	std::pair<double,double> gate1minmax;
 	std::pair<double,double> gate2minmax;
+	std::pair<double,double> gate3minmax;
 
 	std::map<TString, permHisto*> groups_ungated;
 	std::map<TString, permHisto*> groups_gated;
@@ -107,6 +109,8 @@ private:
 
 		double boost1[3], boost2[3];
 
+		bool permPasses = false;
+
 		ExpectedCM expected;
 
 		void Reset(){
@@ -136,6 +140,8 @@ private:
 
 			ecm1 = -666.;
 			ecm2 = -666.;
+
+			permPasses = false;
 
 			for(int i=0; i<3; i++){
 				boost1[i] = -666.;
@@ -175,8 +181,11 @@ public:
 	void SetHypothesis(const Hypothesis4& hypo);
 
 	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx=false);
-	void FillEventHistograms();//fills all 6 cases together for the event
-	void FillSelectCaseHistograms(int caseNum);//selectively fills a single case for the event
+	void FillEventHistograms();//fills all 6 cases together for the event - ungated only
+	void FillSelectCaseHistograms(int caseNum);//selectively fills a single case for the event - ungated only
+
+	void FillGatedEventHistograms();//fills all 6 cases together for the event - gated only (assumes check done on user side!)
+	void FillSelectGatedCaseHistograms(int caseNum);//selectively fills a single case for the event - gated only (assumes check done on user side!)
 
 	void CloseAndWrite();
 
@@ -187,8 +196,16 @@ public:
 	// double GetIntermediateExGate() { return intermediateExGate; }
 	void SetGate1(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate1_index = index; }
 	void SetGate2(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate2_index = index; }
+	void SetGate3(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate3_index = index; }
 	void SetGate1MinMax(std::pair<double,double> minmax) { gate1minmax = minmax; }
 	void SetGate2MinMax(std::pair<double,double> minmax) { gate2minmax = minmax; }
+	void SetGate3MinMax(std::pair<double,double> minmax) { gate3minmax = minmax; }
+
+	bool CheckGate1(double val) { return(val >= gate1minmax.first && val <= gate1minmax.second); }
+	bool CheckGate2(double val) { return(val >= gate2minmax.first && val <= gate2minmax.second); }
+	bool CheckGate3(double val) { return(val >= gate3minmax.first && val <= gate3minmax.second); }
+
+	int CountPermPasses();
 
 };
 
