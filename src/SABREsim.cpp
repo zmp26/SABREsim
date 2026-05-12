@@ -309,13 +309,13 @@ void SABREsim::InitializeBeamspot(){
 void SABREsim::Run(){
 	std::ifstream infile(kinInputFilename_);
 	if(!infile){
-		ConsoleColorizer::PrintRed(("Error opening input file: " + kinInputFilename_).c_str());
+		ConsoleColorizer::PrintRed(("Error opening input file: " + kinInputFilename_ + "\n").c_str());
 		return;
 	}
 
 	std::ofstream outfile(detOutputFilename_);
 	if(!outfile){
-		ConsoleColorizer::PrintRed(("Error opening output file: " + detOutputFilename_).c_str());
+		ConsoleColorizer::PrintRed(("Error opening output file: " + detOutputFilename_ + "\n").c_str());
 		return;
 	}
 
