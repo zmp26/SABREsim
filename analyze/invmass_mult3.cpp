@@ -58,6 +58,9 @@ void InvMass_Mult3::Init(const char* output_filename){
 
 		outfile->cd();
 	}
+
+	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
+	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
 }
 
 void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
@@ -511,11 +514,24 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum){
 
 }
 
+void InvMass_Mult3::FillPermCounter(bool gated){
+	if(gated){
+		hPermCounter_gated->Fill(CountPermPasses());
+	} else {
+		hPermCounter->Fill(CountPermPasses());
+	}
+}
+
 void InvMass_Mult3::CloseAndWrite(){
+	outfile->cd();
+	hPermCounter->Write();
+	hPermCounter_gated->Write();
 	if(outfile && outfile->IsOpen()){
 		outfile->Write();
 		outfile->Close();
 	}
+	// delete hPermCounter;
+	// delete hPermCounter_gated;
 }
 
 void InvMass_Mult3::SetExpectedCMValues(bool verbose){

@@ -172,6 +172,10 @@ private:
 	ExpectedCM expectedCMValues;
 	void SetExpectedCMValues(bool verbose=false);//called automatically at end of SetHypothesis()
 
+	//"correct" permutation histograms:
+	TH1D* hPermCounter;
+	TH1D* hPermCounter_gated;
+
 public:
 	InvMass_Mult3();
 	~InvMass_Mult3();
@@ -186,6 +190,8 @@ public:
 
 	void FillGatedEventHistograms();//fills all 6 cases together for the event - gated only (assumes check done on user side!)
 	void FillSelectGatedCaseHistograms(int caseNum);//selectively fills a single case for the event - gated only (assumes check done on user side!)
+
+	void FillPermCounter(bool gated=false);
 
 	void CloseAndWrite();
 
