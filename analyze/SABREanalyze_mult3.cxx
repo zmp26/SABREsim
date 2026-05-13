@@ -359,7 +359,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 		SABRE_analysis.FillEventHistograms();
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
-		if(numpasses_sabre == 6){ 
+		if(numpasses_sabre == 6ubuntu){ 
 			SABRE_analysis.FillGatedEventHistograms(); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
 		}
