@@ -109,6 +109,8 @@ private:
 
 		double boost1[3], boost2[3];
 
+		double relLabAngle_intfrag1, relLabAngle_frag2frag3;
+
 		bool permPasses = false;
 
 		ExpectedCM expected;
@@ -140,6 +142,9 @@ private:
 
 			ecm1 = -666.;
 			ecm2 = -666.;
+
+			relLabAngle_intfrag1 = -666.;
+			relLabAngle_frag2frag3 = -666.;
 
 			permPasses = false;
 

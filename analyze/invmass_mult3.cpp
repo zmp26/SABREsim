@@ -114,6 +114,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TLorentzVector frag2 = lv[1];
 		TLorentzVector frag3 = lv[2];
 
+		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Angle(frag1)*RADDEG;
+		caseResults[permIndex].relLabAngle_frag2frag3 = frag2.Angle(frag3)*RADDEG;
+
 		//calculate excitation energy:
 		double intermediateEx = intermediate.M() - intermediateMass;
 		double Ex = recoil.M() - recoilMass;
