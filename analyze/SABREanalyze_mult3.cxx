@@ -182,83 +182,83 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
-void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, bool updateRecoilEx = true, bool updateIntermediateEx = true){
-	std::vector<int> intExs = {0, 500, 1000};
-	std::vector<std::pair<double,double>> intEminmax = {{-0.08, 0.08}, {0.28, 0.68}, {0.76, 1.2}};//MeV
-	std::vector<std::pair<double,double>> intVCMminmax = {{0.0092, 0.0102}, {0.0084, 0.0093}, {0.0076, 0.0085}};//c
-	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.0735, 0.0795}, {0.0675, 0.0733}, {0.0601, 0.0666}};//c
+// void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+// 	std::vector<int> intExs = {0, 500, 1000};
+// 	std::vector<std::pair<double,double>> intEminmax = {{-0.08, 0.08}, {0.28, 0.68}, {0.76, 1.2}};//MeV
+// 	std::vector<std::pair<double,double>> intVCMminmax = {{0.0092, 0.0102}, {0.0084, 0.0093}, {0.0076, 0.0085}};//c
+// 	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.0735, 0.0795}, {0.0675, 0.0733}, {0.0601, 0.0666}};//c
 
-	std::pair<double,double> minmax1, minmax2, minmax3;
+// 	std::pair<double,double> minmax1, minmax2, minmax3;
 
-	//for(auto const &intEx : intExs){
-	for(size_t i=0; i<intExs.size(); i++){
-		int intEx = intExs.at(i);
-		TString filename = Form("may11/detRand/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
+// 	//for(auto const &intEx : intExs){
+// 	for(size_t i=0; i<intExs.size(); i++){
+// 		int intEx = intExs.at(i);
+// 		TString filename = Form("may11/detRand/b10ha_7.5MeV_9B_ex3000keV_p8Be_ex%dkeV_tree_mult3.root", intEx);
 
-		switch(gate1index){
-			case NOCHECK:
-				minmax1 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax1 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax1 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax1 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax1 = {0., 0.};
-				break;
-		}
+// 		switch(gate1index){
+// 			case NOCHECK:
+// 				minmax1 = {0.,0.};
+// 				break;
+// 			case INTEXCHECK:
+// 				minmax1 = intEminmax.at(i);
+// 				break;
+// 			case INTVCMCHECK:
+// 				minmax1 = intVCMminmax.at(i);
+// 				break;
+// 			case FRAG1VCMCHECK:
+// 				minmax1 = frag1VCMminmax.at(i);
+// 				break;
+// 			default:
+// 				minmax1 = {0., 0.};
+// 				break;
+// 		}
 
-		switch(gate2index){
-			case NOCHECK:
-				minmax2 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax2 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax2 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax2 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax2 = {0., 0.};
-				break;
-		}
+// 		switch(gate2index){
+// 			case NOCHECK:
+// 				minmax2 = {0.,0.};
+// 				break;
+// 			case INTEXCHECK:
+// 				minmax2 = intEminmax.at(i);
+// 				break;
+// 			case INTVCMCHECK:
+// 				minmax2 = intVCMminmax.at(i);
+// 				break;
+// 			case FRAG1VCMCHECK:
+// 				minmax2 = frag1VCMminmax.at(i);
+// 				break;
+// 			default:
+// 				minmax2 = {0., 0.};
+// 				break;
+// 		}
 
-		switch(gate3index){
-			case NOCHECK:
-				minmax3 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax3 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax3 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax3 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax3 = {0., 0.};
-				break;
-		}
+// 		switch(gate3index){
+// 			case NOCHECK:
+// 				minmax3 = {0.,0.};
+// 				break;
+// 			case INTEXCHECK:
+// 				minmax3 = intEminmax.at(i);
+// 				break;
+// 			case INTVCMCHECK:
+// 				minmax3 = intVCMminmax.at(i);
+// 				break;
+// 			case FRAG1VCMCHECK:
+// 				minmax3 = frag1VCMminmax.at(i);
+// 				break;
+// 			default:
+// 				minmax3 = {0., 0.};
+// 				break;
+// 		}
 
-		// double recoilEx = 3.0;
-		// double intermediateEx = intEx / 1000.;
-		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 0.05, updateRecoilEx, updateIntermediateEx);
-		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-0.05, (intEx/1000.)+0.05, updateRecoilEx, updateIntermediateEx);
-		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx);
-		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
-	}
-}
+// 		// double recoilEx = 3.0;
+// 		// double intermediateEx = intEx / 1000.;
+// 		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 0.05, updateRecoilEx, updateIntermediateEx);
+// 		//B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-0.05, (intEx/1000.)+0.05, updateRecoilEx, updateIntermediateEx);
+// 		B10ha_8BeHypothesis_kin4mcComparison(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx);
+// 		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
+// 	}
+// }
 
-void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -359,7 +359,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 		SABRE_analysis.FillEventHistograms();
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
-		if(numpasses_sabre == 2){ 
+		if(numpasses_sabre == permCheck){ 
 			SABRE_analysis.FillGatedEventHistograms(); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
 		}
@@ -388,6 +388,81 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 
 
 }
+
+void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int permCheck = 2, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+	std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
+	std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
+	std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00289, 0.00429}, {0.00382, 0.00503}, {0.00461, 0.00575}, {0.00527, 0.00637}, {0.00593, 0.00695}};//c
+	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.024, 0.03321}, {0.03051, 0.03985}, {0.03667, 0.04527}, {0.04274, 0.05045}, {0.04797, 0.0549}};//c
+
+ 	std::pair<double,double> minmax1, minmax2, minmax3;
+
+ 	for(size_t i=0; i<intExs.size(); i++){
+ 		int intEx = intExs.at(i);
+ 		TString filename = Form("may14/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_100k_tree_mult3.root", intEx);
+ 	
+ 		switch(gate1index){
+			case NOCHECK:
+				minmax1 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax1 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax1 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax1 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax1 = {0., 0.};
+				break;
+		}
+
+		switch(gate2index){
+			case NOCHECK:
+				minmax2 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax2 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax2 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax2 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax2 = {0., 0.};
+				break;
+		}
+
+		switch(gate3index){
+			case NOCHECK:
+				minmax3 = {0.,0.};
+				break;
+			case INTEXCHECK:
+				minmax3 = intEminmax.at(i);
+				break;
+			case INTVCMCHECK:
+				minmax3 = intVCMminmax.at(i);
+				break;
+			case FRAG1VCMCHECK:
+				minmax3 = frag1VCMminmax.at(i);
+				break;
+			default:
+				minmax3 = {0., 0.};
+				break;
+		}
+
+		B10ha_8BeHypothesis(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx, permCheck);
+
+		std::cout << "Generated " << filename.Data() << std::endl << std::endl;
+
+ 	}
+
+}	
 
 void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 

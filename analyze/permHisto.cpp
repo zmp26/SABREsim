@@ -65,7 +65,7 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register2D(permName, "frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 1000, 0, 0.1, 1000, 0, 0.1);
 	Register2D(permName, "frag2kecmVSfrag3kecm", "frag2 KEcm VS frag3 KEcm", 600, -1, 5, 600, -1, 5);
 
-	Register2D(permName, "decay1VSdecay2_relLabAngle", "decay1 vs decay2 Relative Lab Angle", 360, 0, 180, 360, 0, 180);
+	Register2D(permName, "decay2VSdecay1_relLabAngle", "decay2 vs decay1 Relative Lab Angle", 360, 0, 180, 360, 0, 180);
 
 	//sequential decay energies
 	Register2D(permName, "ecm1VSecm2", "ECM1 vs ECM2; E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 600, -1, 5, 600, -1 , 5);
