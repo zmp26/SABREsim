@@ -114,8 +114,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TLorentzVector frag2 = lv[1];
 		TLorentzVector frag3 = lv[2];
 
-		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Angle(frag1)*RADDEG;
-		caseResults[permIndex].relLabAngle_frag2frag3 = frag2.Angle(frag3)*RADDEG;
+		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Vect().Angle(frag1.Vect())*RADDEG;
+		caseResults[permIndex].relLabAngle_frag2frag3 = frag2.Vect().Angle(frag3.Vect())*RADDEG;
 
 		//calculate excitation energy:
 		double intermediateEx = intermediate.M() - intermediateMass;
@@ -389,6 +389,7 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
 	fillAll("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
 	fillAll("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
+	fillAll("decay1_relLabAngle", res.relLabAngle_intfrag1);
 	fillAll("ecm2_meas", res.ecm2);
 	fillAll("ecm2_expect", res.expected.Ecm2);
 	fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
@@ -400,6 +401,9 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
 	fillAll("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
 	fillAll("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
+	fillAll("decay2_relLabAngle", res.relLabAngle_frag2frag3);
+
+	fillAll2D("decay2VSdecay1_relLabAngle", res.relLabAngle_intfrag1, res.relLabAngle_frag2frag3);
 
 	fillAll2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
 	fillAll2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
@@ -495,6 +499,7 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum){
 		fillGated2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
 		fillGated("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
 		fillGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
+		fillGated("decay1_relLabAngle", res.relLabAngle_intfrag1);
 		fillGated("ecm2_meas", res.ecm2);
 		fillGated("ecm2_expect", res.expected.Ecm2);
 		fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
@@ -506,6 +511,9 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum){
 		fillGated2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
 		fillGated("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
 		fillGated("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
+		fillGated("decay2_relLabAngle", res.relLabAngle_frag2frag3);
+
+		fillGated2D("decay2VSdecay1_relLabAngle", res.relLabAngle_intfrag1, res.relLabAngle_frag2frag3);
 
 		fillGated2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
 		fillGated2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
