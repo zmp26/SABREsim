@@ -306,13 +306,13 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 }
 
 //FillEventHistograms calls FillSelectCaseHistograms for 0-5. Good for filling histograms regardless of results.
-void InvMass_Mult3::FillEventHistograms(){
-	for(int i=0; i<6; i++) FillSelectCaseHistograms(i);
+void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
+	for(int i=0; i<6; i++) FillSelectCaseHistograms(i, SPS_Ex);
 
 	if(outtree) outtree->Fill();
 }
 
-void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
+void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	if(caseNum < 0 || caseNum > 5){
 		std::cerr << "caseNum out of range (" << caseNum << ")\n";
 		return;
@@ -336,6 +336,7 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll("intermediateIM", res.intermediateIM);
 	fillAll("intermediateEx", res.intermediateEx);
 	fillAll("RecoilEx", res.reconEx);
+	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
@@ -413,13 +414,13 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum){
 	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 }
 
-void InvMass_Mult3::FillGatedEventHistograms(){
-	for(int i=0; i<6; i++) FillSelectGatedCaseHistograms(i);
+void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
+	for(int i=0; i<6; i++) FillSelectGatedCaseHistograms(i, SPS_Ex);
 
 	if(outtree) outtree->Fill();
 }
 
-void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum){
+void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 
 	if(caseNum < 0 || caseNum > 5){
 		std::cerr << "caseNum out of range (" << caseNum << ")\n";
@@ -446,6 +447,7 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum){
 		fillGated("intermediateIM", res.intermediateIM);
 		fillGated("intermediateEx", res.intermediateEx);
 		fillGated("RecoilEx", res.reconEx);
+		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);

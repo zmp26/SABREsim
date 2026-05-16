@@ -146,21 +146,21 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		}
 
 		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms();
+		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		if(numpasses_sabre == 2){
-			SABRE_analysis.FillGatedEventHistograms(); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
 		}
-		//SABRE_analysis.FillGatedEventHistograms();
+		//SABRE_analysis.FillGatedEventHistograms(); 
 
 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
-		kin4mc_analysis.FillEventHistograms();
+		kin4mc_analysis.FillEventHistograms(Ex);
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
 		if(numpasses_kin4mc == 2){
-			kin4mc_analysis.FillGatedEventHistograms(); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+			kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			kin4mc_analysis.FillPermCounter(true);
 		}
 		//kin4mc_analysis.FillGatedEventHistograms();
@@ -356,11 +356,11 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 		}
 
 		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms();
+		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		if(numpasses_sabre == permCheck){ 
-			SABRE_analysis.FillGatedEventHistograms(); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
 		}
 		//SABRE_analysis.FillGatedEventHistograms();
@@ -400,7 +400,7 @@ void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int
 
  	for(size_t i=0; i<intExs.size(); i++){
  		int intEx = intExs.at(i);
- 		TString filename = Form("may14/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_100k_tree_mult3.root", intEx);
+ 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_100k_tree_mult3.root", intEx);
  	
  		switch(gate1index){
 			case NOCHECK:
@@ -573,20 +573,20 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		}
 
 		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms();
+		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		if(numpasses_sabre == 1){
-			SABRE_analysis.FillGatedEventHistograms();
+			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
 		}
 
 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
-		kin4mc_analysis.FillEventHistograms();
+		kin4mc_analysis.FillEventHistograms(Ex);
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
 		if(numpasses_kin4mc == 1){
-			kin4mc_analysis.FillGatedEventHistograms();
+			kin4mc_analysis.FillGatedEventHistograms(Ex);
 			kin4mc_analysis.FillPermCounter(true);
 		}
 

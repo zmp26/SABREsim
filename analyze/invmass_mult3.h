@@ -190,11 +190,11 @@ public:
 	void SetHypothesis(const Hypothesis4& hypo);
 
 	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx=false);
-	void FillEventHistograms();//fills all 6 cases together for the event - ungated only
-	void FillSelectCaseHistograms(int caseNum);//selectively fills a single case for the event - ungated only
+	void FillEventHistograms(double SPS_Ex);//fills all 6 cases together for the event - ungated only
+	void FillSelectCaseHistograms(int caseNum, double SPS_Ex);//selectively fills a single case for the event - ungated only
 
-	void FillGatedEventHistograms();//fills all 6 cases together for the event - gated only (assumes check done on user side!)
-	void FillSelectGatedCaseHistograms(int caseNum);//selectively fills a single case for the event - gated only (assumes check done on user side!)
+	void FillGatedEventHistograms(double SPS_Ex);//fills all 6 cases together for the event - gated only (assumes check done on user side!)
+	void FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex);//selectively fills a single case for the event - gated only (assumes check done on user side!)
 
 	void FillPermCounter(bool gated=false);
 
