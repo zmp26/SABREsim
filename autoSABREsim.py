@@ -4,7 +4,6 @@ import tempfile
 from pathlib import Path
 import re
 from datetime import datetime
-from concurrent.futures import ProcessPoolExecutor
 
 #CONFIG_PATH = Path("config/SABREsim_laptop.conf")
 CONFIG_DIR = Path("config")
@@ -14,110 +13,40 @@ SABRESIM_EXE = Path("bin/SABREsim")
 CONFIG_DIR.mkdir(exist_ok=True)
 LOG_DIR.mkdir(exist_ok=True)
 
-#helper function to extract gaus value:
-def extract_gaus_value(s):
-	match = re.search(r'\d+',s)
-	if not match:
-		return None
+CONFIG_FILENAME = CONFIG_DIR / "autoSABRE.conf"
 
-	digits = match.group()
+def run_simulation(recoilEx_keV):
 
-	value = float("0."+digits)
-	return value
+	recoilEx_MeV = recoilEx_keV/1000.
 
-x_opts = ["gaus0005", "gaus001", "gaus0015", "gaus002", "gaus0025"]
-y_opts = ["gaus0005", "gaus001", "gaus0015", "gaus002", "gaus0025"]
+	datestring = "may16"
 
-#anglestrings = ["188208", "178218", "168228", "158238", "148248"]
-#	19.8deg		+/- 1deg  +/- 2deg  +/- 3deg  +/- 4deg  +/- 5deg
-anglestrings = [
-				#"193203",	# 19.8deg +/- 0.5 deg
-				#"188208",	# 19.8deg +/- 1.0 deg
-				#"183213",	# 19.8deg +/- 1.5 deg
-				"178218",	# 19.8deg +/- 2.0 deg
-				#"173223",	# 19.8deg +/- 2.5 deg
-				#"168228",	# 19.8deg +/- 3.0 deg
-				#"163233",	# 19.8deg +/- 3.5 deg
-				#"158238",	# 19.8deg +/- 4.0 deg
-				#"153243",	# 19.8deg +/- 4.5 deg
-				#"148248"	# 19.8deg +/- 5.0 deg
-				]
-
-phistrings = ["-2.125_2.125"]
-
-#kin2mc_7Li3He4He6Ligs_7500keV_theta178218_phi_-0.5_0.5.out
-#phis = [1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
-#phis = [0.5, 1.0, 1.5, 2.0, 2.5]
-# phis = [2+i*0.125 for i in range(0,13)]
-# phistrings = []
-# for philow in phis:
-# 	for phiup in phis:
-# 		phistr = f"{-philow}_{phiup}"
-# 		#print(phistr)
-# 		phistrings.append(phistr)
-# 		#print(f"kin2mc_7Li3He4He6Ligs_7500keV_theta178218_phi_{phistr}.out")
-
-#generate the tasks list:
-tasks = []
-for profx in x_opts:
-	for profy in y_opts:
-		for angstr in anglestrings:
-			for phistring in phistrings:
-				tasks.append((profx, profy, angstr, phistring))
-
-def run_simulation(args):
-	profx, profy, angstr, phistr = args
-
-	parx = 0 if profx == "fixed" else extract_gaus_value(profx)
-	pary = 0 if profy == "fixed" else extract_gaus_value(profy)
-
-	if profx == "fixed" and profy == "fixed":
-		profile_str = "fixedpoint"
-	elif profx == "fixed":
-		profile_str = "fixedxgausy"
-	elif profy == "fixed":
-		profile_str = "gausxfixedy"
-	else:
-		profile_str = "gaussian"
-
-
-	infilename = f"/mnt/e/SABREsim/kinmc/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_phi_{phistr}.out"
-	detfilename = f"/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_phi_{phistr}_{profx}x_{profy}y.det"
-	treefilename = f"/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_phi_{phistr}_{profx}x_{profy}y_tree.root"
-	histofilename = f"/mnt/e/SABREsim/det/kin2mc/kin2mc_7Li3He4He6Ligs_7500keV_theta{angstr}_phi_{phistr}_{profx}x_{profy}y_histos.root"
-
+	infilename = f"/mnt/e/SABREsim/analyze/{datestring}/kinmc/b10ha_7.5MeV_9B_ex{recoilEx_keV}keV_a5Li_ex0keV_1000k.out"
+	detfilename = f"/mnt/e/SABREsim/analyze/{datestring}/det/b10ha_7.5MeV_9B_ex{recoilEx_keV}keV_a5Li_ex0keV_1000k.det"
+	treefilename = f"/mnt/e/SABREsim/analyze/{datestring}/det/b10ha_7.5MeV_9B_ex{recoilEx_keV}keV_a5Li_ex0keV_1000k_tree.root"
+	histofilename = f"/mnt/e/SABREsim/analyze/{datestring}/det/b10ha_7.5MeV_9B_ex{recoilEx_keV}keV_a5Li_ex0keV_1000k_histos.root"
 
 	outputlines = [
-						   "#Default SABREsim config file\n\n[General]\ndetmc_version = 2",
-						   f"infile = {infilename}",
-						   f"detfile = {detfilename}",
-						   f"treefile = {treefilename}",
-						   f"histofile = {histofilename}",
-						   "\n[TargetLosses]\ntargetLoss_par1 = alpha_in_LiF\ntargetLoss_par2 = 6Li_in_LiF\ntargetLoss_par3 = none\ntargetLoss_par4 = none",
-						   "\n[DeadLayerLosses]\ndeadLayerLoss_par1 = alpha_in_Si\ndeadLayerLoss_par2 = 6Li_in_Si\ndeadLayerLoss_par3 = none\ndeadLayerLoss_par4 = none",
-						   "\n[Beamspot]",
-						   f"profile = {profile_str}",
-						   f"parX = {parx}",
-						   f"parY = {pary}",
-						   "beam_offsetX = 0\nbeam_offsetY = 0",
-						   "\n[MetaData]",
-						   "reaction = 7Li(3He,4He)6Li\nbeam_energy = 7.5\nrecoil_excitation_energy = 0"
-						   ]
+						"[General]\ndetmc_version = 4",
+						f"infile = {infilename}",
+						f"detfile = {detfilename}",
+						f"treefile = {treefilename}",
+						f"histofile = {histofilename}",
+						f"\n[Kinematics]\nbeam = 3 He\ntarget = 10 B\nrecoil = 9 B\nejectile = 4 He\nbeam_energy = 7.5\nrecoil_excitation_energy = {recoilEx_MeV}",
+						"\n[TargetLosses]\ntargetLoss_par1 = none\ntargetLoss_par2 = none\ntargetLoss_par3 = none\ntargetLoss_par4 = none",
+						"\n[TargetAngularStraggling]\nenableStraggle1 = false\nenableStraggle2 = false\nenableStraggle3 = false\nenableStraggle4 = false",
+						"\n[DeadLayerLosses]\ndeadLayerLoss_par1 = none\ndeadLayerLoss_par2 = none\ndeadLayerLoss_par3 = none\ndeadLayerLoss_par4 = none\n",
+						"\n[Beamspot]\nprofile = gaussian\nparX = 0.0005\nparY = 0.0005\nbeam_offsetX = 0\nbeam_offsetY = 0",
+						"\n[SPS]\n Coincidence = true\nThetaMin = 18.27\nThetaMax = 21.73\nPhiMin = -2.19\nPhiMax = 2.19\nSigmaE = 0.015\nSigmaTheta = 0.5\nSigmaPhi = 0.5\nApertureDist = 0.175"
+				  ]
 
-	with tempfile.NamedTemporaryFile(mode="w", suffix=".conf", delete=False) as tmp:
-		tmp.write("\n".join(outputlines))
-		tmp.flush()
-		tmp_path = tmp.name
+	with open(CONFIG_FILENAME, "w") as f:
+		for line in outputlines:
+			f.write(line + "\n")
 
-	t = datetime.now().strftime("%Y%m%d_%H%M%S")
-	log_file = LOG_DIR/f"SABREsim_theta{angstr}_phi_{phistr}_{profx}x_{profy}y.log"
+	print(f"Running SABREsim for {recoilEx_keV} keV...")
 
-	with open(log_file, "w") as logf:
-		print(f"running profx = {profx}\tprofy = {profy}")
-		subprocess.run([str(SABRESIM_EXE), tmp_path], stdout=logf, stderr=subprocess.STDOUT)
-
-	Path(tmp_path).unlink(missing_ok=True)
-
+	subprocess.run([str(SABRESIM_EXE), str(CONFIG_FILENAME)], check=True)
 
 
 
@@ -126,8 +55,12 @@ if __name__ == "__main__":
 
 	start = datetime.now()
 
-	with ProcessPoolExecutor(max_workers=4) as exe:
-		exe.map(run_simulation, tasks)
+	#recoil_values = range(0, 501, 50)
+	recoil_values = range(1500, 2501, 50)
+
+	for keV in recoil_values:
+		run_simulation(keV)
+
 
 	end = datetime.now()
 	elapsed = end - start
