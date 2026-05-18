@@ -391,16 +391,21 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 
 void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int permCheck = 2, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
-	std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
-	std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
-	std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00289, 0.00429}, {0.00382, 0.00503}, {0.00461, 0.00575}, {0.00527, 0.00637}, {0.00593, 0.00695}};//c
-	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.024, 0.03321}, {0.03051, 0.03985}, {0.03667, 0.04527}, {0.04274, 0.05045}, {0.04797, 0.0549}};//c
+	// std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
+	// std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
+	// std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00289, 0.00429}, {0.00382, 0.00503}, {0.00461, 0.00575}, {0.00527, 0.00637}, {0.00593, 0.00695}};//c
+	// std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.024, 0.03321}, {0.03051, 0.03985}, {0.03667, 0.04527}, {0.04274, 0.05045}, {0.04797, 0.0549}};//c
+
+	std::vector<int> intExs = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
+	std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};
+	std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00193, 0.0031}, {0.00219, 0.00363}, {0.00245, 0.00389}, {0.00267, 0.00412}, {0.00289, 0.00429}, {0.00301, 0.00451}, {0.00321, 0.00471}, {0.00333, 0.00485}, {0.00347, 0.00501}, {0.00382, 0.00503}};
+	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.01537, 0.02595}, {0.01791, 0.02817}, {0.01967, 0.3035}, {0.02159, 0.03199}, {0.024, 0.03321}, {0.02493, 0.03541}, {0.02599, 0.03665}, {0.02752, 0.03769}, {0.02854, 0.03911}, {0.03051, 0.03985}};
 
  	std::pair<double,double> minmax1, minmax2, minmax3;
 
  	for(size_t i=0; i<intExs.size(); i++){
  		int intEx = intExs.at(i);
- 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_100k_tree_mult3.root", intEx);
+ 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_1000k_tree_mult3.root", intEx);
  	
  		switch(gate1index){
 			case NOCHECK:
@@ -607,18 +612,138 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
+void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+	std::string sabre_str = stem + "_SABREanalyzed5Li.root";
+	std::string kin4mc_str = stem + "_kin4mcanalyzed5Li.root";
+
+	const char* SABRE_output_filename = sabre_str.c_str();
+	const char* kin4mc_output_filename = kin4mc_str.c_str();
+
+	TMassTable fMassTable;
+	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+
+	Hypothesis4 b9_li5_hypothesis;
+	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
+
+	b9_li5_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	b9_li5_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+	// b9_li5_hypothesis.recoilEx = recoilEx;
+	// b9_li5_hypothesis.intermediateEx = intermediateEx;
+	// b9_li5_hypothesis.intermediateExGate = intermediateExGate;
+
+	TFile *infile = new TFile(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult3");
+	if(!intree){
+		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+		return;
+	}
+
+	long numentries = intree->GetEntries();
+
+	InvMass_Mult3 SABRE_analysis;;
+	SABRE_analysis.Init(SABRE_output_filename);
+	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
+	SABRE_analysis.SetGate1(gate1index);
+	SABRE_analysis.SetGate1MinMax(gate1minmax);
+	SABRE_analysis.SetGate2(gate2index);
+	SABRE_analysis.SetGate2MinMax(gate2minmax);
+	SABRE_analysis.SetGate3(gate3index);
+	SABRE_analysis.SetGate3MinMax(gate3minmax);
+
+	double Ex;
+	intree->SetBranchAddress("ExE", &Ex);
+
+	double E[3], theta[3], phi[3];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+
+	for(long i=0; i<numentries; i++){
+
+		intree->GetEntry(i);
+
+		//pass along SPS-informed recoil Ex if enabled:
+		if(updateRecoilEx){
+			SABRE_analysis.SetRecoilEx(Ex);
+			//SABRE_analysis.SetExpectedCMValues();
+		}
+
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		SABRE_analysis.FillEventHistograms(Ex);
+		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+		SABRE_analysis.FillPermCounter();
+		if(numpasses_sabre == 1){
+			SABRE_analysis.FillGatedEventHistograms(Ex);
+			SABRE_analysis.FillPermCounter(true);
+		}
+
+		if(i % 1000 == 0){
+			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+			fflush(stdout);
+		}
+
+	}
+
+	SABRE_analysis.CloseAndWrite();
+	infile->Close();
+
+	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+
+}
+
 void tempDoAll_5LiHypothesis(int gate1index, int gate2index, int gate3index, bool updateRecoilEx = false, bool updateIntermediateEx = false){
-	std::vector<int> intExs = {0, 500, 1000};
-	std::vector<std::pair<double,double>> intEminmax = {{-0.3, 0.14}, {0.14, 0.7}, {0.58, 1.18}};//{{-0.08, 0.08}, {0.28, 0.68}, {0.76, 1.2}};//MeV
-	std::vector<std::pair<double,double>> intVCMminmax = {{0.0193, 0.02175}, {0.0177, 0.0204}, {0.01415, 0.017}};//{{0.0092, 0.0102}, {0.0084, 0.0093}, {0.0076, 0.0085}};//c
-	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.0242, 0.02725}, {0.0206, 0.02525}, {0.01775, 0.02135}};//{{0.0735, 0.0795}, {0.0675, 0.0733}, {0.0601, 0.0666}};//c
+	// std::vector<int> intExs = {0, 500, 1000};
+	// std::vector<std::pair<double,double>> intEminmax = {{-0.3, 0.14}, {0.14, 0.7}, {0.58, 1.18}};//{{-0.08, 0.08}, {0.28, 0.68}, {0.76, 1.2}};//MeV
+	// std::vector<std::pair<double,double>> intVCMminmax = {{0.0193, 0.02175}, {0.0177, 0.0204}, {0.01415, 0.017}};//{{0.0092, 0.0102}, {0.0084, 0.0093}, {0.0076, 0.0085}};//c
+	// std::vector<std::pair<double,double>> frag1VCMminmax = {{0.0242, 0.02725}, {0.0206, 0.02525}, {0.01775, 0.02135}};//{{0.0735, 0.0795}, {0.0675, 0.0733}, {0.0601, 0.0666}};//c
+
+	std::vector<int> intExs;
+	std::vector<std::pair<double,double>> intEminmax;
+	std::vector<std::pair<double,double>> intVCMminmax;
+	std::vector<std::pair<double,double>> frag1VCMminmax;
+	// for(int i=1500; i<=2500; i+=50) {
+	// 	intExs.push_back(i);
+	// 	intEminmax.push_back({0,0});
+	// 	intVCMminmax.push_back({0,0});
+	// 	frag1VCMminmax.push_back({0,0});
+
+	// }
+
 	//update above values for 5Li case (just copied from 8Be)
 	std::pair<double,double> minmax1, minmax2, minmax3;
 
 	//for(auto const &intEx : intExs){
 	for(size_t i=0; i<intExs.size(); i++){
 		int intEx = intExs.at(i);
-		TString filename = Form("may11/detRand/b10ha_7.5MeV_9B_ex4000keV_a5Li_ex%dkeV_tree_mult3.root", intEx);
+		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree_mult3.root", intEx);
 
 		switch(gate1index){
 			case NOCHECK:
@@ -678,7 +803,8 @@ void tempDoAll_5LiHypothesis(int gate1index, int gate2index, int gate3index, boo
 		// double intermediateEx = intEx / 1000.;
 		//B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), recoilEx, intermediateEx, 1.0, updateRecoilEx, updateIntermediateEx);
 		//B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), (intEx/1000.)-1.0, (intEx/1000.)+1.0, updateRecoilEx, updateIntermediateEx);
-		B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx);
+		//B10ha_5LiHypothesis_kin4mcComparison(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx);
+		B10ha_5LiHypothesis(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx);
 		//std::cout << "Will run command: B10ha_8BeHypothesis_kin4mcComparison(\"" << filename.Data() << "\", " << recoilEx << ", " << intermediateEx << ", 0.05, " << updateRecoilEx << ", " << updateIntermediateEx << ")" << std::endl;
 	}
 }

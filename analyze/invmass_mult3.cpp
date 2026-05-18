@@ -337,6 +337,7 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll("intermediateEx", res.intermediateEx);
 	fillAll("RecoilEx", res.reconEx);
 	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
+	fillAll("RecoilExDif", SPS_Ex - res.reconEx);
 
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
@@ -448,6 +449,7 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated("intermediateEx", res.intermediateEx);
 		fillGated("RecoilEx", res.reconEx);
 		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
+		fillGated("RecoilExDif", SPS_Ex - res.reconEx);
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);
