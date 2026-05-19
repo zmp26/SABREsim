@@ -88,8 +88,12 @@ private:
 	//expected CM constants:
 	struct ExpectedCM {
 		double Ecm1, Ecm2;
-		double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;
-		double kecm_frag1, kecm_frag2, kecm_frag3, kecm_intermediate;
+		// double vcm_frag1, vcm_frag2, vcm_frag3, vcm_intermediate;
+		// double kecm_frag1, kecm_frag2, kecm_frag3, kecm_intermediate;
+		double vcm_intermediate, kecm_intermediate;
+		double vcm_frag1, kecm_frag1;
+		double vcm_frag2, kecm_frag2;
+		double vcm_frag3, kecm_frag3;
 	};
 
 	//define a "results" struct here:
@@ -111,9 +115,11 @@ private:
 
 		double relLabAngle_intfrag1, relLabAngle_frag2frag3;
 
-		bool permPasses = false;
+		double IM2_intfrag1, IM2_frag2frag3;
 
 		ExpectedCM expected;
+
+		bool permPasses = false;
 
 		void Reset(){
 			intermediateIM = -666.;

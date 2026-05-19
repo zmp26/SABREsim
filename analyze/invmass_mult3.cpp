@@ -31,15 +31,20 @@ void InvMass_Mult3::Init(const char* output_filename){
 	outfile = new TFile(output_filename, "RECREATE");
 	outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
 
-	TString leaflist = "imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:"
-					   "f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:"
-					   "f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:"
-					   "f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:"
+	TString leaflist = "imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
+					   "f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:f1Comp[3]/D:"
+					   "f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:f2Comp[3]/D:"
+					   "f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:f3Comp[3]/D:"
 					   "ecm1/D:ecm2/D:"
-					   "permPasses/O:"
-					   "exp_ecm1/D:exp_ecm2/D:exp_imVCM/D:exp_imKECM/D:exp_imTHCM/D:exp_imPHCM/D:"
-					   "exp_f1VCM/D:exp_f1KECM/D:exp_f2VCM/D:exp_f2KECM/D:"
-					   "exp_f3VCM/D:exp_f3KECM/D";
+					   "boost1[3]/D:boost2[3]/D:"
+					   "relLabAngle_intfrag1/D:relLabAngle_frag2frag3/D:"
+					   "IM2_intfrag1/D:IM2_frag2frag3/D:"
+					   "exp_ecm1/D:exp_ecm2/D:"
+					   "exp_imVCM/D:exp_imKECM/D:"
+					   "exp_f1VCM/D:exp_f1KECM/D:"
+					   "exp_f2VCM/D:exp_f2KECM/D:"
+					   "exp_f3VCM/D:exp_f3KECM/D:"
+					   "permPasses/O";
 
 	for(int i=0; i<6; i++){
 		//create a branch for each permutation
@@ -113,6 +118,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TLorentzVector frag1 = lv[0];
 		TLorentzVector frag2 = lv[1];
 		TLorentzVector frag3 = lv[2];
+
+		caseResults[permIndex].IM2_intfrag1 = (intermediate+frag1).M2();
+		caseResults[permIndex].IM2_frag2frag3 = (frag2+frag3).M2();
 
 		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Vect().Angle(frag1.Vect())*RADDEG;
 		caseResults[permIndex].relLabAngle_frag2frag3 = frag2.Vect().Angle(frag3.Vect())*RADDEG;
