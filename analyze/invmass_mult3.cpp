@@ -38,7 +38,8 @@ void InvMass_Mult3::Init(const char* output_filename){
 					   "ecm1/D:ecm2/D:"
 					   "boost1[3]/D:boost2[3]/D:"
 					   "relLabAngle_intfrag1/D:relLabAngle_frag2frag3/D:"
-					   "IM2_intfrag1/D:IM2_frag2frag3/D:"
+					   //"IM2_01/D:IM2_12/D:IM2_20/D:"
+					   "IM2_int/D:"
 					   "exp_ecm1/D:exp_ecm2/D:"
 					   "exp_imVCM/D:exp_imKECM/D:"
 					   "exp_f1VCM/D:exp_f1KECM/D:"
@@ -119,8 +120,10 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TLorentzVector frag2 = lv[1];
 		TLorentzVector frag3 = lv[2];
 
-		caseResults[permIndex].IM2_intfrag1 = (intermediate+frag1).M2();
-		caseResults[permIndex].IM2_frag2frag3 = (frag2+frag3).M2();
+		// caseResults[permIndex].IM2_01 = (lv[0] + lv[1]).M2();//(intermediate+frag1).M2();
+		// caseResults[permIndex].IM2_12 = (lv[1] + lv[2]).M2();//(frag2+frag3).M2();
+		// caseResults[permIndex].IM2_20 = (lv[2] + lv[0]).M2();
+		caseResults[permIndex].IM2_int = intermediate.M2();
 
 		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Vect().Angle(frag1.Vect())*RADDEG;
 		caseResults[permIndex].relLabAngle_frag2frag3 = frag2.Vect().Angle(frag3.Vect())*RADDEG;
@@ -346,6 +349,7 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll("RecoilEx", res.reconEx);
 	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 	fillAll("RecoilExDif", SPS_Ex - res.reconEx);
+	fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
 
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
@@ -458,6 +462,7 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated("RecoilEx", res.reconEx);
 		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 		fillGated("RecoilExDif", SPS_Ex - res.reconEx);
+		fillGated2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);

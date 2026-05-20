@@ -16,6 +16,7 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 	Register1D(permName, "RecoilEx", "Recoil Ex;MeV", 1100, -1, 10);
 	Register2D(permName, "RecoilEx_IMvsSPS", "Recoil Ex IM vs SPS;MeV;MeV", 1100, -1, 10, 1100, -1, 10);
 	Register1D(permName, "RecoilExDif", "Recoil Ex (SPS - IM);MeV", 400, -2, 2);
+	Register2D(permName, "intermediateExIMvsSPS", "intermediate Ex IM vs SPS;MeV;MeV",1100,-1,10,1100,-1,10);
 
 	for(const auto& p : particles){
 		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 5000, 0, 0.10);

@@ -115,7 +115,9 @@ private:
 
 		double relLabAngle_intfrag1, relLabAngle_frag2frag3;
 
-		double IM2_intfrag1, IM2_frag2frag3;
+		//double IM2_intfrag1, IM2_frag2frag3;
+		//double IM2_01, IM2_12, IM2_20;
+		double IM2_int;
 
 		ExpectedCM expected;
 
