@@ -27,6 +27,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <iostream>
+#include <chrono>
 #include "TFile.h"
 #include "TH1D.h"
 #include "TString.h"
@@ -359,7 +361,7 @@ void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int
 
  	}
 
-}	
+}
 
 void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
@@ -676,6 +678,36 @@ void tempDoAll_5LiHypothesis(int gate1index, int gate2index, int gate3index, boo
 }
 
 
+void tempDoAll_BothHypothesis(){
+
+	auto totalStart = std::chrono::steady_clock::now();
+
+	std::vector<TString> hypotheses = {"p8Be", "a5Li"};
+	std::vector<int> states = {2345, 2751, 2780};
+	int total = (int)(hypotheses.size() * states.size());
+
+	int count = 0;
+
+	for(auto const &state : states){
+		for(auto const &hyp : hypotheses){
+			auto localStart = std::chrono::steady_clock::now();
+			TString filename = Form("/mnt/e/SABREsim/analyze/may20/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
+			B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+			B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+			count++;
+			auto localStop = std::chrono::steady_clock::now();
+			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+			std::cout << "Finished " << count << " out of " << total << " (" << total*100./count << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+		}
+		
+	}
+
+	auto end = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - totalStart);
+
+	std::cout << "\n\nFinished all analysis! Elapsed time: " << elapsed.count() << " seconds\n\n"<< std::endl;
+}
+
 
 //------------------------------DATA BELOW-------------------------------------
 void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
@@ -696,7 +728,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		return;
 	}
 
-	TTree *intree = (TTree*)infile->Get("T");
+	TTree *intree = (TTree*)infile->Get("mult3");
 	if(!intree){
 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
 		return;
@@ -753,7 +785,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 
 
 	double Ex;
-	intree->SetBranchAddress("Li6ExE", &Ex);//Li6ExE is remnant mistake from Rachel2ROOT --> needs fixing so it does not confuse, but actually just recoil Ex
+	intree->SetBranchAddress("ExE", &Ex);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -778,7 +810,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 			b9_a5Li_analysis.SetRecoilEx(Ex);
 		}
 
-	if(Ex >= 1.5){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
+	if(Ex >= 1.7){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
 		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 		b9_p8Be_analysis.FillEventHistograms(Ex);
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
