@@ -43,7 +43,8 @@ void DalitzPlots_9B_a5Li_vs_p8Be(TString filename_p8Be, TString filename_a5Li){
 	}
 
 	TFile *outfile = new TFile("DalitzPlots_9B_a5Li_vs_p8Be.root", "RECREATE");
-	TH2D *DalitzPlot = new TH2D("DalitzPlot", "Dalitz Plot 9B, a+5Li vs p+8Be", 380, 55.55e6, 55.92e6, 200, 21.75e6, 21.94e6);
+	TH2D *DalitzPlot = new TH2D("DalitzPlot", "Dalitz Plot 9B, a+5Li vs p+8Be;IM2_int (8Be) MeV^2/c^4;IM2_int (5Li) MeV^2/c^4", 1520/8, 55.55e6, 55.92e6, 800/8, 21.75e6, 21.94e6);
+	//TH2D *DalitzPlot = new TH2D("DalitzPlot", "Dalitz Plot 9B, a+5Li vs p+8Be;IM2_int (8Be) MeV^2/c^4;IM2_int (5Li) MeV^2/c^4", 1520, 0, 55.92e6, 800, 0, 21.94e6);
 
 	Long64_t nentries = p8Be_tree->GetEntries();
 	for(Long64_t i=0; i<nentries; i++){
@@ -62,7 +63,7 @@ void DalitzPlots_9B_a5Li_vs_p8Be(TString filename_p8Be, TString filename_a5Li){
 
 	DalitzPlot->SetDirectory(gROOT);
 
-	TCanvas *c = new TCanvas("c1", "Dalitz Plot", 800, 800);
+	TCanvas *c = new TCanvas("c1", "Dalitz Plot", 1000, 1000);
 	DalitzPlot->Draw("COLZ");
 
 	outfile->Close();
