@@ -322,10 +322,14 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 
 void autoslicer(const char* intree = "SABREsim", int omniscienceSort=1){
 
-	for(int i=1500; i<=2500; i+=50){
-		TString filename = Form("/mnt/e/SABREsim/analyze/may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree.root", i);
-		SABREslicer(filename.Data(), intree, omniscienceSort);
-	}
+	// for(int i=1500; i<=2500; i+=50){
+	// 	TString filename = Form("/mnt/e/SABREsim/analyze/may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree.root", i);
+	// 	SABREslicer(filename.Data(), intree, omniscienceSort);
+	// }
+
+	SABREslicer("../analyze/may21/det/b10ha_7.5MeV_9B_ex2345keV_tree.root", intree, omniscienceSort);
+	SABREslicer("../analyze/may21/det/b10ha_7.5MeV_9B_ex2751keV_tree.root", intree, omniscienceSort);
+	SABREslicer("../analyze/may21/det/b10ha_7.5MeV_9B_ex2780keV_tree.root", intree, omniscienceSort);
 
 }
 

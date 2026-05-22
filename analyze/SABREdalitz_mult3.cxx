@@ -12,10 +12,11 @@
 #include "TSystem.h"
 
 
-void SABREsim_DalitzPlots_9B_a5Li_vs_p8Be(int recExkeV, TString simDecayString){
+//void SABREsim_DalitzPlots_9B_a5Li_vs_p8Be(int recExkeV, TString simDecayString){
+void SABREsim_DalitzPlots_9B_a5Li_vs_p8Be(int recExkeV){
 
-	TString filename_p8Be = Form("/mnt/e/SABREsim/analyze/may20/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3_SABREanalyzed8Be.root", recExkeV, simDecayString.Data());
-	TString filename_a5Li = Form("/mnt/e/SABREsim/analyze/may20/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3_SABREanalyzed5Li.root", recExkeV, simDecayString.Data());
+	TString filename_p8Be = Form("/mnt/e/SABREsim/analyze/may21/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3_SABREanalyzed8Be.root", recExkeV);
+	TString filename_a5Li = Form("/mnt/e/SABREsim/analyze/may21/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3_SABREanalyzed5Li.root", recExkeV);
 
 	TFile *infile_p8Be = new TFile(filename_p8Be, "READ");
 	TFile *infile_a5Li = new TFile(filename_a5Li, "READ");
@@ -51,14 +52,14 @@ void SABREsim_DalitzPlots_9B_a5Li_vs_p8Be(int recExkeV, TString simDecayString){
 	}
 
 	TString dirPath = gSystem->DirName(filename_p8Be);
-	TString baseOutfilename = Form("DalitzPlots_9Bex%dkeV%s.root", recExkeV, simDecayString.Data());
+	TString baseOutfilename = Form("DalitzPlots_9Bex%dkeV.root", recExkeV);
 	TString outfilename = dirPath+"/"+baseOutfilename;
 	TFile *outfile = new TFile(outfilename, "RECREATE");
 
 	TString xtitle = Form("IM2_int (8Be) MeV^2/c^4");
 	TString ytitle = Form("IM2_int (5Li) MeV^2/c^4");
-	TString legibleDecayString = simDecayString.EqualTo("p8Be") ? "p + 8Be (gs)" : "a + 5Li (gs)" ;
-	TString htitle = Form("Dalitz Plot 9B (%d keV) -> %s;%s;%s", recExkeV, legibleDecayString.Data(), xtitle.Data(), ytitle.Data());
+	//TString legibleDecayString = simDecayString.EqualTo("p8Be") ? "p + 8Be (gs)" : "a + 5Li (gs)" ;
+	TString htitle = Form("Dalitz Plot 9B (%d keV);%s;%s", recExkeV, xtitle.Data(), ytitle.Data());
 
 	TH2D *DalitzPlot = new TH2D("DalitzPlot", htitle, 1520/4, 55.55e6, 55.92e6, 800/4, 21.75e6, 21.94e6);
 	//TH2D *DalitzPlot = new TH2D("DalitzPlot", "Dalitz Plot 9B, a+5Li vs p+8Be;IM2_int (8Be) MeV^2/c^4;IM2_int (5Li) MeV^2/c^4", 1520, 0, 55.92e6, 800, 0, 21.94e6);
