@@ -98,6 +98,8 @@ private:
 
 	//define a "results" struct here:
 	struct Results {
+		TString permName;
+
 		double intermediateIM, intermediateEx, reconEx;
 
 		double intermediatevcm, intermediatekecm, intermediatethetacm, intermediatephicm;
@@ -124,6 +126,8 @@ private:
 		bool permPasses = false;
 
 		void Reset(){
+			permName = "NONE";
+
 			intermediateIM = -666.;
 			intermediateEx = -666.;
 			reconEx = -666.;
@@ -189,6 +193,9 @@ private:
 	TH1D* hPermCounter;
 	TH1D* hPermCounter_gated;
 
+	//histogram(s) for caseResult entry with recoilEx nearest SPS provided value:
+	TH2D* hSortedIntermediateExIMvsSPS;
+
 public:
 	InvMass_Mult3();
 	~InvMass_Mult3();
@@ -205,6 +212,8 @@ public:
 	void FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex);//selectively fills a single case for the event - gated only (assumes check done on user side!)
 
 	void FillPermCounter(bool gated=false);
+
+	void FillSortedHisto(double SPS_Ex);
 
 	void CloseAndWrite();
 

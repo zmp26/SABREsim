@@ -684,22 +684,37 @@ void tempDoAll_BothHypothesis(){
 
 	std::vector<TString> hypotheses = {"p8Be", "a5Li"};
 	std::vector<int> states = {2345, 2751, 2780};
-	int total = (int)(hypotheses.size() * states.size());
+	//int total = (int)(hypotheses.size() * states.size());
+	int total = (int)(states.size());
 
 	int count = 0;
 
-	for(auto const &state : states){
-		for(auto const &hyp : hypotheses){
-			auto localStart = std::chrono::steady_clock::now();
-			TString filename = Form("/mnt/e/SABREsim/analyze/may20/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
-			B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-			B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-			count++;
-			auto localStop = std::chrono::steady_clock::now();
-			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-			std::cout << "Finished " << count << " out of " << total << " (" << total*100./count << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
-		}
+	// for(auto const &state : states){
+	// 	for(auto const &hyp : hypotheses){
+	// 		auto localStart = std::chrono::steady_clock::now();
+	// 		TString filename = Form("/mnt/e/SABREsim/analyze/may20/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
+	// 		B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+	// 		B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+	// 		count++;
+	// 		auto localStop = std::chrono::steady_clock::now();
+	// 		auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+	// 		std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+	// 	}
 		
+	// }
+
+	for(auto const &state : states){
+		auto localStart = std::chrono::steady_clock::now();
+		TString filename = Form("/mnt/e/SABREsim/analyze/may21/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3.root",state);
+		//std::cout << "here..." << std::endl;
+		B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+		//std::cout << "and here..." << std::endl;
+		B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+		//std::cout << "here too..." << std::endl;
+		count++;
+		auto localStop = std::chrono::steady_clock::now();
+		auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+		std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
 	}
 
 	auto end = std::chrono::steady_clock::now();
@@ -710,14 +725,14 @@ void tempDoAll_BothHypothesis(){
 
 
 //------------------------------DATA BELOW-------------------------------------
-void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
 
-	std::string p8Be_str = stem + "_analyzed8Be.root";
-	std::string a5Li_str = stem + "_analyzed5Li.root";
+	std::string p8Be_str = stem + "_aboveAlphaThreshAnalyzed8Be.root";
+	std::string a5Li_str = stem + "_aboveAlphaThreshAnalyzed5Li.root";
 
 	const char* p8Be_output_filename = p8Be_str.c_str();
 	const char* a5Li_output_filename = a5Li_str.c_str();
@@ -837,4 +852,133 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
 	std::cout << "b9_p8Be output: " << p8Be_output_filename << std::endl;
 	std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
+}
+
+void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+	std::string p8Be_str = stem + "_allExAnalyzed8Be.root";
+	// std::string a5Li_str = stem + "_analyzed5Li.root";
+
+	const char* p8Be_output_filename = p8Be_str.c_str();
+	//const char* a5Li_output_filename = a5Li_str.c_str();
+
+	TFile *infile = new TFile(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult3");
+	if(!intree){
+		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+		return;
+	}
+
+	long numentries = intree->GetEntries();
+
+	TMassTable fMassTable;
+	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+
+	Hypothesis4 b9_p8Be_hypothesis;//, b9_a5Li_hypothesis;
+
+	b9_p8Be_hypothesis.name = "B10ha_8BeHypothesis";
+	b9_p8Be_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	b9_p8Be_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	b9_p8Be_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	b9_p8Be_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+	b9_p8Be_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+
+	// b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
+	// b9_a5Li_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	// b9_a5Li_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	// b9_a5Li_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	// b9_a5Li_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+	// b9_a5Li_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+	// b9_a5Li_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+	// b9_a5Li_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+	// b9_a5Li_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+
+	InvMass_Mult3 b9_p8Be_analysis;//, b9_a5Li_analysis;
+
+	b9_p8Be_analysis.Init(p8Be_output_filename);
+	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
+	b9_p8Be_analysis.SetGate1(NOCHECK);
+	b9_p8Be_analysis.SetGate1MinMax({0,0});
+	b9_p8Be_analysis.SetGate2(NOCHECK);
+	b9_p8Be_analysis.SetGate2MinMax({0,0});
+	b9_p8Be_analysis.SetGate3(NOCHECK);
+	b9_p8Be_analysis.SetGate3MinMax({0,0});
+
+	// b9_a5Li_analysis.Init(a5Li_output_filename);
+	// b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
+	// b9_a5Li_analysis.SetGate1(NOCHECK);
+	// b9_a5Li_analysis.SetGate1MinMax({0,0});
+	// b9_a5Li_analysis.SetGate2(NOCHECK);
+	// b9_a5Li_analysis.SetGate2MinMax({0,0});
+	// b9_a5Li_analysis.SetGate3(NOCHECK);
+	// b9_a5Li_analysis.SetGate3MinMax({0,0});
+
+
+	double Ex;
+	intree->SetBranchAddress("ExE", &Ex);
+
+	double E[3], theta[3], phi[3];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+	for(long i=0; i<numentries; i++){
+
+		intree->GetEntry(i);
+
+		if(updateRecoilEx){
+			b9_p8Be_analysis.SetRecoilEx(Ex);
+			//b9_a5Li_analysis.SetRecoilEx(Ex);
+		}
+
+
+	b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+	b9_p8Be_analysis.FillEventHistograms(Ex);
+	int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
+	b9_p8Be_analysis.FillPermCounter();
+
+	// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+	// b9_a5Li_analysis.FillEventHistograms(Ex);
+	// int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
+	// b9_a5Li_analysis.FillPermCounter();
+
+
+		if(i % 1000 == 0){
+			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+			fflush(stdout);
+		}
+
+	}
+
+	b9_p8Be_analysis.CloseAndWrite();
+	//b9_a5Li_analysis.CloseAndWrite();
+
+	infile->Close();
+
+	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+	std::cout << "b9_p8Be output: " << p8Be_output_filename << std::endl;
+	//std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
 }

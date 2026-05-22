@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <algorithm>
 
 
 InvMass_Mult3::InvMass_Mult3()
@@ -67,6 +68,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
 	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
+	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 300, -5, 7, 300, -5, 7);
 }
 
 void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
@@ -85,7 +87,7 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 
 //AnalyzeEvent assumes theta, phi in degrees and E in MeV
 //update this to return reconstructed recoil excitation energy in MeV
-std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx){
+std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx){ 
 
 	ClearEventResults();
 
@@ -139,6 +141,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 			//test for dynamic4:
 			//SetRecoilEx(Ex);
 		}
+
+		caseResults[permIndex].permName = name;
+
 		caseResults[permIndex].expected = expectedCMValues;
 
 		caseResults[permIndex].intermediateIM = intermediate.M();
@@ -550,10 +555,26 @@ void InvMass_Mult3::FillPermCounter(bool gated){
 	}
 }
 
+void InvMass_Mult3::FillSortedHisto(double SPS_Ex){
+	//set new dummy array equal to caseResults and sort it by difference between IM Ex and SPS Ex
+	Results sorted_caseResults[6];
+	for(int i=0; i<6; i++) sorted_caseResults[i] = caseResults[i];
+
+	std::sort(std::begin(sorted_caseResults), std::end(sorted_caseResults), [SPS_Ex](const Results& a, const Results& b) { 
+		double diffA = std::abs(SPS_Ex - a.reconEx);
+		double diffB = std::abs(SPS_Ex - b.reconEx);
+		return diffA < diffB;
+	});
+
+	hSortedIntermediateExIMvsSPS->Fill(SPS_Ex, sorted_caseResults[0].intermediateEx);
+
+}
+
 void InvMass_Mult3::CloseAndWrite(){
 	outfile->cd();
 	hPermCounter->Write();
 	hPermCounter_gated->Write();
+	hSortedIntermediateExIMvsSPS->Write();
 	if(outfile && outfile->IsOpen()){
 		outfile->Write();
 		outfile->Close();
