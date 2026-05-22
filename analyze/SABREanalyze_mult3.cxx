@@ -151,6 +151,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
+		SABRE_analysis.FillSortedHisto(Ex);
 		if(numpasses_sabre == 2){
 			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
@@ -161,6 +162,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		kin4mc_analysis.FillEventHistograms(Ex);
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
+		kin4mc_analysis.FillSortedHisto(Ex);
 		if(numpasses_kin4mc == 2){
 			kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			kin4mc_analysis.FillPermCounter(true);
@@ -263,6 +265,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
+		SABRE_analysis.FillSortedHisto(Ex);
 		if(numpasses_sabre == permCheck){ 
 			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
@@ -471,6 +474,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
+		SABRE_analysis.FillSortedHisto(Ex);
 		if(numpasses_sabre == 1){
 			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
@@ -480,6 +484,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		kin4mc_analysis.FillEventHistograms(Ex);
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
+		kin4mc_analysis.FillSortedHisto(Ex);
 		if(numpasses_kin4mc == 1){
 			kin4mc_analysis.FillGatedEventHistograms(Ex);
 			kin4mc_analysis.FillPermCounter(true);
@@ -584,6 +589,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<d
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
+		SABRE_analysis.FillSortedHisto(Ex);
 		if(numpasses_sabre == 1){
 			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
@@ -689,33 +695,33 @@ void tempDoAll_BothHypothesis(){
 
 	int count = 0;
 
-	// for(auto const &state : states){
-	// 	for(auto const &hyp : hypotheses){
-	// 		auto localStart = std::chrono::steady_clock::now();
-	// 		TString filename = Form("/mnt/e/SABREsim/analyze/may20/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
-	// 		B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-	// 		B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-	// 		count++;
-	// 		auto localStop = std::chrono::steady_clock::now();
-	// 		auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-	// 		std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
-	// 	}
-		
-	// }
-
 	for(auto const &state : states){
-		auto localStart = std::chrono::steady_clock::now();
-		TString filename = Form("/mnt/e/SABREsim/analyze/may21/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3.root",state);
-		//std::cout << "here..." << std::endl;
-		B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-		//std::cout << "and here..." << std::endl;
-		B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-		//std::cout << "here too..." << std::endl;
-		count++;
-		auto localStop = std::chrono::steady_clock::now();
-		auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-		std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+		for(auto const &hyp : hypotheses){
+			auto localStart = std::chrono::steady_clock::now();
+			TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
+			B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+			B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+			count++;
+			auto localStop = std::chrono::steady_clock::now();
+			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+			std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+		}
+		
 	}
+
+	// for(auto const &state : states){
+	// 	auto localStart = std::chrono::steady_clock::now();
+	// 	TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3.root",state);
+	// 	//std::cout << "here..." << std::endl;
+	// 	B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+	// 	//std::cout << "and here..." << std::endl;
+	// 	B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+	// 	//std::cout << "here too..." << std::endl;
+	// 	count++;
+	// 	auto localStop = std::chrono::steady_clock::now();
+	// 	auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+	// 	std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+	// }
 
 	auto end = std::chrono::steady_clock::now();
 	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - totalStart);
@@ -830,11 +836,13 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		b9_p8Be_analysis.FillEventHistograms(Ex);
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 		b9_p8Be_analysis.FillPermCounter();
+		b9_p8Be_analysis.FillSortedHisto(Ex);
 
 		b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 		b9_a5Li_analysis.FillEventHistograms(Ex);
 		int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
 		b9_a5Li_analysis.FillPermCounter();
+		b9_a5Li_analysis.FillSortedHisto(Ex);
 	}
 
 		if(i % 1000 == 0){
@@ -959,6 +967,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	b9_p8Be_analysis.FillEventHistograms(Ex);
 	int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 	b9_p8Be_analysis.FillPermCounter();
+	b9_p8Be_analysis.FillSortedHisto(Ex);
 
 	// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 	// b9_a5Li_analysis.FillEventHistograms(Ex);

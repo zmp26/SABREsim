@@ -195,6 +195,10 @@ private:
 
 	//histogram(s) for caseResult entry with recoilEx nearest SPS provided value:
 	TH2D* hSortedIntermediateExIMvsSPS;
+	TH1D* hSortedPermutations;
+	TH1D* hSortedIMRecEx;
+	TH1D* hSortedIMRecEx_gate8Be;
+	TH1D* hSortedIMRecEx_gate5Li;
 
 public:
 	InvMass_Mult3();

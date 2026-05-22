@@ -69,6 +69,14 @@ void InvMass_Mult3::Init(const char* output_filename){
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
 	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
 	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 300, -5, 7, 300, -5, 7);
+	hSortedPermutations = new TH1D("hSortedPermutations", "Permutation Picks", 6, -0.5, 5.5);
+	hSortedIMRecEx = new TH1D("hSortedIMRecEx", "Rec Ex (IM)", 300, -5, 7);
+	hSortedIMRecEx_gate8Be = new TH1D("hSortedIMRecEx_gate8Be", "Rec Ex (IM) - Gate IM 8Be", 300, -5, 7);
+	hSortedIMRecEx_gate5Li = new TH1D("hSortedIMRecEx_gate5Li", "Rec Ex (IM) - Gate IM 5Li", 300, -5, 7);
+	const char* labels[6] = {"012","021","102","120","201","210"};
+	for(int i=0; i<6; i++){
+		hSortedPermutations->GetXaxis()->SetBinLabel(i+1, labels[i]);
+	}
 }
 
 void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
@@ -567,7 +575,24 @@ void InvMass_Mult3::FillSortedHisto(double SPS_Ex){
 	});
 
 	hSortedIntermediateExIMvsSPS->Fill(SPS_Ex, sorted_caseResults[0].intermediateEx);
+	hSortedIMRecEx->Fill(sorted_caseResults[0].reconEx);
+	if(sorted_caseResults[0].intermediateEx >= -0.04 && sorted_caseResults[0].intermediateEx <= 0.04){
+		hSortedIMRecEx_gate8Be->Fill(sorted_caseResults[0].reconEx);
+	}
+	if(sorted_caseResults[0].intermediateEx >= -0.8 && sorted_caseResults[0].intermediateEx <= 0.8){
+		hSortedIMRecEx_gate5Li->Fill(sorted_caseResults[0].reconEx);
+	}
 
+	int permIndex = -1;
+	TString perm = sorted_caseResults[0].permName;
+	if(perm == "012") permIndex = 0;
+	else if(perm == "021") permIndex = 1;
+	else if(perm == "102") permIndex = 2;
+	else if(perm == "120") permIndex = 3;
+	else if(perm == "201") permIndex = 4;
+	else if(perm == "210") permIndex = 5;
+
+	hSortedPermutations->Fill(permIndex);
 }
 
 void InvMass_Mult3::CloseAndWrite(){
@@ -575,6 +600,10 @@ void InvMass_Mult3::CloseAndWrite(){
 	hPermCounter->Write();
 	hPermCounter_gated->Write();
 	hSortedIntermediateExIMvsSPS->Write();
+	hSortedPermutations->Write();
+	hSortedIMRecEx->Write();
+	hSortedIMRecEx_gate8Be->Write();
+	hSortedIMRecEx_gate5Li->Write();
 	if(outfile && outfile->IsOpen()){
 		outfile->Write();
 		outfile->Close();
