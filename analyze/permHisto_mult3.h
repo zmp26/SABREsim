@@ -1,5 +1,5 @@
-#ifndef PERMHISTO_H
-#define PERMHISTO_H
+#ifndef PERMHISTOMULT3_H
+#define PERMHISTOMULT3_H
 
 #include "TH1D.h"
 #include "TH2D.h"
@@ -25,4 +25,4 @@ private:
 	void Register2D(TString permName, TString key, TString title, int xbins, double xmin, double xmax, int ybins, double ymin, double ymax);
 };
 
-#endif//PERMHISTO_H
+#endif//PERMHISTOMULT3_H
