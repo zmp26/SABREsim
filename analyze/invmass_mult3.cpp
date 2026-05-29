@@ -60,8 +60,8 @@ void InvMass_Mult3::Init(const char* output_filename){
 		TDirectory *ungateDir = permdir->mkdir("ungated");
 		TDirectory *gateDir = permdir->mkdir("gated");
 
-		groups_ungated[cn] = new permHisto(cn + "_ungated", ungateDir);
-		groups_gated[cn] = new permHisto(cn + "_gated", gateDir);
+		groups_ungated[cn] = new permHisto_mult3(cn + "_ungated", ungateDir);
+		groups_gated[cn] = new permHisto_mult3(cn + "_gated", gateDir);
 
 		outfile->cd();
 	}

@@ -1,11 +1,11 @@
-#include "permHisto.h"
+#include "permHisto_mult3.h"
 #include "TH1.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include <iostream>
 #include <vector>
 
-permHisto::permHisto(TString permName, TDirectory* targetDir){
+permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	targetDir->cd();
 
 	std::vector<TString> particles = {"intermediate", "frag1", "frag2", "frag3"};
@@ -76,20 +76,20 @@ permHisto::permHisto(TString permName, TDirectory* targetDir){
 
 }
 
-void permHisto::Register1D(TString name, TString key, TString title, int xbins, double xmin, double xmax){
+void permHisto_mult3::Register1D(TString name, TString key, TString title, int xbins, double xmin, double xmax){
 	hMap[key] = new TH1D(name + "_" + key, title, xbins, xmin, xmax);
 }
 
-void permHisto::Register2D(TString name, TString key, TString title, int xbins, double xmin, double xmax, int ybins, double ymin, double ymax){
+void permHisto_mult3::Register2D(TString name, TString key, TString title, int xbins, double xmin, double xmax, int ybins, double ymin, double ymax){
 	hMap[key] = new TH2D(name + "_" + key, title, xbins, xmin, xmax, ybins, ymin, ymax);
 }
 
-void permHisto::Fill(TString key, double x){
+void permHisto_mult3::Fill(TString key, double x){
 	if(hMap.count(key)) hMap[key]->Fill(x);
 	else std::cout << key << " not found in hMap!" << std::endl;
 }
 
-void permHisto::Fill(TString key, double x, double y){
+void permHisto_mult3::Fill(TString key, double x, double y){
 	if(hMap.count(key)) hMap[key]->Fill(x, y);
 	else std::cout << key << " not found in hMap!" << std::endl;
 }

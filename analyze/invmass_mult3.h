@@ -11,7 +11,7 @@
 #include "TString.h"
 #include "TDirectory.h"
 #include "TLorentzVector.h"
-#include "permHisto.h"
+#include "permHisto_mult3.h"
 
 //Hypothesis4 struct
 struct Hypothesis4 {
@@ -79,8 +79,8 @@ private:
 	std::pair<double,double> gate2minmax;
 	std::pair<double,double> gate3minmax;
 
-	std::map<TString, permHisto*> groups_ungated;
-	std::map<TString, permHisto*> groups_gated;
+	std::map<TString, permHisto_mult3*> groups_ungated;
+	std::map<TString, permHisto_mult3*> groups_gated;
 
 	//double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
 	double intermediateEx;//, intermediateEmin, intermediateEmax;

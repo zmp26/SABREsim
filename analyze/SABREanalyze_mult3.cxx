@@ -35,7 +35,8 @@
 #include "TDirectory.h"
 #include "invmass_mult3.h"
 #include "invmass_mult3.cpp"//including .cpp for simple root macro purposes
-#include "permHisto.cpp"//" above "
+#include "permHisto_mult3.h"//" above "
+#include "permHisto_mult3.cpp"//" above "
 
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;

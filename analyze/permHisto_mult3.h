@@ -7,11 +7,11 @@
 #include "TDirectory.h"
 #include <map>
 
-class permHisto {
+class permHisto_mult3 {
 public:
-	permHisto(TString permName, TDirectory* targetDir);
+	permHisto_mult3(TString permName, TDirectory* targetDir);
 
-	~permHisto(){};
+	~permHisto_mult3(){};
 
 	void Fill(TString key, double x);
 	void Fill(TString key, double x, double y);
