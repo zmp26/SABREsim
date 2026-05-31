@@ -98,10 +98,8 @@ private:
 
 	//define a "results" struct here:
 	struct Results {
-		TString permName;
 
 		double intermediateIM, intermediateEx, reconEx;
-
 		double intermediatevcm, intermediatekecm, intermediatethetacm, intermediatephicm;
 		double intermediateComp[3];
 		double frag1vcm, frag1kecm, frag1thetacm, frag1phicm;
@@ -112,18 +110,20 @@ private:
 		double frag3Comp[3];
 
 		double ecm1, ecm2;
-
 		double boost1[3], boost2[3];
-
 		double relLabAngle_intfrag1, relLabAngle_frag2frag3;
-
-		//double IM2_intfrag1, IM2_frag2frag3;
-		//double IM2_01, IM2_12, IM2_20;
 		double IM2_int;
 
-		ExpectedCM expected;
+		double exp_ecm1, exp_ecm2;
+		double exp_imVCM, exp_imKECM;
+		double exp_f1VCM, exp_f1KECM;
+		double exp_f2VCM, exp_f2KECM;
+		double exp_f3VCM, exp_f3KECM;
 
 		bool permPasses = false;
+		
+		TString permName;
+		ExpectedCM expected;
 
 		void Reset(){
 			permName = "NONE";

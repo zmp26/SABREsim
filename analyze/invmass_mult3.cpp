@@ -50,7 +50,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 
 	for(int i=0; i<6; i++){
 		//create a branch for each permutation
-		outtree->Branch(permNames[i], &caseResults[i], leaflist);
+		outtree->Branch("_"+permNames[i], &caseResults[i], leaflist);
 	}
 
 	for(auto &cn : permNames){
@@ -239,6 +239,17 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		//determine ecm2:
 		double ecm2 = frag2kecm + frag3kecm;
 		caseResults[permIndex].ecm2 = ecm2;
+
+		caseResults[permIndex].exp_ecm1 = expectedCMValues.Ecm1;
+		caseResults[permIndex].exp_ecm2 = expectedCMValues.Ecm2;
+		caseResults[permIndex].exp_imVCM = expectedCMValues.vcm_intermediate;
+		caseResults[permIndex].exp_imKECM = expectedCMValues.kecm_intermediate;
+		caseResults[permIndex].exp_f1VCM  = expectedCMValues.vcm_frag1;
+		caseResults[permIndex].exp_f1KECM = expectedCMValues.kecm_frag1;
+		caseResults[permIndex].exp_f2VCM  = expectedCMValues.vcm_frag2;
+		caseResults[permIndex].exp_f2KECM = expectedCMValues.kecm_frag2;
+		caseResults[permIndex].exp_f3VCM  = expectedCMValues.vcm_frag3;
+		caseResults[permIndex].exp_f3KECM = expectedCMValues.kecm_frag3;
 
 		//increment permIndex here!
 		permIndex += 1;
