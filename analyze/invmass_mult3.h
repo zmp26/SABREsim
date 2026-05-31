@@ -215,6 +215,8 @@ public:
 	void FillGatedEventHistograms(double SPS_Ex);//fills all 6 cases together for the event - gated only (assumes check done on user side!)
 	void FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex);//selectively fills a single case for the event - gated only (assumes check done on user side!)
 
+	void FillTree();
+
 	void FillPermCounter(bool gated=false);
 
 	void FillSortedHisto(double SPS_Ex);

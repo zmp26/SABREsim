@@ -329,11 +329,15 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 	return recoilExs;
 }
 
+void InvMass_Mult3::FillTree(){
+	if(outtree) outtree->Fill();
+}
+
 //FillEventHistograms calls FillSelectCaseHistograms for 0-5. Good for filling histograms regardless of results.
 void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 	for(int i=0; i<6; i++) FillSelectCaseHistograms(i, SPS_Ex);
 
-	if(outtree) outtree->Fill();
+	//if(outtree) outtree->Fill();
 }
 
 void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
@@ -443,7 +447,7 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 	for(int i=0; i<6; i++) FillSelectGatedCaseHistograms(i, SPS_Ex);
 
-	if(outtree) outtree->Fill();
+	//if(outtree) outtree->Fill();
 }
 
 void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){

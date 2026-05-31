@@ -157,6 +157,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
 		}
+		SABRE_analysis.FillTree();
 		//SABRE_analysis.FillGatedEventHistograms(); 
 
 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
@@ -168,6 +169,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 			kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			kin4mc_analysis.FillPermCounter(true);
 		}
+		kin4mc_analysis.FillTree();
 		//kin4mc_analysis.FillGatedEventHistograms();
 
 		if(i % 1000 == 0){
@@ -271,6 +273,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
 		}
+		SABRE_analysis.FillTree();
 
 		if(i % 1000 == 0){
 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
@@ -480,6 +483,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
 		}
+		SABRE_analysis.FillTree();
 
 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
 		kin4mc_analysis.FillEventHistograms(Ex);
@@ -490,6 +494,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 			kin4mc_analysis.FillGatedEventHistograms(Ex);
 			kin4mc_analysis.FillPermCounter(true);
 		}
+		kin4mc_analysis.FillTree();
 
 		if(i % 1000 == 0){
 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
@@ -595,6 +600,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<d
 			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
 		}
+		SABRE_analysis.FillTree();
 
 		if(i % 1000 == 0){
 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
@@ -838,12 +844,14 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 		b9_p8Be_analysis.FillPermCounter();
 		b9_p8Be_analysis.FillSortedHisto(Ex);
+		b9_p8Be_analysis.FillTree();
 
 		b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 		b9_a5Li_analysis.FillEventHistograms(Ex);
 		int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
 		b9_a5Li_analysis.FillPermCounter();
 		b9_a5Li_analysis.FillSortedHisto(Ex);
+		b9_a5Li_analysis.FillTree();
 	}
 
 		if(i % 1000 == 0){
@@ -969,6 +977,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 	b9_p8Be_analysis.FillPermCounter();
 	b9_p8Be_analysis.FillSortedHisto(Ex);
+	b9_p8Be_analysis.FillTree();
 
 	// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
 	// b9_a5Li_analysis.FillEventHistograms(Ex);
