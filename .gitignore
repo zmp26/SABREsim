@@ -19,4 +19,4 @@ analyze/may*/*
 train/bdt_inference
 train/include/
 train/lib/
-train/sabre_bdt.onnx
+*.onnx
