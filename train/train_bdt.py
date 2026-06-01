@@ -6,7 +6,7 @@ import onnxmltools
 from onnxmltools.convert.common.data_types import FloatTensorType
 
 
-file = uproot.open("../analyze/may31/det/b10ha_7.5MeV_9B_ex2345keV_p8Be_ex0keV_1mil_tree_mult3_SABREanalyzed8Be_flattenTest.root")
+file = uproot.open("../analyze/jun01/det/b10ha_7.5MeV_9B_ex2345keV_a5Li_ex0keV_1mil_tree_mult3_SABREanalyzed5Li_flattenTest.root")
 tree = file["SABREtrainTree"]
 
 features_dict = tree.arrays(["reconEx", "imEx", "delta_ecm1", "delta_ecm2"], library="np")
@@ -32,7 +32,14 @@ model = xgb.XGBClassifier(
 )
 print("Training model...")
 model.fit(X,Y)
+# Quick check after model.fit(X, Y)
+probs = model.predict_proba(X)[:, 1]
+true_indices = np.where(Y == 1)[0]
+bg_indices = np.where(Y == 0)[0]
+
 print("XGBoost training complete!")
+print(f"Mean prob for True permutations: {np.mean(probs[true_indices]):.4f}")
+print(f"Mean prob for Background: {np.mean(probs[bg_indices]):.4f}")
 
 initial_type = [('float_input', FloatTensorType([None, X.shape[1]]))]
 

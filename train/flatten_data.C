@@ -3,6 +3,13 @@
 #include <vector>
 #include <string>
 
+/*
+Example command to call this from terminal:
+root 'flatten_data.C("../analyze/may31/det/b10ha_7.5MeV_9B_e
+x2345keV_p8Be_ex0keV_1mil_tree_mult3_SABREanalyzed8Be.root", "../analyze/may31/det/b10ha_7.5MeV_9B_ex2345keV
+_p8Be_ex0keV_1mil_tree_mult3_SABREanalyzed8Be_flattenTest.root")'
+*/
+
 void flatten_data(const char* input_filename, const char* output_filename){
 
 	//ROOT::EnableImplicitMT();
@@ -33,7 +40,8 @@ void flatten_data(const char* input_filename, const char* output_filename){
 			"_201.ecm2 - _201.exp_ecm2, _210.ecm2 - _210.exp_ecm2"
 			"}"
 		)
-		.Define("label", "std::vector<int>{1,0,0,0,0,0}");
+		.Define("label", "std::vector<int>{1,0,0,0,0,0}");//for asymmetric decays
+		//.Define("label", "std::vector<int>{1,1,0,0,0,0}");//for symmetric decays
 
 	std::vector<std::string> out_cols = {"reconEx", "imEx", "delta_ecm1", "delta_ecm2", "label"};
 	df_vectors.Snapshot("SABREtrainTree", output_filename, out_cols);

@@ -12,8 +12,10 @@ void evaluate_bdt() {
 	const char* model_path = "sabre_bdt.onnx";
 	std::cout << "Loading model: " << model_path << std::endl;
 	Ort::Session session(env, model_path, session_options);
-
-	std::vector<float> input_tensor_values = {2.35f, 12.4f, -0.05f, 0.12f};
+	//									 {deltaReconEx, imEx, deltaEcm1, deltaEcm2}
+	//std::vector<float> input_tensor_values = {2.35f, 12.4f, -0.05f, 0.12f};
+	//std::vector<float> input_tensor_values = {-0.022626, 0.0134231, 0.0746820, -6.42e-5};//from 012
+	std::vector<float> input_tensor_values = {-0.022626, 0.0134231, 0.0746820, -6.42e-5};//from 021
 	std::vector<int64_t> input_node_dims = {1, 4};
 
 	//auto memory_info = Ort::MemoryInfo::CreateCpu(Ort::ArenaAllocator, Ort::MemTypeDefault);
