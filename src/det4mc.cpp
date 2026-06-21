@@ -258,8 +258,9 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 			}
 		}
 
-		if(totalHits >= 2){
-			RootPlotter->FillSumEnergyHisto(totalHits, SPS_E, sumSABREEnergy);
+		if(totalHits >= 1){
+			RootPlotter->FillSumEnergyHisto(hitMask, totalHits, SPS_RecoilEx, sumSABREEnergy);
+			//std::cout << "SPS_E = " << SPS_E << std::endl;
 		}
 
 		//finalize event

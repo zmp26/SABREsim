@@ -28,6 +28,8 @@ public:
 
 	void FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi, double dTheta, double dPhi);
 
+	void FillSumEnergyHisto(uint8_t hitMask, int SABREMult, double SPS_E, double sumSABREEnergy);
+
 	void Fill_IMM(const CaseResult4& cr, double recoilGroundMassMeV);
 	void Fill_MMM(const CaseResult4& cr, double recoilGroundMassMeV);
 
@@ -41,8 +43,6 @@ private:
 	void FillKinematicsHistos(PHYSDATA& pd1, PHYSDATA& pd2, PHYSDATA& pd3, PHYSDATA& pd4);
 
 	void FillSABREHistos(SABREDATA& sd1, PHYSDATA& pd1);
-
-	void FillSumEnergyHisto(int SABREMult, double SPS_E, double sumSABREEnergy);
 
 	bool ParsePhysData(const std::string& line, PHYSDATA& pd1, PHYSDATA& pd2, PHYSDATA& pd3, PHYSDATA& pd4);
 

@@ -171,19 +171,29 @@ void plot4mc::FillSABREHistos(SABREDATA& sd1, PHYSDATA& pd1){
 
 }
 
-void plot4mc::FillSumEnergyHisto(int SABREMult, double SPS_E, double sumSABREEnergy){
+void plot4mc::FillSumEnergyHisto(uint8_t hitMask, int SABREMult, double SPS_RecoilEx, double sumSABREEnergy){
 	if(SABREMult == 1){
 		//fill multiplicity 1 histogram here
-		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1")->Fill(SPS_E, sumSABREEnergy);
-		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_E, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_RecoilEx, sumSABREEnergy);
+
+		if(hitMask == 2) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1_1")->Fill(SPS_RecoilEx, sumSABREEnergy);		//0010 hit only 1
+		if(hitMask == 4) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1_2")->Fill(SPS_RecoilEx, sumSABREEnergy);		//0100 hit only 2
+		if(hitMask == 8) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1_3")->Fill(SPS_RecoilEx, sumSABREEnergy);		//1000 hit only 3
+
 	} else if(SABREMult == 2){
 		//fill multiplicity 2 histogram here
-		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2")->Fill(SPS_E, sumSABREEnergy);
-		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_E, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_RecoilEx, sumSABREEnergy);
+
+		if(hitMask == 6) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2_12")->Fill(SPS_RecoilEx, sumSABREEnergy);		//0110 hit only 12
+		if(hitMask == 10) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2_13")->Fill(SPS_RecoilEx, sumSABREEnergy);		//1010 hit only 13
+		if(hitMask == 12) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2_23")->Fill(SPS_RecoilEx, sumSABREEnergy);		//1100 hit only 23
+
 	} else if(SABREMult == 3){
 		//fill multiplicity 3 histogram here
-		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult3")->Fill(SPS_E, sumSABREEnergy);
-		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_E, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult3")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_RecoilEx, sumSABREEnergy);
 	}
 }
 
