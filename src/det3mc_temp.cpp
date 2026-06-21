@@ -25,6 +25,7 @@ const std::pair<int, int> det3mc_temp::offsets[] = {
 				TargetAngularStraggler* straggler_par3,
 				TargetAngularStraggler* straggler_par4)
 	: SABRE_Array_(SABRE_Array_),
+	  SPS_Aperture_(SPS_Aperture_),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_par1_(targetLoss_par1),
 	  targetLoss_par2_(targetLoss_par2),
@@ -42,10 +43,9 @@ const std::pair<int, int> det3mc_temp::offsets[] = {
 	  nevents_(0),
 	  hitejSPS_(0),
 	  nohitejSPS_(0),
-	  hitej_(0),
-	  hit1_(0), hit3_(0), hit4_(0),
-	  hitBoth34_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly3_(0), hitOnly4_(0),
-	  hitOnly13_(0), hitOnly34_(0), hitOnly14_(0), hitOnly134_(0),
+	  hit1_(0), hit2_(0), hit3_(0),
+	  hitBoth23_(0), hitOnly1_(0), hitOnly2_(0), hitOnly3_(0),
+	  hitOnly12_(0), hitOnly23_(0), hitOnly13_(0), hitOnly123_(0),
 	  onePartHits_(0), twoPartHits_(0), threePartHits_(0),
 	  detectorHits_(SABRE_Array_->size()),
 	  beamspot_(beamspot)
@@ -151,43 +151,136 @@ void det3mc_temp::Run(std::ifstream& infile, std::ofstream& outfile, EventRecord
 		uint8_t hitMask = 0;
 		int totalHits = 0;
 
+		bool EjInSPS = false;
+		double SPS_E, SPS_Theta, SPS_Phi, SPS_RecoilEx;
+		Vec3 ejTraj;
+		ejTraj.SetVectorSpherical(1.0, particles[0].theta*DEGRAD, particles[0].phi*DEGRAD);
+		if(SPS_Aperture_->IsDetected(ejTraj, reactionOrigin)){
+			EjInSPS = true;
+
+			SPS_E = SPS_Aperture_->GetSmearedEnergy(particles[0].energy);
+			SPS_Theta = SPS_Aperture_->GetSmearedTheta(particles[0].theta);
+			SPS_Phi = SPS_Aperture_->GetSmearedPhi(particles[0].phi);
+
+			TLorentzVector beam(0., 0., std::sqrt(2*config->GetBeam().massMeV*config->GetBeamEnergy()), config->GetBeam().massMeV+config->GetBeamEnergy());
+			TLorentzVector target(0., 0., 0., config->GetTarget().massMeV);
+			double Pej = std::sqrt(2*config->GetEjectile().massMeV*SPS_E);
+			TLorentzVector ejectile(Pej*std::sin(SPS_Theta*DEGRAD)*std::cos(SPS_Phi*DEGRAD),
+									Pej*std::sin(SPS_Theta*DEGRAD)*std::sin(SPS_Phi*DEGRAD),
+									Pej*std::cos(SPS_Theta*DEGRAD),
+									config->GetEjectile().massMeV + SPS_E);
+
+			TLorentzVector recoil = beam + target - ejectile;
+			SPS_RecoilEx = recoil.M() - config->GetRecoil().massMeV;
+
+			hitejSPS_ += 1;
+
+		} else {
+
+			EjInSPS = false;
+
+			SPS_E = -666.;
+			SPS_Theta = -666.;
+			SPS_Phi = -666.;
+
+			SPS_RecoilEx = -666.;
+
+		}
+
+		EventRecorder->UpdateSPS(EjInSPS, SPS_E, SPS_Theta, SPS_Phi, SPS_RecoilEx);
+
 		for(int i=0; i<4; i++){
-
-			if(i == 1) continue; // skip the recoil that we do not directly measure
-
 			particles[i].detected = false;
 			EventRecorder->SetKinematics(i, particles[i].energy, particles[i].theta, particles[i].phi);
 
-			ss << particles[i].energy << "\t" << particles[i].theta << "\t" << particles[i].phi << "\t";
-
-			if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
-				hitMask |= (1 << i);
-				totalHits += 1;
-				nevents_ += 1;
-			}
+			ss << particles[i].energy << "\t" << particles[i].theta << "\t" << particles[i].phi;
+			if(i!=3) ss << "\t";
+			else ss << "\n";
 		}
 
-		ss << "\n";
+		if(config->GetSPSCoincidence()){
+
+			if(EjInSPS){
+
+				for(int i=2; i<4; i++){
+					if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config, ss)){
+						int analysisShift = i - 1;
+						hitMask |= (1 << analysisShift);
+						totalHits += 1;
+					}
+				}
+
+			} else {
+				nohitejSPS_++;
+			}
+
+		} else {
+
+			for(int i=0; i<4; i++){
+				if(i==1) continue;
+				if(i==0 && EjInSPS) continue;
+
+				if(ProcessParticle(particles[i], reactionOrigin, EventRecorder, RootPlotter, config ,ss)){
+					int analysisShift = (i == 0) ? 0 : (i -1);
+					hitMask |= (1 << analysisShift);
+					totalHits += 1;
+				}
+			}
+
+		}
+
+		if(totalHits > 0) nevents_ += 1;
 
 		if(hitMask & 1) hit1_ += 1;
+		if(hitMask & 2) hit2_ += 1;
 		if(hitMask & 4) hit3_ += 1;
-		if(hitMask & 8) hit4_ += 1;
 
 		if(totalHits == 1) onePartHits_ += 1;
 		if(totalHits == 2) twoPartHits_ += 1;
 		if(totalHits == 3) threePartHits_ += 1;
 
+		// switch(hitMask){
+		// case 4: hitOnly2_ += 1; break;
+		// case 8: hitOnly3_ += 1; break;
+		// case 12: hitBoth23_ += 1; break;
+		// default: break;
+		// }
 		switch(hitMask){
+		case 1: hitOnly1_ += 1; break;
+		case 2: hitOnly2_ += 1; break;
 		case 4: hitOnly3_ += 1; break;
-		case 8: hitOnly4_ += 1; break;
-		case 12: hitBoth34_ += 1; break;
+		case 3: hitOnly12_ += 1; break;
+		case 5: hitOnly13_ += 1; break;
+		case 6: hitOnly23_ += 1; hitBoth23_ += 1; break;
+		case 7: hitOnly123_ += 1; hitBoth23_ += 1; break;
 		default: break;
 		}
 
+		double sumSABREEnergy = 0.;
+		if(hitMask & 1) sumSABREEnergy += particles[0].smearedERing;
+		if(hitMask & 2) sumSABREEnergy += particles[2].smearedERing;
+		if(hitMask & 4) sumSABREEnergy += particles[3].smearedERing;
+
+		if(totalHits >= 1){
+			RootPlotter->FillSumEnergyHisto(hitMask, totalHits, SPS_RecoilEx, sumSABREEnergy);
+		}
+
 		ss << eoev;
-		outfile << ss.str() << "\n";
-		RootPlotter->ProcessTXTOutput(ss.str());
-		EventRecorder->FillEvent();
+		// outfile << ss.str() << "\n";
+		// RootPlotter->ProcessTXTOutput(ss.str());
+		// EventRecorder->FillEvent();
+
+		if(config->GetSPSCoincidence() && EjInSPS){
+			outfile << ss.str() << "\n";
+			RootPlotter->ProcessTXTOutput(ss.str());
+			EventRecorder->FillEvent();
+		} else if(config->GetSPSCoincidence() && !EjInSPS){
+			EventRecorder->ResetEvent();
+		} else if(!config->GetSPSCoincidence()){
+			outfile << ss.str() << "\n";
+			RootPlotter->ProcessTXTOutput(ss.str());
+			EventRecorder->FillEvent();
+		}
 
 	}
 

@@ -38,9 +38,7 @@ public:
 	/*
 		A(a,b)B
 	      	   \
-	            B → D + c
-	                 \
-	                  D → d + e
+	            B → c + d
 	*/
 
 	//after Run(), these functions can be called to query for statistics:
@@ -48,19 +46,19 @@ public:
 	long GetNumKinEvents() const { return nkinevents_; };							//number of kinematic events in input file
 	long GetNoHitEjSPS() const { return nohitejSPS_; };								//number of input events where ejectile does not intersect SPS region
 	long GetHitEjSPS() const { return hitejSPS_; };								//ejectile in SPS
-	long GetHitEj() const { return hitej_; };									//ejectile in SABRE				(b)
-	long GetHit1() const { return hit1_; };									//at least decay 1 				(c)
-	long GetHit3() const { return hit3_; };									//at least decay 3 				(d)
-	long GetHit4() const { return hit4_; };									//at least decay 4 				(e)
-	long GetHitBoth34() const { return hitBoth34_; };								//at least decay2, decay 3 		(d,e)
-	long GetHitOnlyEj() const { return hitOnlyEj_; };								//ejectile only 				(b)
+	long GetHit1() const { return hit1_; };									//ejectile in SABRE				(b)
+	long GetHit2() const { return hit2_; };									//at least decay 1 				(c)
+	long GetHit3() const { return hit3_; };									//at least decay 2				(d)
+	// long GetHit3() const { return hit3_; };									//at least decay 3 				(e)
+	long GetHitBoth23() const { return hitBoth23_; };								//at least decay2, decay 3 		(d,e)
+	//long GetHitOnlyEj() const { return hitOnlyEj_; };								//ejectile only 				(b)
 	long GetHitOnly1() const { return hitOnly1_; };								//decay 1 only 					(c)
-	long GetHitOnly3() const { return hitOnly3_; };								//decay 2 only 					(d)
-	long GetHitOnly4() const { return hitOnly4_; };								//decay 3 only 					(e)
-	long GetHitOnly13() const { return hitOnly13_; };								//decay 1&2 only 				(c,d)
-	long GetHitOnly34() const { return hitOnly34_; };								//decay 2&3 only 				(d,e)
-	long GetHitOnly14() const { return hitOnly14_; };								//decay 1&3 only 				(c,e)
-	long GetHitOnly134() const { return hitOnly134_; };								//decay 1,2,3 only 				(c,d,e)
+	long GetHitOnly2() const { return hitOnly2_; };								//decay 2 only 					(d)
+	long GetHitOnly3() const { return hitOnly3_; };								//decay 3 only 					(e)
+	long GetHitOnly12() const { return hitOnly12_; };								//decay 1&2 only 				(c,d)
+	long GetHitOnly23() const { return hitOnly23_; };								//decay 2&3 only 				(d,e)
+	long GetHitOnly13() const { return hitOnly13_; };								//decay 1&3 only 				(c,e)
+	long GetHitOnly123() const { return hitOnly123_; };								//decay 1,2,3 only 				(c,d,e)
 	long GetOnePartHits() const { return onePartHits_; };							//total events w/ 1 particle
 	long GetTwoPartHits() const { return twoPartHits_; };							//total events w/ 2 particles
 	long GetThreePartHits() const { return threePartHits_; };							//total events w/ 3 particles
@@ -78,6 +76,7 @@ public:
 
 
 private:
+	//long GetHitOnlyEj() const { return hitOnlyEj_; };								//ejectile only 				(b)
 
 	double DEGRAD = M_PI/180.;
 	double RADDEG = 180./M_PI;
@@ -109,17 +108,17 @@ private:
 	long nohitejSPS_;
 	long hitej_;
 	long hit1_;
+	long hit2_;
 	long hit3_;
-	long hit4_;
-	long hitBoth34_;
+	long hitBoth23_;
 	long hitOnlyEj_;
 	long hitOnly1_;
+	long hitOnly2_;
 	long hitOnly3_;
-	long hitOnly4_;
+	long hitOnly12_;//new
+	long hitOnly23_;
 	long hitOnly13_;//new
-	long hitOnly34_;
-	long hitOnly14_;//new
-	long hitOnly134_;
+	long hitOnly123_;
 	long onePartHits_;
 	long twoPartHits_;
 	long threePartHits_;
