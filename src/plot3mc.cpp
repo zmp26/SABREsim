@@ -170,6 +170,29 @@ void plot3mc::FillSABREHistos(SABREDATA& sd1, PHYSDATA& pd1){
 
 }
 
+void plot3mc::FillSumEnergyHisto(uint8_t hitMask, int SABREMult, double SPS_RecoilEx, double sumSABREEnergy){
+	if(SABREMult == 1){
+		//fill multiplicity 1 histogram here
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_RecoilEx, sumSABREEnergy);
+
+		if(hitMask == 1) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1_1")->Fill(SPS_RecoilEx, sumSABREEnergy);		//0010 hit only 1
+		if(hitMask == 2) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1_2")->Fill(SPS_RecoilEx, sumSABREEnergy);		//0100 hit only 2	//1000 hit only 3
+		if(hitMask == 4) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1_3")->Fill(SPS_RecoilEx, sumSABREEnergy);
+
+
+	} else if(SABREMult == 2){
+		//fill multiplicity 2 histogram here
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_RecoilEx, sumSABREEnergy);		//1100 hit only 23
+
+		if(hitMask == 3) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2_12")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		if(hitMask == 5) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2_13")->Fill(SPS_RecoilEx, sumSABREEnergy);
+		if(hitMask == 6) histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2_23")->Fill(SPS_RecoilEx, sumSABREEnergy);
+
+	}
+}
+
 void plot3mc::FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi, double dTheta, double dPhi){
 	histoman->getHisto2D("hNewTheta_vs_OldTheta")->Fill(oldTheta, newTheta);
 	histoman->getHisto2D("hNewPhi_vs_OldPhi")->Fill(oldPhi, newPhi);

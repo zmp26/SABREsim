@@ -28,6 +28,8 @@ public:
 
 	void FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi, double dTheta, double dPhi);
 
+	void FillSumEnergyHisto(uint8_t hitMask, int SABREMult, double SPS_E, double sumSABREEnergy);
+
 	void Fill_IMM(const CaseResult& cr, double recoilGroundMassMeV);
 	void Fill_MMM(const CaseResult& cr, double recoilGroundMassMeV);
 
