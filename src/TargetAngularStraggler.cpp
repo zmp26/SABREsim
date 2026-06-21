@@ -16,12 +16,12 @@ TargetAngularStraggler::TargetAngularStraggler(std::unique_ptr<Distribution> dis
 
 //sample single value
 double TargetAngularStraggler::Sample(){
-	if(mu_ == 0 && sigma_ == 0 && lambda_ == 0) return 0.;//way to check if "none"
+	if(!distribution || (mu_ == 0 && sigma_ == 0 && lambda_ == 0)) return 0.;//way to check if "none"
 	return distribution->Sample();
 }
 
 double TargetAngularStraggler::Sample(std::mt19937_64& rng){
-	if(mu_ == 0 && sigma_ == 0 && lambda_ == 0) return 0.;//way to check if "none"
+	if(!distribution || (mu_ == 0 && sigma_ == 0 && lambda_ == 0)) return 0.;//way to check if "none"
 	return distribution->Sample(rng);
 }
 
@@ -38,7 +38,8 @@ double TargetAngularStraggler::SamplePhi(std::mt19937_64& rng){
 
 //sample multiple values:
 std::vector<double> TargetAngularStraggler::Sample(size_t n){
-	std::vector<double> samples(n);
+	std::vector<double> samples(n,0.);
+	if(!distribution || (mu_ == 0 && sigma_ == 0 && lambda_ == 0)) return samples;
 	for(size_t i=0; i<n; i++){
 		samples[i] = distribution->Sample();
 	}
@@ -46,7 +47,8 @@ std::vector<double> TargetAngularStraggler::Sample(size_t n){
 }
 
 std::vector<double> TargetAngularStraggler::Sample(size_t n, std::mt19937_64& rng){
-	std::vector<double> samples(n);
+	std::vector<double> samples(n,0.);
+	if(!distribution || (mu_ == 0 && sigma_ == 0 && lambda_ == 0)) return samples;
 	for(size_t i=0; i<n; i++){
 		samples[i] = distribution->Sample(rng);
 	}
@@ -55,6 +57,7 @@ std::vector<double> TargetAngularStraggler::Sample(size_t n, std::mt19937_64& rn
 
 //evaluate PDF at point:
 double TargetAngularStraggler::pdf(double x) const {
+	if(!distribution) return 0.0;
 	return distribution->pdf(x);
 }
 
@@ -91,7 +94,13 @@ TargetAngularStraggler* TargetAngularStraggler::LoadFromConfigFile(const std::st
 		}
 	}
 
-	TargetAngularStraggler* tas = new TargetAngularStraggler(std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda));
+	//TargetAngularStraggler* tas = new TargetAngularStraggler(std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda));
+	std::unique_ptr<Distribution> dist = nullptr;
+	if(mu != 0. || sigma != 0. || lambda != 0.0){
+		dist = std::make_unique<ExponentiallyModifiedGaussian>(mu,sigma,lambda);
+	}
+
+	TargetAngularStraggler *tas = new TargetAngularStraggler(std::move(dist));
 
 	tas->SetMu_(mu);
 	tas->SetSigma_(sigma);
@@ -101,14 +110,17 @@ TargetAngularStraggler* TargetAngularStraggler::LoadFromConfigFile(const std::st
 }
 
 double TargetAngularStraggler::GetDistMu(){
+	if(!distribution) return 0.0;
 	return distribution->GetMu();
 }
 
 double TargetAngularStraggler::GetDistSigma(){
+	if(!distribution) return 0.0;
 	return distribution->GetSigma();
 }
 
 double TargetAngularStraggler::GetDistLambda(){
+	if(!distribution) return 0.0;
 	return distribution->GetLambda();
 }
 
