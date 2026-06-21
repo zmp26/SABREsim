@@ -526,7 +526,13 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	det3mc det3mcProcessor(SABRE_Array_,
+	// det3mc det3mcProcessor(SABRE_Array_,
+	// 					   SABREARRAY_EnergyResolutionModels_,
+	// 					   targetLoss_par1_, targetLoss_par2_, targetLoss_par3_, targetLoss_par4_,
+	// 					   deadLayerLoss_par1_, deadLayerLoss_par2_, deadLayerLoss_par3_, deadLayerLoss_par4_,
+	// 					   beamspot_,
+	// 					   straggler_par1_, straggler_par2_, straggler_par3_, straggler_par4_);
+	det3mc det3mcProcessor(SABRE_Array_, sps,
 						   SABREARRAY_EnergyResolutionModels_,
 						   targetLoss_par1_, targetLoss_par2_, targetLoss_par3_, targetLoss_par4_,
 						   deadLayerLoss_par1_, deadLayerLoss_par2_, deadLayerLoss_par3_, deadLayerLoss_par4_,
@@ -543,11 +549,11 @@ void SABREsim::Simulate3body(std::ifstream& infile, std::ofstream& outfile){
 	nevents_ = det3mcProcessor.GetNumEvents();
 	detectorHits_ = det3mcProcessor.GetDetectorHits();
 	hit1_ = det3mcProcessor.GetHit1();
+	hit2_ = det3mcProcessor.GetHit2();
 	hit3_ = det3mcProcessor.GetHit3();
-	hit4_ = det3mcProcessor.GetHit4();
-	hit34_ = det3mcProcessor.GetHitBoth34();
+	hit23_ = det3mcProcessor.GetHitBoth23();
+	hitOnly2_ = det3mcProcessor.GetHitOnly2();
 	hitOnly3_ = det3mcProcessor.GetHitOnly3();
-	hitOnly4_ = det3mcProcessor.GetHitOnly4();
 	onePartHits_ = det3mcProcessor.GetOnePartHits();
 	twoPartHits_ = det3mcProcessor.GetTwoPartHits();
 	threePartHits_ = det3mcProcessor.GetThreePartHits();
