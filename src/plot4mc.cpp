@@ -171,6 +171,22 @@ void plot4mc::FillSABREHistos(SABREDATA& sd1, PHYSDATA& pd1){
 
 }
 
+void plot4mc::FillSumEnergyHisto(int SABREMult, double SPS_E, double sumSABREEnergy){
+	if(SABREMult == 1){
+		//fill multiplicity 1 histogram here
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult1")->Fill(SPS_E, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_E, sumSABREEnergy);
+	} else if(SABREMult == 2){
+		//fill multiplicity 2 histogram here
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult2")->Fill(SPS_E, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_E, sumSABREEnergy);
+	} else if(SABREMult == 3){
+		//fill multiplicity 3 histogram here
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS_mult3")->Fill(SPS_E, sumSABREEnergy);
+		histoman->getHisto2D("hSABRE_SabreRingESumVsSPS")->Fill(SPS_E, sumSABREEnergy);
+	}
+}
+
 void plot4mc::FillStraggleHistos(double oldTheta, double oldPhi, double newTheta, double newPhi, double dTheta, double dPhi){
 	histoman->getHisto2D("hNewTheta_vs_OldTheta")->Fill(oldTheta, newTheta);
 	histoman->getHisto2D("hNewPhi_vs_OldPhi")->Fill(oldPhi, newPhi);

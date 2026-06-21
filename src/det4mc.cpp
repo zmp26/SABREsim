@@ -249,6 +249,19 @@ void det4mc::Run(std::ifstream& infile, std::ofstream& outfile, EventRecorder* E
 
 		if(hitMask == 14) hitOnly123_++;	//1110
 
+		//begin energy summing logic
+		double sumSABREEnergy = 0.;
+		//sum only detected particles (index 1,2,3)
+		for(int i=1; i<=3; i++){
+			if(hitMask & (1 << i)){
+				sumSABREEnergy += particles[i].smearedERing;
+			}
+		}
+
+		if(totalHits >= 2){
+			RootPlotter->FillSumEnergyHisto(totalHits, SPS_E, sumSABREEnergy);
+		}
+
 		//finalize event
 		ss << eoev;
 		outfile << ss.str() << "\n";
