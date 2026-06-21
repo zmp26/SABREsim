@@ -20,3 +20,6 @@ train/bdt_inference
 train/include/
 train/lib/
 *.onnx
+tempIMM.txt
+tempMMM.txt
+config/current_sim.conf
