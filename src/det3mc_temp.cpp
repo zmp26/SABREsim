@@ -3,26 +3,28 @@
 #include "ConsoleColorizer.h"
 #include "TLorentzVector.h"
 
+static const int eoev = -1;//end of event value (eoev), printed between events in .det file (-1 will separate entries in mass text file)
+
 const std::pair<int, int> det3mc_temp::offsets[] = {
 	{112,40}, {96,32}, {80,16}, {64,24}, {48,0}
 };
 
-	det3mc_temp::det3mc_temp(SABRE_Array* array,
-			   std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
-			   TargetEnergyLoss* targetLoss_par1,
-			   TargetEnergyLoss* targetLoss_par2,
-			   TargetEnergyLoss* targetLoss_par3,
-			   TargetEnergyLoss* targetLoss_par4,
-			   SABRE_DeadLayerModel* deadLayerLoss_par1,
-			   SABRE_DeadLayerModel* deadLayerLoss_par2,
-			   SABRE_DeadLayerModel* deadLayerLoss_par3,
-			   SABRE_DeadLayerModel* deadLayerLoss_par4,
-			   Beamspot* beamspot,
-			   TargetAngularStraggler* straggler_par1,
-			   TargetAngularStraggler* straggler_par2,
-			   TargetAngularStraggler* straggler_par3,
-			   TargetAngularStraggler* straggler_par4)
-	: SABRE_Array_(array),
+	det3mc_temp::det3mc_temp(SABRE_Array* SABRE_Array_, SPS_Aperture* SPS_Aperture_, 
+				std::vector<SABRE_EnergyResolutionModel*>& SABREARRAY_EnergyResolutionModels,
+				TargetEnergyLoss* targetLoss_par1,
+				TargetEnergyLoss* targetLoss_par2,
+				TargetEnergyLoss* targetLoss_par3,
+				TargetEnergyLoss* targetLoss_par4,
+				SABRE_DeadLayerModel* deadLayerLoss_par1,
+				SABRE_DeadLayerModel* deadLayerLoss_par2,
+				SABRE_DeadLayerModel* deadLayerLoss_par3,
+				SABRE_DeadLayerModel* deadLayerLoss_par4,
+				Beamspot* beamspot,
+				TargetAngularStraggler* straggler_par1,
+				TargetAngularStraggler* straggler_par2,
+				TargetAngularStraggler* straggler_par3,
+				TargetAngularStraggler* straggler_par4)
+	: SABRE_Array_(SABRE_Array_),
 	  SABREARRAY_EnergyResolutionModels_(SABREARRAY_EnergyResolutionModels),
 	  targetLoss_par1_(targetLoss_par1),
 	  targetLoss_par2_(targetLoss_par2),
@@ -45,13 +47,13 @@ const std::pair<int, int> det3mc_temp::offsets[] = {
 	  hitBoth34_(0), hitOnlyEj_(0), hitOnly1_(0), hitOnly3_(0), hitOnly4_(0),
 	  hitOnly13_(0), hitOnly34_(0), hitOnly14_(0), hitOnly134_(0),
 	  onePartHits_(0), twoPartHits_(0), threePartHits_(0),
-	  detectorHits_(array->size()),
+	  detectorHits_(SABRE_Array_->size()),
 	  beamspot_(beamspot)
 	{
 
 	}
 
-void det3mc_temp::ProcessParticle(Particle& p, const Vec3& origin, EventRecorder* rec, plot3mc* plotter, SimConfig* config, std::ostringstream& ss){
+bool det3mc_temp::ProcessParticle(Particle& p, const Vec3& origin, EventRecorder* rec, plot3mc* plotter, SimConfig* config, std::ostringstream& ss){
 
 	Vec3 traj;
 	traj.SetVectorSpherical(1, p.theta*DEGRAD, p.phi*DEGRAD);
@@ -79,7 +81,7 @@ void det3mc_temp::ProcessParticle(Particle& p, const Vec3& origin, EventRecorder
 	double phi = traj.GetPhi()*RADDEG;
 	if(phi<0.) phi += 360.;
 
-	for(size_t i=0; i<SABRE_Array_.size(); i++){
+	for(size_t i=0; i<SABRE_Array_->size(); i++){
 
 		std::pair<int, int> hit_rw = SABRE_Array_->at(i)->GetOffsetTrajectoryRingWedge(theta*DEGRAD, phi*DEGRAD, origin);
 
