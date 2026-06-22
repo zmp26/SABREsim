@@ -86,7 +86,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 	long numentries = intree->GetEntries();
 
-	InvMass_Mult3 SABRE_analysis;;
+	InvMass_Mult3 SABRE_analysis;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
 	SABRE_analysis.SetGate1(gate1index);
@@ -972,17 +972,17 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 		}
 
 
-	b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
-	b9_p8Be_analysis.FillEventHistograms(Ex);
-	int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
-	b9_p8Be_analysis.FillPermCounter();
-	b9_p8Be_analysis.FillSortedHisto(Ex);
-	b9_p8Be_analysis.FillTree();
+		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		b9_p8Be_analysis.FillEventHistograms(Ex);
+		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
+		b9_p8Be_analysis.FillPermCounter();
+		b9_p8Be_analysis.FillSortedHisto(Ex);
+		b9_p8Be_analysis.FillTree();
 
-	// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
-	// b9_a5Li_analysis.FillEventHistograms(Ex);
-	// int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
-	// b9_a5Li_analysis.FillPermCounter();
+		// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		// b9_a5Li_analysis.FillEventHistograms(Ex);
+		// int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
+		// b9_a5Li_analysis.FillPermCounter();
 
 
 		if(i % 1000 == 0){
