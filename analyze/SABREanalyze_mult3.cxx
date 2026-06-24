@@ -111,8 +111,9 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -238,8 +239,9 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 	SABRE_analysis.SetGate3(gate3index);
 	SABRE_analysis.SetGate3MinMax(gate3minmax);
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -436,8 +438,9 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -564,8 +567,9 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<d
 	SABRE_analysis.SetGate3(gate3index);
 	SABRE_analysis.SetGate3MinMax(gate3minmax);
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -812,8 +816,9 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 	b9_a5Li_analysis.SetGate3MinMax({0,0});
 
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -945,8 +950,9 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	// b9_a5Li_analysis.SetGate3MinMax({0,0});
 
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
