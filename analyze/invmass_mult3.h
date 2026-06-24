@@ -13,7 +13,14 @@
 #include "TLorentzVector.h"
 #include "permHisto_mult3.h"
 
-//Hypothesis4 struct
+/*
+	invmass_mult3::Hypothesis4 differs from missmass_mult2::Hypothesis4MM
+	only by the removal of the beamEnergyMeV variable. This is necessary
+	for missmass_mult2 case because the missing particle is reconstructed
+	using the kinematical infomratoin from the assumed reaction (beam,
+	target, ejectile). However, it is not strictly needed in the invariant
+	mass case (N case).
+*/
 struct Hypothesis4 {
 	std::string name;
 
