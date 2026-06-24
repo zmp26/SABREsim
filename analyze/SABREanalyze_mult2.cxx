@@ -101,8 +101,9 @@ void Li7ha_adHypothesis_kin3mcComparison(const char* input_filename, int gate1in
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[2], theta[2], phi[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -217,6 +218,7 @@ void Li7ha_2par_exp_allEx(const char* input_filename, bool updateRecoilEx=true){
 
 	double Ex;
 	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
 	double E[2], theta[2], phi[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
