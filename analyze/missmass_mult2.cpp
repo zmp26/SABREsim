@@ -11,6 +11,9 @@
 		The purpose of this code is to perform kinematically constrained
 		missing mass analysis of events in which only N-1 resonance decay
 		particles are detected in coincidence with the reaction ejectile.
+		This code specifically handles events from decays resulting in
+		N=3 final particles of which only N-1=2 are detected in addition
+		to the reaction ejectile.
 
 		Assume some nuclear reaction A(a,b)B* in which an unbound resonance
 		B* is populated and then decays via B*->C*+c where C* is another
@@ -345,6 +348,8 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 			else missing_idx = m;
 		}
 
+		caseResults[permIndex].SABREsumE = lv_measuredSum.E();
+
 		if(missing_idx != -1) lv[missing_idx] = recoil - lv_measuredSum;
 		missingmass = lv[missing_idx].M();
 
@@ -394,8 +399,10 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		double intermediatevcm = ((1/intermediate.Energy())*intermediate.Vect()).Mag();
 		//double intermediatevcm = intermediate.BoostVector().Mag();
 		double intermediatekecm = 0.5*intermediateMass*intermediatevcm*intermediatevcm;
-		double intermediatethetacm = RADDEG*std::acos(intermediate.Vect().Z()/intermediate.Vect().Mag());
-		double intermediatephicm = RADDEG*std::atan2(intermediate.Vect().Y(), intermediate.Vect().X());
+		// double intermediatethetacm = RADDEG*std::acos(intermediate.Vect().Z()/intermediate.Vect().Mag());
+		// double intermediatephicm = RADDEG*std::atan2(intermediate.Vect().Y(), intermediate.Vect().X());
+		double intermediatethetacm = intermediate.Theta()*RADDEG;
+		double intermediatephicm = intermediate.Phi()*RADDEG;
 		if(intermediatephicm < 0) intermediatephicm += 360.;
 
 		caseResults[permIndex].intermediatevcm = intermediatevcm;
@@ -407,8 +414,10 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		double frag1vcm = ((1/frag1.Energy())*frag1.Vect()).Mag();
 		//double frag1vcm = frag1.BoostVector().Mag();
 		double frag1kecm = 0.5*masses[0]*frag1vcm*frag1vcm;
-		double frag1thetacm = RADDEG*std::acos(frag1.Vect().Z()/frag1.Vect().Mag());
-		double frag1phicm = RADDEG*std::atan2(frag1.Vect().Y(), frag1.Vect().X());
+		// double frag1thetacm = RADDEG*std::acos(frag1.Vect().Z()/frag1.Vect().Mag());
+		// double frag1phicm = RADDEG*std::atan2(frag1.Vect().Y(), frag1.Vect().X());
+		double frag1thetacm = frag1.Theta()*RADDEG;
+		double frag1phicm = frag1.Phi()*RADDEG;
 		if(frag1phicm < 0) frag1phicm += 360.;
 
 		caseResults[permIndex].frag1vcm = frag1vcm;
@@ -429,8 +438,10 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		double frag2vcm = ((1/frag2.Energy())*frag2.Vect()).Mag();
 		//double frag2vcm = frag2.BoostVector().Mag();
 		double frag2kecm = 0.5*masses[1]*frag2vcm*frag2vcm;
-		double frag2thetacm = RADDEG*std::acos(frag2.Vect().Z()/frag2.Vect().Mag());
-		double frag2phicm = RADDEG*std::atan2(frag2.Vect().Y(), frag2.Vect().X());
+		//double frag2thetacm = RADDEG*std::acos(frag2.Vect().Z()/frag2.Vect().Mag());
+		//double frag2phicm = RADDEG*std::atan2(frag2.Vect().Y(), frag2.Vect().X());
+		double frag2thetacm = frag2.Theta()*RADDEG;
+		double frag2phicm = frag2.Phi()*RADDEG;
 		if(frag2phicm < 0) frag2phicm += 360.;
 
 		caseResults[permIndex].frag2vcm = frag2vcm;
@@ -442,8 +453,10 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		double frag3vcm = ((1/frag3.Energy())*frag3.Vect()).Mag();
 		//double frag3vcm = frag3.BoostVector().Mag();
 		double frag3kecm = 0.5*masses[2]*frag3vcm*frag3vcm;
-		double frag3thetacm = RADDEG*std::acos(frag3.Vect().Z()/frag3.Vect().Mag());
-		double frag3phicm = RADDEG*std::atan2(frag3.Vect().Y(), frag3.Vect().X());
+		//double frag3thetacm = RADDEG*std::acos(frag3.Vect().Z()/frag3.Vect().Mag());
+		//double frag3phicm = RADDEG*std::atan2(frag3.Vect().Y(), frag3.Vect().X());
+		double frag3thetacm = frag3.Theta()*RADDEG;
+		double frag3phicm = frag3.Phi()*RADDEG;
 		if(frag3phicm < 0) frag3phicm += 360.;
 
 		caseResults[permIndex].frag3vcm = frag3vcm;
@@ -567,6 +580,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 	fillAll("RecoilExDif", SPS_Ex - res.reconEx);
 	fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+	fillAll("MissingMass",res.missingmass);
+	fillAll2D("intermediateExVSMissingMass", res.missingmass, res.intermediateEx);
 
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
@@ -678,6 +693,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 		fillGated("RecoilExDif", SPS_Ex - res.reconEx);
 		fillGated2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+		fillGated("MissingMass",res.missingmass);
+		fillGated2D("intermediateExVSMissingMass", res.missingmass, res.intermediateEx);
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);
@@ -791,6 +808,10 @@ void MissMass_Mult2::FillSortedHisto(double SPS_Ex){
 	else if(perm == "recon_f3b") permIndex = 5;
 
 	hSortedPermutations->Fill(permIndex);
+}
+
+void MissMass_Mult2::FillSABREvsSPSHisto(double SPS_Ex, double SABREsumE){
+	hSABRESumE_vs_ExSPS->Fill(SPS_Ex, SABREsumE);
 }
 
 void MissMass_Mult2::CloseAndWrite(){

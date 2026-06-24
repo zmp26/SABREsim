@@ -40,3 +40,284 @@
 #include "missmass_mult2.cpp"//including .cpp for simple root macro purposes
 #include "permHistoMM_mult2.h"//" above "
 #include "permHistoMM_mult2.cpp"//" above "
+
+const double DEGRAD = M_PI/180.;
+const double RADDEG = 180./M_PI;
+
+void MM_B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+	std::string sabre_str = stem + "_SABREanalyzed8Be.root";
+	std::string kin4mc_str = stem + "_kin4mcanalyzed8Be.root";
+
+	const char* SABRE_output_filename = sabre_str.c_str();
+	const char* kin4mc_output_filename = kin4mc_str.c_str();
+
+	TMassTable fMassTable;
+	//fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("../config/masstable.dat");
+
+	Hypothesis4MM b9_be8_hypothesis;
+	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
+
+	b9_be8_hypothesis.beamEnergyMeV = 7.5;
+
+	b9_be8_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	b9_be8_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+	TFile *infile = new TFile(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult2");
+	if(!intree){
+		std::cerr << "Could not get TTree 'mult2' from " << input_filename << std::endl;
+		return;
+	}
+
+	long numentries = intree->GetEntries();
+
+	MissMass_Mult2 SABRE_analysis;
+	SABRE_analysis.Init(SABRE_output_filename);
+	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
+	SABRE_analysis.SetGate1(gate1index);
+	SABRE_analysis.SetGate1MinMax(gate1minmax);
+	SABRE_analysis.SetGate2(gate2index);
+	SABRE_analysis.SetGate2MinMax(gate2minmax);
+
+	//MissMass_Mult2 kin4mc_analysis;
+	//kin4mc_analysis.Init(kin4mc_output_filename);
+	//kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
+	//kin4mc_analysis.SetGate1(gate1index);
+	//kin4mc_analysis.SetGate1MinMax(gate1minmax);
+	//kin4mc_analysis.SetGate2(gate2index);
+	//kin4mc_analysis.SetGate2MinMax(gate2minmax);
+
+	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+	intree->SetBranchAddress("kin_e", kinmc_e);
+	intree->SetBranchAddress("kin_theta", kinmc_theta);
+	intree->SetBranchAddress("kin_phi", kinmc_phi);
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	double E[2], theta[2], phi[2];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+
+	for(long i=0; i<numentries; i++){
+
+		intree->GetEntry(i);
+
+		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+		for(int j=0; j<3; j++){
+			kinmc_bue[j] = kinmc_e[j+1];
+			kinmc_butheta[j] = kinmc_theta[j+1];
+			kinmc_buphi[j] = kinmc_phi[j+1];
+		}
+
+		if(updateRecoilEx){
+			SABRE_analysis.SetRecoilEx(Ex);
+			//kin4mc_analysis.SetRecoilEx(Ex);
+		}
+
+		SABRE_analysis.AnalyzeEvent(E,theta,phi,SPSE,SPSTheta,SPSPhi,updateIntermediateEx);
+		SABRE_analysis.FillEventHistograms(Ex);
+		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+		SABRE_analysis.FillPermCounter();
+		SABRE_analysis.FillSortedHisto(Ex);
+		SABRE_analysis.FillSABREvsSPSHisto(Ex, E[0]+E[1]);
+		if(numpasses_sabre == 2){
+			SABRE_analysis.FillGatedEventHistograms(Ex);
+			SABRE_analysis.FillPermCounter(true);
+		}
+		SABRE_analysis.FillTree();
+
+		//kin4mc_analysis.AnalyzeEvent(E,theta,phi,SPSE,SPSTheta,SPSPhi,updateIntermediateEx);
+		//kin4mc_analysis.FillEventHistograms(Ex);
+		//int numpasses_kin4mc = //kin4mc_analysis.CountPermPasses();
+		//kin4mc_analysis.FillPermCounter();
+		//kin4mc_analysis.FillSortedHisto(Ex);
+		//kin4mc_analysis.FillSABREvsSPSHisto(Ex, E[0]+E[1]);
+		// if(numpasses_kin4mc == 2){
+			// kin4mc_analysis.FillGatedEventHistograms(Ex);
+			// kin4mc_analysis.FillPermCounter(true);
+		// }
+		//kin4mc_analysis.FillTree();
+
+		if(i % 1000 == 0){
+			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+			fflush(stdout);
+		}
+
+	}
+
+	SABRE_analysis.CloseAndWrite();
+	//kin4mc_analysis.CloseAndWrite();
+	infile->Close();
+
+	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+	//std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
+
+}
+
+void MM_B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+	std::string sabre_str = stem + "_SABREanalyzed5Li.root";
+	std::string kin4mc_str = stem + "_kin4mcanalyzed5Li.root";
+
+	const char* SABRE_output_filename = sabre_str.c_str();
+	const char* kin4mc_output_filename = kin4mc_str.c_str();
+
+	TMassTable fMassTable;
+	//fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("../config/masstable.dat");
+
+	Hypothesis4MM b9_li5_hypothesis;
+	b9_li5_hypothesis.name = "B10ha_8BeHypothesis";
+
+	b9_li5_hypothesis.beamEnergyMeV = 7.5;
+
+	b9_li5_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	b9_li5_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+	TFile *infile = new TFile(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult2");
+	if(!intree){
+		std::cerr << "Could not get TTree 'mult2' from " << input_filename << std::endl;
+		return;
+	}
+
+	long numentries = intree->GetEntries();
+
+	MissMass_Mult2 SABRE_analysis;
+	SABRE_analysis.Init(SABRE_output_filename);
+	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
+	SABRE_analysis.SetGate1(gate1index);
+	SABRE_analysis.SetGate1MinMax(gate1minmax);
+	SABRE_analysis.SetGate2(gate2index);
+	SABRE_analysis.SetGate2MinMax(gate2minmax);
+
+	//MissMass_Mult2 kin4mc_analysis;
+	//kin4mc_analysis.Init(kin4mc_output_filename);
+	//kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
+	//kin4mc_analysis.SetGate1(gate1index);
+	//kin4mc_analysis.SetGate1MinMax(gate1minmax);
+	//kin4mc_analysis.SetGate2(gate2index);
+	//kin4mc_analysis.SetGate2MinMax(gate2minmax);
+
+	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+	intree->SetBranchAddress("kin_e", kinmc_e);
+	intree->SetBranchAddress("kin_theta", kinmc_theta);
+	intree->SetBranchAddress("kin_phi", kinmc_phi);
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	double E[2], theta[2], phi[2];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+
+	for(long i=0; i<numentries; i++){
+
+		intree->GetEntry(i);
+
+		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+		for(int j=0; j<3; j++){
+			kinmc_bue[j] = kinmc_e[j+1];
+			kinmc_butheta[j] = kinmc_theta[j+1];
+			kinmc_buphi[j] = kinmc_phi[j+1];
+		}
+
+		if(updateRecoilEx){
+			SABRE_analysis.SetRecoilEx(Ex);
+			//kin4mc_analysis.SetRecoilEx(Ex);
+		}
+
+		SABRE_analysis.AnalyzeEvent(E,theta,phi,SPSE,SPSTheta,SPSPhi,updateIntermediateEx);
+		SABRE_analysis.FillEventHistograms(Ex);
+		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+		SABRE_analysis.FillPermCounter();
+		SABRE_analysis.FillSortedHisto(Ex);
+		SABRE_analysis.FillSABREvsSPSHisto(Ex, E[0]+E[1]);
+		if(numpasses_sabre == 2){
+			SABRE_analysis.FillGatedEventHistograms(Ex);
+			SABRE_analysis.FillPermCounter(true);
+		}
+		SABRE_analysis.FillTree();
+
+		//kin4mc_analysis.AnalyzeEvent(E,theta,phi,SPSE,SPSTheta,SPSPhi,updateIntermediateEx);
+		//kin4mc_analysis.FillEventHistograms(Ex);
+		//int numpasses_kin4mc = //kin4mc_analysis.CountPermPasses();
+		//kin4mc_analysis.FillPermCounter();
+		//kin4mc_analysis.FillSortedHisto(Ex);
+		//kin4mc_analysis.FillSABREvsSPSHisto(Ex, E[0]+E[1]);
+		// if(numpasses_kin4mc == 2){
+			// kin4mc_analysis.FillGatedEventHistograms(Ex);
+			// kin4mc_analysis.FillPermCounter(true);
+		// }
+		//kin4mc_analysis.FillTree();
+
+		if(i % 1000 == 0){
+			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+			fflush(stdout);
+		}
+
+	}
+
+	SABRE_analysis.CloseAndWrite();
+	//kin4mc_analysis.CloseAndWrite();
+	infile->Close();
+
+	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+	//std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
+
+}

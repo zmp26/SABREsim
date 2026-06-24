@@ -13,6 +13,13 @@
 #include "TLorentzVector.h"
 #include "permHistoMM_mult2.h"
 
+/*
+	missmass_mult2::Hypothesis4MM differs from invmass_mult3::Hypothesis4
+	only by the addition of the beamEnergyMeV variable. This is necessary
+	for missmass_mult2 case because the missing particle is reconstructed
+	using the kinematical infomratoin from the assumed reaction (beam,
+	target, ejectile).
+*/
 struct Hypothesis4MM {
 	std::string name;
 
@@ -100,6 +107,7 @@ private:
 		double frag3Comp[3];
 
 		double missingmass;
+		double SABREsumE;
 
 		double ecm1, ecm2;
 		double boost1[3], boost2[3];
@@ -145,6 +153,7 @@ private:
 			frag3phicm = -666.;
 
 			missingmass = -666.;
+			SABREsumE = -666.;
 
 			ecm1 = -666.;
 			ecm2 = -666.;
@@ -213,6 +222,8 @@ public:
 	void FillPermCounter(bool gated=false);
 
 	void FillSortedHisto(double SPS_Ex);
+
+	void FillSABREvsSPSHisto(double SPS_Ex, double SABREsumE);
 
 	void CloseAndWrite();
 
