@@ -199,6 +199,7 @@ private:
 	TH1D* hSortedIMRecEx;
 	TH1D* hSortedIMRecEx_gate8Be;
 	TH1D* hSortedIMRecEx_gate5Li;
+	TH2D* hSABRESumE_vs_ExSPS;
 
 public:
 	InvMass_Mult3();

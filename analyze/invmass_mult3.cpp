@@ -73,6 +73,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 	hSortedIMRecEx = new TH1D("hSortedIMRecEx", "Rec Ex (IM)", 300, -5, 7);
 	hSortedIMRecEx_gate8Be = new TH1D("hSortedIMRecEx_gate8Be", "Rec Ex (IM) - Gate IM 8Be", 300, -5, 7);
 	hSortedIMRecEx_gate5Li = new TH1D("hSortedIMRecEx_gate5Li", "Rec Ex (IM) - Gate IM 5Li", 300, -5, 7);
+	hSABRESumE_vs_ExSPS = new TH2D("hSABRESumE_vs_ExSPS", "hSABRESumE_vs_ExSPS", 600, -2, 10, 500, 0, 10);
 	const char* labels[6] = {"012","021","102","120","201","210"};
 	for(int i=0; i<6; i++){
 		hSortedPermutations->GetXaxis()->SetBinLabel(i+1, labels[i]);
@@ -619,6 +620,7 @@ void InvMass_Mult3::CloseAndWrite(){
 	hSortedIMRecEx->Write();
 	hSortedIMRecEx_gate8Be->Write();
 	hSortedIMRecEx_gate5Li->Write();
+	hSABRESumE_vs_ExSPS->Write();
 	if(outfile && outfile->IsOpen()){
 		outfile->Write();
 		outfile->Close();
