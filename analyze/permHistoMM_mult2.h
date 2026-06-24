@@ -1,0 +1,28 @@
+#ifndef PERMHISTOMMMULT2_H
+#define PERMHISTOMMMULT2_H
+
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TString.h"
+#include "TDirectory.h"
+#include <map>
+
+class permHistoMM_mult2 {
+public:
+	permHistoMM_mult2(TString permName, TDirectory* targetDir);
+	~permHistoMM_mult2();
+
+	void Fill(TString key, double x);
+	void Fill(TString key, double x, double y);
+
+	TH1* Get(TString key) { return hMap[key]; }
+
+private:
+	std::map<TString, TH1*> hMap;
+
+
+	void Register1D(TString permName, TString key, TString title, int xbins, double xmin, double xmax);
+	void Register2D(TString permName, TString key, TString title, int xbins, double xmin, double xmax, int ybins, double ymin, double ymax);
+};
+
+#endif//PERMHISTOMULT2_H
