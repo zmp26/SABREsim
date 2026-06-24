@@ -90,6 +90,8 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	int SR2, SW2; double SRE2, SWE2, Stheta2, Sphi2;
 	int SR3, SW3; double SRE3, SWE3, Stheta3, Sphi3;
 
+	double SABREsumE;
+
 	int* const SR[3]        = { &SR1, &SR2, &SR3 };
 	int* const SW[3]        = { &SW1, &SW2, &SW3 };
 	double* const SRE[3]       = { &SRE1, &SRE2, &SRE3 };
@@ -117,6 +119,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t1->Branch("thetalab_hit1", &Stheta1, "thetalab_hit1/D");
 	t1->Branch("philab_hit1", &Sphi1, "philab_hit1/D");
 	t1->Branch("key_hit1", &key[0], "key_hit1/I");
+	t1->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 
 	t2->Branch("eventnum", &eventnum, "eventnum/I");
@@ -143,6 +146,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t2->Branch("thetalab_hit2", &Stheta2, "thetalab_hit2/D");
 	t2->Branch("philab_hit2", &Sphi2, "philab_hit2/D");
 	t2->Branch("key_hit2", &key[1], "key_hit2/I");
+	t2->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 
 
@@ -177,6 +181,7 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 	t3->Branch("thetalab_hit3", &Stheta3, "thetalab_hit3/D");
 	t3->Branch("philab_hit3", &Sphi3, "philab_hit3/D");
 	t3->Branch("key_hit3", &key[2], "key_hit3/I");
+	t3->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 	//prepare variables to read value of tin entry
 	double tin_kine[4], tin_kintheta[4], tin_kinphi[4];
@@ -279,16 +284,19 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 		if(nParticles == 1){//SABRE multiplicity 1
 
 			//simply fill the tree if the multiplicity is correct:
+			SABREsumE = *SRE[0];
 			t1->Fill();
 
 		} else if(nParticles == 2){//SABRE multiplicity 2
 
 			//simply fill the tree if the multiplicity is correct:
+			SABREsumE = *SRE[0]+*SRE[1];
 			t2->Fill();
 
 		} else if(nParticles == 3){//SABRE multiplicity 3
 
 			//simply fill the tree if the multiplicity is correct:
+			SABREsumE = *SRE[0]+*SRE[1]+*SRE[2];
 			t3->Fill();
 		}
 
