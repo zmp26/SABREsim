@@ -584,7 +584,7 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	};
 
 	//invariant mass and excitation energy histograms:
-	fillAll("intermediateIM", res.intermediateIM);
+	//fillAll("intermediateIM", res.intermediateIM);
 	fillAll("intermediateEx", res.intermediateEx);
 	fillAll("RecoilEx", res.reconEx);
 	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
@@ -600,8 +600,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
 	fillAll("intermediatekecm_meas", res.intermediatekecm);
-	fillAll("intermediatekecm_expect", res.expected.kecm_intermediate);
-	fillAll("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
+	//fillAll("intermediatekecm_expect", res.expected.kecm_intermediate);
+	//fillAll("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
 
 	fillAll("intermediatethetacm", res.intermediatethetacm);
@@ -619,8 +619,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 		fillAll2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 		fillAll(f+"kecm_meas",kecm);
-		fillAll(f+"kecm_expect",expK);
-		fillAll(f+"kecm_delta",kecm-expK);
+		//fillAll(f+"kecm_expect",expK);
+		//fillAll(f+"kecm_delta",kecm-expK);
 
 		fillAll(f+"thetacm",theta);
 		fillAll(f+"phicm",phi);
@@ -635,8 +635,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 
 	//decays
 	fillAll("ecm1_meas", res.ecm1);
-	fillAll("ecm1_expect", res.expected.Ecm1);
-	fillAll("ecm1_delta", res.ecm1 - res.expected.Ecm1);
+	//fillAll("ecm1_expect", res.expected.Ecm1);
+	//fillAll("ecm1_delta", res.ecm1 - res.expected.Ecm1);
 	fillAll2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
 	fillAll2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
 	fillAll2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
@@ -647,8 +647,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
 	fillAll("decay1_relLabAngle", res.relLabAngle_intfrag1);
 	fillAll("ecm2_meas", res.ecm2);
-	fillAll("ecm2_expect", res.expected.Ecm2);
-	fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
+	//fillAll("ecm2_expect", res.expected.Ecm2);
+	//fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
 	fillAll2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
 	fillAll2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
 	fillAll2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
@@ -666,7 +666,7 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
 	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
-	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);	
+	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 }
 
 void MissMass_Mult2::FillGatedEventHistograms(double SPS_Ex){
@@ -697,7 +697,7 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		};
 
 		//invariant mass and excitation energy histograms:
-		fillGated("intermediateIM", res.intermediateIM);
+		//fillGated("intermediateIM", res.intermediateIM);
 		fillGated("intermediateEx", res.intermediateEx);
 		fillGated("RecoilEx", res.reconEx);
 		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
@@ -713,8 +713,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
 		fillGated("intermediatekecm_meas", res.intermediatekecm);
-		fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
-		fillGated("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
+		//fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
+		//fillGated("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
 		fillGated("intermediatethetacm", res.intermediatethetacm);
 		fillGated("intermediatephicm", res.intermediatephicm);
@@ -732,8 +732,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 			fillGated2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 			fillGated(f+"kecm_meas",kecm);
-			fillGated(f+"kecm_expect",expK);
-			fillGated(f+"kecm_delta",kecm-expK);
+			//fillGated(f+"kecm_expect",expK);
+			//fillGated(f+"kecm_delta",kecm-expK);
 
 			fillGated(f+"thetacm",theta);
 			fillGated(f+"phicm",phi);

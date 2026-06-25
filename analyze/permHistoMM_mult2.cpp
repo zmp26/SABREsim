@@ -37,8 +37,8 @@ permHistoMM_mult2::permHistoMM_mult2(TString permName, TDirectory* targetDir){
 	}
 
 	//missing mass specific histograms (note that these will change meaning between permutations!)
-	Register1D(permName, "MissingMass", "Reconstructed Missing Mass;MeV/c^{2}", 500, 0, 10000);
-	Register2D(permName, "intermediateExVSMissingMass", "intermediate vs ExMissing Mass;MeV;MeV/c^{2}", 500, 0, 10000, 300, -5, 7);
+	Register1D(permName, "MissingMass", "Reconstructed Missing Mass;MeV/c^{2}", 200, 0, 4000);
+	Register2D(permName, "intermediateExVSMissingMass", "intermediate vs ExMissing Mass;MeV;MeV/c^{2}", 500, 0, 10000, 200, -1, 7);
 
 	//decay1
 	Register1D(permName, "ecm1_meas", "E_{cm} Decay 1 (meas);MeV", 150, -1, 5);
