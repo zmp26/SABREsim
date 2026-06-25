@@ -216,7 +216,7 @@ void Li7ha_2par_exp_allEx(const char* input_filename, bool updateRecoilEx=true){
 	li7ha_ad_analysis.SetGate2(NOCHECK_M2);
 	li7ha_ad_analysis.SetGate2MinMax({0,0});
 
-	double Ex;
+	double Ex, SPSE;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
 
