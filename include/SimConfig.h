@@ -57,6 +57,8 @@ public:
 	const double GetSPSSigmaTheta() const { return SPS_SigmaTheta; }
 	const double GetSPSSigmaPhi() const { return SPS_SigmaPhi; }
 	const double GetSPSApertureDist() const { return SPS_ApertureDist; }
+	const double GetSABREDefaultResolutionMeV() const { return SABRE_DefaultResolutionMeV; }
+	const double GetSABREDefaultThresholdMeV() const { return SABRE_DefaultThresholdMeV; }
 
 private:
 	MassTable *masstable;
@@ -93,6 +95,9 @@ private:
 	double SPS_ThetaMin, SPS_ThetaMax, SPS_PhiMin, SPS_PhiMax;
 	double SPS_SigmaE, SPS_SigmaTheta, SPS_SigmaPhi;
 	double SPS_ApertureDist;
+
+	double SABRE_DefaultResolutionMeV;
+	double SABRE_DefaultThresholdMeV;
 
 };
 

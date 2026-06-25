@@ -43,9 +43,10 @@ void SABRE_EnergyResolutionModel::setWedgeThreshold(int wedge, double thresholdM
 double SABRE_EnergyResolutionModel::applyEnergyResolution(double kinEnergyMeV, double sigma){
 	std::random_device rd;
 	std::mt19937 gen(rd());//mersenne twister rng
+	if(sigma <= 0) return kinEnergyMeV;
+
 	std::normal_distribution<double> dist(0.,sigma);
 	double sample = dist(gen);
-
 	return kinEnergyMeV + sample;
 }
 

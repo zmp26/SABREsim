@@ -190,7 +190,8 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 bool SABREsim::InitializeModels(){
 	//energy resolution models (eventually, config_ should have the ability to set the resolution and cut off below dynamically)
 	for(size_t i=0; i<SABRE_Array_->size(); i++){
-		SABRE_EnergyResolutionModel* m = new SABRE_EnergyResolutionModel(0.05, 0.100);
+		//SABRE_EnergyResolutionModel* m = new SABRE_EnergyResolutionModel(0.05, 0.100);
+		SABRE_EnergyResolutionModel *m = new SABRE_EnergyResolutionModel(config_->GetSABREDefaultResolutionMeV(), config_->GetSABREDefaultThresholdMeV());
 		SABREARRAY_EnergyResolutionModels_.push_back(m);
 	}
 
@@ -349,6 +350,8 @@ void SABREsim::Run(){
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nSPS SigmaE = %f\tSPS SigmaTheta = %f\tSPS SigmaPhi = %f\n", config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi());
 		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSABRE Default Resolution = %f MeV\tSABRE Default Threshold = %f\n", config_->GetSABREDefaultResolutionMeV(), config_->GetSABREDefaultThresholdMeV());
+		ConsoleColorizer::PrintGreen(outline.Data());
 		Simulate2body(infile, outfile);
 	} else if(kinX_ == 3){
 		TString outline = Form("Reaction: %s\n", config_->GetReaction().data());
@@ -377,6 +380,8 @@ void SABREsim::Run(){
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("\nSPS SigmaE = %f\tSPS SigmaTheta = %f\tSPS SigmaPhi = %f\n", config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi());
 		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSABRE Default Resolution = %f MeV\tSABRE Default Threshold = %f\n", config_->GetSABREDefaultResolutionMeV(), config_->GetSABREDefaultThresholdMeV());
+		ConsoleColorizer::PrintGreen(outline.Data());
 		Simulate3body(infile,outfile);
 	} else if(kinX_ == 4){
 		TString outline = Form("Reaction: %s\n", config_->GetReaction().data());
@@ -404,6 +409,8 @@ void SABREsim::Run(){
 		outline = Form("SPS PhiMin = %f\tSPS PhiMax = %f\n", config_->GetSPSPhiMin(), config_->GetSPSPhiMax());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		outline = Form("SPS SigmaE = %f\tSPS SigmaTheta = %f\tSPS SigmaPhi = %f\n\n", config_->GetSPSSigmaE(), config_->GetSPSSigmaTheta(), config_->GetSPSSigmaPhi());
+		ConsoleColorizer::PrintGreen(outline.Data());
+		outline = Form("\nSABRE Default Resolution = %f MeV\tSABRE Default Threshold = %f\n", config_->GetSABREDefaultResolutionMeV(), config_->GetSABREDefaultThresholdMeV());
 		ConsoleColorizer::PrintGreen(outline.Data());
 		Simulate4body(infile,outfile);
 	} else if(kinX_ == 0){ 
