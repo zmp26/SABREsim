@@ -484,6 +484,16 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 
 		//increment permIndex:
 		permIndex += 1;
+
+		//temp debugging:
+		// std::cout << "f1 ThetaCM=" << caseResults[permIndex].frag1thetacm <<", PhiCM = " << caseResults[permIndex].frag1phicm << std::endl;
+		// std::cout << "f2 ThetaCM=" << caseResults[permIndex].frag2thetacm <<", PhiCM = " << caseResults[permIndex].frag2phicm << std::endl;
+		// std::cout << "f3 ThetaCM=" << caseResults[permIndex].frag3thetacm <<", PhiCM = " << caseResults[permIndex].frag3phicm << std::endl;
+		// std::cout << "f1 ThetaCM=" << frag1thetacm <<", PhiCM = " << frag1phicm << std::endl;
+		// std::cout << "f2 ThetaCM=" << frag2thetacm <<", PhiCM = " << frag2phicm << std::endl;
+		// std::cout << "f3 ThetaCM=" << frag3thetacm <<", PhiCM = " << frag3phicm << std::endl;
+		// std::cout << "\n";
+
 	}
 
 	for(int i=0; i<6; i++){

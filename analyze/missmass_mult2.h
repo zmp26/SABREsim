@@ -58,7 +58,7 @@ private:
 	std::map<TString, Perm> pMap;
 
 	const double DEGRAD = M_PI/180.;
-	const double RADDEG = M_PI/180.;
+	const double RADDEG = 180./M_PI;
 
 	TFile *outfile;
 	TTree *outtree;
