@@ -143,12 +143,12 @@ void MissMass_Mult2::Init(const char* output_filename){
 
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
 	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
-	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 300, -5, 7, 300, -5, 7);
+	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 200, -1, 7, 200, -1, 7);
 	hSortedPermutations = new TH1D("hSortedPermutations", "Permutation Picks", 6, -0.5, 5.5);
 	hSortedIMRecEx = new TH1D("hSortedIMRecEx", "Rec Ex (IM)", 300, -5, 7);
 	hSortedIMRecEx_gate8Be = new TH1D("hSortedIMRecEx_gate8Be", "Rec Ex (IM) - Gate IM 8Be", 300, -5, 7);
 	hSortedIMRecEx_gate5Li = new TH1D("hSortedIMRecEx_gate5Li", "Rec Ex (IM) - Gate IM 5Li", 300, -5, 7);
-	hSABRESumE_vs_ExSPS = new TH2D("hSABRESumE_vs_ExSPS", "hSABRESumE_vs_ExSPS", 600, -2, 10, 500, 0, 10);
+	hSABRESumE_vs_ExSPS = new TH2D("hSABRESumE_vs_ExSPS", "hSABRESumE_vs_ExSPS", 275, -1, 10, 500, 0, 10);
 	const char* labels[6] = {"012","021","102","120","201","210"};
 	for(int i=0; i<6; i++){
 		hSortedPermutations->GetXaxis()->SetBinLabel(i+1, labels[i]);
@@ -595,8 +595,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
-	fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
-	fillAll("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
+	//fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
+	//fillAll("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
 	fillAll2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
 	fillAll("intermediatekecm_meas", res.intermediatekecm);
@@ -614,8 +614,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	auto fillFrag = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
 		TString f = Form("frag%d",i);
 		fillAll(f+"vcm_meas",vcm);
-		fillAll(f+"vcm_expect",expV);
-		fillAll(f+"vcm_delta",vcm-expV);
+		//fillAll(f+"vcm_expect",expV);
+		//fillAll(f+"vcm_delta",vcm-expV);
 		fillAll2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 		fillAll(f+"kecm_meas",kecm);
@@ -708,8 +708,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);
-		fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
-		fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
+		//fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
+		//fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
 		fillGated2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
 		fillGated("intermediatekecm_meas", res.intermediatekecm);
@@ -727,8 +727,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
 			TString f = Form("frag%d",i);
 			fillGated(f+"vcm_meas",vcm);
-			fillGated(f+"vcm_expect",expV);
-			fillGated(f+"vcm_delta",vcm-expV);
+			//fillGated(f+"vcm_expect",expV);
+			//fillGated(f+"vcm_delta",vcm-expV);
 			fillGated2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 			fillGated(f+"kecm_meas",kecm);
@@ -748,8 +748,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 
 		//decays
 		fillGated("ecm1_meas", res.ecm1);
-		fillGated("ecm1_expect", res.expected.Ecm1);
-		fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
+		//fillGated("ecm1_expect", res.expected.Ecm1);
+		//fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
 		fillGated2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
 		fillGated2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
 		fillGated2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
@@ -760,8 +760,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
 		fillGated("decay1_relLabAngle", res.relLabAngle_intfrag1);
 		fillGated("ecm2_meas", res.ecm2);
-		fillGated("ecm2_expect", res.expected.Ecm2);
-		fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
+		//fillGated("ecm2_expect", res.expected.Ecm2);
+		//fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
 		fillGated2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
 		fillGated2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
 		fillGated2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);

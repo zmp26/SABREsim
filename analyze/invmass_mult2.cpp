@@ -230,13 +230,13 @@ void InvMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex) {
 	auto fillFrag = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK) {
 		TString f = Form("frag%d", i);
 		fillAll(f + "vcm_meas", vcm);
-		fillAll(f + "vcm_expect", expV);
-		fillAll(f + "vcm_delta", vcm - expV);
+		//fillAll(f + "vcm_expect", expV);
+		//fillAll(f + "vcm_delta", vcm - expV);
 		fillAll2D(f + "vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 		fillAll(f + "kecm_meas", kecm);
-		fillAll(f + "kecm_expect", expK);
-		fillAll(f + "kecm_delta", kecm - expK);
+		//fillAll(f + "kecm_expect", expK);
+		//fillAll(f + "kecm_delta", kecm - expK);
 
 		fillAll(f + "thetacm", theta);
 		fillAll(f + "phicm", phi);
@@ -249,8 +249,8 @@ void InvMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex) {
 	fillFrag(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
 
 	fillAll("ecm_meas", res.ecm);
-	fillAll("ecm_expect", res.expected.Ecm);
-	fillAll("ecm_delta", res.ecm - res.expected.Ecm);
+	//fillAll("ecm_expect", res.expected.Ecm);
+	//fillAll("ecm_delta", res.ecm - res.expected.Ecm);
 	fillAll2D("ecmmeasVSfrag1thetacm", res.frag1thetacm, res.ecm);
 	fillAll2D("ecmmeasVSfrag2thetacm", res.frag2thetacm, res.ecm);
 
@@ -296,13 +296,13 @@ void InvMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex) {
 		auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK) {
 			TString f = Form("frag%d", i);
 			fillGated(f + "vcm_meas", vcm);
-			fillGated(f + "vcm_expect", expV);
-			fillGated(f + "vcm_delta", vcm - expV);
+			//fillGated(f + "vcm_expect", expV);
+			//fillGated(f + "vcm_delta", vcm - expV);
 			fillGated2D(f + "vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
 			fillGated(f + "kecm_meas", kecm);
-			fillGated(f + "kecm_expect", expK);
-			fillGated(f + "kecm_delta", kecm - expK);
+			//fillGated(f + "kecm_expect", expK);
+			//fillGated(f + "kecm_delta", kecm - expK);
 
 			fillGated(f + "thetacm", theta);
 			fillGated(f + "phicm", phi);
@@ -315,8 +315,8 @@ void InvMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex) {
 		fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
 
 		fillGated("ecm_meas", res.ecm);
-		fillGated("ecm_expect", res.expected.Ecm);
-		fillGated("ecm_delta", res.ecm - res.expected.Ecm);
+		//fillGated("ecm_expect", res.expected.Ecm);
+		//fillGated("ecm_delta", res.ecm - res.expected.Ecm);
 		fillGated2D("ecmmeasVSfrag1thetacm", res.frag1thetacm, res.ecm);
 		fillGated2D("ecmmeasVSfrag2thetacm", res.frag2thetacm, res.ecm);
 
