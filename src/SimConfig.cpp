@@ -16,7 +16,8 @@ SimConfig::SimConfig(const std::string& filename)
 	  SPS_ThetaMin(0.), SPS_ThetaMax(0.),
 	  SPS_PhiMin(0.), SPS_PhiMax(0.),
 	  SPS_SigmaE(0.), SPS_SigmaTheta(0.), SPS_SigmaPhi(0.),
-	  SPS_ApertureDist(0.)
+	  SPS_ApertureDist(0.),
+	  SABRE_DefaultResolutionMeV(0.), SABRE_DefaultThresholdMeV(0.)
 {
 
 	targetLoss_par_.resize(4, "none");
@@ -160,6 +161,10 @@ bool SimConfig::Parse(){
 			else if(key == "SigmaTheta") SPS_SigmaTheta = std::stod(val);
 			else if(key == "SigmaPhi") SPS_SigmaPhi = std::stod(val);
 			else if(key == "ApertureDist") SPS_ApertureDist = std::stod(val);
+		}
+		else if(section == "SABRE"){
+			if(key == "DefaultResolutionMeV") SABRE_DefaultResolutionMeV = std::stod(val);
+			else if(key == "DefaultThresholdMeV") SABRE_DefaultThresholdMeV = std::stod(val);
 		}
 	}
 
