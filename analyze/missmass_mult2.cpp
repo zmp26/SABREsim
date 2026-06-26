@@ -342,13 +342,19 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		//first, we generally identify which one is missing:
 		TLorentzVector lv_measuredSum;
 		int missing_idx = -1;
+		int meas_idx1 = -1, meas_idx2 = -1;
 
 		for(int m=0; m<3; m++){
-			if(lv[m].E() > 0) lv_measuredSum += lv[m];
-			else missing_idx = m;
+			if(lv[m].E() > 0){
+				lv_measuredSum += lv[m];
+				if(meas_idx1 == -1) meas_idx1 = m;
+				else meas_idx2 = m;
+			} else {
+				missing_idx = m;
+			}
 		}
 
-		caseResults[permIndex].SABREsumE = lv_measuredSum.E();
+		caseResults[permIndex].SABREsumE = lv_measuredSum.P()*lv_measuredSum.P()/lv_measuredSum.M();
 
 		if(missing_idx != -1) lv[missing_idx] = recoil - lv_measuredSum;
 		missingmass = lv[missing_idx].M();
@@ -390,6 +396,14 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		caseResults[permIndex].boost2[0] = boost2.X();
 		caseResults[permIndex].boost2[1] = boost2.Y();
 		caseResults[permIndex].boost2[2] = boost2.Z();
+
+		caseResults[permIndex].catania_x = (lv[missing_idx].P() * lv[missing_idx].P()) / (2*nucleonMassMeV);
+		//caseResults[permIndex].catania_y = (beamEnergyMeV - lv[meas_idx1].P()*lv[meas_idx1].P()/(2*nucleonMassMeV) - lv[meas_idx2].P()*lv[meas_idx2].P()/(2*nucleonMassMeV) - SPSE);
+		caseResults[permIndex].catania_y = (beamEnergyMeV - E[0] - E[1]);// - SPSE);
+		std::cout << "catania_x = " << caseResults[permIndex].catania_x << "\tcatania_y = " << caseResults[permIndex].catania_y << std::endl;
+		//std::cout << "beam energy = " << beamEnergyMeV << "\n";
+		//std::cout << "lv[0].E() = " << lv[0].E() << "\tlv[1].E() = " << lv[1].E() << "\tlv[2].E() = " << lv[2].E() << "\n";
+		//std::cout << "lv[0].P()^2/2m = " << lv[0].P()*lv[0].P()/(2*nucleonMassMeV) << "\tlv[1].P()^2/2m = " << lv[1].P()*lv[1].P()/(2*nucleonMassMeV) << "\tlv[2].P()^2/2m = " << lv[2].P()*lv[2].P()/(2*nucleonMassMeV) << "\n";
 
 		//begin analysis of first decay step here: recoil->frag1+intermediate
 		//boost the lab-measured intermediate and frag1 into the frame of the recoil:
@@ -667,6 +681,8 @@ void MissMass_Mult2::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
 	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+
+	fillAll2D("catania_plot", res.catania_x, res.catania_y);
 }
 
 void MissMass_Mult2::FillGatedEventHistograms(double SPS_Ex){
@@ -780,6 +796,8 @@ void MissMass_Mult2::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
 		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+
+		fillGated2D("catania_plot", res.catania_x, res.catania_y);
 	}
 }
 

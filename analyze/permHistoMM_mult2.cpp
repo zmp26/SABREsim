@@ -78,6 +78,9 @@ permHistoMM_mult2::permHistoMM_mult2(TString permName, TDirectory* targetDir){
 	Register2D(permName, "ecm1VSecm2", "ECM1 vs ECM2; E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 150, -1, 5, 150, -1 , 5);
 	Register2D(permName, "ecm1deltaVSecm2delta", "ECM1 Delta vs ECM2 Delta; Decay 2 (MeV); Decay 1 (MeV)", 250, -5, 5, 250, -5, 5);
 
+	//catania plot
+	Register2D(permName, "catania_plot", "Catania Plot (p_{4}^{2}/(2m) vs E_{4}-Q)", 100, 0, 10, 100, 0, 10);
+
 }
 
 void permHistoMM_mult2::Register1D(TString name, TString key, TString title, int xbins, double xmin, double xmax){

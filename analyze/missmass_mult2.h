@@ -59,6 +59,7 @@ private:
 
 	const double DEGRAD = M_PI/180.;
 	const double RADDEG = 180./M_PI;
+	const double nucleonMassMeV = (938.27 + 939.57)/2.;
 
 	TFile *outfile;
 	TTree *outtree;
@@ -120,6 +121,8 @@ private:
 		double exp_f2VCM, exp_f2KECM;
 		double exp_f3VCM, exp_f3KECM;
 
+		double catania_x, catania_y;
+
 		bool permPasses = false;
 		
 		TString permName;
@@ -160,6 +163,9 @@ private:
 
 			relLabAngle_intfrag1 = -666.;
 			relLabAngle_frag2frag3 = -666.;
+
+			catania_x = -666.;
+			catania_y = -666.;
 
 			permPasses = false;
 
