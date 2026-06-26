@@ -127,6 +127,8 @@ private:
 		double exp_f2VCM, exp_f2KECM;
 		double exp_f3VCM, exp_f3KECM;
 
+		double m12sq, m23sq;
+
 		bool permPasses = false;
 		
 		TString permName;
@@ -164,6 +166,9 @@ private:
 
 			relLabAngle_intfrag1 = -666.;
 			relLabAngle_frag2frag3 = -666.;
+
+			m12sq = -666.;
+			m23sq = -666.;
 
 			permPasses = false;
 

@@ -76,7 +76,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 	hSABRESumE_vs_ExSPS = new TH2D("hSABRESumE_vs_ExSPS", "hSABRESumE_vs_ExSPS", 275, -1, 10, 500, 0, 10);
 	const char* labels[6] = {"012","021","102","120","201","210"};
 	for(int i=0; i<6; i++){
-		hSortedPermutations->GetXaxis()->SetBinLabel(i+1, labels[i]);hSABRESumE
+		hSortedPermutations->GetXaxis()->SetBinLabel(i+1, labels[i]);
 	}
 }
 
@@ -251,6 +251,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].exp_f2KECM = expectedCMValues.kecm_frag2;
 		caseResults[permIndex].exp_f3VCM  = expectedCMValues.vcm_frag3;
 		caseResults[permIndex].exp_f3KECM = expectedCMValues.kecm_frag3;
+
+		caseResults[permIndex].m12sq = (lv[0] + lv[1]).M2();
+		caseResults[permIndex].m23sq = (lv[1] + lv[2]).M2();
 
 		//increment permIndex here!
 		permIndex += 1;
@@ -454,6 +457,9 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
 	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+
+	//std::cout << "m12sq = " << res.m12sq << "\tm23sq = " << res.m23sq << std::endl;
+	fillAll2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
 }
 
 void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
@@ -567,6 +573,8 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
 		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+
+		fillGated2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
 	}
 
 }

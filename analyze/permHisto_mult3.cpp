@@ -74,6 +74,9 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register2D(permName, "ecm1VSecm2", "ECM1 vs ECM2; E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 150, -1, 5, 150, -1 , 5);
 	Register2D(permName, "ecm1deltaVSecm2delta", "ECM1 Delta vs ECM2 Delta; Decay 2 (MeV); Decay 1 (MeV)", 250, -5, 5, 250, -5, 5);
 
+	//dalitz plot
+	Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m_{12} vs m_{23}", 1520/4, 55.55e6, 55.92e6, 1520, 0, 55.92e6);
+
 }
 
 void permHisto_mult3::Register1D(TString name, TString key, TString title, int xbins, double xmin, double xmax){

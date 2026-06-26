@@ -54,7 +54,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	const char* kin4mc_output_filename = kin4mc_str.c_str();
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
 	Hypothesis4 b9_be8_hypothesis;
 	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
@@ -201,7 +201,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 	const char* SABRE_output_filename = sabre_str.c_str();
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
 	Hypothesis4 b9_be8_hypothesis;
 	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
@@ -385,7 +385,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	const char* kin4mc_output_filename = kin4mc_str.c_str();
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
 	Hypothesis4 b9_li5_hypothesis;
 	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
@@ -529,7 +529,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<d
 	const char* kin4mc_output_filename = kin4mc_str.c_str();
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
 	Hypothesis4 b9_li5_hypothesis;
 	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
@@ -769,7 +769,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 	long numentries = intree->GetEntries();
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
 	Hypothesis4 b9_p8Be_hypothesis, b9_a5Li_hypothesis;
 
@@ -903,7 +903,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	long numentries = intree->GetEntries();
 
 	TMassTable fMassTable;
-	fMassTable.Init("/mnt/e/masstable/masstable.dat");
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
 	Hypothesis4 b9_p8Be_hypothesis;//, b9_a5Li_hypothesis;
 
