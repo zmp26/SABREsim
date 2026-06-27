@@ -69,6 +69,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
 	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
 	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 200, -1, 7, 200, -1, 7);
+	hSortedDalitz = new TH2D("hSortedDalitz", "Dalitz m_{12}^{2} vs m_{23}^{2}", 1520/4, 55.55e6, 55.92e6, 1520, 0, 55.92e6);
 	hSortedPermutations = new TH1D("hSortedPermutations", "Permutation Picks", 6, -0.5, 5.5);
 	hSortedIMRecEx = new TH1D("hSortedIMRecEx", "Rec Ex (IM)", 300, -5, 7);
 	hSortedIMRecEx_gate8Be = new TH1D("hSortedIMRecEx_gate8Be", "Rec Ex (IM) - Gate IM 8Be", 300, -5, 7);
@@ -599,6 +600,7 @@ void InvMass_Mult3::FillSortedHisto(double SPS_Ex){
 	});
 
 	hSortedIntermediateExIMvsSPS->Fill(SPS_Ex, sorted_caseResults[0].intermediateEx);
+	hSortedDalitz->Fill(sorted_caseResults[0].m23sq, sorted_caseResults[0].m12sq);
 	hSortedIMRecEx->Fill(sorted_caseResults[0].reconEx);
 	if(sorted_caseResults[0].intermediateEx >= -0.04 && sorted_caseResults[0].intermediateEx <= 0.04){
 		hSortedIMRecEx_gate8Be->Fill(sorted_caseResults[0].reconEx);
@@ -624,6 +626,7 @@ void InvMass_Mult3::CloseAndWrite(){
 	hPermCounter->Write();
 	hPermCounter_gated->Write();
 	hSortedIntermediateExIMvsSPS->Write();
+	hSortedDalitz->Write();
 	hSortedPermutations->Write();
 	hSortedIMRecEx->Write();
 	hSortedIMRecEx_gate8Be->Write();
