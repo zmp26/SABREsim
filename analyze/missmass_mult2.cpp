@@ -144,6 +144,7 @@ void MissMass_Mult2::Init(const char* output_filename){
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
 	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
 	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 200, -1, 7, 200, -1, 7);
+	hSortedCataniaPlot = new TH2D("hSortedCataniaPlot", "Catania Plot (p_{3}^{2}/(2m) vs E_{3}-Q)", 100, 0, 10, 100, 0, 10);
 	hSortedPermutations = new TH1D("hSortedPermutations", "Permutation Picks", 6, -0.5, 5.5);
 	hSortedIMRecEx = new TH1D("hSortedIMRecEx", "Rec Ex (IM)", 300, -5, 7);
 	hSortedIMRecEx_gate8Be = new TH1D("hSortedIMRecEx_gate8Be", "Rec Ex (IM) - Gate IM 8Be", 300, -5, 7);
@@ -400,7 +401,7 @@ std::array<double,6> MissMass_Mult2::AnalyzeEvent(double E[2], double theta[2], 
 		caseResults[permIndex].catania_x = (lv[missing_idx].P() * lv[missing_idx].P()) / (2*nucleonMassMeV);
 		//caseResults[permIndex].catania_y = (beamEnergyMeV - lv[meas_idx1].P()*lv[meas_idx1].P()/(2*nucleonMassMeV) - lv[meas_idx2].P()*lv[meas_idx2].P()/(2*nucleonMassMeV) - SPSE);
 		caseResults[permIndex].catania_y = (beamEnergyMeV - E[0] - E[1]);// - SPSE);
-		std::cout << "catania_x = " << caseResults[permIndex].catania_x << "\tcatania_y = " << caseResults[permIndex].catania_y << std::endl;
+		//std::cout << "catania_x = " << caseResults[permIndex].catania_x << "\tcatania_y = " << caseResults[permIndex].catania_y << std::endl;
 		//std::cout << "beam energy = " << beamEnergyMeV << "\n";
 		//std::cout << "lv[0].E() = " << lv[0].E() << "\tlv[1].E() = " << lv[1].E() << "\tlv[2].E() = " << lv[2].E() << "\n";
 		//std::cout << "lv[0].P()^2/2m = " << lv[0].P()*lv[0].P()/(2*nucleonMassMeV) << "\tlv[1].P()^2/2m = " << lv[1].P()*lv[1].P()/(2*nucleonMassMeV) << "\tlv[2].P()^2/2m = " << lv[2].P()*lv[2].P()/(2*nucleonMassMeV) << "\n";
@@ -818,6 +819,7 @@ void MissMass_Mult2::FillSortedHisto(double SPS_Ex){
 	});
 
 	hSortedIntermediateExIMvsSPS->Fill(SPS_Ex, sorted_caseResults[0].intermediateEx);
+	hSortedCataniaPlot->Fill(sorted_caseResults[0].catania_x, sorted_caseResults[0].catania_y);
 	hSortedIMRecEx->Fill(sorted_caseResults[0].reconEx);
 	if(sorted_caseResults[0].intermediateEx >= -0.04 && sorted_caseResults[0].intermediateEx <= 0.04){
 		hSortedIMRecEx_gate8Be->Fill(sorted_caseResults[0].reconEx);
@@ -847,6 +849,7 @@ void MissMass_Mult2::CloseAndWrite(){
 	hPermCounter->Write();
 	hPermCounter_gated->Write();
 	hSortedIntermediateExIMvsSPS->Write();
+	hSortedCataniaPlot->Write();
 	hSortedPermutations->Write();
 	hSortedIMRecEx->Write();
 	hSortedIMRecEx_gate8Be->Write();

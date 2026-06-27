@@ -203,6 +203,7 @@ private:
 
 	//histogram(s) for caseResult entry with recoilEx nearest SPS provided value:
 	TH2D* hSortedIntermediateExIMvsSPS;
+	TH2D* hSortedCataniaPlot;
 	TH1D* hSortedPermutations;
 	TH1D* hSortedIMRecEx;
 	TH1D* hSortedIMRecEx_gate8Be;
