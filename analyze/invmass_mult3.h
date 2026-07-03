@@ -30,6 +30,13 @@ struct Hypothesis4 {
 	double mass_recoil;
 	double mass_intermediate;
 
+	//note that kin4mc treats masses[0] as the first decay step and masses[2] as the second decay step, leaving masses[3] the "daughter"
+	//For example, 5Li -> p + a means that 5Li is proton decaying and 5Li -> a + p is 5Li undergoing alpha decay
+	//Yes, these are energetically identical in the above case
+	//However, one can imagine heaver resonances resulting in a heavier, but still stable, resonance decay particles for masses[3]
+	//For this reason, we will calculate an "above masses[2] threshold" to generate a plot of intermediate energy above thresohld
+	//(This is essentially just another shifted histogram of the true invariant mass spectrum)
+	//We will do the same for the initial resonance (the recoil from reaction that decays into, for example, the 5Li above)
 	double masses[3];//masses[0] = frag1, masses[1] = frag2, masses[2] = frag3
 
 	// double recoilEx;
@@ -92,6 +99,9 @@ private:
 	//double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
 	double intermediateEx;//, intermediateEmin, intermediateEmax;
 
+	double intermediateM1Threshold;
+	double recoilM0Threshold;
+
 	//expected CM constants:
 	struct ExpectedCM {
 		double Ecm1, Ecm2;
@@ -107,6 +117,8 @@ private:
 	struct Results {
 
 		double intermediateIM, intermediateEx, reconEx;
+		double intermediateEnergyAboveM1Thresh;
+		double recoilEnergyAboveM0Thresh;
 		double intermediatevcm, intermediatekecm, intermediatethetacm, intermediatephicm;
 		double intermediateComp[3];
 		double frag1vcm, frag1kecm, frag1thetacm, frag1phicm;
@@ -120,6 +132,9 @@ private:
 		double boost1[3], boost2[3];
 		double relLabAngle_intfrag1, relLabAngle_frag2frag3;
 		double IM2_int;
+
+		double Theta2h;
+		double CosTheta2h;
 
 		double exp_ecm1, exp_ecm2;
 		double exp_imVCM, exp_imKECM;
@@ -140,6 +155,9 @@ private:
 			intermediateIM = -666.;
 			intermediateEx = -666.;
 			reconEx = -666.;
+
+			intermediateEnergyAboveM1Thresh = -666.;
+			recoilEnergyAboveM0Thresh = -666.;
 
 			intermediatevcm = -666.;
 			intermediatekecm = -666.;
@@ -166,6 +184,11 @@ private:
 
 			relLabAngle_intfrag1 = -666.;
 			relLabAngle_frag2frag3 = -666.;
+			IM2_int = -666.;
+
+			Theta2h = -666.;
+			CosTheta2h = -666.;
+
 
 			m12sq = -666.;
 			m23sq = -666.;
@@ -234,6 +257,8 @@ public:
 	void FillPermCounter(bool gated=false);
 
 	void FillSortedHisto(double SPS_Ex);
+
+	void FillSABRESumEVsSPS_Ex(double SPS_Ex, double SABREsumE);
 
 	void CloseAndWrite();
 

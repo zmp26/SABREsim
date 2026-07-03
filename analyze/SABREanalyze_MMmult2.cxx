@@ -44,7 +44,7 @@
 const double DEGRAD = M_PI/180.;
 const double RADDEG = 180./M_PI;
 
-void MM_B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void MM_B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1index=NOCHECK, std::pair<double,double> gate1minmax={0.,0.}, int gate2index=NOCHECK, std::pair<double,double> gate2minmax={0.,0.}, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -183,7 +183,7 @@ void MM_B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gat
 
 }
 
-void MM_B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void MM_B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index=NOCHECK, std::pair<double,double> gate1minmax={0.,0.}, int gate2index=NOCHECK, std::pair<double,double> gate2minmax={0.,0.}, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");

@@ -154,6 +154,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
+		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		if(numpasses_sabre == 2){
 			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
@@ -166,6 +167,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
 		kin4mc_analysis.FillSortedHisto(Ex);
+		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		if(numpasses_kin4mc == 2){
 			kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			kin4mc_analysis.FillPermCounter(true);
@@ -190,7 +192,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
-void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+void B10ha_8BeHypothesis(const char* input_filename, int gate1index=NOCHECK, std::pair<double,double> gate1minmax={0.,0.}, int gate2index=NOCHECK, std::pair<double,double> gate2minmax={0.,0.}, int gate3index=NOCHECK, std::pair<double,double> gate3minmax={0.,0.}, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -271,6 +273,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index, std::pair<d
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
+		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		if(numpasses_sabre == permCheck){ 
 			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
 			SABRE_analysis.FillPermCounter(true);
@@ -482,6 +485,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
+		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		if(numpasses_sabre == 1){
 			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
@@ -493,6 +497,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
 		kin4mc_analysis.FillSortedHisto(Ex);
+		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		if(numpasses_kin4mc == 1){
 			kin4mc_analysis.FillGatedEventHistograms(Ex);
 			kin4mc_analysis.FillPermCounter(true);
@@ -516,7 +521,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
-void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_5LiHypothesis(const char* input_filename, int gate1index=NOCHECK, std::pair<double,double> gate1minmax={0.,0.}, int gate2index=NOCHECK, std::pair<double,double> gate2minmax={0.,0.}, int gate3index=NOCHECK, std::pair<double,double> gate3minmax={0.,0.}, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -600,6 +605,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index, std::pair<d
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
+		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		if(numpasses_sabre == 1){
 			SABRE_analysis.FillGatedEventHistograms(Ex);
 			SABRE_analysis.FillPermCounter(true);
@@ -849,6 +855,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 		b9_p8Be_analysis.FillPermCounter();
 		b9_p8Be_analysis.FillSortedHisto(Ex);
+		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		b9_p8Be_analysis.FillTree();
 
 		b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
@@ -856,6 +863,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
 		b9_a5Li_analysis.FillPermCounter();
 		b9_a5Li_analysis.FillSortedHisto(Ex);
+		b9_a5Li_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		b9_a5Li_analysis.FillTree();
 	}
 
@@ -983,6 +991,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 		b9_p8Be_analysis.FillPermCounter();
 		b9_p8Be_analysis.FillSortedHisto(Ex);
+		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		b9_p8Be_analysis.FillTree();
 
 		// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);

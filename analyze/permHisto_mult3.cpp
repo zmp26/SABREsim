@@ -13,7 +13,9 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	//invariant mass and ex energy histograms
 	//Register1D(permName, "intermediateIM", "Intermediate Invariant Mass;MeV/c^{2}", 2900, 4600, 7500);
 	Register1D(permName, "intermediateEx", "Intermediate Ex;MeV",300,-5,7);
+	Register1D(permName, "intermediateEnergyAboveM1Thresh", "M(intermediate) - M(thresh)",300,-5,7);
 	Register1D(permName, "RecoilEx", "Recoil Ex;MeV",300,-5,7);
+	Register1D(permName, "RecoilEnergyAboveM0Thresh", "M(recoil) - M(thresh)",300,-5,7);
 	Register2D(permName, "RecoilEx_IMvsSPS", "Recoil Ex IM vs SPS;SPS MeV;IM MeV",200,-1,7,200,-1,7);
 	Register1D(permName, "RecoilExDif", "Recoil Ex (SPS - IM);MeV", 100, -2, 2);
 	Register2D(permName, "intermediateExIMvsSPS", "intermediate Ex IM vs SPS;SPS MeV;IM MeV",200,-1,7,200,-1,7);
@@ -68,14 +70,20 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register2D(permName, "frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 1000, 0, 0.1, 1000, 0, 0.1);
 	Register2D(permName, "frag2kecmVSfrag3kecm", "frag2 KEcm VS frag3 KEcm", 600, -1, 5, 600, -1, 5);
 
+	Register1D(permName, "Theta2h", "Theta^{h}_{2}", 360, 0, 180);
+	Register1D(permName, "CosTheta2h", "Cos(Theta^{h}_{2})", 200, -1, 1);
+	Register2D(permName, "CosTheta2h_vs_m12sq", "Cos(Theta^{h}_{2}) vs m12sq", 22, 21.784e6, 21.795e6, 200, -1, 1);//10B(3He,4He)9B_2345 -> p+8Be
+	//Register2D(permName, "CosTheta2h_vs_m12sq", "Cos(Theta^{h}_{2}) vs m12sq", 50*2, 21.76e6, 21.81e6, 200, -1, 1);//10B(3He,4He)9B_2345 -> a+5Li
+
 	Register2D(permName, "decay2VSdecay1_relLabAngle", "decay2 vs decay1 Relative Lab Angle", 360, 0, 180, 360, 0, 180);
 
 	//sequential decay energies
 	Register2D(permName, "ecm1VSecm2", "ECM1 vs ECM2; E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 150, -1, 5, 150, -1 , 5);
-	Register2D(permName, "ecm1deltaVSecm2delta", "ECM1 Delta vs ECM2 Delta; Decay 2 (MeV); Decay 1 (MeV)", 250, -5, 5, 250, -5, 5);
+	//Register2D(permName, "ecm1deltaVSecm2delta", "ECM1 Delta vs ECM2 Delta; Decay 2 (MeV); Decay 1 (MeV)", 250, -5, 5, 250, -5, 5);
 
 	//dalitz plot
-	Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m_{12} vs m_{23}", 1520/4, 55.55e6, 55.92e6, 1520, 0, 55.92e6);
+	Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m^{2}_{12} vs m^{2}_{23}", 60, 55.5735e6, 55.5765e6, 22, 21.784e6, 21.795e6);//10B(3He,4He)9B_2345 -> p+8Be
+	//Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m_{12} vs m_{23}", 50*2, 21.76e6, 21.81e6, 50*2, 21.76e6, 21.81e6);//10B(3He,4He)9B_2345 -> a+5Li
 
 }
 

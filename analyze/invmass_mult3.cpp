@@ -92,10 +92,17 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 	//intermediateExGate = hypo.intermediateExGate;
 	//recoilEx = hypo.recoilEx;
 
+	//calculate "above masses[0] threshold" in recoil here:
+	
+	recoilM0Threshold = intermediateMass + masses[0];// - recoilMass;
+
+	//calculate "above masses[1] threshold" in intermediate here:
+	intermediateM1Threshold = masses[1] + masses[2];// - intermediateMass;
+
 	//SetExpectedCMValues();
 }
 
-//AnalyzeEvent assumes theta, phi in degrees and E in MeV
+//Event assumes theta, phi in degrees and E in MeV
 //update this to return reconstructed recoil excitation energy in MeV
 std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx){ 
 
@@ -142,7 +149,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 
 		//calculate excitation energy:
 		double intermediateEx = intermediate.M() - intermediateMass;
+		double intermediateEnergyAboveM1Thresh = intermediate.M() - intermediateM1Threshold;
 		double Ex = recoil.M() - recoilMass;
+		double recoilEnergyAboveM0Thresh = recoil.M() - recoilM0Threshold;
 		recoilExs[permIndex] = Ex;
 
 		//let's check if we should update CM variables by using the IM-calcualted intermediate excitation energy:
@@ -159,6 +168,9 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].intermediateIM = intermediate.M();
 		caseResults[permIndex].intermediateEx = intermediateEx;
 		caseResults[permIndex].reconEx = Ex;
+
+		caseResults[permIndex].intermediateEnergyAboveM1Thresh = intermediateEnergyAboveM1Thresh;
+		caseResults[permIndex].recoilEnergyAboveM0Thresh = recoilEnergyAboveM0Thresh;
 
 		TVector3 boost1 = -recoil.BoostVector();
 		TVector3 boost2 = -intermediate.BoostVector();
@@ -211,6 +223,10 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		//boost the lab-measured frag2 and frag3 into the frame of the intermediate:
 		frag2.Boost(boost2);
 		frag3.Boost(boost2);
+
+		//calculate angle between boosted boosted frag2 and the boost vector of the intermediate:
+		caseResults[permIndex].Theta2h = RADDEG*boost2.Angle(frag2.Vect());
+		caseResults[permIndex].CosTheta2h = std::cos(boost2.Angle(frag2.Vect()));
 
 		double frag2vcm = ((1/frag2.Energy())*frag2.Vect()).Mag();
 		//double frag2vcm = frag2.BoostVector().Mag();
@@ -379,7 +395,11 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	//invariant mass and excitation energy histograms:
 	//fillAll("intermediateIM", res.intermediateIM);
 	fillAll("intermediateEx", res.intermediateEx);
+	fillAll("intermediateEnergyAboveM1Thresh", res.intermediateEnergyAboveM1Thresh);
+	//std::cout << "intermediateEnergyAboveM1Thresh = " << res.intermediateEnergyAboveM1Thresh << "\n";
 	fillAll("RecoilEx", res.reconEx);
+	fillAll("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
+	//std::cout << "recoilEnergyAboveM0Thresh = " << res.recoilEnergyAboveM0Thresh << "\n";
 	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 	fillAll("RecoilExDif", SPS_Ex - res.reconEx);
 	fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
@@ -457,10 +477,14 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
 	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
-	fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+	//fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
 	//std::cout << "m12sq = " << res.m12sq << "\tm23sq = " << res.m23sq << std::endl;
 	fillAll2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
+
+	fillAll("Theta2h", res.Theta2h);
+	fillAll("CosTheta2h", res.CosTheta2h);
+	fillAll2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
 }
 
 void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
@@ -499,6 +523,9 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 		fillGated("RecoilExDif", SPS_Ex - res.reconEx);
 		fillGated2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+
+		fillGated("intermediateEnergyAboveM1Threshold", res.intermediateEnergyAboveM1Thresh);
+		fillGated("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
 
 		//intermediate CM
 		fillGated("intermediatevcm_meas", res.intermediatevcm);
@@ -573,9 +600,14 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
 		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
-		fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+		//fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
 		fillGated2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
+
+
+		fillGated("Theta2h", res.Theta2h);
+		fillGated("CosTheta2h", res.CosTheta2h);
+		fillGated2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
 	}
 
 }
@@ -619,6 +651,10 @@ void InvMass_Mult3::FillSortedHisto(double SPS_Ex){
 	else if(perm == "210") permIndex = 5;
 
 	hSortedPermutations->Fill(permIndex);
+}
+
+void InvMass_Mult3::FillSABRESumEVsSPS_Ex(double SPS_Ex, double SABREsumE){
+	hSABRESumE_vs_ExSPS->Fill(SPS_Ex, SABREsumE);
 }
 
 void InvMass_Mult3::CloseAndWrite(){
