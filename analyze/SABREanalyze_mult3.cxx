@@ -67,6 +67,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_be8_hypothesis.beamEnergyMeV = 7.5;
 
 	// b9_be8_hypothesis.recoilEx = recoilEx;
 	// b9_be8_hypothesis.intermediateEx = intermediateEx;
@@ -216,6 +217,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_be8_hypothesis.beamEnergyMeV = 7.5;
 
 	TFile *infile = new TFile(input_filename, "READ");
 	if(!infile || infile->IsZombie()){
@@ -401,6 +403,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_li5_hypothesis.beamEnergyMeV = 7.5;
 
 	TFile *infile = new TFile(input_filename, "READ");
 	if(!infile || infile->IsZombie()){
@@ -547,6 +550,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_li5_hypothesis.beamEnergyMeV = 7.5;
 
 	TFile *infile = new TFile(input_filename, "READ");
 	if(!infile || infile->IsZombie()){

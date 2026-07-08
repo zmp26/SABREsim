@@ -30,6 +30,8 @@ struct Hypothesis4 {
 	double mass_recoil;
 	double mass_intermediate;
 
+	double beamEnergyMeV;
+
 	//note that kin4mc treats masses[0] as the first decay step and masses[2] as the second decay step, leaving masses[3] the "daughter"
 	//For example, 5Li -> p + a means that 5Li is proton decaying and 5Li -> a + p is 5Li undergoing alpha decay
 	//Yes, these are energetically identical in the above case
@@ -61,6 +63,7 @@ private:
 	Hypothesis4 hypothesis;
 	double masses[3];
 	double intermediateMass, recoilMass, recoilEx;
+	double beamEnergyMeV;
 
 	struct Perm { int i, j, k; };
 	std::map<TString, Perm> pMap;
@@ -144,6 +147,13 @@ private:
 
 		double m12sq, m23sq;
 
+		double PLabTotal_ResDecayParticles;
+		double PLabTotal_Beam;
+		double E2meas;
+
+		// double permTheta2h;
+		// double permCosTheta2h;
+
 		bool permPasses = false;
 		
 		TString permName;
@@ -189,9 +199,15 @@ private:
 			Theta2h = -666.;
 			CosTheta2h = -666.;
 
-
 			m12sq = -666.;
 			m23sq = -666.;
+
+			PLabTotal_Beam = -666.;
+			PLabTotal_ResDecayParticles = -666.;
+			E2meas = -666.;
+
+			// permTheta2h = -666.;
+			// permCosTheta2h = -666.;
 
 			permPasses = false;
 

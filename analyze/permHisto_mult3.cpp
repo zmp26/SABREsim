@@ -20,6 +20,8 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register1D(permName, "RecoilExDif", "Recoil Ex (SPS - IM);MeV", 100, -2, 2);
 	Register2D(permName, "intermediateExIMvsSPS", "intermediate Ex IM vs SPS;SPS MeV;IM MeV",200,-1,7,200,-1,7);
 
+	Register1D(permName, "MissingMomentum", "Missing Momentum (P_beam - P_resdecay)", 200, -50, 50);
+
 	for(const auto& p : particles){
 		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 1000, 0, 0.10);
 		//Register1D(permName, p+"vcm_expect", p+" Velocity CM (expect);c", 5000, 0, 0.10);
@@ -74,6 +76,10 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register1D(permName, "CosTheta2h", "Cos(Theta^{h}_{2})", 200, -1, 1);
 	Register2D(permName, "CosTheta2h_vs_m12sq", "Cos(Theta^{h}_{2}) vs m12sq", 22, 21.784e6, 21.795e6, 200, -1, 1);//10B(3He,4He)9B_2345 -> p+8Be
 	//Register2D(permName, "CosTheta2h_vs_m12sq", "Cos(Theta^{h}_{2}) vs m12sq", 50*2, 21.76e6, 21.81e6, 200, -1, 1);//10B(3He,4He)9B_2345 -> a+5Li
+	Register2D(permName, "Theta2h_vs_DetE2", "Theta^{h}_{2} vs E[2]", 250, 0, 10, 360, 0, 180);
+	Register2D(permName, "CosTheta2h_vs_DetE2", "Cos(Theta^{h}_{2}) vs E[2]", 250, 0, 10, 200, -1, 1);
+	Register2D(permName, "CosTheta2h_vs_MissingMomentum", "Cos(Theta^{h}_{2}) vs (P_beam - P_resdecay)", 200, -50, 50, 200, -1, 1);
+
 
 	Register2D(permName, "decay2VSdecay1_relLabAngle", "decay2 vs decay1 Relative Lab Angle", 360, 0, 180, 360, 0, 180);
 

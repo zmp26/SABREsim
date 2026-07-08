@@ -3,10 +3,10 @@
 #include <vector>
 #include <array>
 #include <algorithm>
-
+#include <cmath>
 
 InvMass_Mult3::InvMass_Mult3()
-	: outfile(nullptr), intermediateMass(0), recoilMass(0), intermediateEx(0){
+	: outfile(nullptr), intermediateMass(0), recoilMass(0), recoilEx(0), beamEnergyMeV(0), intermediateEx(0){
 
 		permNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
@@ -99,6 +99,9 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 	//calculate "above masses[1] threshold" in intermediate here:
 	intermediateM1Threshold = masses[1] + masses[2];// - intermediateMass;
 
+	beamEnergyMeV = hypo.beamEnergyMeV;
+	std::cout << "setting beamEnergyMeV to hypo.beamEnergyMeV (= " << hypo.beamEnergyMeV << ")...did it work?\n";
+
 	//SetExpectedCMValues();
 }
 
@@ -136,8 +139,14 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TLorentzVector recoil = lv[0] + lv[1] + lv[2];
 
 		TLorentzVector frag1 = lv[0];
+		TLorentzVector frag1_boost2 = lv[0];//this is to be boosted into CM frame of second decay for use in calculating theta2h
 		TLorentzVector frag2 = lv[1];
 		TLorentzVector frag3 = lv[2];
+
+		caseResults[permIndex].PLabTotal_ResDecayParticles = (lv[0] + lv[1] + lv[2]).P();
+		caseResults[permIndex].PLabTotal_Beam = std::sqrt(2*hypothesis.mass_beam*beamEnergyMeV);
+		//std::cout << "hypothesis.mass_beam = " << hypothesis.mass_beam << ", beamEnergyMeV = " << beamEnergyMeV << "\n";
+		caseResults[permIndex].E2meas = E[indices[2]];//indices[2] is the hit index assigned to particle 2 (contents of indices[2] depends on current permutation)
 
 		// caseResults[permIndex].IM2_01 = (lv[0] + lv[1]).M2();//(intermediate+frag1).M2();
 		// caseResults[permIndex].IM2_12 = (lv[1] + lv[2]).M2();//(frag2+frag3).M2();
@@ -223,10 +232,14 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		//boost the lab-measured frag2 and frag3 into the frame of the intermediate:
 		frag2.Boost(boost2);
 		frag3.Boost(boost2);
+		frag1_boost2.Boost(boost2);
 
 		//calculate angle between boosted boosted frag2 and the boost vector of the intermediate:
 		caseResults[permIndex].Theta2h = RADDEG*boost2.Angle(frag2.Vect());
 		caseResults[permIndex].CosTheta2h = std::cos(boost2.Angle(frag2.Vect()));
+		// double costheta2h_numerator = -2.*(frag2+frag3).M2()*(frag1_boost2+frag2).M2() + (frag2+frag3).M2()*(frag2.M2() + frag3.M2() - (frag2+frag3).M2()) + frag1_boost2.M2()*(frag2.M2() - frag3.M2() + (frag2+frag3).M2()) - (frag1_boost2+frag2+frag3).M2()*(frag2.M2() - frag3.M2() - (frag2+frag3).M2());
+		// double costheta2h_denominator = std::sqrt((std::pow((frag1_boost2+frag2+frag3).M2(),2) + std::pow(frag1_boost2.M2() - (frag2+frag3).M2(),2) - 2.*(frag1_boost2+frag2+frag3).M2()*(frag1_boost2.M2()-(frag2+frag3).M2()))*(std::pow(frag2.M2(),2) + std::pow((frag2+frag3).M2() - frag3.M2(),2) - 2.*frag2.M2()*((frag2+frag3).M2() + frag3.M2())));
+		// caseResults[permIndex].permTheta2h = costheta2h_numerator / costheta2h_denominator;
 
 		double frag2vcm = ((1/frag2.Energy())*frag2.Vect()).Mag();
 		//double frag2vcm = frag2.BoostVector().Mag();
@@ -404,6 +417,9 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll("RecoilExDif", SPS_Ex - res.reconEx);
 	fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
 
+	fillAll("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
+	//std::cout << "missing momentum = " << res.PLabTotal_Beam << " - " << res.PLabTotal_ResDecayParticles << " = " << res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles << std::endl;
+
 	//intermediate CM
 	fillAll("intermediatevcm_meas", res.intermediatevcm);
 	//fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
@@ -485,6 +501,10 @@ void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
 	fillAll("Theta2h", res.Theta2h);
 	fillAll("CosTheta2h", res.CosTheta2h);
 	fillAll2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
+	fillAll2D("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
+	fillAll2D("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
+	fillAll2D("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
+
 }
 
 void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
@@ -523,6 +543,8 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 		fillGated("RecoilExDif", SPS_Ex - res.reconEx);
 		fillGated2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+
+		fillGated("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
 
 		fillGated("intermediateEnergyAboveM1Threshold", res.intermediateEnergyAboveM1Thresh);
 		fillGated("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
@@ -608,6 +630,9 @@ void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
 		fillGated("Theta2h", res.Theta2h);
 		fillGated("CosTheta2h", res.CosTheta2h);
 		fillGated2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
+		fillGated2D("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
+		fillGated2D("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
+		fillGated2D("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
 	}
 
 }
