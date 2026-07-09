@@ -123,7 +123,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		for(int n=0; n<3; n++){
 			int hitindex = indices[n];
 			double mass = masses[n];
-			double mom = std::sqrt(2*mass*E[hitindex]);
+			//double mom = std::sqrt(2*mass*E[hitindex]);//newtonian approximation
+			double mom = std::sqrt(E[hitindex]*(E[hitindex]+2.*mass));//relativistic
 
 			lv[n].SetPxPyPzE(
 					mom*std::sin(theta[hitindex]*DEGRAD)*std::cos(phi[hitindex]*DEGRAD),
@@ -197,7 +198,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		intermediate.Boost(boost1);
 		frag1.Boost(boost1);
 
-		double intermediatevcm = ((1/intermediate.Energy())*intermediate.Vect()).Mag();
+		TVector3 intermediatevcm_vect = ((1/intermediate.Energy())*intermediate.Vect());
+		double intermediatevcm = intermediatevcm_vect.Mag();
 		//double intermediatevcm = intermediate.BoostVector().Mag();
 		double intermediatekecm = 0.5*intermediateMass*intermediatevcm*intermediatevcm;
 		double intermediatethetacm = RADDEG*std::acos(intermediate.Vect().Z()/intermediate.Vect().Mag());
@@ -208,9 +210,10 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].intermediatekecm = intermediatekecm;
 		caseResults[permIndex].intermediatethetacm = intermediatethetacm;
 		caseResults[permIndex].intermediatephicm = intermediatephicm;
-		for(int i=0; i<3; i++) caseResults[permIndex].intermediateComp[i] = (-intermediate.BoostVector())(i);
+		for(int i=0; i<3; i++) caseResults[permIndex].intermediateComp[i] = intermediatevcm_vect[i];
 
-		double frag1vcm = ((1/frag1.Energy())*frag1.Vect()).Mag();
+		TVector3 frag1vcm_vect = ((1/frag1.Energy())*frag1.Vect());
+		double frag1vcm = frag1vcm_vect.Mag();
 		//double frag1vcm = frag1.BoostVector().Mag();
 		double frag1kecm = 0.5*masses[0]*frag1vcm*frag1vcm;
 		double frag1thetacm = RADDEG*std::acos(frag1.Vect().Z()/frag1.Vect().Mag());
@@ -221,7 +224,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag1kecm = frag1kecm;
 		caseResults[permIndex].frag1thetacm = frag1thetacm;
 		caseResults[permIndex].frag1phicm = frag1phicm;
-		for(int i=0; i<3; i++) caseResults[permIndex].frag1Comp[i] = (-frag1.BoostVector())(i);
+		for(int i=0; i<3; i++) caseResults[permIndex].frag1Comp[i] = frag1vcm_vect[i];
 
 		//determine ecm1:
 		double ecm1 = intermediatekecm + frag1kecm + intermediateEx;
@@ -241,7 +244,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		// double costheta2h_denominator = std::sqrt((std::pow((frag1_boost2+frag2+frag3).M2(),2) + std::pow(frag1_boost2.M2() - (frag2+frag3).M2(),2) - 2.*(frag1_boost2+frag2+frag3).M2()*(frag1_boost2.M2()-(frag2+frag3).M2()))*(std::pow(frag2.M2(),2) + std::pow((frag2+frag3).M2() - frag3.M2(),2) - 2.*frag2.M2()*((frag2+frag3).M2() + frag3.M2())));
 		// caseResults[permIndex].permTheta2h = costheta2h_numerator / costheta2h_denominator;
 
-		double frag2vcm = ((1/frag2.Energy())*frag2.Vect()).Mag();
+		TVector3 frag2vcm_vect = ((1/frag2.Energy())*frag2.Vect());
+		double frag2vcm = frag2vcm_vect.Mag();
 		//double frag2vcm = frag2.BoostVector().Mag();
 		double frag2kecm = 0.5*masses[1]*frag2vcm*frag2vcm;
 		double frag2thetacm = RADDEG*std::acos(frag2.Vect().Z()/frag2.Vect().Mag());
@@ -252,9 +256,10 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag2kecm = frag2kecm;
 		caseResults[permIndex].frag2thetacm = frag2thetacm;
 		caseResults[permIndex].frag2phicm = frag2phicm;
-		for(int i=0; i<3; i++) caseResults[permIndex].frag2Comp[i] = (-frag2.BoostVector())(i);
+		for(int i=0; i<3; i++) caseResults[permIndex].frag2Comp[i] = frag2vcm_vect[i];
 
-		double frag3vcm = ((1/frag3.Energy())*frag3.Vect()).Mag();
+		TVector3 frag3vcm_vect = ((1/frag3.Energy())*frag3.Vect());
+		double frag3vcm = frag3vcm_vect.Mag();
 		//double frag3vcm = frag3.BoostVector().Mag();
 		double frag3kecm = 0.5*masses[2]*frag3vcm*frag3vcm;
 		double frag3thetacm = RADDEG*std::acos(frag3.Vect().Z()/frag3.Vect().Mag());
@@ -265,7 +270,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].frag3kecm = frag3kecm;
 		caseResults[permIndex].frag3thetacm = frag3thetacm;
 		caseResults[permIndex].frag3phicm = frag3phicm;
-		for(int i=0; i<3; i++) caseResults[permIndex].frag3Comp[i] = (-frag3.BoostVector())(i);
+		for(int i=0; i<3; i++) caseResults[permIndex].frag3Comp[i] = frag3vcm_vect[i];
 
 		//determine ecm2:
 		double ecm2 = frag2kecm + frag3kecm;
@@ -684,15 +689,15 @@ void InvMass_Mult3::FillSABRESumEVsSPS_Ex(double SPS_Ex, double SABREsumE){
 
 void InvMass_Mult3::CloseAndWrite(){
 	outfile->cd();
-	hPermCounter->Write();
-	hPermCounter_gated->Write();
-	hSortedIntermediateExIMvsSPS->Write();
-	hSortedDalitz->Write();
-	hSortedPermutations->Write();
-	hSortedIMRecEx->Write();
-	hSortedIMRecEx_gate8Be->Write();
-	hSortedIMRecEx_gate5Li->Write();
-	hSABRESumE_vs_ExSPS->Write();
+	// hPermCounter->Write();
+	// hPermCounter_gated->Write();
+	// hSortedIntermediateExIMvsSPS->Write();
+	// hSortedDalitz->Write();
+	// hSortedPermutations->Write();
+	// hSortedIMRecEx->Write();
+	// hSortedIMRecEx_gate8Be->Write();
+	// hSortedIMRecEx_gate5Li->Write();
+	// hSABRESumE_vs_ExSPS->Write();
 	if(outfile && outfile->IsOpen()){
 		outfile->Write();
 		outfile->Close();

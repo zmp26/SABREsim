@@ -37,6 +37,8 @@
 #include "invmass_mult3.cpp"//including .cpp for simple root macro purposes
 #include "permHisto_mult3.h"//" above "
 #include "permHisto_mult3.cpp"//" above "
+#include "CutHandler.h"//" above "
+#include "CutHandler.cpp"//" above "
 
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
