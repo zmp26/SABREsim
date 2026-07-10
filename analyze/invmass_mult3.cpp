@@ -32,21 +32,21 @@ void InvMass_Mult3::Init(const char* output_filename){
 	outfile = new TFile(output_filename, "RECREATE");
 	outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
 
-	TString leaflist = "imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
-					   "f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:f1Comp[3]/D:"
-					   "f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:f2Comp[3]/D:"
-					   "f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:f3Comp[3]/D:"
-					   "ecm1/D:ecm2/D:"
-					   "boost1[3]/D:boost2[3]/D:"
-					   "relLabAngle_intfrag1/D:relLabAngle_frag2frag3/D:"
-					   //"IM2_01/D:IM2_12/D:IM2_20/D:"
-					   "IM2_int/D:"
-					   "exp_ecm1/D:exp_ecm2/D:"
-					   "exp_imVCM/D:exp_imKECM/D:"
-					   "exp_f1VCM/D:exp_f1KECM/D:"
-					   "exp_f2VCM/D:exp_f2KECM/D:"
-					   "exp_f3VCM/D:exp_f3KECM/D:"
-					   "permPasses/O";
+	TString leaflist =  "SPSEnergy/D:SPSTheta/D:SPSPhi/D:SPS_Ex/D:" 
+						"imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
+						"f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:f1Comp[3]/D:"
+						"f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:f2Comp[3]/D:"
+						"f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:f3Comp[3]/D:"
+						"ecm1/D:ecm2/D:"
+						"boost1[3]/D:boost2[3]/D:"
+						"relLabAngle_intfrag1/D:relLabAngle_frag2frag3/D:"
+						"IM2_int/D:"
+						"exp_ecm1/D:exp_ecm2/D:"
+						"exp_imVCM/D:exp_imKECM/D:"
+						"exp_f1VCM/D:exp_f1KECM/D:"
+						"exp_f2VCM/D:exp_f2KECM/D:"
+						"exp_f3VCM/D:exp_f3KECM/D:"
+						"permPasses/O";
 
 	for(int i=0; i<6; i++){
 		//create a branch for each permutation
@@ -107,7 +107,7 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 
 //Event assumes theta, phi in degrees and E in MeV
 //update this to return reconstructed recoil excitation energy in MeV
-std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx){ 
+std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], double phi[3], double SPSEnergy, double SPSTheta, double SPSPhi, double SPS_Ex, bool updateIntermediateEx){ 
 
 	ClearEventResults();
 
@@ -144,14 +144,16 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TLorentzVector frag2 = lv[1];
 		TLorentzVector frag3 = lv[2];
 
+		caseResults[permIndex].SPSEnergy = SPSEnergy;
+		caseResults[permIndex].SPSTheta = SPSTheta;
+		caseResults[permIndex].SPSPhi = SPSPhi;
+		caseResults[permIndex].SPS_Ex = SPS_Ex;
+
 		caseResults[permIndex].PLabTotal_ResDecayParticles = (lv[0] + lv[1] + lv[2]).P();
 		caseResults[permIndex].PLabTotal_Beam = std::sqrt(2*hypothesis.mass_beam*beamEnergyMeV);
 		//std::cout << "hypothesis.mass_beam = " << hypothesis.mass_beam << ", beamEnergyMeV = " << beamEnergyMeV << "\n";
 		caseResults[permIndex].E2meas = E[indices[2]];//indices[2] is the hit index assigned to particle 2 (contents of indices[2] depends on current permutation)
 
-		// caseResults[permIndex].IM2_01 = (lv[0] + lv[1]).M2();//(intermediate+frag1).M2();
-		// caseResults[permIndex].IM2_12 = (lv[1] + lv[2]).M2();//(frag2+frag3).M2();
-		// caseResults[permIndex].IM2_20 = (lv[2] + lv[0]).M2();
 		caseResults[permIndex].IM2_int = intermediate.M2();
 
 		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Vect().Angle(frag1.Vect())*RADDEG;
@@ -295,87 +297,6 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 
 	}
 
-
-	for(int i=0; i<6; i++){
-
-		bool gate1 = false, gate2 = false, gate3 = false;
-
-		auto& res = caseResults[i];
-
-		switch(gate1_index){
-			case NOCHECK:
-				gate1 = true;
-				break;
-			case INTEXCHECK:
-				//gate1 = intermediateExCheck;
-				//gate1 = (res.intermediateEx >= gate1minmax.first && res.intermediateEx <= gate1minmax.second);
-				gate1 = CheckGate1(res.intermediateEx);
-				break;
-			case INTVCMCHECK:
-				//gate1 = intermediateVcmCheck;
-				//gate1 = (res.intermediatevcm >= gate1minmax.first && res.intermediatevcm <= gate1minmax.second);
-				gate1 = CheckGate1(res.intermediatevcm);
-				break;
-			case FRAG1VCMCHECK:
-				//gate1 = (res.frag1vcm >= gate1minmax.first && res.frag1vcm <= gate1minmax.second);
-				gate1 = CheckGate1(res.frag1vcm);
-				break;
-			default:
-				gate1 = false;
-				break;
-		}
-
-		switch(gate2_index){
-			case NOCHECK:
-				gate2 = true;
-				break;
-			case INTEXCHECK:
-				//gate2 = intermediateExCheck;
-				//gate2 = (res.intermediateEx >= gate2minmax.first && res.intermediateEx <= gate2minmax.second);
-				gate2 = CheckGate2(res.intermediateEx);
-				break;
-			case INTVCMCHECK:
-				//gate2 = intermediateVcmCheck;
-				//gate2 = (res.intermediatevcm >= gate2minmax.first && res.intermediatevcm <= gate2minmax.second);
-				gate2 = CheckGate2(res.intermediatevcm);
-				break;
-			case FRAG1VCMCHECK:
-				//gate2 = frag1VcmCheck;
-				//gate2 = (res.frag1vcm >= gate2minmax.first && res.frag1vcm <= gate2minmax.second);
-				gate2 = CheckGate2(res.frag1vcm);
-				break;
-			default:
-				gate2 = false;
-				break;
-		}
-
-		switch(gate3_index){
-			case NOCHECK:
-				gate3 = true;
-				break;
-			case INTEXCHECK:
-				//gate2 = intermediateExCheck;
-				//gate3 = (res.intermediateEx >= gate3minmax.first && res.intermediateEx <= gate3minmax.second);
-				gate3 = CheckGate3(res.intermediateEx);
-				break;
-			case INTVCMCHECK:
-				//gate2 = intermediateVcmCheck;
-				//gate3 = (res.intermediatevcm >= gate3minmax.first && res.intermediatevcm <= gate3minmax.second);
-				gate3 = CheckGate3(res.intermediatevcm);
-				break;
-			case FRAG1VCMCHECK:
-				//gate2 = frag1VcmCheck;
-				//gate3 = (res.frag1vcm >= gate3minmax.first && res.frag1vcm <= gate3minmax.second);
-				gate3 = CheckGate3(res.frag1vcm);
-				break;
-			default:
-				gate3 = false;
-				break;
-		}
-
-		if(gate1 && gate2 && gate3) res.permPasses = true;
-	}
-
 	return recoilExs;
 }
 
@@ -383,263 +304,229 @@ void InvMass_Mult3::FillTree(){
 	if(outtree) outtree->Fill();
 }
 
-//FillEventHistograms calls FillSelectCaseHistograms for 0-5. Good for filling histograms regardless of results.
 void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
-	for(int i=0; i<6; i++) FillSelectCaseHistograms(i, SPS_Ex);
-
-	//if(outtree) outtree->Fill();
-}
-
-void InvMass_Mult3::FillSelectCaseHistograms(int caseNum, double SPS_Ex){
-	if(caseNum < 0 || caseNum > 5){
-		std::cerr << "caseNum out of range (" << caseNum << ")\n";
-		return;
-	}
-
-	TString cn = permNames.at(caseNum);
-	auto& res = caseResults[caseNum];
-
-	//lambdas to fill both specific permutation and "allCases"
-	auto fillAll = [&](TString key, double x){
-		groups_ungated[cn]->Fill(key, x);
-		groups_ungated["allCases"]->Fill(key, x);
-	};
-
-	auto fillAll2D = [&](TString key, double x, double y){
-		groups_ungated[cn]->Fill(key, x, y);
-		groups_ungated["allCases"]->Fill(key, x, y);
-	};
-
-	//invariant mass and excitation energy histograms:
-	//fillAll("intermediateIM", res.intermediateIM);
-	fillAll("intermediateEx", res.intermediateEx);
-	fillAll("intermediateEnergyAboveM1Thresh", res.intermediateEnergyAboveM1Thresh);
-	//std::cout << "intermediateEnergyAboveM1Thresh = " << res.intermediateEnergyAboveM1Thresh << "\n";
-	fillAll("RecoilEx", res.reconEx);
-	fillAll("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
-	//std::cout << "recoilEnergyAboveM0Thresh = " << res.recoilEnergyAboveM0Thresh << "\n";
-	fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
-	fillAll("RecoilExDif", SPS_Ex - res.reconEx);
-	fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
-
-	fillAll("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
-	//std::cout << "missing momentum = " << res.PLabTotal_Beam << " - " << res.PLabTotal_ResDecayParticles << " = " << res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles << std::endl;
-
-	//intermediate CM
-	fillAll("intermediatevcm_meas", res.intermediatevcm);
-	//fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
-	//fillAll("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
-	fillAll2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
-
-	fillAll("intermediatekecm_meas", res.intermediatekecm);
-	//fillAll("intermediatekecm_expect", res.expected.kecm_intermediate);
-	//fillAll("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
-
-
-	fillAll("intermediatethetacm", res.intermediatethetacm);
-	fillAll("intermediatephicm", res.intermediatephicm);
-	fillAll2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
-	fillAll2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
-	fillAll2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
-
-	//fill frag1-3
-	auto fillFrag = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
-		TString f = Form("frag%d",i);
-		fillAll(f+"vcm_meas",vcm);
-		//fillAll(f+"vcm_expect",expV);
-		//fillAll(f+"vcm_delta",vcm-expV);
-		fillAll2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
-
-		fillAll(f+"kecm_meas",kecm);
-		//fillAll(f+"kecm_expect",expK);
-		//fillAll(f+"kecm_delta",kecm-expK);
-
-		fillAll(f+"thetacm",theta);
-		fillAll(f+"phicm",phi);
-		fillAll2D(f+"thetacmvsphicm",phi,theta);
-
-		fillAll2D(f+"vcmVSthetacm",theta,vcm);
-		fillAll2D(f+"kecmVSthetacm",theta,kecm);
-	};
-	fillFrag(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
-	fillFrag(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
-	fillFrag(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
-
-	//decays
-	fillAll("ecm1_meas", res.ecm1);
-	//fillAll("ecm1_expect", res.expected.Ecm1);
-	//fillAll("ecm1_delta", res.ecm1 - res.expected.Ecm1);
-	fillAll2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
-	fillAll2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
-	fillAll2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
-	fillAll2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
-	fillAll("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
-	fillAll2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
-	fillAll("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
-	fillAll("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
-	fillAll("decay1_relLabAngle", res.relLabAngle_intfrag1);
-	fillAll("ecm2_meas", res.ecm2);
-	//fillAll("ecm2_expect", res.expected.Ecm2);
-	//fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
-	fillAll2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
-	fillAll2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
-	fillAll2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
-	fillAll2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
-	fillAll("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
-	fillAll2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
-	fillAll("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
-	fillAll("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
-	fillAll("decay2_relLabAngle", res.relLabAngle_frag2frag3);
-
-	fillAll2D("decay2VSdecay1_relLabAngle", res.relLabAngle_intfrag1, res.relLabAngle_frag2frag3);
-
-	fillAll2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
-	fillAll2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
-	fillAll2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
-	fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
-	fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
-	//fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
-
-	//std::cout << "m12sq = " << res.m12sq << "\tm23sq = " << res.m23sq << std::endl;
-	fillAll2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
-
-	fillAll("Theta2h", res.Theta2h);
-	fillAll("CosTheta2h", res.CosTheta2h);
-	fillAll2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
-	fillAll2D("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
-	fillAll2D("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
-	fillAll2D("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
-
-}
-
-void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
-	for(int i=0; i<6; i++) FillSelectGatedCaseHistograms(i, SPS_Ex);
-
-	//if(outtree) outtree->Fill();
-}
-
-void InvMass_Mult3::FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex){
-
-	if(caseNum < 0 || caseNum > 5){
-		std::cerr << "caseNum out of range (" << caseNum << ")\n";
-		return;
-	}
-
-	TString cn = permNames.at(caseNum);
-	auto& res = caseResults[caseNum];
-
-	if(caseResults[caseNum].permPasses){
+	for(int caseNum=0; caseNum<6; caseNum++){
+		TString cn = permNames.at(caseNum);
+		auto& res = caseResults[caseNum];
 
 		//lambdas to fill both specific permutation and "allCases"
-		auto fillGated = [&](TString key, double x){
-			groups_gated[cn]->Fill(key, x);
-			groups_gated["allCases"]->Fill(key, x);
+		auto fillAll = [&](TString key, double x){
+			groups_ungated[cn]->Fill(key, x);
+			groups_ungated["allCases"]->Fill(key, x);
 		};
 
-		auto fillGated2D = [&](TString key, double x, double y){
-			groups_gated[cn]->Fill(key, x, y);
-			groups_gated["allCases"]->Fill(key, x, y);
+		auto fillAll2D = [&](TString key, double x, double y){
+			groups_ungated[cn]->Fill(key, x, y);
+			groups_ungated["allCases"]->Fill(key, x, y);
 		};
 
 		//invariant mass and excitation energy histograms:
-		fillGated("intermediateIM", res.intermediateIM);
-		fillGated("intermediateEx", res.intermediateEx);
-		fillGated("RecoilEx", res.reconEx);
-		fillGated2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
-		fillGated("RecoilExDif", SPS_Ex - res.reconEx);
-		fillGated2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+		//fillAll("intermediateIM", res.intermediateIM);
+		fillAll("intermediateEx", res.intermediateEx);
+		fillAll("intermediateEnergyAboveM1Thresh", res.intermediateEnergyAboveM1Thresh);
+		//std::cout << "intermediateEnergyAboveM1Thresh = " << res.intermediateEnergyAboveM1Thresh << "\n";
+		fillAll("RecoilEx", res.reconEx);
+		fillAll("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
+		//std::cout << "recoilEnergyAboveM0Thresh = " << res.recoilEnergyAboveM0Thresh << "\n";
+		fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
+		fillAll("RecoilExDif", SPS_Ex - res.reconEx);
+		fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
 
-		fillGated("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
-
-		fillGated("intermediateEnergyAboveM1Threshold", res.intermediateEnergyAboveM1Thresh);
-		fillGated("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
+		fillAll("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
+		//std::cout << "missing momentum = " << res.PLabTotal_Beam << " - " << res.PLabTotal_ResDecayParticles << " = " << res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles << std::endl;
 
 		//intermediate CM
-		fillGated("intermediatevcm_meas", res.intermediatevcm);
-		fillGated("intermediatevcm_expect", res.expected.vcm_intermediate);
-		fillGated("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
-		fillGated2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
+		fillAll("intermediatevcm_meas", res.intermediatevcm);
+		//fillAll("intermediatevcm_expect", res.expected.vcm_intermediate);
+		//fillAll("intermediatevcm_delta", res.intermediatevcm - res.expected.vcm_intermediate);
+		fillAll2D("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
 
-		fillGated("intermediatekecm_meas", res.intermediatekecm);
-		fillGated("intermediatekecm_expect", res.expected.kecm_intermediate);
-		fillGated("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
+		fillAll("intermediatekecm_meas", res.intermediatekecm);
+		//fillAll("intermediatekecm_expect", res.expected.kecm_intermediate);
+		//fillAll("intermediatekecm_delta", res.intermediatekecm - res.expected.kecm_intermediate);
 
-		fillGated("intermediatethetacm", res.intermediatethetacm);
-		fillGated("intermediatephicm", res.intermediatephicm);
-		fillGated2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
 
-		fillGated2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
-		fillGated2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
+		fillAll("intermediatethetacm", res.intermediatethetacm);
+		fillAll("intermediatephicm", res.intermediatephicm);
+		fillAll2D("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
+		fillAll2D("intermediatevcmVSthetacm",res.intermediatethetacm, res.intermediatevcm);
+		fillAll2D("intermediatekecmVSthetacm",res.intermediatethetacm, res.intermediatekecm);
 
 		//fill frag1-3
-		auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
+		auto fillFrag = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi, double expV, double expK){
 			TString f = Form("frag%d",i);
-			fillGated(f+"vcm_meas",vcm);
-			fillGated(f+"vcm_expect",expV);
-			fillGated(f+"vcm_delta",vcm-expV);
-			fillGated2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
+			fillAll(f+"vcm_meas",vcm);
+			//fillAll(f+"vcm_expect",expV);
+			//fillAll(f+"vcm_delta",vcm-expV);
+			fillAll2D(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
 
-			fillGated(f+"kecm_meas",kecm);
-			fillGated(f+"kecm_expect",expK);
-			fillGated(f+"kecm_delta",kecm-expK);
+			fillAll(f+"kecm_meas",kecm);
+			//fillAll(f+"kecm_expect",expK);
+			//fillAll(f+"kecm_delta",kecm-expK);
 
-			fillGated(f+"thetacm",theta);
-			fillGated(f+"phicm",phi);
-			fillGated2D(f+"thetacmvsphicm",phi,theta);
+			fillAll(f+"thetacm",theta);
+			fillAll(f+"phicm",phi);
+			fillAll2D(f+"thetacmvsphicm",phi,theta);
 
-			fillGated2D(f+"vcmVSthetacm",theta,vcm);
-			fillGated2D(f+"kecmVSthetacm",theta,kecm);
+			fillAll2D(f+"vcmVSthetacm",theta,vcm);
+			fillAll2D(f+"kecmVSthetacm",theta,kecm);
 		};
-		fillFragGated(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
-		fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
-		fillFragGated(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
+		fillFrag(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm, res.expected.vcm_frag1, res.expected.kecm_frag1);
+		fillFrag(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
+		fillFrag(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
 		//decays
-		fillGated("ecm1_meas", res.ecm1);
-		fillGated("ecm1_expect", res.expected.Ecm1);
-		fillGated("ecm1_delta", res.ecm1 - res.expected.Ecm1);
-		fillGated2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
-		fillGated2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
-		fillGated2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
-		fillGated2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
-		fillGated("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
-		fillGated2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
-		fillGated("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
-		fillGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
-		fillGated("decay1_relLabAngle", res.relLabAngle_intfrag1);
-		fillGated("ecm2_meas", res.ecm2);
-		fillGated("ecm2_expect", res.expected.Ecm2);
-		fillGated("ecm2_delta", res.ecm2 - res.expected.Ecm2);
-		fillGated2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
-		fillGated2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
-		fillGated2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
-		fillGated2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
-		fillGated("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
-		fillGated2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
-		fillGated("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
-		fillGated("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
-		fillGated("decay2_relLabAngle", res.relLabAngle_frag2frag3);
+		fillAll("ecm1_meas", res.ecm1);
+		//fillAll("ecm1_expect", res.expected.Ecm1);
+		//fillAll("ecm1_delta", res.ecm1 - res.expected.Ecm1);
+		fillAll2D("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
+		fillAll2D("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
+		fillAll2D("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
+		fillAll2D("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
+		fillAll("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
+		fillAll2D("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
+		fillAll("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
+		fillAll("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
+		fillAll("decay1_relLabAngle", res.relLabAngle_intfrag1);
+		fillAll("ecm2_meas", res.ecm2);
+		//fillAll("ecm2_expect", res.expected.Ecm2);
+		//fillAll("ecm2_delta", res.ecm2 - res.expected.Ecm2);
+		fillAll2D("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
+		fillAll2D("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
+		fillAll2D("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
+		fillAll2D("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
+		fillAll("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
+		fillAll2D("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
+		fillAll("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
+		fillAll("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
+		fillAll("decay2_relLabAngle", res.relLabAngle_frag2frag3);
 
-		fillGated2D("decay2VSdecay1_relLabAngle", res.relLabAngle_intfrag1, res.relLabAngle_frag2frag3);
+		fillAll2D("decay2VSdecay1_relLabAngle", res.relLabAngle_intfrag1, res.relLabAngle_frag2frag3);
 
-		fillGated2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
-		fillGated2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
-		fillGated2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
-		fillGated2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
-		fillGated2D("ecm1VSecm2", res.ecm2, res.ecm1);
-		//fillGated2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
+		fillAll2D("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
+		fillAll2D("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
+		fillAll2D("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
+		fillAll2D("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
+		fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
+		//fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
-		fillGated2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
+		//std::cout << "m12sq = " << res.m12sq << "\tm23sq = " << res.m23sq << std::endl;
+		fillAll2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
 
-
-		fillGated("Theta2h", res.Theta2h);
-		fillGated("CosTheta2h", res.CosTheta2h);
-		fillGated2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
-		fillGated2D("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
-		fillGated2D("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
-		fillGated2D("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
+		fillAll("Theta2h", res.Theta2h);
+		fillAll("CosTheta2h", res.CosTheta2h);
+		fillAll2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
+		fillAll2D("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
+		fillAll2D("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
+		fillAll2D("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
 	}
 
+	//if(outtree) outtree->Fill();
+}
+
+void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
+	for(int caseNum=0; caseNum<6; caseNum++){
+		TString cn = permNames.at(caseNum);
+		auto& res = caseResults[caseNum];
+
+		if(res.permName == "NONE") continue;
+
+		// 1. Pack metrics and check if this specific permutation passes the gate
+		std::map<TString, double> metrics1D = PackMetrics1D(res);
+		std::map<TString, std::pair<double,double>> metrics2D = PackPoints2D(res);
+
+		if (fCutHandler.PassAll1D(metrics1D) && fCutHandler.PassAll2D(metrics2D)) {
+
+			// 2. Define lambdas to fill the gated histograms
+			auto fillAllGated = [&](TString key, double x){
+				groups_gated[cn]->Fill(key, x);
+				groups_gated["allCases"]->Fill(key, x);
+			};
+
+			auto fillAll2DGated = [&](TString key, double x, double y){
+				groups_gated[cn]->Fill(key, x, y);
+				groups_gated["allCases"]->Fill(key, x, y);
+			};
+
+			// 3. Replicate the exact histogram filling logic from FillEventHistograms
+			fillAllGated("intermediateEx", res.intermediateEx);
+			fillAllGated("intermediateEnergyAboveM1Thresh", res.intermediateEnergyAboveM1Thresh);
+			fillAllGated("RecoilEx", res.reconEx);
+			fillAllGated("RecoilEnergyAboveM0Thresh", res.recoilEnergyAboveM0Thresh);
+			fillAll2DGated("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
+			fillAllGated("RecoilExDif", SPS_Ex - res.reconEx);
+			fillAll2DGated("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+
+			fillAllGated("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
+
+			// Intermediate CM
+			fillAllGated("intermediatevcm_meas", res.intermediatevcm);
+			fillAll2DGated("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
+			fillAllGated("intermediatekecm_meas", res.intermediatekecm);
+
+			fillAllGated("intermediatethetacm", res.intermediatethetacm);
+			fillAllGated("intermediatephicm", res.intermediatephicm);
+			fillAll2DGated("intermediatethetacmvsphicm", res.intermediatephicm, res.intermediatethetacm);
+			fillAll2DGated("intermediatevcmVSthetacm", res.intermediatethetacm, res.intermediatevcm);
+			fillAll2DGated("intermediatekecmVSthetacm", res.intermediatethetacm, res.intermediatekecm);
+
+			// Fragment helper lambda
+			auto fillFragGated = [&](int i, double vcm, double comps[3], double kecm, double theta, double phi){
+				TString f = Form("frag%d", i);
+				fillAllGated(f+"vcm_meas", vcm);
+				fillAll2DGated(f+"vcm_TransverseVSLongitudinal", std::abs(comps[2]), std::sqrt(comps[0]*comps[0] + comps[1]*comps[1]));
+				fillAllGated(f+"kecm_meas", kecm);
+				fillAllGated(f+"thetacm", theta);
+				fillAllGated(f+"phicm", phi);
+				fillAll2DGated(f+"thetacmvsphicm", phi, theta);
+				fillAll2DGated(f+"vcmVSthetacm", theta, vcm);
+				fillAll2DGated(f+"kecmVSthetacm", theta, kecm);
+			};
+
+			fillFragGated(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm);
+			fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm);
+			fillFragGated(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm);
+
+			// Decays
+			fillAllGated("ecm1_meas", res.ecm1);
+			fillAll2DGated("ecm1measVSintermediatethetacm", res.intermediatethetacm, res.ecm1);
+			fillAll2DGated("ecm1measVSfrag1thetacm", res.frag1thetacm, res.ecm1);
+			fillAll2DGated("ecm1measVSfrag2thetacm", res.frag2thetacm, res.ecm1);
+			fillAll2DGated("ecm1measVSfrag3thetacm", res.frag3thetacm, res.ecm1);
+			fillAllGated("decay1_VCM", std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1] + res.boost1[2]*res.boost1[2]));
+			fillAll2DGated("decay1_VCM_TransverseVSLongitudinal", std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]));
+			fillAllGated("decay1_thetaCMsum", res.intermediatethetacm + res.frag1thetacm);
+			fillAllGated("decay1_phiCMdiff", std::abs(res.intermediatephicm - res.frag1phicm));
+			fillAllGated("decay1_relLabAngle", res.relLabAngle_intfrag1);
+
+			fillAllGated("ecm2_meas", res.ecm2);
+			fillAll2DGated("ecm2measVSintermediatethetacm", res.intermediatethetacm, res.ecm2);
+			fillAll2DGated("ecm2measVSfrag1thetacm", res.frag1thetacm, res.ecm2);
+			fillAll2DGated("ecm2measVSfrag2thetacm", res.frag2thetacm, res.ecm2);
+			fillAll2DGated("ecm2measVSfrag3thetacm", res.frag3thetacm, res.ecm2);
+			fillAllGated("decay2_VCM", std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1] + res.boost2[2]*res.boost2[2]));
+			fillAll2DGated("decay2_VCM_TransverseVSLongitudinal", std::abs(res.boost2[2]), std::sqrt(res.boost2[0]*res.boost2[0] + res.boost2[1]*res.boost2[1]));
+			fillAllGated("decay2_thetaCMsum", res.frag2thetacm + res.frag3thetacm);
+			fillAllGated("decay2_phiCMdiff", std::abs(res.frag2phicm - res.frag3phicm));
+			fillAllGated("decay2_relLabAngle", res.relLabAngle_frag2frag3);
+
+			fillAll2DGated("decay2VSdecay1_relLabAngle", res.relLabAngle_intfrag1, res.relLabAngle_frag2frag3);
+			fillAll2DGated("intermediatevcmVSfrag1vcm", res.frag1vcm, res.intermediatevcm);
+			fillAll2DGated("intermediatekecmVSfrag1kecm", res.frag1kecm, res.intermediatekecm);
+			fillAll2DGated("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
+			fillAll2DGated("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
+			fillAll2DGated("ecm1VSecm2", res.ecm2, res.ecm1);
+
+			fillAll2DGated("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
+
+			fillAllGated("Theta2h", res.Theta2h);
+			fillAllGated("CosTheta2h", res.CosTheta2h);
+			fillAll2DGated("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
+			fillAll2DGated("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
+			fillAll2DGated("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
+			fillAll2DGated("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
+		}
+	}
 }
 
 void InvMass_Mult3::FillPermCounter(bool gated){
@@ -748,10 +635,71 @@ void InvMass_Mult3::SetExpectedCMValues(bool verbose){
 
 }
 
+std::map<TString, double> InvMass_Mult3::PackMetrics1D(const Results& res) const {
+	std::map<TString, double> metrics;
+
+	metrics["intermediateEx"] = res.intermediateEx;
+	metrics["reconEx"] = res.reconEx;
+	metrics["intermediateIM"] = res.intermediateIM;
+	metrics["intermediateEnergyAboveM1Thresh"] = res.intermediateEnergyAboveM1Thresh;
+	metrics["recoilEnergyAboveM0Thresh"] = res.recoilEnergyAboveM0Thresh;
+	metrics["E2meas"] = res.E2meas;
+
+	metrics["intermediatevcm"] = res.intermediatevcm;
+	metrics["intermediatekecm"] = res.intermediatekecm;
+	metrics["frag1vcm"] = res.frag1vcm;
+	metrics["frag1kecm"] = res.frag1kecm;
+	metrics["frag2vcm"] = res.frag2vcm;
+	metrics["frag2kecm"] = res.frag2kecm;
+	metrics["frag3vcm"] = res.frag3vcm;
+	metrics["frag3kecm"] = res.frag3kecm;
+
+	metrics["Theta2h"] = res.Theta2h;
+	metrics["CosTheta2h"] = res.CosTheta2h;
+	metrics["relLabAngle_intfrag1"] = res.relLabAngle_intfrag1;
+	metrics["relLabAngle_frag2frag3"] = res.relLabAngle_frag2frag3;
+
+	return metrics;
+}
+
+std::map<TString, std::pair<double, double>> InvMass_Mult3::PackPoints2D(const Results& res) const {
+	std::map<TString, std::pair<double,double>> points;
+
+	points["RecoilEx_IMvsSPS"] = { res.SPS_Ex, res.reconEx };
+	points["intermediateExIMvsSPS"] = { res.SPS_Ex, res.intermediateEx };
+	points["intermediatevcm_TransverseVSLongitudinal"] = { std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1])};
+	points["frag1vcm_TransverseVSLongitudinal"] = { std::abs(res.frag1Comp[2]), std::sqrt(res.frag1Comp[0]*res.frag1Comp[0] + res.frag1Comp[1]*res.frag1Comp[1]) };
+	points["frag2vcm_TransverseVSLongitudinal"] = { std::abs(res.frag2Comp[2]), std::sqrt(res.frag2Comp[0]*res.frag2Comp[0] + res.frag2Comp[1]*res.frag2Comp[1]) };
+	points["frag3vcm_TransverseVSLongitudinal"] = { std::abs(res.frag3Comp[2]), std::sqrt(res.frag3Comp[0]*res.frag3Comp[0] + res.frag3Comp[1]*res.frag3Comp[1]) };
+	points["CosTheta2h_vs_MissingMomentum"] = { res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h };
+	points["ecm1VSecm2"] = { res.ecm2, res.ecm1 };
+	points["dalitz_m12_vs_m23"] = { res.m23sq, res.m12sq };
+
+	return points;
+}
+
 int InvMass_Mult3::CountPermPasses(){
-	int numPasses = 0;
-	for(int i=0; i<6; i++) numPasses += caseResults[i].permPasses;
-	return numPasses;
+	int passCount = 0;
+
+	for(int i=0; i<6; i++){
+		auto& res = caseResults[i];
+		if(res.permName == "NONE"){
+			res.permPasses = false;
+			continue;
+		}
+
+		std::map<TString, double> metrics1D = PackMetrics1D(res);
+		std::map<TString, std::pair<double,double>> metrics2D = PackPoints2D(res);
+
+		if(fCutHandler.PassAll1D(metrics1D) && fCutHandler.PassAll2D(metrics2D)){
+			res.permPasses = true;
+			passCount++;
+		} else {
+			res.permPasses = false;
+		}
+	}
+
+	return passCount;
 }
 
 void InvMass_Mult3::ClearEventResults(){

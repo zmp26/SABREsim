@@ -6,12 +6,15 @@
 #include <array>
 #include <string>
 #include "TFile.h"
+#include "TTree.h"
 #include "TH1.h"
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TString.h"
 #include "TDirectory.h"
 #include "TLorentzVector.h"
 #include "permHisto_mult3.h"
+#include "CutHandler.h"
 
 /*
 	invmass_mult3::Hypothesis4 differs from missmass_mult2::Hypothesis4MM
@@ -46,15 +49,6 @@ struct Hypothesis4 {
 	// double intermediateExGate;
 };
 
-enum gateIndices {
-	NOCHECK,
-	FIRSTVALID = NOCHECK,
-	INTEXCHECK,
-	INTVCMCHECK,
-	FRAG1VCMCHECK,
-	LASTVALID = FRAG1VCMCHECK
-};
-
 class InvMass_Mult3{
 private:
 	std::map<TString, std::map<TString,TH1*>> hMap;
@@ -73,28 +67,6 @@ private:
 
 	TFile *outfile;
 	TTree *outtree;
-
-	/*
-		gate1/2_index mapping:
-			0 	=	no gate check (just pass true to if statement)
-			1	=	intermediateExCheck
-			2	=	intermediateVcmCheck
-			3 	=	frag1VcmCheck
-
-		Default is gate1_index = 1, gate2_index = 0 for basic intermediateEx gate
-
-		This should be set via invmass_mult3::SetGate1/2() before beginning analysis of events
-
-		**SEE ENUM DECLARED OUTSIDE OF CLASS AT TOP OF FILE**
-	*/
-
-	int gate1_index;
-	int gate2_index;
-	int gate3_index;
-
-	std::pair<double,double> gate1minmax;
-	std::pair<double,double> gate2minmax;
-	std::pair<double,double> gate3minmax;
 
 	std::map<TString, permHisto_mult3*> groups_ungated;
 	std::map<TString, permHisto_mult3*> groups_gated;
@@ -118,6 +90,8 @@ private:
 
 	//define a "results" struct here:
 	struct Results {
+
+		double SPSEnergy, SPSTheta, SPSPhi, SPS_Ex;
 
 		double intermediateIM, intermediateEx, reconEx;
 		double intermediateEnergyAboveM1Thresh;
@@ -151,9 +125,6 @@ private:
 		double PLabTotal_Beam;
 		double E2meas;
 
-		// double permTheta2h;
-		// double permCosTheta2h;
-
 		bool permPasses = false;
 		
 		TString permName;
@@ -161,6 +132,11 @@ private:
 
 		void Reset(){
 			permName = "NONE";
+
+			SPSEnergy = -666.;
+			SPSTheta = -666.;
+			SPSPhi = -666.;
+			SPS_Ex = -666.;
 
 			intermediateIM = -666.;
 			intermediateEx = -666.;
@@ -206,9 +182,6 @@ private:
 			PLabTotal_ResDecayParticles = -666.;
 			E2meas = -666.;
 
-			// permTheta2h = -666.;
-			// permCosTheta2h = -666.;
-
 			permPasses = false;
 
 			for(int i=0; i<3; i++){
@@ -253,6 +226,11 @@ private:
 	TH1D* hSortedIMRecEx_gate5Li;
 	TH2D* hSABRESumE_vs_ExSPS;
 
+	CutHandler fCutHandler;
+
+	std::map<TString, double> PackMetrics1D(const Results& res) const;
+	std::map<TString, std::pair<double, double>> PackPoints2D(const Results& res) const;
+
 public:
 	InvMass_Mult3();
 	~InvMass_Mult3();
@@ -261,12 +239,10 @@ public:
 	//void SetMasses(double mass_frag1, double mass_frag2, double mass_frag3, double mass_recoil, double mass_intermediate);
 	void SetHypothesis(const Hypothesis4& hypo);
 
-	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3], bool updateIntermediateEx=false);
+	std::array<double,6> AnalyzeEvent(double E[3], double theta[3], double phi[3], double SPS_E, double SPSTheta, double SPSPhi, double SPS_Ex, bool updateIntermediateEx=false);
 	void FillEventHistograms(double SPS_Ex);//fills all 6 cases together for the event - ungated only
-	void FillSelectCaseHistograms(int caseNum, double SPS_Ex);//selectively fills a single case for the event - ungated only
 
 	void FillGatedEventHistograms(double SPS_Ex);//fills all 6 cases together for the event - gated only (assumes check done on user side!)
-	void FillSelectGatedCaseHistograms(int caseNum, double SPS_Ex);//selectively fills a single case for the event - gated only (assumes check done on user side!)
 
 	void FillTree();
 
@@ -280,22 +256,10 @@ public:
 
 	void SetRecoilEx(double Ex) { recoilEx = Ex; SetExpectedCMValues(); }// hypothesis.recoilEx = Ex; SetExpectedCMValues(); }
 	void SetIntermediateEx(double Ex) { intermediateEx = Ex; SetExpectedCMValues(); }// hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
-	//void SetIntermediateExGate(double ExGate) { intermediateExGate = ExGate; }// hypothesis.intermediateExGate = ExGate; }
-	// double GetIntermediateEx() { return intermediateEx; }
-	// double GetIntermediateExGate() { return intermediateExGate; }
-	void SetGate1(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate1_index = index; }
-	void SetGate2(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate2_index = index; }
-	void SetGate3(int index) { if(FIRSTVALID <= index && LASTVALID >= index) gate3_index = index; }
-	void SetGate1MinMax(std::pair<double,double> minmax) { gate1minmax = minmax; }
-	void SetGate2MinMax(std::pair<double,double> minmax) { gate2minmax = minmax; }
-	void SetGate3MinMax(std::pair<double,double> minmax) { gate3minmax = minmax; }
 
-	bool CheckGate1(double val) { return(val >= gate1minmax.first && val <= gate1minmax.second); }
-	bool CheckGate2(double val) { return(val >= gate2minmax.first && val <= gate2minmax.second); }
-	bool CheckGate3(double val) { return(val >= gate3minmax.first && val <= gate3minmax.second); }
+	CutHandler& GetCutHandler() { return fCutHandler; }
 
 	int CountPermPasses();
-
 };
 
 

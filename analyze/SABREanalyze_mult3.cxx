@@ -92,31 +92,33 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	InvMass_Mult3 SABRE_analysis;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
-	SABRE_analysis.SetGate1(gate1index);
-	SABRE_analysis.SetGate1MinMax(gate1minmax);
-	SABRE_analysis.SetGate2(gate2index);
-	SABRE_analysis.SetGate2MinMax(gate2minmax);
-	SABRE_analysis.SetGate3(gate3index);
-	SABRE_analysis.SetGate3MinMax(gate3minmax);
+	// SABRE_analysis.SetGate1(gate1index);
+	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+	// SABRE_analysis.SetGate2(gate2index);
+	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+	// SABRE_analysis.SetGate3(gate3index);
+	// SABRE_analysis.SetGate3MinMax(gate3minmax);
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
 	kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
-	kin4mc_analysis.SetGate1(gate1index);
-	kin4mc_analysis.SetGate1MinMax(gate1minmax);
-	kin4mc_analysis.SetGate2(gate2index);
-	kin4mc_analysis.SetGate2MinMax(gate2minmax);
-	kin4mc_analysis.SetGate3(gate3index);
-	kin4mc_analysis.SetGate3MinMax(gate3minmax);
+	// kin4mc_analysis.SetGate1(gate1index);
+	// kin4mc_analysis.SetGate1MinMax(gate1minmax);
+	// kin4mc_analysis.SetGate2(gate2index);
+	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
+	// kin4mc_analysis.SetGate3(gate3index);
+	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double Ex, SPSE;
+	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -152,7 +154,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 			//kin4mc_analysis.SetExpectedCMValues();
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, updateIntermediateEx);
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
@@ -165,7 +167,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		SABRE_analysis.FillTree();
 		//SABRE_analysis.FillGatedEventHistograms(); 
 
-		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
+		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
 		kin4mc_analysis.FillEventHistograms(Ex);
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
@@ -195,7 +197,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
-void B10ha_8BeHypothesis(const char* input_filename, int gate1index=NOCHECK, std::pair<double,double> gate1minmax={0.,0.}, int gate2index=NOCHECK, std::pair<double,double> gate2minmax={0.,0.}, int gate3index=NOCHECK, std::pair<double,double> gate3minmax={0.,0.}, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+void B10ha_8BeHypothesis(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -238,16 +240,18 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
-	SABRE_analysis.SetGate1(gate1index);
-	SABRE_analysis.SetGate1MinMax(gate1minmax);
-	SABRE_analysis.SetGate2(gate2index);
-	SABRE_analysis.SetGate2MinMax(gate2minmax);
-	SABRE_analysis.SetGate3(gate3index);
-	SABRE_analysis.SetGate3MinMax(gate3minmax);
+	// SABRE_analysis.SetGate1(gate1index);
+	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+	// SABRE_analysis.SetGate2(gate2index);
+	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+	// SABRE_analysis.SetGate3(gate3index);
+	// SABRE_analysis.SetGate3MinMax(gate3minmax);
 
-	double Ex, SPSE;
+	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -272,7 +276,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 			SABRE_analysis.SetRecoilEx(Ex);
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
@@ -299,7 +303,7 @@ void B10ha_8BeHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
 }
 
-void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int permCheck = 2, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void tempDoAll_8BeHypothesis(bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	// std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
 	// std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
@@ -316,62 +320,8 @@ void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int
  	for(size_t i=0; i<intExs.size(); i++){
  		int intEx = intExs.at(i);
  		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_1000k_tree_mult3.root", intEx);
- 	
- 		switch(gate1index){
-			case NOCHECK:
-				minmax1 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax1 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax1 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax1 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax1 = {0., 0.};
-				break;
-		}
 
-		switch(gate2index){
-			case NOCHECK:
-				minmax2 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax2 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax2 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax2 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax2 = {0., 0.};
-				break;
-		}
-
-		switch(gate3index){
-			case NOCHECK:
-				minmax3 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax3 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax3 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax3 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax3 = {0., 0.};
-				break;
-		}
-
-		B10ha_8BeHypothesis(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx, permCheck);
+		B10ha_8BeHypothesis(filename.Data(), updateRecoilEx, updateIntermediateEx, permCheck);
 
 		std::cout << "Generated " << filename.Data() << std::endl << std::endl;
 
@@ -379,7 +329,7 @@ void tempDoAll_8BeHypothesis(int gate1index, int gate2index, int gate3index, int
 
 }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -424,31 +374,33 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
-	SABRE_analysis.SetGate1(gate1index);
-	SABRE_analysis.SetGate1MinMax(gate1minmax);
-	SABRE_analysis.SetGate2(gate2index);
-	SABRE_analysis.SetGate2MinMax(gate2minmax);
-	SABRE_analysis.SetGate3(gate3index);
-	SABRE_analysis.SetGate3MinMax(gate3minmax);
+	// SABRE_analysis.SetGate1(gate1index);
+	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+	// SABRE_analysis.SetGate2(gate2index);
+	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+	// SABRE_analysis.SetGate3(gate3index);
+	// SABRE_analysis.SetGate3MinMax(gate3minmax);
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
 	kin4mc_analysis.SetHypothesis(b9_li5_hypothesis);
-	kin4mc_analysis.SetGate1(gate1index);
-	kin4mc_analysis.SetGate1MinMax(gate1minmax);
-	kin4mc_analysis.SetGate2(gate2index);
-	kin4mc_analysis.SetGate2MinMax(gate2minmax);
-	kin4mc_analysis.SetGate3(gate3index);
-	kin4mc_analysis.SetGate3MinMax(gate3minmax);
+	// kin4mc_analysis.SetGate1(gate1index);
+	// kin4mc_analysis.SetGate1MinMax(gate1minmax);
+	// kin4mc_analysis.SetGate2(gate2index);
+	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
+	// kin4mc_analysis.SetGate3(gate3index);
+	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
 	intree->SetBranchAddress("kin_theta", kinmc_theta);
 	intree->SetBranchAddress("kin_phi", kinmc_phi);
 
-	double Ex, SPSE;
+	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -485,7 +437,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 			//kin4mc_analysis.SetExpectedCMValues();
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
@@ -497,7 +449,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 		}
 		SABRE_analysis.FillTree();
 
-		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, updateIntermediateEx);
+		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
 		kin4mc_analysis.FillEventHistograms(Ex);
 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
 		kin4mc_analysis.FillPermCounter();
@@ -526,7 +478,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
-void B10ha_5LiHypothesis(const char* input_filename, int gate1index=NOCHECK, std::pair<double,double> gate1minmax={0.,0.}, int gate2index=NOCHECK, std::pair<double,double> gate2minmax={0.,0.}, int gate3index=NOCHECK, std::pair<double,double> gate3minmax={0.,0.}, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_5LiHypothesis(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -571,16 +523,18 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
-	SABRE_analysis.SetGate1(gate1index);
-	SABRE_analysis.SetGate1MinMax(gate1minmax);
-	SABRE_analysis.SetGate2(gate2index);
-	SABRE_analysis.SetGate2MinMax(gate2minmax);
-	SABRE_analysis.SetGate3(gate3index);
-	SABRE_analysis.SetGate3MinMax(gate3minmax);
+	// SABRE_analysis.SetGate1(gate1index);
+	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+	// SABRE_analysis.SetGate2(gate2index);
+	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+	// SABRE_analysis.SetGate3(gate3index);
+	// SABRE_analysis.SetGate3MinMax(gate3minmax);
 
-	double Ex, SPSE;
+	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -606,7 +560,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 			SABRE_analysis.SetRecoilEx(Ex);
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		SABRE_analysis.FillEventHistograms(Ex);
 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
 		SABRE_analysis.FillPermCounter();
@@ -633,7 +587,7 @@ void B10ha_5LiHypothesis(const char* input_filename, int gate1index=NOCHECK, std
 
 }
 
-void tempDoAll_5LiHypothesis(int gate1index, int gate2index, int gate3index, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
 	std::vector<int> intExs;
 	std::vector<std::pair<double,double>> intEminmax;
@@ -648,61 +602,7 @@ void tempDoAll_5LiHypothesis(int gate1index, int gate2index, int gate3index, boo
 		int intEx = intExs.at(i);
 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree_mult3.root", intEx);
 
-		switch(gate1index){
-			case NOCHECK:
-				minmax1 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax1 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax1 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax1 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax1 = {0., 0.};
-				break;
-		}
-
-		switch(gate2index){
-			case NOCHECK:
-				minmax2 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax2 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax2 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax2 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax2 = {0., 0.};
-				break;
-		}
-
-		switch(gate3index){
-			case NOCHECK:
-				minmax3 = {0.,0.};
-				break;
-			case INTEXCHECK:
-				minmax3 = intEminmax.at(i);
-				break;
-			case INTVCMCHECK:
-				minmax3 = intVCMminmax.at(i);
-				break;
-			case FRAG1VCMCHECK:
-				minmax3 = frag1VCMminmax.at(i);
-				break;
-			default:
-				minmax3 = {0., 0.};
-				break;
-		}
-
-		B10ha_5LiHypothesis(filename.Data(), gate1index, minmax1, gate2index, minmax2, gate3index, minmax3, updateRecoilEx, updateIntermediateEx);
+		B10ha_5LiHypothesis(filename.Data(), updateRecoilEx, updateIntermediateEx);
 	}
 }
 
@@ -722,8 +622,8 @@ void tempDoAll_BothHypothesis(){
 		for(auto const &hyp : hypotheses){
 			auto localStart = std::chrono::steady_clock::now();
 			TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
-			B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-			B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+			B10ha_8BeHypothesis(filename.Data());
+			B10ha_5LiHypothesis(filename.Data());
 			count++;
 			auto localStop = std::chrono::steady_clock::now();
 			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
@@ -811,26 +711,28 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 
 	b9_p8Be_analysis.Init(p8Be_output_filename);
 	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
-	b9_p8Be_analysis.SetGate1(NOCHECK);
-	b9_p8Be_analysis.SetGate1MinMax({0,0});
-	b9_p8Be_analysis.SetGate2(NOCHECK);
-	b9_p8Be_analysis.SetGate2MinMax({0,0});
-	b9_p8Be_analysis.SetGate3(NOCHECK);
-	b9_p8Be_analysis.SetGate3MinMax({0,0});
+	// b9_p8Be_analysis.SetGate1(NOCHECK);
+	// b9_p8Be_analysis.SetGate1MinMax({0,0});
+	// b9_p8Be_analysis.SetGate2(NOCHECK);
+	// b9_p8Be_analysis.SetGate2MinMax({0,0});
+	// b9_p8Be_analysis.SetGate3(NOCHECK);
+	// b9_p8Be_analysis.SetGate3MinMax({0,0});
 
 	b9_a5Li_analysis.Init(a5Li_output_filename);
 	b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
-	b9_a5Li_analysis.SetGate1(NOCHECK);
-	b9_a5Li_analysis.SetGate1MinMax({0,0});
-	b9_a5Li_analysis.SetGate2(NOCHECK);
-	b9_a5Li_analysis.SetGate2MinMax({0,0});
-	b9_a5Li_analysis.SetGate3(NOCHECK);
-	b9_a5Li_analysis.SetGate3MinMax({0,0});
+	// b9_a5Li_analysis.SetGate1(NOCHECK);
+	// b9_a5Li_analysis.SetGate1MinMax({0,0});
+	// b9_a5Li_analysis.SetGate2(NOCHECK);
+	// b9_a5Li_analysis.SetGate2MinMax({0,0});
+	// b9_a5Li_analysis.SetGate3(NOCHECK);
+	// b9_a5Li_analysis.SetGate3MinMax({0,0});
 
 
-	double Ex, SPSE;
+	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -856,7 +758,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		}
 
 	if(Ex >= 1.7){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
-		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		b9_p8Be_analysis.FillEventHistograms(Ex);
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 		b9_p8Be_analysis.FillPermCounter();
@@ -864,7 +766,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		b9_p8Be_analysis.FillTree();
 
-		b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		b9_a5Li_analysis.FillEventHistograms(Ex);
 		int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
 		b9_a5Li_analysis.FillPermCounter();
@@ -947,12 +849,12 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 
 	b9_p8Be_analysis.Init(p8Be_output_filename);
 	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
-	b9_p8Be_analysis.SetGate1(NOCHECK);
-	b9_p8Be_analysis.SetGate1MinMax({0,0});
-	b9_p8Be_analysis.SetGate2(NOCHECK);
-	b9_p8Be_analysis.SetGate2MinMax({0,0});
-	b9_p8Be_analysis.SetGate3(NOCHECK);
-	b9_p8Be_analysis.SetGate3MinMax({0,0});
+	// b9_p8Be_analysis.SetGate1(NOCHECK);
+	// b9_p8Be_analysis.SetGate1MinMax({0,0});
+	// b9_p8Be_analysis.SetGate2(NOCHECK);
+	// b9_p8Be_analysis.SetGate2MinMax({0,0});
+	// b9_p8Be_analysis.SetGate3(NOCHECK);
+	// b9_p8Be_analysis.SetGate3MinMax({0,0});
 
 	// b9_a5Li_analysis.Init(a5Li_output_filename);
 	// b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
@@ -963,10 +865,11 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	// b9_a5Li_analysis.SetGate3(NOCHECK);
 	// b9_a5Li_analysis.SetGate3MinMax({0,0});
 
-
-	double Ex, SPSE;
+	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
@@ -992,7 +895,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 		}
 
 
-		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		b9_p8Be_analysis.FillEventHistograms(Ex);
 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
 		b9_p8Be_analysis.FillPermCounter();
@@ -1000,7 +903,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
 		b9_p8Be_analysis.FillTree();
 
-		// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, updateIntermediateEx);
+		// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 		// b9_a5Li_analysis.FillEventHistograms(Ex);
 		// int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
 		// b9_a5Li_analysis.FillPermCounter();
