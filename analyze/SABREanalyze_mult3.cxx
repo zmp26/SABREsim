@@ -197,7 +197,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 }
 
-void B10ha_8BeHypothesis(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -246,6 +246,13 @@ void B10ha_8BeHypothesis(const char* input_filename, bool updateRecoilEx = true,
 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
 	// SABRE_analysis.SetGate3(gate3index);
 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
@@ -303,31 +310,31 @@ void B10ha_8BeHypothesis(const char* input_filename, bool updateRecoilEx = true,
 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
 }
 
-void tempDoAll_8BeHypothesis(bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+// void tempDoAll_8BeHypothesis(bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
-	// std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
-	// std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
-	// std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00289, 0.00429}, {0.00382, 0.00503}, {0.00461, 0.00575}, {0.00527, 0.00637}, {0.00593, 0.00695}};//c
-	// std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.024, 0.03321}, {0.03051, 0.03985}, {0.03667, 0.04527}, {0.04274, 0.05045}, {0.04797, 0.0549}};//c
+// 	// std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
+// 	// std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
+// 	// std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00289, 0.00429}, {0.00382, 0.00503}, {0.00461, 0.00575}, {0.00527, 0.00637}, {0.00593, 0.00695}};//c
+// 	// std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.024, 0.03321}, {0.03051, 0.03985}, {0.03667, 0.04527}, {0.04274, 0.05045}, {0.04797, 0.0549}};//c
 
-	std::vector<int> intExs = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
-	std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};
-	std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00193, 0.0031}, {0.00219, 0.00363}, {0.00245, 0.00389}, {0.00267, 0.00412}, {0.00289, 0.00429}, {0.00301, 0.00451}, {0.00321, 0.00471}, {0.00333, 0.00485}, {0.00347, 0.00501}, {0.00382, 0.00503}};
-	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.01537, 0.02595}, {0.01791, 0.02817}, {0.01967, 0.3035}, {0.02159, 0.03199}, {0.024, 0.03321}, {0.02493, 0.03541}, {0.02599, 0.03665}, {0.02752, 0.03769}, {0.02854, 0.03911}, {0.03051, 0.03985}};
+// 	std::vector<int> intExs = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
+// 	std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};
+// 	std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00193, 0.0031}, {0.00219, 0.00363}, {0.00245, 0.00389}, {0.00267, 0.00412}, {0.00289, 0.00429}, {0.00301, 0.00451}, {0.00321, 0.00471}, {0.00333, 0.00485}, {0.00347, 0.00501}, {0.00382, 0.00503}};
+// 	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.01537, 0.02595}, {0.01791, 0.02817}, {0.01967, 0.3035}, {0.02159, 0.03199}, {0.024, 0.03321}, {0.02493, 0.03541}, {0.02599, 0.03665}, {0.02752, 0.03769}, {0.02854, 0.03911}, {0.03051, 0.03985}};
 
- 	std::pair<double,double> minmax1, minmax2, minmax3;
+//  	std::pair<double,double> minmax1, minmax2, minmax3;
 
- 	for(size_t i=0; i<intExs.size(); i++){
- 		int intEx = intExs.at(i);
- 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_1000k_tree_mult3.root", intEx);
+//  	for(size_t i=0; i<intExs.size(); i++){
+//  		int intEx = intExs.at(i);
+//  		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_1000k_tree_mult3.root", intEx);
 
-		B10ha_8BeHypothesis(filename.Data(), updateRecoilEx, updateIntermediateEx, permCheck);
+// 		B10ha_8BeHypothesis(filename.Data(), updateRecoilEx, updateIntermediateEx, permCheck);
 
-		std::cout << "Generated " << filename.Data() << std::endl << std::endl;
+// 		std::cout << "Generated " << filename.Data() << std::endl << std::endl;
 
- 	}
+//  	}
 
-}
+// }
 
 void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
@@ -607,50 +614,50 @@ void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediat
 }
 
 
-void tempDoAll_BothHypothesis(){
+// void tempDoAll_BothHypothesis(){
 
-	auto totalStart = std::chrono::steady_clock::now();
+// 	auto totalStart = std::chrono::steady_clock::now();
 
-	std::vector<TString> hypotheses = {"p8Be", "a5Li"};
-	std::vector<int> states = {2345, 2751, 2780};
-	//int total = (int)(hypotheses.size() * states.size());
-	int total = (int)(states.size());
+// 	std::vector<TString> hypotheses = {"p8Be", "a5Li"};
+// 	std::vector<int> states = {2345, 2751, 2780};
+// 	//int total = (int)(hypotheses.size() * states.size());
+// 	int total = (int)(states.size());
 
-	int count = 0;
+// 	int count = 0;
 
-	for(auto const &state : states){
-		for(auto const &hyp : hypotheses){
-			auto localStart = std::chrono::steady_clock::now();
-			TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
-			B10ha_8BeHypothesis(filename.Data());
-			B10ha_5LiHypothesis(filename.Data());
-			count++;
-			auto localStop = std::chrono::steady_clock::now();
-			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-			std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
-		}
+// 	for(auto const &state : states){
+// 		for(auto const &hyp : hypotheses){
+// 			auto localStart = std::chrono::steady_clock::now();
+// 			TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
+// 			B10ha_8BeHypothesis(filename.Data());
+// 			B10ha_5LiHypothesis(filename.Data());
+// 			count++;
+// 			auto localStop = std::chrono::steady_clock::now();
+// 			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+// 			std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+// 		}
 		
-	}
+// 	}
 
-	// for(auto const &state : states){
-	// 	auto localStart = std::chrono::steady_clock::now();
-	// 	TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3.root",state);
-	// 	//std::cout << "here..." << std::endl;
-	// 	B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-	// 	//std::cout << "and here..." << std::endl;
-	// 	B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-	// 	//std::cout << "here too..." << std::endl;
-	// 	count++;
-	// 	auto localStop = std::chrono::steady_clock::now();
-	// 	auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-	// 	std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
-	// }
+// 	// for(auto const &state : states){
+// 	// 	auto localStart = std::chrono::steady_clock::now();
+// 	// 	TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3.root",state);
+// 	// 	//std::cout << "here..." << std::endl;
+// 	// 	B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+// 	// 	//std::cout << "and here..." << std::endl;
+// 	// 	B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
+// 	// 	//std::cout << "here too..." << std::endl;
+// 	// 	count++;
+// 	// 	auto localStop = std::chrono::steady_clock::now();
+// 	// 	auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
+// 	// 	std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
+// 	// }
 
-	auto end = std::chrono::steady_clock::now();
-	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - totalStart);
+// 	auto end = std::chrono::steady_clock::now();
+// 	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - totalStart);
 
-	std::cout << "\n\nFinished all analysis! Elapsed time: " << elapsed.count() << " seconds\n\n"<< std::endl;
-}
+// 	std::cout << "\n\nFinished all analysis! Elapsed time: " << elapsed.count() << " seconds\n\n"<< std::endl;
+// }
 
 
 //------------------------------DATA BELOW-------------------------------------

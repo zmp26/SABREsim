@@ -23,3 +23,5 @@ train/lib/
 tempIMM.txt
 tempMMM.txt
 config/current_sim.conf
+analyze/testcuts.txt
+
