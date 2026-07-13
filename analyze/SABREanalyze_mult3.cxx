@@ -43,7 +43,7 @@
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -89,7 +89,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 
 	long numentries = intree->GetEntries();
 
-	InvMass_Mult3 SABRE_analysis;
+	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
 	// SABRE_analysis.SetGate1(gate1index);
@@ -98,6 +98,13 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
 	// SABRE_analysis.SetGate3(gate3index);
 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
@@ -108,6 +115,13 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, int gate1i
 	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
 	// kin4mc_analysis.SetGate3(gate3index);
 	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
+	cuthandler = kin4mc_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
@@ -336,7 +350,7 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filenam
 
 // }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -387,6 +401,13 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, bool updat
 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
 	// SABRE_analysis.SetGate3(gate3index);
 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	InvMass_Mult3 kin4mc_analysis;
 	kin4mc_analysis.Init(kin4mc_output_filename);
@@ -397,6 +418,13 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, bool updat
 	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
 	// kin4mc_analysis.SetGate3(gate3index);
 	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
+	cuthandler = kin4mc_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
 	intree->SetBranchAddress("kin_e", kinmc_e);
@@ -485,7 +513,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, bool updat
 
 }
 
-void B10ha_5LiHypothesis(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -536,6 +564,13 @@ void B10ha_5LiHypothesis(const char* input_filename, bool updateRecoilEx = true,
 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
 	// SABRE_analysis.SetGate3(gate3index);
 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
@@ -594,7 +629,7 @@ void B10ha_5LiHypothesis(const char* input_filename, bool updateRecoilEx = true,
 
 }
 
-void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void tempDoAll_5LiHypothesis(const char* cutlist_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
 	std::vector<int> intExs;
 	std::vector<std::pair<double,double>> intEminmax;
@@ -609,59 +644,13 @@ void tempDoAll_5LiHypothesis(bool updateRecoilEx = false, bool updateIntermediat
 		int intEx = intExs.at(i);
 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree_mult3.root", intEx);
 
-		B10ha_5LiHypothesis(filename.Data(), updateRecoilEx, updateIntermediateEx);
+		B10ha_5LiHypothesis(filename.Data(), cutlist_filename, updateRecoilEx, updateIntermediateEx);
 	}
 }
 
 
-// void tempDoAll_BothHypothesis(){
-
-// 	auto totalStart = std::chrono::steady_clock::now();
-
-// 	std::vector<TString> hypotheses = {"p8Be", "a5Li"};
-// 	std::vector<int> states = {2345, 2751, 2780};
-// 	//int total = (int)(hypotheses.size() * states.size());
-// 	int total = (int)(states.size());
-
-// 	int count = 0;
-
-// 	for(auto const &state : states){
-// 		for(auto const &hyp : hypotheses){
-// 			auto localStart = std::chrono::steady_clock::now();
-// 			TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_%s_ex0keV_1mil_tree_mult3.root", state, hyp.Data());
-// 			B10ha_8BeHypothesis(filename.Data());
-// 			B10ha_5LiHypothesis(filename.Data());
-// 			count++;
-// 			auto localStop = std::chrono::steady_clock::now();
-// 			auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-// 			std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
-// 		}
-		
-// 	}
-
-// 	// for(auto const &state : states){
-// 	// 	auto localStart = std::chrono::steady_clock::now();
-// 	// 	TString filename = Form("/mnt/e/SABREsim/analyze/may22/det/b10ha_7.5MeV_9B_ex%dkeV_tree_mult3.root",state);
-// 	// 	//std::cout << "here..." << std::endl;
-// 	// 	B10ha_8BeHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-// 	// 	//std::cout << "and here..." << std::endl;
-// 	// 	B10ha_5LiHypothesis(filename.Data(), NOCHECK, {0,0}, NOCHECK, {0,0}, NOCHECK, {0,0});
-// 	// 	//std::cout << "here too..." << std::endl;
-// 	// 	count++;
-// 	// 	auto localStop = std::chrono::steady_clock::now();
-// 	// 	auto localElapsed = std::chrono::duration_cast<std::chrono::seconds>(localStop-localStart);
-// 	// 	std::cout << "Finished " << count << " out of " << total << " (" << count*100./total << "%)\t(" << localElapsed.count() << "s)\n\n" << std::endl;
-// 	// }
-
-// 	auto end = std::chrono::steady_clock::now();
-// 	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - totalStart);
-
-// 	std::cout << "\n\nFinished all analysis! Elapsed time: " << elapsed.count() << " seconds\n\n"<< std::endl;
-// }
-
-
 //------------------------------DATA BELOW-------------------------------------
-void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, const char* cutlist_p8Be_filename, const char* cutlist_a5Li_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -701,6 +690,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_p8Be_hypothesis.beamEnergyMeV = 7.5;
 
 
 	b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
@@ -712,27 +702,30 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 	b9_a5Li_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_a5Li_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_a5Li_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_a5Li_hypothesis.beamEnergyMeV = 7.5;
 
 
 	InvMass_Mult3 b9_p8Be_analysis, b9_a5Li_analysis;
 
 	b9_p8Be_analysis.Init(p8Be_output_filename);
 	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
-	// b9_p8Be_analysis.SetGate1(NOCHECK);
-	// b9_p8Be_analysis.SetGate1MinMax({0,0});
-	// b9_p8Be_analysis.SetGate2(NOCHECK);
-	// b9_p8Be_analysis.SetGate2MinMax({0,0});
-	// b9_p8Be_analysis.SetGate3(NOCHECK);
-	// b9_p8Be_analysis.SetGate3MinMax({0,0});
+	CutHandler& cuthandler = b9_p8Be_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_p8Be_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_p8Be_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	b9_a5Li_analysis.Init(a5Li_output_filename);
 	b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
-	// b9_a5Li_analysis.SetGate1(NOCHECK);
-	// b9_a5Li_analysis.SetGate1MinMax({0,0});
-	// b9_a5Li_analysis.SetGate2(NOCHECK);
-	// b9_a5Li_analysis.SetGate2MinMax({0,0});
-	// b9_a5Li_analysis.SetGate3(NOCHECK);
-	// b9_a5Li_analysis.SetGate3MinMax({0,0});
+	cuthandler = b9_a5Li_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_a5Li_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_a5Li_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 
 	double Ex, SPSE, SPSTheta, SPSPhi;
@@ -762,25 +755,27 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 		if(updateRecoilEx){
 			b9_p8Be_analysis.SetRecoilEx(Ex);
 			b9_a5Li_analysis.SetRecoilEx(Ex);
+			//std::cout << "Ex = " << Ex << std::endl;
 		}
 
-	if(Ex >= 1.7){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
-		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		b9_p8Be_analysis.FillEventHistograms(Ex);
-		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
-		b9_p8Be_analysis.FillPermCounter();
-		b9_p8Be_analysis.FillSortedHisto(Ex);
-		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		b9_p8Be_analysis.FillTree();
+		if(Ex >= 1.7){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
+			b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+			b9_p8Be_analysis.FillEventHistograms(Ex);
+			int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
+			b9_p8Be_analysis.FillPermCounter();
+			b9_p8Be_analysis.FillSortedHisto(Ex);
+			b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+			b9_p8Be_analysis.FillTree();
 
-		b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		b9_a5Li_analysis.FillEventHistograms(Ex);
-		int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
-		b9_a5Li_analysis.FillPermCounter();
-		b9_a5Li_analysis.FillSortedHisto(Ex);
-		b9_a5Li_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		b9_a5Li_analysis.FillTree();
-	}
+			b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+			b9_a5Li_analysis.FillEventHistograms(Ex);
+			int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
+			b9_a5Li_analysis.FillPermCounter();
+			b9_a5Li_analysis.FillSortedHisto(Ex);
+			b9_a5Li_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+			b9_a5Li_analysis.FillTree();
+			//std::cout << "test" << std::endl;
+		}
 
 		if(i % 1000 == 0){
 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
@@ -799,7 +794,7 @@ void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, bool updateReco
 	std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
 }
 
-void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_3par_exp_allEx(const char* input_filename, const char* cutlist_p8Be_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -839,6 +834,7 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	b9_p8Be_hypothesis.beamEnergyMeV = 7.5;
 
 
 	// b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
@@ -862,6 +858,13 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	// b9_p8Be_analysis.SetGate2MinMax({0,0});
 	// b9_p8Be_analysis.SetGate3(NOCHECK);
 	// b9_p8Be_analysis.SetGate3MinMax({0,0});
+	CutHandler& cuthandler = b9_p8Be_analysis.GetCutHandler();
+	if(!cuthandler.LoadCutsFromConfig(cutlist_p8Be_filename)){
+		std::cerr << "Warning: could not load at least one cut from " << cutlist_p8Be_filename << "!\n";
+	}
+
+	//test by printing cuts here:
+	cuthandler.PrintCuts();
 
 	// b9_a5Li_analysis.Init(a5Li_output_filename);
 	// b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
@@ -871,6 +874,13 @@ void B10ha_3par_exp_allEx(const char* input_filename, bool updateRecoilEx = true
 	// b9_a5Li_analysis.SetGate2MinMax({0,0});
 	// b9_a5Li_analysis.SetGate3(NOCHECK);
 	// b9_a5Li_analysis.SetGate3MinMax({0,0});
+	//cuthandler = b9_a5Li_analysis.GetCutHandler();
+	// if(!cuthandler.LoadCutsFromConfig(cutlist_a5Li_filename)){
+	// 	std::cerr << "Warning: could not load at least one cut from " << cutlist_a5Li_filename << "!\n";
+	// }
+
+	// //test by printing cuts here:
+	// cuthandler.PrintCuts();
 
 	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);

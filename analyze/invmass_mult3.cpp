@@ -149,8 +149,27 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].SPSPhi = SPSPhi;
 		caseResults[permIndex].SPS_Ex = SPS_Ex;
 
+		double PLabVect_beam_mag = std::sqrt(2.*hypothesis.mass_beam*beamEnergyMeV);
+		TVector3 PLabVect_beam = {0., 0., PLabVect_beam_mag};
+
+		double PLabVect_ejectile_mag = std::sqrt(2.*hypothesis.mass_ejectile*SPSEnergy);
+		TVector3 PLabVect_ejectile = {PLabVect_ejectile_mag*std::sin(SPSTheta*DEGRAD)*std::cos(SPSPhi*DEGRAD),
+									  PLabVect_ejectile_mag*std::sin(SPSTheta*DEGRAD)*std::sin(SPSPhi*DEGRAD),
+									  PLabVect_ejectile_mag*std::cos(SPSTheta*DEGRAD)};
+
+		TVector3 missingmomentum = PLabVect_beam - PLabVect_ejectile - (lv[0] + lv[1] + lv[2]).Vect();
+
+		for(int i=0; i<3; i++) caseResults[permIndex].MissingMomentumComp[i] = missingmomentum[i];
+
+		caseResults[permIndex].MissingMomentumMag = missingmomentum.Mag();
+
 		caseResults[permIndex].PLabTotal_ResDecayParticles = (lv[0] + lv[1] + lv[2]).P();
 		caseResults[permIndex].PLabTotal_Beam = std::sqrt(2*hypothesis.mass_beam*beamEnergyMeV);
+		caseResults[permIndex].PLabTotal_Ejectile = std::sqrt(2*hypothesis.mass_ejectile*SPSEnergy);
+		// std::cout << "PLabTotal_Beam = " << caseResults[permIndex].PLabTotal_Beam << "\n";
+		// std::cout << "PLabTotal_ResDecayParticles = " << caseResults[permIndex].PLabTotal_ResDecayParticles << "\n";
+		// std::cout << "PLabTotal_Ejectile = " << caseResults[permIndex].PLabTotal_Ejectile << "\n";
+		// std::cout << "Missing momentum = " << missingmomentum.Mag() << "\n\n";
 		//std::cout << "hypothesis.mass_beam = " << hypothesis.mass_beam << ", beamEnergyMeV = " << beamEnergyMeV << "\n";
 		caseResults[permIndex].E2meas = E[indices[2]];//indices[2] is the hit index assigned to particle 2 (contents of indices[2] depends on current permutation)
 
@@ -330,9 +349,9 @@ void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 		//std::cout << "recoilEnergyAboveM0Thresh = " << res.recoilEnergyAboveM0Thresh << "\n";
 		fillAll2D("RecoilEx_IMvsSPS", SPS_Ex, res.reconEx);
 		fillAll("RecoilExDif", SPS_Ex - res.reconEx);
-		fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
+		fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx); 
 
-		fillAll("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
+		fillAll("MissingMomentum", res.MissingMomentumMag);
 		//std::cout << "missing momentum = " << res.PLabTotal_Beam << " - " << res.PLabTotal_ResDecayParticles << " = " << res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles << std::endl;
 
 		//intermediate CM
@@ -418,7 +437,7 @@ void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 		fillAll2D("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
 		fillAll2D("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
 		fillAll2D("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
-		fillAll2D("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
+		fillAll2D("CosTheta2h_vs_MissingMomentum", res.MissingMomentumMag, res.CosTheta2h);
 	}
 
 	//if(outtree) outtree->Fill();
@@ -457,7 +476,7 @@ void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 			fillAllGated("RecoilExDif", SPS_Ex - res.reconEx);
 			fillAll2DGated("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
 
-			fillAllGated("MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles);
+			fillAllGated("MissingMomentum", res.MissingMomentumMag);
 
 			// Intermediate CM
 			fillAllGated("intermediatevcm_meas", res.intermediatevcm);
@@ -524,7 +543,7 @@ void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 			fillAll2DGated("CosTheta2h_vs_m12sq", res.m12sq, res.CosTheta2h);
 			fillAll2DGated("Theta2h_vs_DetE2", res.E2meas, res.Theta2h);
 			fillAll2DGated("CosTheta2h_vs_DetE2", res.E2meas, res.CosTheta2h);
-			fillAll2DGated("CosTheta2h_vs_MissingMomentum", res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h);
+			fillAll2DGated("CosTheta2h_vs_MissingMomentum", res.MissingMomentumMag, res.CosTheta2h);
 		}
 	}
 }
@@ -671,7 +690,7 @@ std::map<TString, std::pair<double, double>> InvMass_Mult3::PackPoints2D(const R
 	points["frag1vcm_TransverseVSLongitudinal"] = { std::abs(res.frag1Comp[2]), std::sqrt(res.frag1Comp[0]*res.frag1Comp[0] + res.frag1Comp[1]*res.frag1Comp[1]) };
 	points["frag2vcm_TransverseVSLongitudinal"] = { std::abs(res.frag2Comp[2]), std::sqrt(res.frag2Comp[0]*res.frag2Comp[0] + res.frag2Comp[1]*res.frag2Comp[1]) };
 	points["frag3vcm_TransverseVSLongitudinal"] = { std::abs(res.frag3Comp[2]), std::sqrt(res.frag3Comp[0]*res.frag3Comp[0] + res.frag3Comp[1]*res.frag3Comp[1]) };
-	points["CosTheta2h_vs_MissingMomentum"] = { res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles, res.CosTheta2h };
+	points["CosTheta2h_vs_MissingMomentum"] = { res.MissingMomentumMag, res.CosTheta2h };
 	points["ecm1VSecm2"] = { res.ecm2, res.ecm1 };
 	points["dalitz_m12_vs_m23"] = { res.m23sq, res.m12sq };
 

@@ -123,6 +123,9 @@ private:
 
 		double PLabTotal_ResDecayParticles;
 		double PLabTotal_Beam;
+		double PLabTotal_Ejectile;
+		double MissingMomentumComp[3];
+		double MissingMomentumMag;
 		double E2meas;
 
 		bool permPasses = false;
@@ -180,7 +183,9 @@ private:
 
 			PLabTotal_Beam = -666.;
 			PLabTotal_ResDecayParticles = -666.;
+			PLabTotal_Ejectile = -666.;
 			E2meas = -666.;
+			MissingMomentumMag = -666.;
 
 			permPasses = false;
 
@@ -191,6 +196,7 @@ private:
 				frag1Comp[i] = -666.;
 				frag2Comp[i] = -666.;
 				frag3Comp[i] = -666.;
+				MissingMomentumComp[i] = -666.;
 			}
 
 			expected.Ecm1 = -666.;
