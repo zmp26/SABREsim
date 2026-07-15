@@ -32,12 +32,12 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 		//Register1D(permName, p+"kecm_expect", p+" KE CM (expect);MeV", 500, 0, 5);
 		//Register1D(permName, p+"kecm_delta", p+" KE CM (meas - expect);MeV", 1000, -5, 5);
 
-		Register1D(permName, p+"thetacm", p+" Theta CM; deg", 180, 0, 180);
-		Register1D(permName, p+"phicm", p+" Phi CM; deg", 360, 0, 360);
-		Register2D(permName, p+"thetacmvsphicm", p+" ThetaCM vs PhiCM;deg;deg", 360, 0, 360, 180, 0, 180);
+		Register1D(permName, p+"thetacm", p+" Theta CM; deg", 90, 0, 180);
+		Register1D(permName, p+"phicm", p+" Phi CM; deg", 180, 0, 360);
+		Register2D(permName, p+"thetacmvsphicm", p+" ThetaCM vs PhiCM;deg;deg", 180, 0, 360, 90, 0, 180);
 
-		Register2D(permName, p+"vcmVSthetacm", p+" V CM vs Theta CM", 180, 0, 180, 100, 0, 0.1);
-		Register2D(permName, p+"kecmVSthetacm", p+" KE CM vs Theta CM", 180, 0, 180, 500, 0, 5);
+		Register2D(permName, p+"vcmVSthetacm", p+" V CM vs Theta CM", 90, 0, 180, 100, 0, 0.1);
+		Register2D(permName, p+"kecmVSthetacm", p+" KE CM vs Theta CM", 90, 0, 180, 500, 0, 5);
 	}
 
 	//decay1
@@ -45,14 +45,14 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	//Register1D(permName, "ecm1_expect", "E_{cm} Decay 1 (expect);MeV", 150, -1, 5);
 	//Register1D(permName, "ecm1_delta", "E_{cm} Decay 1 (meas - expect);MeV", 250, -5, 5);
 	Register2D(permName, "ecm1measVSintermediatethetacm", "E_{cm} Decay 1 (meas) vs Intermediate ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-	Register2D(permName, "ecm1measVSfrag1thetacm", "E_{cm} Decay 1 (meas) vs frag1 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-	Register2D(permName, "ecm1measVSfrag2thetacm", "E_{cm} Decay 1 (meas) vs frag2 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-	Register2D(permName, "ecm1measVSfrag3thetacm", "E_{cm} Decay 1 (meas) vs frag3 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm1measVSfrag1thetacm", "E_{cm} Decay 1 (meas) vs frag1 ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm1measVSfrag2thetacm", "E_{cm} Decay 1 (meas) vs frag2 ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm1measVSfrag3thetacm", "E_{cm} Decay 1 (meas) vs frag3 ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
 	Register1D(permName, "decay1_VCM", "VCM Decay 1;c", 1000, 0, 0.1);
 	Register2D(permName, "decay1_VCM_TransverseVSLongitudinal", "Decay 1 VCM Transverse Vs Longitudinal", 100, 0, 0.10, 100, 0, 0.10);
 	Register1D(permName, "decay1_thetaCMsum", "decay1 Theta CM Sum", 80, 170, 190);
 	Register1D(permName, "decay1_phiCMdiff", "decay1 Phi CM Diff", 80, 170, 190);
-	Register1D(permName, "decay1_relLabAngle", "decay1 Relative Lab Angle", 360, 0, 180);
+	Register1D(permName, "decay1_relLabAngle", "decay1 Relative Lab Angle", 90, 0, 180);
 	Register2D(permName, "intermediatevcmVSfrag1vcm", "intermediate Vcm VS frag1 Vcm", 1000, 0, 0.1, 1000, 0, 0.1);
 	Register2D(permName, "intermediatekecmVSfrag1kecm", "intermediate KEcm VS frag1 KEcm", 600, -1, 5, 600, -1, 5);
 
@@ -60,36 +60,45 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register1D(permName, "ecm2_meas", "E_{cm} Decay 2 (meas);MeV", 150, -1, 5);
 	//Register1D(permName, "ecm2_expect", "E_{cm} Decay 2 (expect);MeV", 150, -1, 5);
 	//Register1D(permName, "ecm2_delta", "E_{cm} Decay 2 (meas - expect);MeV", 250, -5, 5);
-	Register2D(permName, "ecm2measVSintermediatethetacm", "E_{cm} Decay 2 (meas) vs Intermediate ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-	Register2D(permName, "ecm2measVSfrag1thetacm", "E_{cm} Decay 2 (meas) vs frag1 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-	Register2D(permName, "ecm2measVSfrag2thetacm", "E_{cm} Decay 2 (meas) vs frag2 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-	Register2D(permName, "ecm2measVSfrag3thetacm", "E_{cm} Decay 2 (meas) vs frag3 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm2measVSintermediatethetacm", "E_{cm} Decay 2 (meas) vs Intermediate ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm2measVSfrag1thetacm", "E_{cm} Decay 2 (meas) vs frag1 ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm2measVSfrag2thetacm", "E_{cm} Decay 2 (meas) vs frag2 ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
+	Register2D(permName, "ecm2measVSfrag3thetacm", "E_{cm} Decay 2 (meas) vs frag3 ThetaCM;MeV;deg", 90, 0, 180, 150, -1, 5);
 	Register1D(permName, "decay2_VCM", "VCM Decay 2;c", 1000, 0, 0.1);
 	Register2D(permName, "decay2_VCM_TransverseVSLongitudinal", "Decay 2 VCM Transverse Vs Longitudinal",  100, 0, 0.10, 100, 0, 0.10);
 	Register1D(permName, "decay2_thetaCMsum", "decay2 Theta CM Sum", 80, 170, 190);
 	Register1D(permName, "decay2_phiCMdiff", "decay2 Phi CM Diff", 80, 170, 190);
-	Register1D(permName, "decay2_relLabAngle", "decay2 Relative Lab Angle", 360, 0, 180);
+	Register1D(permName, "decay2_relLabAngle", "decay2 Relative Lab Angle", 90, 0, 180);
 	Register2D(permName, "frag2vcmVSfrag3vcm", "frag2 Vcm VS frag3 Vcm", 1000, 0, 0.1, 1000, 0, 0.1);
 	Register2D(permName, "frag2kecmVSfrag3kecm", "frag2 KEcm VS frag3 KEcm", 600, -1, 5, 600, -1, 5);
 
-	Register1D(permName, "Theta2h", "Theta^{h}_{2}", 360, 0, 180);
+	Register1D(permName, "Theta2h", "Theta^{h}_{2}", 90, 0, 180);
 	Register1D(permName, "CosTheta2h", "Cos(Theta^{h}_{2})", 200, -1, 1);
 	Register2D(permName, "CosTheta2h_vs_m12sq", "Cos(Theta^{h}_{2}) vs m12sq", 22, 21.784e6, 21.795e6, 200, -1, 1);//10B(3He,4He)9B_2345 -> p+8Be
 	//Register2D(permName, "CosTheta2h_vs_m12sq", "Cos(Theta^{h}_{2}) vs m12sq", 50*2, 21.76e6, 21.81e6, 200, -1, 1);//10B(3He,4He)9B_2345 -> a+5Li
-	Register2D(permName, "Theta2h_vs_DetE2", "Theta^{h}_{2} vs E[2]", 250, 0, 10, 360, 0, 180);
+	Register2D(permName, "Theta2h_vs_DetE2", "Theta^{h}_{2} vs E[2]", 250, 0, 10, 90, 0, 180);
 	Register2D(permName, "CosTheta2h_vs_DetE2", "Cos(Theta^{h}_{2}) vs E[2]", 250, 0, 10, 200, -1, 1);
 	Register2D(permName, "CosTheta2h_vs_MissingMomentum", "Cos(Theta^{h}_{2}) vs (P_beam - P_resdecay)", 200, -50, 50, 200, -1, 1);
 
 
-	Register2D(permName, "decay2VSdecay1_relLabAngle", "decay2 vs decay1 Relative Lab Angle", 360, 0, 180, 360, 0, 180);
+	Register2D(permName, "decay2VSdecay1_relLabAngle", "decay2 vs decay1 Relative Lab Angle", 90, 0, 180, 90, 0, 180);
 
 	//sequential decay energies
 	Register2D(permName, "ecm1VSecm2", "ECM1 vs ECM2; E_{CM} Decay 2 (MeV); E_{CM} Decay 1 (MeV)", 150, -1, 5, 150, -1 , 5);
 	//Register2D(permName, "ecm1deltaVSecm2delta", "ECM1 Delta vs ECM2 Delta; Decay 2 (MeV); Decay 1 (MeV)", 250, -5, 5, 250, -5, 5);
 
+	Register1D(permName, "relLabAngle_intfrag1", "relLabAngle_intfrag1 (deg)", 90, 0, 180);
+	Register1D(permName, "relLabAngle_frag1frag2", "relLabAngle_intfrag1 (deg)", 90, 0, 180);
+	Register1D(permName, "relLabAngle_frag2frag3", "relLabAngle_intfrag1 (deg)", 90, 0, 180);
+	Register2D(permName, "relLabAngle_frag1frag2_vs_frag2frag3", "rel lab angle frag2_frag3 (deg);rel lab angle frag1_frag2 (deg)", 90, 0, 180, 90, 0, 180);
+	// Register2D(permName, "relLabAngle_intfrag1", "rel lab angle intermeidate vs frag1;deg;deg", 90, 0, 180, 90, 0, 180);
+	// Register2D(permName, "relLabAngle_frag1frag2", "rel lab angle frag1 vs frag2;deg;deg", 90, 0, 180, 90, 0, 180);
+	// Register2D(permName, "relLabAngle_frag2frag3", "rel lab angle frag2 vs frag3;deg;deg", 90, 0, 180, 90, 0, 180);
+
+
 	//dalitz plot
-	Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m^{2}_{12} vs m^{2}_{23}", 60, 55.5735e6, 55.5765e6, 22, 21.784e6, 21.795e6);//10B(3He,4He)9B_2345 -> p+8Be
-	//Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m_{12} vs m_{23}", 50*2, 21.76e6, 21.81e6, 50*2, 21.76e6, 21.81e6);//10B(3He,4He)9B_2345 -> a+5Li
+	//Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m^{2}_{12} vs m^{2}_{23}", 60, 55.5735e6, 55.5765e6, 22, 21.784e6, 21.795e6);//10B(3He,4He)9B_2345 -> p+8Be
+	Register2D(permName, "dalitz_m12_vs_m23", "Dalitz Plot m_{12} vs m_{23}", 50*2, 21.76e6, 21.81e6, 50*2, 21.76e6, 21.81e6);//10B(3He,4He)9B_2345 -> a+5Li
 
 }
 

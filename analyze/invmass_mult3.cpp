@@ -30,27 +30,29 @@ InvMass_Mult3::~InvMass_Mult3(){
 void InvMass_Mult3::Init(const char* output_filename){
 	
 	outfile = new TFile(output_filename, "RECREATE");
+	if(writeTree){
 	outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
 
-	TString leaflist =  "SPSEnergy/D:SPSTheta/D:SPSPhi/D:SPS_Ex/D:" 
-						"imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
-						"f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:f1Comp[3]/D:"
-						"f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:f2Comp[3]/D:"
-						"f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:f3Comp[3]/D:"
-						"ecm1/D:ecm2/D:"
-						"boost1[3]/D:boost2[3]/D:"
-						"relLabAngle_intfrag1/D:relLabAngle_frag2frag3/D:"
-						"IM2_int/D:"
-						"exp_ecm1/D:exp_ecm2/D:"
-						"exp_imVCM/D:exp_imKECM/D:"
-						"exp_f1VCM/D:exp_f1KECM/D:"
-						"exp_f2VCM/D:exp_f2KECM/D:"
-						"exp_f3VCM/D:exp_f3KECM/D:"
-						"permPasses/O";
+		TString leaflist =  "SPSEnergy/D:SPSTheta/D:SPSPhi/D:SPS_Ex/D:" 
+							"imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
+							"f1VCM/D:f1KECM/D:f1THCM/D:f1PHCM/D:f1Comp[3]/D:"
+							"f2VCM/D:f2KECM/D:f2THCM/D:f2PHCM/D:f2Comp[3]/D:"
+							"f3VCM/D:f3KECM/D:f3THCM/D:f3PHCM/D:f3Comp[3]/D:"
+							"ecm1/D:ecm2/D:"
+							"boost1[3]/D:boost2[3]/D:"
+							"relLabAngle_intfrag1/D:relLabAngle_frag2frag3/D:"
+							"IM2_int/D:"
+							"exp_ecm1/D:exp_ecm2/D:"
+							"exp_imVCM/D:exp_imKECM/D:"
+							"exp_f1VCM/D:exp_f1KECM/D:"
+							"exp_f2VCM/D:exp_f2KECM/D:"
+							"exp_f3VCM/D:exp_f3KECM/D:"
+							"permPasses/O";
 
-	for(int i=0; i<6; i++){
-		//create a branch for each permutation
-		outtree->Branch("_"+permNames[i], &caseResults[i], leaflist);
+		for(int i=0; i<6; i++){
+			//create a branch for each permutation
+			outtree->Branch("_"+permNames[i], &caseResults[i], leaflist);
+		}
 	}
 
 	for(auto &cn : permNames){
@@ -176,6 +178,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].IM2_int = intermediate.M2();
 
 		caseResults[permIndex].relLabAngle_intfrag1 = intermediate.Vect().Angle(frag1.Vect())*RADDEG;
+		caseResults[permIndex].relLabAngle_frag1frag2 = frag1.Vect().Angle(frag2.Vect())*RADDEG;
 		caseResults[permIndex].relLabAngle_frag2frag3 = frag2.Vect().Angle(frag3.Vect())*RADDEG;
 
 		//calculate excitation energy:
@@ -320,7 +323,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 }
 
 void InvMass_Mult3::FillTree(){
-	if(outtree) outtree->Fill();
+	if(outtree && writeTree) outtree->Fill();
 }
 
 void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
@@ -429,6 +432,11 @@ void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 		fillAll2D("ecm1VSecm2", res.ecm2, res.ecm1);
 		//fillAll2D("ecm1deltaVSecm2delta", res.ecm2 - res.expected.Ecm2, res.ecm1 - res.expected.Ecm1);
 
+		fillAll("relLabAngle_intfrag1", res.relLabAngle_intfrag1);
+		fillAll("relLabAngle_frag1frag2", res.relLabAngle_frag1frag2);
+		fillAll("relLabAngle_frag2frag3", res.relLabAngle_frag2frag3);
+		fillAll2D("relLabAngle_frag1frag2_vs_frag2frag3", res.relLabAngle_frag2frag3, res.relLabAngle_frag1frag2);
+
 		//std::cout << "m12sq = " << res.m12sq << "\tm23sq = " << res.m23sq << std::endl;
 		fillAll2D("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
 
@@ -535,6 +543,11 @@ void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 			fillAll2DGated("frag2vcmVSfrag3vcm", res.frag3vcm, res.frag2vcm);
 			fillAll2DGated("frag2kecmVSfrag3kecm", res.frag3kecm, res.frag2kecm);
 			fillAll2DGated("ecm1VSecm2", res.ecm2, res.ecm1);
+
+			fillAllGated("relLabAngle_intfrag1", res.relLabAngle_intfrag1);
+			fillAllGated("relLabAngle_frag1frag2", res.relLabAngle_frag1frag2);
+			fillAllGated("relLabAngle_frag2frag3", res.relLabAngle_frag2frag3);
+			fillAll2DGated("relLabAngle_frag1frag2_vs_frag2frag3", res.relLabAngle_frag2frag3, res.relLabAngle_frag1frag2);
 
 			fillAll2DGated("dalitz_m12_vs_m23", res.m23sq, res.m12sq);
 
@@ -693,6 +706,7 @@ std::map<TString, std::pair<double, double>> InvMass_Mult3::PackPoints2D(const R
 	points["CosTheta2h_vs_MissingMomentum"] = { res.MissingMomentumMag, res.CosTheta2h };
 	points["ecm1VSecm2"] = { res.ecm2, res.ecm1 };
 	points["dalitz_m12_vs_m23"] = { res.m23sq, res.m12sq };
+	points["decay1vcm_TransverseVsLongitudinal"] = { std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]) };
 
 	return points;
 }

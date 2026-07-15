@@ -67,6 +67,7 @@ private:
 
 	TFile *outfile;
 	TTree *outtree;
+	bool writeTree = false;
 
 	std::map<TString, permHisto_mult3*> groups_ungated;
 	std::map<TString, permHisto_mult3*> groups_gated;
@@ -107,7 +108,7 @@ private:
 
 		double ecm1, ecm2;
 		double boost1[3], boost2[3];
-		double relLabAngle_intfrag1, relLabAngle_frag2frag3;
+		double relLabAngle_intfrag1, relLabAngle_frag1frag2, relLabAngle_frag2frag3;
 		double IM2_int;
 
 		double Theta2h;
@@ -172,6 +173,7 @@ private:
 			ecm2 = -666.;
 
 			relLabAngle_intfrag1 = -666.;
+			relLabAngle_frag1frag2 = -666.;
 			relLabAngle_frag2frag3 = -666.;
 			IM2_int = -666.;
 
@@ -257,6 +259,9 @@ public:
 	void FillSortedHisto(double SPS_Ex);
 
 	void FillSABRESumEVsSPS_Ex(double SPS_Ex, double SABREsumE);
+
+	void SetWriteTree(bool val){ writeTree = val; }
+	bool GetWriteTree() { return writeTree; }
 
 	void CloseAndWrite();
 
