@@ -174,10 +174,10 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		if(numpasses_sabre == 2){
-			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
-			SABRE_analysis.FillPermCounter(true);
-		}
+		//if(numpasses_sabre == 2){
+		SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+		SABRE_analysis.FillPermCounter(true);
+		//}
 		SABRE_analysis.FillTree();
 		//SABRE_analysis.FillGatedEventHistograms(); 
 
@@ -187,10 +187,10 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 		kin4mc_analysis.FillPermCounter();
 		kin4mc_analysis.FillSortedHisto(Ex);
 		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		if(numpasses_kin4mc == 2){
-			kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
-			kin4mc_analysis.FillPermCounter(true);
-		}
+		//if(numpasses_kin4mc == 2){
+		kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+		kin4mc_analysis.FillPermCounter(true);
+		//}
 		kin4mc_analysis.FillTree();
 		//kin4mc_analysis.FillGatedEventHistograms();
 
@@ -303,10 +303,10 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filenam
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		if(numpasses_sabre == permCheck){ 
-			SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
-			SABRE_analysis.FillPermCounter(true);
-		}
+		//if(numpasses_sabre == permCheck){ 
+		SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+		SABRE_analysis.FillPermCounter(true);
+		//}
 		SABRE_analysis.FillTree();
 
 		if(i % 1000 == 0){
@@ -478,10 +478,10 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		if(numpasses_sabre == 1){
-			SABRE_analysis.FillGatedEventHistograms(Ex);
-			SABRE_analysis.FillPermCounter(true);
-		}
+		//if(numpasses_sabre == 1){
+		SABRE_analysis.FillGatedEventHistograms(Ex);
+		SABRE_analysis.FillPermCounter(true);
+		//}
 		SABRE_analysis.FillTree();
 
 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
@@ -490,10 +490,10 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char
 		kin4mc_analysis.FillPermCounter();
 		kin4mc_analysis.FillSortedHisto(Ex);
 		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		if(numpasses_kin4mc == 1){
-			kin4mc_analysis.FillGatedEventHistograms(Ex);
-			kin4mc_analysis.FillPermCounter(true);
-		}
+		//if(numpasses_kin4mc == 1){
+		kin4mc_analysis.FillGatedEventHistograms(Ex);
+		kin4mc_analysis.FillPermCounter(true);
+		//}
 		kin4mc_analysis.FillTree();
 
 		if(i % 1000 == 0){
@@ -608,10 +608,11 @@ void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filenam
 		SABRE_analysis.FillPermCounter();
 		SABRE_analysis.FillSortedHisto(Ex);
 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		if(numpasses_sabre == 1){
-			SABRE_analysis.FillGatedEventHistograms(Ex);
-			SABRE_analysis.FillPermCounter(true);
-		}
+		//std::cout << "numpasses_sabre = " << numpasses_sabre << "\n";
+		//if(numpasses_sabre == 1){
+		SABRE_analysis.FillGatedEventHistograms(Ex);
+		SABRE_analysis.FillPermCounter(true);
+		//}
 		SABRE_analysis.FillTree();
 
 		if(i % 1000 == 0){

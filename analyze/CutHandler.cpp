@@ -84,7 +84,13 @@ bool CutHandler::CheckCut1D(const TString& name, double value) const {
 bool CutHandler::CheckCut2D(const TString& name, double x, double y) const {
 	auto it = fCuts2D.find(name);
 	if(it != fCuts2D.end() && it->second != nullptr){
-		return it->second->IsInside(x,y);
+		if(it->second->IsInside(x,y)){
+			std::cout << "Point (" << x << ", " << y << ") is inside cut with name " << name << "\n";
+			return true;
+		} else {
+			//std::cout << "Point (" << x << ", " << y << ") is not inside cut with name " << name << "\n";
+			return false;
+		}
 	}
 	return false;
 }
@@ -108,10 +114,14 @@ bool CutHandler::PassAll2D(const std::map<TString, std::pair<double,double>>& ev
 		auto it = eventPoints.find(keyName);
 		if(it != eventPoints.end()){
 			if(!cut->IsInside(it->second.first, it->second.second)){
+				//std::cout << "point (" << it->second.first << ", " << it->second.second << ") is not inside " << keyName << "!\n";
 				return false;
+			} else {
+				//std::cout << "point (" << it->second.first << ", " << it->second.second << ") is inside " << keyName << "!\n";
 			}
 		}
 	}
+	//std::cout << "returning true...\n";
 	return true;
 }
 
