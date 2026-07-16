@@ -173,7 +173,12 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		// std::cout << "PLabTotal_Ejectile = " << caseResults[permIndex].PLabTotal_Ejectile << "\n";
 		// std::cout << "Missing momentum = " << missingmomentum.Mag() << "\n\n";
 		//std::cout << "hypothesis.mass_beam = " << hypothesis.mass_beam << ", beamEnergyMeV = " << beamEnergyMeV << "\n";
-		caseResults[permIndex].E2meas = E[indices[2]];//indices[2] is the hit index assigned to particle 2 (contents of indices[2] depends on current permutation)
+		caseResults[permIndex].E1meas = E[indices[0]];
+		caseResults[permIndex].E2meas = E[indices[1]];//indices[2] is the hit index assigned to particle 2 (contents of indices[2] depends on current permutation)
+		caseResults[permIndex].E3meas = E[indices[2]];
+		caseResults[permIndex].Theta1meas = theta[indices[0]];
+		caseResults[permIndex].Theta2meas = theta[indices[1]];
+		caseResults[permIndex].Theta3meas = theta[indices[2]];
 
 		caseResults[permIndex].IM2_int = intermediate.M2();
 
@@ -262,7 +267,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		frag1_boost2.Boost(boost2);
 
 		//calculate angle between boosted boosted frag2 and the boost vector of the intermediate:
-		caseResults[permIndex].Theta2h = RADDEG*boost2.Angle(frag2.Vect());
+		caseResults[permIndex].Theta2h = RADDEG*-1*boost2.Angle(frag2.Vect());//-1 corrects for negative sign in boost2
 		caseResults[permIndex].CosTheta2h = std::cos(boost2.Angle(frag2.Vect()));
 		// double costheta2h_numerator = -2.*(frag2+frag3).M2()*(frag1_boost2+frag2).M2() + (frag2+frag3).M2()*(frag2.M2() + frag3.M2() - (frag2+frag3).M2()) + frag1_boost2.M2()*(frag2.M2() - frag3.M2() + (frag2+frag3).M2()) - (frag1_boost2+frag2+frag3).M2()*(frag2.M2() - frag3.M2() - (frag2+frag3).M2());
 		// double costheta2h_denominator = std::sqrt((std::pow((frag1_boost2+frag2+frag3).M2(),2) + std::pow(frag1_boost2.M2() - (frag2+frag3).M2(),2) - 2.*(frag1_boost2+frag2+frag3).M2()*(frag1_boost2.M2()-(frag2+frag3).M2()))*(std::pow(frag2.M2(),2) + std::pow((frag2+frag3).M2() - frag3.M2(),2) - 2.*frag2.M2()*((frag2+frag3).M2() + frag3.M2())));
@@ -397,6 +402,10 @@ void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 		fillFrag(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm, res.expected.vcm_frag2, res.expected.kecm_frag2);
 		fillFrag(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm, res.expected.vcm_frag3, res.expected.kecm_frag3);
 
+		fillAll2D("E1measVSTheta1meas", res.Theta1meas, res.E1meas);
+		fillAll2D("E2measVSTheta2meas", res.Theta2meas, res.E2meas);
+		fillAll2D("E3measVSTheta3meas", res.Theta3meas, res.E3meas);
+
 		//decays
 		fillAll("ecm1_meas", res.ecm1);
 		//fillAll("ecm1_expect", res.expected.Ecm1);
@@ -513,6 +522,10 @@ void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 			fillFragGated(1, res.frag1vcm, res.frag1Comp, res.frag1kecm, res.frag1thetacm, res.frag1phicm);
 			fillFragGated(2, res.frag2vcm, res.frag2Comp, res.frag2kecm, res.frag2thetacm, res.frag2phicm);
 			fillFragGated(3, res.frag3vcm, res.frag3Comp, res.frag3kecm, res.frag3thetacm, res.frag3phicm);
+
+			fillAll2DGated("E1measVSTheta1meas", res.Theta1meas, res.E1meas);
+			fillAll2DGated("E2measVSTheta2meas", res.Theta2meas, res.E2meas);
+			fillAll2DGated("E3measVSTheta3meas", res.Theta3meas, res.E3meas);
 
 			// Decays
 			fillAllGated("ecm1_meas", res.ecm1);
@@ -675,7 +688,12 @@ std::map<TString, double> InvMass_Mult3::PackMetrics1D(const Results& res) const
 	metrics["intermediateIM"] = res.intermediateIM;
 	metrics["intermediateEnergyAboveM1Thresh"] = res.intermediateEnergyAboveM1Thresh;
 	metrics["recoilEnergyAboveM0Thresh"] = res.recoilEnergyAboveM0Thresh;
+	metrics["E1meas"] = res.E1meas;
 	metrics["E2meas"] = res.E2meas;
+	metrics["E3meas"] = res.E3meas;
+	metrics["Theta1meas"] = res.Theta1meas;
+	metrics["Theta2meas"] = res.Theta2meas;
+	metrics["Theta3meas"] = res.Theta3meas;
 
 	metrics["intermediatevcm"] = res.intermediatevcm;
 	metrics["intermediatekecm"] = res.intermediatekecm;
@@ -707,6 +725,10 @@ std::map<TString, std::pair<double, double>> InvMass_Mult3::PackPoints2D(const R
 	points["ecm1VSecm2"] = { res.ecm2, res.ecm1 };
 	points["dalitz_m12_vs_m23"] = { res.m23sq, res.m12sq };
 	points["decay1vcm_TransverseVsLongitudinal"] = { std::abs(res.boost1[2]), std::sqrt(res.boost1[0]*res.boost1[0] + res.boost1[1]*res.boost1[1]) };
+	points["E1meas_vs_Theta1meas"] = { res.Theta1meas, res.E1meas};
+	points["E2meas_vs_Theta2meas"] = { res.Theta2meas, res.E2meas};
+	points["E3meas_vs_Theta3meas"] = { res.Theta3meas, res.E3meas};
+
 
 	return points;
 }

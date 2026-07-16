@@ -40,6 +40,11 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 		Register2D(permName, p+"kecmVSthetacm", p+" KE CM vs Theta CM", 90, 0, 180, 500, 0, 5);
 	}
 
+	Register2D(permName, "E1measVSTheta1meas", "E1 vs Theta1;MeV;deg", 90, 0, 180, 500, 0, 10);
+	Register2D(permName, "E2measVSTheta2meas", "E2 vs Theta2;MeV;deg", 90, 0, 180, 500, 0, 10);
+	Register2D(permName, "E3measVSTheta3meas", "E3 vs Theta3;MeV;deg", 90, 0, 180, 500, 0, 10);
+
+
 	//decay1
 	Register1D(permName, "ecm1_meas", "E_{cm} Decay 1 (meas);MeV", 150, -1, 5);
 	//Register1D(permName, "ecm1_expect", "E_{cm} Decay 1 (expect);MeV", 150, -1, 5);
