@@ -20,7 +20,10 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register1D(permName, "RecoilExDif", "Recoil Ex (SPS - IM);MeV", 100, -2, 2);
 	Register2D(permName, "intermediateExIMvsSPS", "intermediate Ex IM vs SPS;SPS MeV;IM MeV",200,-1,7,200,-1,7);
 
-	Register1D(permName, "MissingMomentum", "Missing Momentum (P_beam - P_resdecay)", 200, -50, 50);
+	Register1D(permName, "MissingMomentum", "Missing Momentum (P_beam - P_ej - P_resdecay)", 200, -50, 50);
+	Register1D(permName, "MissingMomentumX", "Missing Momentum X (P_beam - P_ej - P_resdecay)", 200, -50, 50);
+	Register1D(permName, "MissingMomentumY", "Missing Momentum Y (P_beam - P_ej - P_resdecay)", 200, -50, 50);
+	Register1D(permName, "MissingMomentumZ", "Missing Momentum Z (P_beam - P_ej - P_resdecay)", 200, -50, 50);
 
 	for(const auto& p : particles){
 		Register1D(permName, p+"vcm_meas", p+" Velocity CM (meas);c", 1000, 0, 0.10);
@@ -40,9 +43,9 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 		Register2D(permName, p+"kecmVSthetacm", p+" KE CM vs Theta CM", 90, 0, 180, 500, 0, 5);
 	}
 
-	Register2D(permName, "E1measVSTheta1meas", "E1 vs Theta1;MeV;deg", 90, 0, 180, 500, 0, 10);
-	Register2D(permName, "E2measVSTheta2meas", "E2 vs Theta2;MeV;deg", 90, 0, 180, 500, 0, 10);
-	Register2D(permName, "E3measVSTheta3meas", "E3 vs Theta3;MeV;deg", 90, 0, 180, 500, 0, 10);
+	Register2D(permName, "E1measVSTheta1meas", "E1 vs Theta1;MeV;deg", 45, 0, 180, 250, 0, 10);
+	Register2D(permName, "E2measVSTheta2meas", "E2 vs Theta2;MeV;deg", 45, 0, 180, 250, 0, 10);
+	Register2D(permName, "E3measVSTheta3meas", "E3 vs Theta3;MeV;deg", 45, 0, 180, 250, 0, 10);
 
 
 	//decay1
@@ -93,8 +96,8 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	//Register2D(permName, "ecm1deltaVSecm2delta", "ECM1 Delta vs ECM2 Delta; Decay 2 (MeV); Decay 1 (MeV)", 250, -5, 5, 250, -5, 5);
 
 	Register1D(permName, "relLabAngle_intfrag1", "relLabAngle_intfrag1 (deg)", 90, 0, 180);
-	Register1D(permName, "relLabAngle_frag1frag2", "relLabAngle_intfrag1 (deg)", 90, 0, 180);
-	Register1D(permName, "relLabAngle_frag2frag3", "relLabAngle_intfrag1 (deg)", 90, 0, 180);
+	Register1D(permName, "relLabAngle_frag1frag2", "relLabAngle_frag1frag2 (deg)", 90, 0, 180);
+	Register1D(permName, "relLabAngle_frag2frag3", "relLabAngle_frag2frag3 (deg)", 90, 0, 180);
 	Register2D(permName, "relLabAngle_frag1frag2_vs_frag2frag3", "rel lab angle frag2_frag3 (deg);rel lab angle frag1_frag2 (deg)", 90, 0, 180, 90, 0, 180);
 	// Register2D(permName, "relLabAngle_intfrag1", "rel lab angle intermeidate vs frag1;deg;deg", 90, 0, 180, 90, 0, 180);
 	// Register2D(permName, "relLabAngle_frag1frag2", "rel lab angle frag1 vs frag2;deg;deg", 90, 0, 180, 90, 0, 180);

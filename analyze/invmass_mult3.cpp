@@ -151,10 +151,13 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].SPSPhi = SPSPhi;
 		caseResults[permIndex].SPS_Ex = SPS_Ex;
 
-		double PLabVect_beam_mag = std::sqrt(2.*hypothesis.mass_beam*beamEnergyMeV);
+		// double PLabVect_beam_mag = std::sqrt(2.*hypothesis.mass_beam*beamEnergyMeV);
+		// TVector3 PLabVect_beam = {0., 0., PLabVect_beam_mag};
+		double PLabVect_beam_mag = std::sqrt(beamEnergyMeV * (beamEnergyMeV + 2.*hypothesis.mass_beam));
 		TVector3 PLabVect_beam = {0., 0., PLabVect_beam_mag};
 
-		double PLabVect_ejectile_mag = std::sqrt(2.*hypothesis.mass_ejectile*SPSEnergy);
+		//double PLabVect_ejectile_mag = std::sqrt(2.*hypothesis.mass_ejectile*SPSEnergy);
+		double PLabVect_ejectile_mag = std::sqrt(SPSEnergy * (SPSEnergy + 2.*hypothesis.mass_ejectile));
 		TVector3 PLabVect_ejectile = {PLabVect_ejectile_mag*std::sin(SPSTheta*DEGRAD)*std::cos(SPSPhi*DEGRAD),
 									  PLabVect_ejectile_mag*std::sin(SPSTheta*DEGRAD)*std::sin(SPSPhi*DEGRAD),
 									  PLabVect_ejectile_mag*std::cos(SPSTheta*DEGRAD)};
@@ -166,8 +169,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].MissingMomentumMag = missingmomentum.Mag();
 
 		caseResults[permIndex].PLabTotal_ResDecayParticles = (lv[0] + lv[1] + lv[2]).P();
-		caseResults[permIndex].PLabTotal_Beam = std::sqrt(2*hypothesis.mass_beam*beamEnergyMeV);
-		caseResults[permIndex].PLabTotal_Ejectile = std::sqrt(2*hypothesis.mass_ejectile*SPSEnergy);
+		caseResults[permIndex].PLabTotal_Beam = PLabVect_beam_mag;       // Relativistic magnitude
+		caseResults[permIndex].PLabTotal_Ejectile = PLabVect_ejectile_mag; // Relativistic magnitude
 		// std::cout << "PLabTotal_Beam = " << caseResults[permIndex].PLabTotal_Beam << "\n";
 		// std::cout << "PLabTotal_ResDecayParticles = " << caseResults[permIndex].PLabTotal_ResDecayParticles << "\n";
 		// std::cout << "PLabTotal_Ejectile = " << caseResults[permIndex].PLabTotal_Ejectile << "\n";
@@ -230,7 +233,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TVector3 intermediatevcm_vect = ((1/intermediate.Energy())*intermediate.Vect());
 		double intermediatevcm = intermediatevcm_vect.Mag();
 		//double intermediatevcm = intermediate.BoostVector().Mag();
-		double intermediatekecm = 0.5*intermediateMass*intermediatevcm*intermediatevcm;
+		//double intermediatekecm = 0.5*intermediateMass*intermediatevcm*intermediatevcm;
+		double intermediatekecm = intermediate.Energy() - intermediate.M();
 		double intermediatethetacm = RADDEG*std::acos(intermediate.Vect().Z()/intermediate.Vect().Mag());
 		double intermediatephicm = RADDEG*std::atan2(intermediate.Vect().Y(), intermediate.Vect().X());
 		if(intermediatephicm < 0) intermediatephicm += 360.;
@@ -244,7 +248,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TVector3 frag1vcm_vect = ((1/frag1.Energy())*frag1.Vect());
 		double frag1vcm = frag1vcm_vect.Mag();
 		//double frag1vcm = frag1.BoostVector().Mag();
-		double frag1kecm = 0.5*masses[0]*frag1vcm*frag1vcm;
+		//double frag1kecm = 0.5*masses[0]*frag1vcm*frag1vcm;
+		double frag1kecm = frag1.Energy() - masses[0];
 		double frag1thetacm = RADDEG*std::acos(frag1.Vect().Z()/frag1.Vect().Mag());
 		double frag1phicm = RADDEG*std::atan2(frag1.Vect().Y(), frag1.Vect().X());
 		if(frag1phicm < 0) frag1phicm += 360.;
@@ -256,7 +261,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		for(int i=0; i<3; i++) caseResults[permIndex].frag1Comp[i] = frag1vcm_vect[i];
 
 		//determine ecm1:
-		double ecm1 = intermediatekecm + frag1kecm + intermediateEx;
+		double ecm1 = intermediatekecm + frag1kecm;// + intermediateEx;
+		//double ecm1 = intermediate.Energy() + frag1.Energy();
 		caseResults[permIndex].ecm1 = ecm1;
 
 
@@ -267,8 +273,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		frag1_boost2.Boost(boost2);
 
 		//calculate angle between boosted boosted frag2 and the boost vector of the intermediate:
-		caseResults[permIndex].Theta2h = RADDEG*-1*boost2.Angle(frag2.Vect());//-1 corrects for negative sign in boost2
-		caseResults[permIndex].CosTheta2h = std::cos(boost2.Angle(frag2.Vect()));
+		caseResults[permIndex].Theta2h = RADDEG*(-boost2).Angle(frag2.Vect());//-1 corrects for negative sign in boost2
+		caseResults[permIndex].CosTheta2h = std::cos((-boost2).Angle(frag2.Vect()));
 		// double costheta2h_numerator = -2.*(frag2+frag3).M2()*(frag1_boost2+frag2).M2() + (frag2+frag3).M2()*(frag2.M2() + frag3.M2() - (frag2+frag3).M2()) + frag1_boost2.M2()*(frag2.M2() - frag3.M2() + (frag2+frag3).M2()) - (frag1_boost2+frag2+frag3).M2()*(frag2.M2() - frag3.M2() - (frag2+frag3).M2());
 		// double costheta2h_denominator = std::sqrt((std::pow((frag1_boost2+frag2+frag3).M2(),2) + std::pow(frag1_boost2.M2() - (frag2+frag3).M2(),2) - 2.*(frag1_boost2+frag2+frag3).M2()*(frag1_boost2.M2()-(frag2+frag3).M2()))*(std::pow(frag2.M2(),2) + std::pow((frag2+frag3).M2() - frag3.M2(),2) - 2.*frag2.M2()*((frag2+frag3).M2() + frag3.M2())));
 		// caseResults[permIndex].permTheta2h = costheta2h_numerator / costheta2h_denominator;
@@ -276,7 +282,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TVector3 frag2vcm_vect = ((1/frag2.Energy())*frag2.Vect());
 		double frag2vcm = frag2vcm_vect.Mag();
 		//double frag2vcm = frag2.BoostVector().Mag();
-		double frag2kecm = 0.5*masses[1]*frag2vcm*frag2vcm;
+		//double frag2kecm = 0.5*masses[1]*frag2vcm*frag2vcm;
+		double frag2kecm = frag2.Energy() - masses[1];
 		double frag2thetacm = RADDEG*std::acos(frag2.Vect().Z()/frag2.Vect().Mag());
 		double frag2phicm = RADDEG*std::atan2(frag2.Vect().Y(), frag2.Vect().X());
 		if(frag2phicm < 0) frag2phicm += 360.;
@@ -290,7 +297,8 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		TVector3 frag3vcm_vect = ((1/frag3.Energy())*frag3.Vect());
 		double frag3vcm = frag3vcm_vect.Mag();
 		//double frag3vcm = frag3.BoostVector().Mag();
-		double frag3kecm = 0.5*masses[2]*frag3vcm*frag3vcm;
+		//double frag3kecm = 0.5*masses[2]*frag3vcm*frag3vcm;
+		double frag3kecm = frag3.Energy() - masses[2];
 		double frag3thetacm = RADDEG*std::acos(frag3.Vect().Z()/frag3.Vect().Mag());
 		double frag3phicm = RADDEG*std::atan2(frag3.Vect().Y(), frag3.Vect().X());
 		if(frag3phicm < 0) frag3phicm += 360.;
@@ -303,6 +311,7 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 
 		//determine ecm2:
 		double ecm2 = frag2kecm + frag3kecm;
+		//double ecm2 = frag2.Energy() + frag3.Energy();
 		caseResults[permIndex].ecm2 = ecm2;
 
 		caseResults[permIndex].exp_ecm1 = expectedCMValues.Ecm1;
@@ -360,6 +369,9 @@ void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 		fillAll2D("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx); 
 
 		fillAll("MissingMomentum", res.MissingMomentumMag);
+		fillAll("MissingMomentumX", res.MissingMomentumComp[0]);
+		fillAll("MissingMomentumY", res.MissingMomentumComp[1]);
+		fillAll("MissingMomentumZ", res.MissingMomentumComp[2]);
 		//std::cout << "missing momentum = " << res.PLabTotal_Beam << " - " << res.PLabTotal_ResDecayParticles << " = " << res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles << std::endl;
 
 		//intermediate CM
@@ -494,6 +506,9 @@ void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 			fillAll2DGated("intermediateExIMvsSPS", SPS_Ex, res.intermediateEx);
 
 			fillAllGated("MissingMomentum", res.MissingMomentumMag);
+			fillAllGated("MissingMomentumX", res.MissingMomentumComp[0]);
+			fillAllGated("MissingMomentumY", res.MissingMomentumComp[1]);
+			fillAllGated("MissingMomentumZ", res.MissingMomentumComp[2]);
 
 			// Intermediate CM
 			fillAllGated("intermediatevcm_meas", res.intermediatevcm);
