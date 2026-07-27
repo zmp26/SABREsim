@@ -5,7 +5,7 @@
 #include "SABRE_Detector.h"
 #include <string>
 #include <optional>
-
+#include "SABRE_AngleMap.h"
 
 class SABRE_Array{
 public:
@@ -30,11 +30,11 @@ private:
 	std::vector<SABRE_Detector*> SABRE_Array_;
 
 	const std::vector<std::string> filenames = {
-		"anglemaps/SABRE0_phi306_anglemap.txt",
-		"anglemaps/SABRE1_phi18_anglemap.txt",
-		"anglemaps/SABRE2_phi234_anglemap.txt",
-		"anglemaps/SABRE3_phi162_anglemap.txt",
-		"anglemaps/SABRE4_phi90_anglemap.txt"
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE0_phi306_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE1_phi18_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE2_phi234_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE3_phi162_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE4_phi90_anglemap.txt"
 	};
 
 	SABRE_AngleMap *anglemap;
