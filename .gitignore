@@ -25,3 +25,5 @@ tempMMM.txt
 config/current_sim.conf
 analyze/testcuts.txt
 *cutlist.txt
+anglemaps/sigmas/*txt
+anglemaps/sigmas/rays
