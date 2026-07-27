@@ -1,0 +1,10 @@
+Below is command to compile rays.cpp:
+
+
+g++ rays.cpp \
+../../src/SABRE_Detector.cpp \
+../../src/SABRE_Array.cpp \
+../../src/Vec3.cpp \
+../../src/Rotation.cpp \
+../../src/SABRE_AngleMap.cpp \
+-I../../include `root-config --cflags --libs` -o rays
