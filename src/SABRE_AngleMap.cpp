@@ -24,7 +24,7 @@ bool SABRE_AngleMap::LoadMapFromFile(const std::string& filename){
 
 	std::string line;
 	int ring, wedge;
-	double theta, phi;
+	double theta, sigmatheta, phi, sigmaphi;
 
 	while(std::getline(infile,line)){
 
@@ -32,9 +32,13 @@ bool SABRE_AngleMap::LoadMapFromFile(const std::string& filename){
 			continue;
 		}
 
-		if(ParseLine(line,ring,wedge,theta,phi)){
+		if(ParseLine(line,ring,wedge,theta,sigmatheta,phi,sigmaphi)){
 			ChannelKey key = std::make_pair(ring, wedge);
-			AngleValue val = std::make_pair(theta, phi);
+
+			std::pair<double,double> thetapair = std::make_pair(theta, sigmatheta);
+			std::pair<double,double> phipair = std::make_pair(phi, sigmaphi);
+			AngleValue val = std::make_pair(thetapair, phipair);
+
 			//std::cout << "Loaded (ring, wedge) = (" << ring << ", " << wedge << ") with (theta, phi) = (" << theta << ", " << phi << ")\n";
 
 			fAngleMap[key] = val;
@@ -50,9 +54,29 @@ bool SABRE_AngleMap::LoadMapFromFile(const std::string& filename){
 std::optional<std::pair<double,double>> SABRE_AngleMap::GetDetectorThetaPhi(int ringchan, int wedgechan) const {
 	ChannelKey key = std::make_pair(ringchan,wedgechan);
 
-	auto it = fAngleMap.find(key);
+	auto it = fAngleMap.find(key); //it is of same type as entry in fAngleMap which is std::pair<std::pair<int,int>, std::pair<std::pair<double,double>,std::pair<double,double>>>
+									//this seems complicated, but looks like this in practice: {{ring, wedge}, {{theta, sigmatheta}, {phi, sigmaphi}}};
+									//so, you find the entry based on the unique (ring, wedge) pair and get the theta, sigmatheta, phi, and sigmaphi out
+									//TODO: rewrite this to take a struct or something that makes it much more readable than a bunch of 'first's and 'second's
 	if(it != fAngleMap.end()){
-		return it->second;
+		std::pair<double,double> retpair = std::make_pair(it->second.first.first, it->second.second.first);
+		return retpair;
+	}
+
+	return std::nullopt;
+}
+
+std::optional<std::pair<double,double>> SABRE_AngleMap::GetDetectorThetaPhiSigmas(int ringchan, int wedgechan) const {
+	ChannelKey key = std::make_pair(ringchan, wedgechan);
+
+	auto it = fAngleMap.find(key);//it is of same type as entry in fAngleMap which is std::pair<std::pair<int,int>, std::pair<std::pair<double,double>,std::pair<double,double>>>
+									//this seems complicated, but looks like this in practice: {{ring, wedge}, {{theta, sigmatheta}, {phi, sigmaphi}}};
+									//so, you find the entry based on the unique (ring, wedge) pair and get the theta, sigmatheta, phi, and sigmaphi out
+									//TODO: rewrite this to take a struct or something that makes it much more readable than a bunch of 'first's and 'second's
+
+	if(it != fAngleMap.end()){
+		std::pair<double,double> retpair = std::make_pair(it->second.first.second, it->second.second.second);
+		return retpair;
 	}
 
 	return std::nullopt;
@@ -67,10 +91,10 @@ void SABRE_AngleMap::Clear(){
 	fAngleMap.clear();
 }
 
-bool SABRE_AngleMap::ParseLine(const std::string& line, int& ring, int& wedge, double& theta, double& phi) const {
+bool SABRE_AngleMap::ParseLine(const std::string& line, int& ring, int& wedge, double& theta, double& sigmatheta, double& phi, double& sigmaphi) const {
 	std::istringstream iss(line);
 
-	if(!(iss >> ring >> wedge >> theta >> phi)){
+	if(!(iss >> ring >> wedge >> theta >> sigmatheta >> phi >> sigmaphi)){
 		return false;
 	}
 

@@ -18,6 +18,7 @@ public:
 	bool LoadMapFromFile(const std::string& filename);
 
 	std::optional<std::pair<double,double>> GetDetectorThetaPhi(int ringchan, int wedgechan) const;
+	std::optional<std::pair<double,double>> GetDetectorThetaPhiSigmas(int ringchan, int wedgechan) const;
 
 	bool HasEntry(int ringchan, int wedgechan) const;
 	void Clear();
@@ -25,11 +26,12 @@ public:
 
 private:
 	using ChannelKey = std::pair<int,int>;
-	using AngleValue = std::pair<double,double>;
+	//using AngleValue = std::pair<double,double>;
+	using AngleValue = std::pair<std::pair<double,double>, std::pair<double,double>>;//entry [0] = theta and unc., entry [1] = pih and unc.
 
 	std::map<ChannelKey, AngleValue> fAngleMap;
 
-	bool ParseLine(const std::string& line, int& ring, int& wedge, double& theta, double& phi) const;
+	bool ParseLine(const std::string& line, int& ring, int& wedge, double& theta, double& sigmatheta, double& phi, double& sigmaphi) const;
 };
 
 
