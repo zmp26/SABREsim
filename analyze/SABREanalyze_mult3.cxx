@@ -39,6 +39,8 @@
 #include "permHisto_mult3.cpp"//" above "
 #include "CutHandler.h"//" above "
 #include "CutHandler.cpp"//" above "
+#include "PixelHandler.h"//" above "
+#include "PixelHandler.cpp"//" above "
 
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
