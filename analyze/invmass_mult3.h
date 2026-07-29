@@ -14,7 +14,9 @@
 #include "TDirectory.h"
 #include "TLorentzVector.h"
 #include "permHisto_mult3.h"
+#include "permHistoCorrelation_mult3.h"
 #include "CutHandler.h"
+#include "PixelHandler.h"
 
 /*
 	invmass_mult3::Hypothesis4 differs from missmass_mult2::Hypothesis4MM
@@ -34,6 +36,8 @@ struct Hypothesis4 {
 	double mass_intermediate;
 
 	double beamEnergyMeV;
+
+	double width_intermediate;
 
 	//note that kin4mc treats masses[0] as the first decay step and masses[2] as the second decay step, leaving masses[3] the "daughter"
 	//For example, 5Li -> p + a means that 5Li is proton decaying and 5Li -> a + p is 5Li undergoing alpha decay
@@ -61,6 +65,7 @@ private:
 
 	struct Perm { int i, j, k; };
 	std::map<TString, Perm> pMap;
+	std::vector<double> eventReducedChi2s;
 
 	const double DEGRAD = M_PI / 180.;
 	const double RADDEG = 180. / M_PI;
@@ -71,6 +76,10 @@ private:
 
 	std::map<TString, permHisto_mult3*> groups_ungated;
 	std::map<TString, permHisto_mult3*> groups_gated;
+
+	permHistoCorrelation_mult3* correlationPlotter{nullptr};
+	void InitCorrelationPlotter(TDirectory* targetDir);
+	void FillCorrelationPlots();
 
 	//double intermediateEx, intermediateExGate; //this holds the hypothesis of the intermediate/intermediate Ex and the gate (+/- due to width)
 	double intermediateEx;//, intermediateEmin, intermediateEmax;
@@ -129,6 +138,13 @@ private:
 		double MissingMomentumMag;
 		double E1meas, E2meas, E3meas;
 		double Theta1meas, Theta2meas, Theta3meas;
+
+		double missing_px, sigma_px;
+		double missing_py, sigma_py;
+		double missing_pz, sigma_pz;
+
+		double totalChi2, reducedChi2;
+
 
 		bool permPasses = false;
 		
@@ -239,6 +255,8 @@ private:
 	TH1D* hSortedIMRecEx_gate8Be;
 	TH1D* hSortedIMRecEx_gate5Li;
 	TH2D* hSABRESumE_vs_ExSPS;
+
+	TH1D* hBestPermByChiSquared;
 
 	CutHandler fCutHandler;
 

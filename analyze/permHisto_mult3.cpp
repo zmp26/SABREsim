@@ -20,6 +20,8 @@ permHisto_mult3::permHisto_mult3(TString permName, TDirectory* targetDir){
 	Register1D(permName, "RecoilExDif", "Recoil Ex (SPS - IM);MeV", 100, -2, 2);
 	Register2D(permName, "intermediateExIMvsSPS", "intermediate Ex IM vs SPS;SPS MeV;IM MeV",200,-1,7,200,-1,7);
 
+	Register1D(permName, "MissingMomentum_reducedChi2", "Missing Momentum Reduced #chi^{2}", 1000, 0., 100.);
+
 	Register1D(permName, "MissingMomentum", "Missing Momentum (P_beam - P_ej - P_resdecay)", 200, -50, 50);
 	Register1D(permName, "MissingMomentumX", "Missing Momentum X (P_beam - P_ej - P_resdecay)", 200, -50, 50);
 	Register1D(permName, "MissingMomentumY", "Missing Momentum Y (P_beam - P_ej - P_resdecay)", 200, -50, 50);

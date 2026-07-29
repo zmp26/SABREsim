@@ -5,6 +5,49 @@
 #include <algorithm>
 #include <cmath>
 
+//helper function to get 3x3 covariance matrix in MeV^2/c^2 for (px, py, pz)
+std::array<std::array<double, 3>, 3> GetMomentumCovariance(double E, double theta_deg, double phi_deg, double mass, double sigma_E, double sigma_theta_deg, double sigma_phi_deg){
+
+	double DEGRAD = M_PI / 180.;
+	double RADDEG = 180. / M_PI;
+
+	double theta = theta_deg * DEGRAD;
+	double phi = phi_deg * DEGRAD;
+	double sigma_theta = sigma_theta_deg * DEGRAD;
+	double sigma_phi = sigma_phi_deg * DEGRAD;
+
+	double p = std::sqrt(E*(E+2.*mass));
+	double dP_dE = (E + mass) / p;
+
+	//compute 3x3 jacobian J
+	//column 0: d/dE
+	//column 1: d/dTheta
+	//column 2: d/dPhi
+	double J[3][3] = {
+		{dP_dE * std::sin(theta) * std::cos(phi), p * std::cos(theta) * std::cos(phi), -p * std::sin(theta) * std::sin(phi)},
+		{dP_dE * std::sin(theta) * std::sin(phi), p * std::cos(theta) * std::sin(phi), p * std::sin(theta) * std::cos(phi)},
+		{dP_dE * std::cos(theta), -p * std::sin(theta), 0.}
+	};
+
+	//V matrix, diagonal elements:
+	double var_E = sigma_E * sigma_E;
+	double var_theta = sigma_theta * sigma_theta;
+	double var_phi = sigma_phi * sigma_phi;
+
+	//compute sigma_p = J * V * J^T
+	std::array<std::array<double, 3>, 3> Cov = {{{0}}};
+	for(int i=0; i<3; i++){
+		for(int j=0; j<3; j++){
+			Cov[i][j] = J[i][0] * var_E * J[j][0] +
+						J[i][1] * var_theta * J[j][1] +
+						J[i][2] * var_phi * J[j][2];
+		}
+	}
+
+	return Cov;
+
+}
+
 InvMass_Mult3::InvMass_Mult3()
 	: outfile(nullptr), intermediateMass(0), recoilMass(0), recoilEx(0), beamEnergyMeV(0), intermediateEx(0){
 
@@ -18,6 +61,8 @@ InvMass_Mult3::InvMass_Mult3()
 			{"201",{2,0,1}},
 			{"210",{2,1,0}}
 		};
+
+		eventReducedChi2s.reserve(pMap.size());
 	}
 
 InvMass_Mult3::~InvMass_Mult3(){
@@ -25,6 +70,8 @@ InvMass_Mult3::~InvMass_Mult3(){
 		outfile->Close();
 		delete outfile;
 	}
+
+	delete correlationPlotter;
 }
 
 void InvMass_Mult3::Init(const char* output_filename){
@@ -68,6 +115,9 @@ void InvMass_Mult3::Init(const char* output_filename){
 		outfile->cd();
 	}
 
+	TDirectory *correlationdir = outfile->mkdir("Correlations");
+	InitCorrelationPlotter(correlationdir);
+
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
 	hPermCounter_gated = new TH1D("hPermCounter_gated", "hPermCounter_gated", 7, -0.5, 6.5);
 	hSortedIntermediateExIMvsSPS = new TH2D("hSortedIntermediateExIMvsSPS", "Intermediate Ex (IM) vs Recoil Ex (SPS);SPS (MeV);IM (MeV)", 200, -1, 7, 200, -1, 7);
@@ -77,6 +127,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 	hSortedIMRecEx_gate8Be = new TH1D("hSortedIMRecEx_gate8Be", "Rec Ex (IM) - Gate IM 8Be", 300, -5, 7);
 	hSortedIMRecEx_gate5Li = new TH1D("hSortedIMRecEx_gate5Li", "Rec Ex (IM) - Gate IM 5Li", 300, -5, 7);
 	hSABRESumE_vs_ExSPS = new TH2D("hSABRESumE_vs_ExSPS", "hSABRESumE_vs_ExSPS", 275, -1, 10, 500, 0, 10);
+	hBestPermByChiSquared = new TH1D("hBestPermByChiSquared", "BestPermByChiSquared", 6, -0.5, 5.5);
 	const char* labels[6] = {"012","021","102","120","201","210"};
 	for(int i=0; i<6; i++){
 		hSortedPermutations->GetXaxis()->SetBinLabel(i+1, labels[i]);
@@ -102,9 +153,27 @@ void InvMass_Mult3::SetHypothesis(const Hypothesis4& hypo){
 	intermediateM1Threshold = masses[1] + masses[2];// - intermediateMass;
 
 	beamEnergyMeV = hypo.beamEnergyMeV;
-	std::cout << "setting beamEnergyMeV to hypo.beamEnergyMeV (= " << hypo.beamEnergyMeV << ")...did it work?\n";
+	//std::cout << "setting beamEnergyMeV to hypo.beamEnergyMeV (= " << hypo.beamEnergyMeV << ")...did it work?\n";
 
 	//SetExpectedCMValues();
+}
+
+void InvMass_Mult3::InitCorrelationPlotter(TDirectory* targetDir){
+	if(!targetDir) return;
+
+	std::vector<TString> pnames;
+	pnames.reserve(pMap.size());
+	for(auto const& [name, p] : pMap){
+		pnames.push_back(name);
+	}
+
+	delete correlationPlotter;
+
+	correlationPlotter = new permHistoCorrelation_mult3(pnames, targetDir);
+}
+
+void InvMass_Mult3::FillCorrelationPlots(){
+	if(correlationPlotter) correlationPlotter->FillCorner(eventReducedChi2s);
 }
 
 //Event assumes theta, phi in degrees and E in MeV
@@ -115,8 +184,10 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 
 	std::array<double,6> recoilExs;
 
+	eventReducedChi2s.clear();
+
 	int permIndex = 0;
-	for(auto const& [name, p] : pMap){
+	for(const auto& [name, p] : pMap){
 
 		TLorentzVector lv[3];
 		int indices[3] = {p.i, p.j, p.k};
@@ -328,11 +399,76 @@ std::array<double,6> InvMass_Mult3::AnalyzeEvent(double E[3], double theta[3], d
 		caseResults[permIndex].m12sq = (lv[0] + lv[1]).M2();
 		caseResults[permIndex].m23sq = (lv[1] + lv[2]).M2();
 
+		std::array<std::array<double, 3>, 3> Sigma_tot = {{{0.}}};
+		double sigE = 0.05;
+		double sigTheta = 1.0;
+		double sigPhi = 2.5;
+		for(int n=0; n<3; n++){
+			int hitindex = indices[n];
+			double mass = masses[n];
+
+			//obtain pixel-dependent uncertainties here...use pixel handler!
+			//sigE = ;
+			//sigTheta = ;
+			//sigPhi = ;
+
+			auto Cov_particle = GetMomentumCovariance(E[hitindex], theta[hitindex], phi[hitindex], mass, sigE, sigTheta, sigPhi);
+
+			for(int r=0; r<3; r++){
+				for(int c=0; c<3; c++){
+					Sigma_tot[r][c] += Cov_particle[r][c];
+				}
+			}
+		}
+
+		//NEED TO GET SPS COVARIANCES!!!!
+		double sps_sigE = 0.015;
+		double sps_sigTheta = 1.;
+		double sps_sigPhi = 1.;
+		auto Cov_SPS = GetMomentumCovariance(SPSEnergy, SPSTheta, SPSPhi, hypothesis.mass_ejectile, sps_sigE, sps_sigTheta, sps_sigPhi);
+		for(int r=0; r<3; r++){
+			for(int c=0; c<3; c++){
+				Sigma_tot[r][c] += Cov_SPS[r][c];
+			}
+		}
+
+		//optionally add beam sigma...
+		//Sigma_tot[2][2] += sigma_p_beam * sigma_p_beam;
+
+		double var_px = Sigma_tot[0][0];
+		double var_py = Sigma_tot[1][1];
+		double var_pz = Sigma_tot[2][2];
+		double var_mint = sigE*sigE + (hypothesis.width_intermediate/2.)*(hypothesis.width_intermediate/2.);
+
+		double px = missingmomentum.X();
+		double py = missingmomentum.Y();
+		double pz = missingmomentum.Z();
+		double mint = intermediate.M() - hypothesis.mass_intermediate;
+
+		double chi2 = (px * px) / var_px +
+					  (py * py) / var_py +
+					  (pz * pz) / var_pz +
+					  (mint * mint) / var_mint;
+
+		caseResults[permIndex].missing_px = px;
+		caseResults[permIndex].missing_py = py;
+		caseResults[permIndex].missing_pz = pz;
+
+		caseResults[permIndex].sigma_px = std::sqrt(var_px);
+		caseResults[permIndex].sigma_py = std::sqrt(var_py);
+		caseResults[permIndex].sigma_pz = std::sqrt(var_pz);
+
+		caseResults[permIndex].totalChi2 = chi2;
+		caseResults[permIndex].reducedChi2 = chi2 / 4.; //px, py, pz, mint
+
+		eventReducedChi2s.push_back(caseResults[permIndex].reducedChi2);
+
 		//increment permIndex here!
 		permIndex += 1;
 
 	}
 
+	FillCorrelationPlots();
 	return recoilExs;
 }
 
@@ -373,6 +509,7 @@ void InvMass_Mult3::FillEventHistograms(double SPS_Ex){
 		fillAll("MissingMomentumY", res.MissingMomentumComp[1]);
 		fillAll("MissingMomentumZ", res.MissingMomentumComp[2]);
 		//std::cout << "missing momentum = " << res.PLabTotal_Beam << " - " << res.PLabTotal_ResDecayParticles << " = " << res.PLabTotal_Beam - res.PLabTotal_ResDecayParticles << std::endl;
+		fillAll("MissingMomentum_reducedChi2", res.reducedChi2);
 
 		//intermediate CM
 		fillAll("intermediatevcm_meas", res.intermediatevcm);
@@ -510,6 +647,8 @@ void InvMass_Mult3::FillGatedEventHistograms(double SPS_Ex){
 			fillAllGated("MissingMomentumY", res.MissingMomentumComp[1]);
 			fillAllGated("MissingMomentumZ", res.MissingMomentumComp[2]);
 
+			fillAllGated("MissingMomentum_reducedChi2", res.reducedChi2);
+
 			// Intermediate CM
 			fillAllGated("intermediatevcm_meas", res.intermediatevcm);
 			fillAll2DGated("intermediatevcm_TransverseVSLongitudinal", std::abs(res.intermediateComp[2]), std::sqrt(res.intermediateComp[0]*res.intermediateComp[0] + res.intermediateComp[1]*res.intermediateComp[1]));
@@ -598,6 +737,18 @@ void InvMass_Mult3::FillPermCounter(bool gated){
 }
 
 void InvMass_Mult3::FillSortedHisto(double SPS_Ex){
+
+	double bestchi2 = 1e9;
+	int bestperm = -1;
+	for(int i=0; i<6; i++){
+		if(caseResults[i].reducedChi2 < bestchi2){
+			bestchi2 = caseResults[i].reducedChi2;
+			bestperm = i;
+		}
+	}
+
+	hBestPermByChiSquared->Fill(bestperm);
+
 	//set new dummy array equal to caseResults and sort it by difference between IM Ex and SPS Ex
 	Results sorted_caseResults[6];
 	for(int i=0; i<6; i++) sorted_caseResults[i] = caseResults[i];
@@ -607,6 +758,14 @@ void InvMass_Mult3::FillSortedHisto(double SPS_Ex){
 		double diffB = std::abs(SPS_Ex - b.reconEx);
 		return diffA < diffB;
 	});
+
+	// std::sort(std::begin(sorted_caseResults), std::end(sorted_caseResults), [SPS_Ex](const Results& a, const Results& b) { 
+	// 	// double diffA = std::abs(SPS_Ex - a.reconEx);
+	// 	// double diffB = std::abs(SPS_Ex - b.reconEx);
+	// 	//return diffA < diffB;
+	// 	return a.reducedChi2 < b.reducedChi2;
+	// });
+
 
 	hSortedIntermediateExIMvsSPS->Fill(SPS_Ex, sorted_caseResults[0].intermediateEx);
 	hSortedDalitz->Fill(sorted_caseResults[0].m23sq, sorted_caseResults[0].m12sq);

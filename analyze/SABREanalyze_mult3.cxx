@@ -37,6 +37,8 @@
 #include "invmass_mult3.cpp"//including .cpp for simple root macro purposes
 #include "permHisto_mult3.h"//" above "
 #include "permHisto_mult3.cpp"//" above "
+#include "permHistoCorrelation_mult3.h"//" above "
+#include "permHistoCorrelation_mult3.cpp"//" above "
 #include "CutHandler.h"//" above "
 #include "CutHandler.cpp"//" above "
 #include "PixelHandler.h"//" above "
@@ -45,7 +47,7 @@
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, int gate1index, std::pair<double,double> gate1minmax, int gate2index, std::pair<double,double> gate2minmax, int gate3index, std::pair<double,double> gate3minmax, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -256,6 +258,7 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filenam
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
+	//SABRE_analysis.InitCorrelationPlots();
 	// SABRE_analysis.SetGate1(gate1index);
 	// SABRE_analysis.SetGate1MinMax(gate1minmax);
 	// SABRE_analysis.SetGate2(gate2index);
