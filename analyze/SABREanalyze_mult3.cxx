@@ -47,7 +47,7 @@
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -70,6 +70,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
 	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+	b9_be8_hypothesis.width_intermediate = width_int;
 	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
@@ -215,7 +216,7 @@ void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char
 
 }
 
-void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -236,6 +237,7 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filenam
 	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
 	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+	b9_be8_hypothesis.width_intermediate = width_int;
 	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
@@ -355,7 +357,7 @@ void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filenam
 
 // }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = false, bool updateIntermediateEx = false){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -378,6 +380,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char
 	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
 	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
 	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+	b9_li5_hypothesis.width_intermediate = width_int;
 	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
@@ -518,7 +521,7 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char
 
 }
 
-void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -541,6 +544,7 @@ void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filenam
 	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
 	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
 	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+	b9_li5_hypothesis.width_intermediate = width_int;
 	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);

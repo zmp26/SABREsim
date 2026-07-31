@@ -19,6 +19,7 @@ public:
 private:
     std::map<TString, TH2D*> h2Map;
     std::map<TString, TH1D*> h1Map;
+    std::map<TString, TH1D*> difMap;
     std::vector<TString> fPermNames;
 };
 

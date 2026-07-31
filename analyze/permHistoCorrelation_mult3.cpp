@@ -30,6 +30,11 @@ permHistoCorrelation_mult3::permHistoCorrelation_mult3(const std::vector<TString
 
 			h2Map[h2Key] = new TH2D(h2Key, h2Title, nBins, minChi2, maxChi2, nBins, minChi2, maxChi2);
 		}
+
+		//(1D permutation - 012) (permutation minus correct permutation --> greater than 0 means worse pick than 012, lesser than 0 means better pick than 012)
+		TString difkey = Form("chi2_dif_%s_minus_012", fPermNames[i].Data());
+		TString diftitle = Form("%s - 012;#chi^{2}_{%s} - #chi^{2}_{012}", fPermNames[i].Data(), fPermNames[i].Data());
+		difMap[difkey] = new TH1D(difkey, diftitle, nBins*8, -maxChi2, maxChi2);
 	}
 }
 
@@ -55,6 +60,12 @@ void permHistoCorrelation_mult3::FillCorner(const std::vector<double>& chi2Value
 				// X-axis: Permutation j, Y-axis: Permutation i
 				h2Map[h2Key]->Fill(chi2Values[j], chi2Values[i]);
 			}
+		}
+
+		//Fill dif:
+		TString difkey = Form("chi2_dif_%s_minus_012", fPermNames[i].Data());
+		if(difMap.count(difkey)){
+			difMap[difkey]->Fill(chi2Values[i] - chi2Values[0]);
 		}
 	}
 }
