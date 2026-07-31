@@ -11,10 +11,10 @@ plot4mc::plot4mc(const std::string& outname){
 
 	histofile = new TFile(outname.c_str(), "RECREATE");
 	histoman = new HistoManager(histofile);
-	histoman->loadHistoConfig("config/_4body.HMConfig");
+	histoman->loadHistoConfig("/home/zachpurcell/SABREsim/config/_4body.HMConfig");
 
 	masstable = new MassTable;
-	masstable->Init("config/masstable.dat");
+	masstable->Init("/home/zachpurcell/SABREsim/config/masstable.dat");
 
 }
 
@@ -508,11 +508,11 @@ void plot4mc::readSingleAngleMap(std::ifstream& infile, std::map<std::pair<int,i
 
 std::map<std::pair<int,int>, std::pair<double,double>> plot4mc::readAngleMaps(){
 	const std::vector<std::string> filenames = {
-		"anglemaps/SABRE0_phi306_anglemap.txt",
-		"anglemaps/SABRE1_phi18_anglemap.txt",
-		"anglemaps/SABRE2_phi234_anglemap.txt",
-		"anglemaps/SABRE3_phi162_anglemap.txt",
-		"anglemaps/SABRE4_phi90_anglemap.txt"
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE0_phi306_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE1_phi18_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE2_phi234_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE3_phi162_anglemap.txt",
+		"/home/zachpurcell/SABREsim/anglemaps/SABRE4_phi90_anglemap.txt"
 	};
 
 	std::map<std::pair<int,int>, std::pair<double,double>> retmap;

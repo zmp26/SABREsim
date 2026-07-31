@@ -169,10 +169,10 @@ void SABREsim::InitializeDetectors(bool WriteCornersToFile){
 
 		if(WriteCornersToFile){
 
-			TString cornerfilename = Form("config/corners/SABRE%zu_corners.txt",i);
+			TString cornerfilename = Form("/home/zachpurcell/SABREsim/config/corners/SABRE%zu_corners.txt",i);
 			std::ofstream cornerfile_cartesian(cornerfilename);
 
-			cornerfilename = Form("config/corners/SABRE%zu_corners_spherical.txt",i);
+			cornerfilename = Form("/home/zachpurcell/SABREsim/config/corners/SABRE%zu_corners_spherical.txt",i);
 			std::ofstream cornerfile_spherical(cornerfilename);
 
 			det->WriteTransformedCorners(cornerfile_cartesian);
@@ -196,25 +196,25 @@ bool SABREsim::InitializeModels(){
 	}
 
 	//load target energy losses
-	targetLoss_6Li_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_6Li_in_LiF.conf");
+	targetLoss_6Li_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/TargetELoss_6Li_in_LiF.conf");
 	if(!targetLoss_6Li_in_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load 6Li in LiF target loss config file\n");
 		return false;
 	}
 
-	targetLoss_alpha_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_alpha_in_LiF.conf");
+	targetLoss_alpha_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/TargetELoss_alpha_in_LiF.conf");
 	if(!targetLoss_alpha_in_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load alpha in LiF target loss config file\n");
 		return false;
 	}
 
-	targetLoss_deuteron_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_deuteron_in_LiF.conf");
+	targetLoss_deuteron_in_LiF_ = TargetEnergyLoss::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/TargetELoss_deuteron_in_LiF.conf");
 	if(!targetLoss_deuteron_in_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load deuteron in LiF target loss config file\n");
 		return false;
 	}
 
-	targetLoss_none_ = TargetEnergyLoss::LoadFromConfigFile("config/TargetELoss_none.conf");
+	targetLoss_none_ = TargetEnergyLoss::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/TargetELoss_none.conf");
 	if(!targetLoss_none_){
 		ConsoleColorizer::PrintRed("Failed to load none target loss config file\n");
 		return false;
@@ -222,44 +222,44 @@ bool SABREsim::InitializeModels(){
 
 
 	//load dead layer models
-	deadLayerLoss_6Li_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_6Li_in_Si.conf");
+	deadLayerLoss_6Li_ = SABRE_DeadLayerModel::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/DeadLayerELoss_6Li_in_Si.conf");
 	if(!deadLayerLoss_6Li_){
 		ConsoleColorizer::PrintRed("Failed to load 6Li dead layer config file\n");
 		return false;
 	}
 
-	deadLayerLoss_alpha_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_alpha_in_Si.conf");
+	deadLayerLoss_alpha_ = SABRE_DeadLayerModel::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/DeadLayerELoss_alpha_in_Si.conf");
 	if(!deadLayerLoss_alpha_){
 		ConsoleColorizer::PrintRed("Failed to load alpha dead layer config file\n");
 		return false;
 	}
 
-	deadLayerLoss_deuteron_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_deuteron_in_Si.conf");
+	deadLayerLoss_deuteron_ = SABRE_DeadLayerModel::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/DeadLayerELoss_deuteron_in_Si.conf");
 	if(!deadLayerLoss_deuteron_){
 		ConsoleColorizer::PrintRed("Failed to load deuteron dead layer config file\n");
 		return false;
 	}
 
-	deadLayerLoss_none_ = SABRE_DeadLayerModel::LoadFromConfigFile("config/DeadLayerELoss_none.conf");
+	deadLayerLoss_none_ = SABRE_DeadLayerModel::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/DeadLayerELoss_none.conf");
 	if(!deadLayerLoss_none_){
 		ConsoleColorizer::PrintRed("Failed to load none dead layer config\n"); 
 		return false;
 	}
 
 	//load target stragglers
-	straggler_6Li_3061keV_LiF_ = TargetAngularStraggler::LoadFromConfigFile("config/straggler_6Li_3061keV_LiF.conf");
+	straggler_6Li_3061keV_LiF_ = TargetAngularStraggler::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/straggler_6Li_3061keV_LiF.conf");
 	if(!straggler_6Li_3061keV_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load 6Li 3061keV straggler from config file\n");
 		return false;
 	}
 	
-	straggler_6Li_2239keV_LiF_ = TargetAngularStraggler::LoadFromConfigFile("config/straggler_6Li_2239keV_LiF.conf");
+	straggler_6Li_2239keV_LiF_ = TargetAngularStraggler::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/straggler_6Li_2239keV_LiF.conf");
 	if(!straggler_6Li_2239keV_LiF_){
 		ConsoleColorizer::PrintRed("Failed to load 6Li 2239keV straggler from config file\n");
 		return false;
 	}
 
-	straggler_none_ = TargetAngularStraggler::LoadFromConfigFile("config/straggler_none.conf");
+	straggler_none_ = TargetAngularStraggler::LoadFromConfigFile("/home/zachpurcell/SABREsim/config/straggler_none.conf");
 	if(!straggler_none_){
 		ConsoleColorizer::PrintRed("Failed to load none straggler from config file\n");
 		return false;

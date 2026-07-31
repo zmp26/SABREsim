@@ -26,7 +26,7 @@ SimConfig::SimConfig(const std::string& filename)
 	targetStraggle_par_.resize(4,"none");
 
 	masstable = new MassTable;
-	masstable->Init("config/masstable.dat");
+	masstable->Init("/home/zachpurcell/SABREsim/config/masstable.dat");
 }
 
 SimConfig::~SimConfig(){

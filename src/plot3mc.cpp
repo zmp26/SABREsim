@@ -11,10 +11,10 @@ plot3mc::plot3mc(const std::string& outname){
 
 	histofile = new TFile(outname.c_str(), "RECREATE");
 	histoman = new HistoManager(histofile);
-	histoman->loadHistoConfig("config/_3body.HMConfig");
+	histoman->loadHistoConfig("/home/zachpurcell/SABREsim/config/_3body.HMConfig");
 
 	masstable = new MassTable;
-	masstable->Init("config/masstable.dat");
+	masstable->Init("/home/zachpurcell/SABREsim/config/masstable.dat");
 
 }
 
