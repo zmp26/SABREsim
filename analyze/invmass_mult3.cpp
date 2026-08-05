@@ -70,10 +70,13 @@ InvMass_Mult3::~InvMass_Mult3(){
 }
 
 void InvMass_Mult3::Init(TDirectory* targetDir){
+
+	outdir = targetDir;
+	outdir->cd();
 	
 	if(writeTree){
-	outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
-	outtree->SetDirectory(outdir);
+		outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
+		outtree->SetDirectory(outdir);
 
 		TString leaflist =  "SPSEnergy/D:SPSTheta/D:SPSPhi/D:SPS_Ex/D:" 
 							"imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
