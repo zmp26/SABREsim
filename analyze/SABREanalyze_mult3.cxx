@@ -716,9 +716,7 @@ void B10ha_CombinedAnalysis(const char* input_filename, const char* cutlist_8Be,
 */
 
 	InvMass_Mult3 analysis_8Be;
-	std::cout << "Setting directory for 8Be..." << std::endl;
 	analysis_8Be.Init(dir_8Be);
-	std::cout << "...And set!" << std::endl;
 	analysis_8Be.SetHypothesis(hyp_8Be);
 	if(!analysis_8Be.GetCutHandler().LoadCutsFromConfig(cutlist_8Be)){
 		std::cerr << "Warning: Could not load 8Be cut list from " << cutlist_8Be << std::endl;
@@ -726,9 +724,7 @@ void B10ha_CombinedAnalysis(const char* input_filename, const char* cutlist_8Be,
 	analysis_8Be.GetCutHandler().PrintCuts();
 
 	InvMass_Mult3 analysis_5Li;
-	std::cout << "Setting directory for 5Li..." << std::endl;
 	analysis_5Li.Init(dir_5Li);
-	std::cout << "...And set!" << std::endl;
 	analysis_5Li.SetHypothesis(hyp_5Li);
 	if (!analysis_5Li.GetCutHandler().LoadCutsFromConfig(cutlist_5Li)) {
 		std::cerr << "Warning: Could not load 5Li cuts from " << cutlist_5Li << std::endl;
@@ -832,7 +828,7 @@ void B10ha_CombinedAnalysis(const char* input_filename, const char* cutlist_8Be,
 		}
 
 
-		if(i % 10000 == 0){
+		if(i % 1000 == 0){
 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)", (float)i*100./numentries, i, numentries);
 			fflush(stdout);
 		}
