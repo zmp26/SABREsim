@@ -47,358 +47,654 @@
 const double DEGRAD = M_PI / 180.;
 const double RADDEG = 180. / M_PI;
 
-void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
-
-	std::string s = input_filename;
-	size_t last_dot = s.find_last_of(".");
-	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
-
-	std::string sabre_str = stem + "_SABREanalyzed8Be.root";
-	std::string kin4mc_str = stem + "_kin4mcanalyzed8Be.root";
-
-	const char* SABRE_output_filename = sabre_str.c_str();
-	const char* kin4mc_output_filename = kin4mc_str.c_str();
-
-	TMassTable fMassTable;
-	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
-
-	Hypothesis4 b9_be8_hypothesis;
-	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
-
-	b9_be8_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_be8_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
-	b9_be8_hypothesis.width_intermediate = width_int;
-	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_be8_hypothesis.beamEnergyMeV = 7.5;
-
-	// b9_be8_hypothesis.recoilEx = recoilEx;
-	// b9_be8_hypothesis.intermediateEx = intermediateEx;
-	// b9_be8_hypothesis.intermediateExGate = intermediateExGate;
-
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
-
-	TTree *intree = (TTree*)infile->Get("mult3");
-	if(!intree){
-		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
-		return;
-	}
-
-	long numentries = intree->GetEntries();
-
-	InvMass_Mult3 SABRE_analysis;;
-	SABRE_analysis.Init(SABRE_output_filename);
-	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
-	// SABRE_analysis.SetGate1(gate1index);
-	// SABRE_analysis.SetGate1MinMax(gate1minmax);
-	// SABRE_analysis.SetGate2(gate2index);
-	// SABRE_analysis.SetGate2MinMax(gate2minmax);
-	// SABRE_analysis.SetGate3(gate3index);
-	// SABRE_analysis.SetGate3MinMax(gate3minmax);
-	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	InvMass_Mult3 kin4mc_analysis;
-	kin4mc_analysis.Init(kin4mc_output_filename);
-	kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
-	// kin4mc_analysis.SetGate1(gate1index);
-	// kin4mc_analysis.SetGate1MinMax(gate1minmax);
-	// kin4mc_analysis.SetGate2(gate2index);
-	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
-	// kin4mc_analysis.SetGate3(gate3index);
-	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
-	cuthandler = kin4mc_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
-	intree->SetBranchAddress("kin_e", kinmc_e);
-	intree->SetBranchAddress("kin_theta", kinmc_theta);
-	intree->SetBranchAddress("kin_phi", kinmc_phi);
-
-	double Ex, SPSE, SPSTheta, SPSPhi;
-	intree->SetBranchAddress("ExE", &Ex);
-	intree->SetBranchAddress("SPSEnergy", &SPSE);
-	intree->SetBranchAddress("SPSTheta", &SPSTheta);
-	intree->SetBranchAddress("SPSPhi", &SPSPhi);
-
-	double E[3], theta[3], phi[3];
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
-
-	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
-	for(long i=0; i<numentries; i++){
-
-		intree->GetEntry(i);
-
-		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
-		for(int j=0; j<3; j++){
-			kinmc_bue[j] = kinmc_e[j+1];
-			kinmc_butheta[j] = kinmc_theta[j+1];
-			kinmc_buphi[j] = kinmc_phi[j+1];
-		}
-
-		//pass along SPS-informed recoil Ex if enabled:
-		if(updateRecoilEx){
-			SABRE_analysis.SetRecoilEx(Ex);
-			//SABRE_analysis.SetExpectedCMValues();
-
-			kin4mc_analysis.SetRecoilEx(Ex);
-			//kin4mc_analysis.SetExpectedCMValues();
-		}
-
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms(Ex);
-		int numpasses_sabre = SABRE_analysis.CountPermPasses();
-		SABRE_analysis.FillPermCounter();
-		SABRE_analysis.FillSortedHisto(Ex);
-		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		//if(numpasses_sabre == 2){
-		SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
-		SABRE_analysis.FillPermCounter(true);
-		//}
-		SABRE_analysis.FillTree();
-		//SABRE_analysis.FillGatedEventHistograms(); 
-
-		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
-		kin4mc_analysis.FillEventHistograms(Ex);
-		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
-		kin4mc_analysis.FillPermCounter();
-		kin4mc_analysis.FillSortedHisto(Ex);
-		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		//if(numpasses_kin4mc == 2){
-		kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
-		kin4mc_analysis.FillPermCounter(true);
-		//}
-		kin4mc_analysis.FillTree();
-		//kin4mc_analysis.FillGatedEventHistograms();
-
-		if(i % 1000 == 0){
-			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
-			fflush(stdout);
-		}
-
-	}
-
-	SABRE_analysis.CloseAndWrite();
-	kin4mc_analysis.CloseAndWrite();
-	infile->Close();
-
-	std::cout << "\n\nAnalysis complete!\n" << std::endl;
-	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
-	std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
-
-}
-
-void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
-
-	std::string s = input_filename;
-	size_t last_dot = s.find_last_of(".");
-	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
-
-	std::string sabre_str = stem + "_SABREanalyzed8Be.root";
-
-	const char* SABRE_output_filename = sabre_str.c_str();
-
-	TMassTable fMassTable;
-	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
-
-	Hypothesis4 b9_be8_hypothesis;
-	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
-
-	b9_be8_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_be8_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
-	b9_be8_hypothesis.width_intermediate = width_int;
-	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_be8_hypothesis.beamEnergyMeV = 7.5;
-
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
-
-	TTree *intree = (TTree*)infile->Get("mult3");
-	if(!intree){
-		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
-		return;
-	}
-
-	long numentries = intree->GetEntries();
-
-	InvMass_Mult3 SABRE_analysis;;
-	SABRE_analysis.Init(SABRE_output_filename);
-	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
-	//SABRE_analysis.InitCorrelationPlots();
-	// SABRE_analysis.SetGate1(gate1index);
-	// SABRE_analysis.SetGate1MinMax(gate1minmax);
-	// SABRE_analysis.SetGate2(gate2index);
-	// SABRE_analysis.SetGate2MinMax(gate2minmax);
-	// SABRE_analysis.SetGate3(gate3index);
-	// SABRE_analysis.SetGate3MinMax(gate3minmax);
-	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	double Ex, SPSE, SPSTheta, SPSPhi;
-	intree->SetBranchAddress("ExE", &Ex);
-	intree->SetBranchAddress("SPSEnergy", &SPSE);
-	intree->SetBranchAddress("SPSTheta", &SPSTheta);
-	intree->SetBranchAddress("SPSPhi", &SPSPhi);
-
-	double E[3], theta[3], phi[3];
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
-
-	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
-	for(long i=0; i<numentries; i++){
-
-		intree->GetEntry(i);
-
-		//pass along SPS-informed recoil Ex if enabled:
-		if(updateRecoilEx){
-			SABRE_analysis.SetRecoilEx(Ex);
-		}
-
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms(Ex);
-		int numpasses_sabre = SABRE_analysis.CountPermPasses();
-		SABRE_analysis.FillPermCounter();
-		SABRE_analysis.FillSortedHisto(Ex);
-		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		//if(numpasses_sabre == permCheck){ 
-		SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
-		SABRE_analysis.FillPermCounter(true);
-		//}
-		SABRE_analysis.FillTree();
-
-		if(i % 1000 == 0){
-			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
-			fflush(stdout);
-		}
-
-	}
-
-	SABRE_analysis.CloseAndWrite();
-
-	infile->Close();
-
-	std::cout << "\n\nAnalysis complete!\n" << std::endl;
-	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
-}
-
-// void tempDoAll_8BeHypothesis(bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
-
-// 	// std::vector<int> intExs = {0, 250, 500, 750, 1000, 1250};
-// 	// std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};//MeV
-// 	// std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00289, 0.00429}, {0.00382, 0.00503}, {0.00461, 0.00575}, {0.00527, 0.00637}, {0.00593, 0.00695}};//c
-// 	// std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.024, 0.03321}, {0.03051, 0.03985}, {0.03667, 0.04527}, {0.04274, 0.05045}, {0.04797, 0.0549}};//c
-
-// 	std::vector<int> intExs = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
-// 	std::vector<std::pair<double,double>> intEminmax = {{-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}, {-0.05, 0.1}};
-// 	std::vector<std::pair<double,double>> intVCMminmax = {{0.0017, 0.00295}, {0.00193, 0.0031}, {0.00219, 0.00363}, {0.00245, 0.00389}, {0.00267, 0.00412}, {0.00289, 0.00429}, {0.00301, 0.00451}, {0.00321, 0.00471}, {0.00333, 0.00485}, {0.00347, 0.00501}, {0.00382, 0.00503}};
-// 	std::vector<std::pair<double,double>> frag1VCMminmax = {{0.01355, 0.02275}, {0.01537, 0.02595}, {0.01791, 0.02817}, {0.01967, 0.3035}, {0.02159, 0.03199}, {0.024, 0.03321}, {0.02493, 0.03541}, {0.02599, 0.03665}, {0.02752, 0.03769}, {0.02854, 0.03911}, {0.03051, 0.03985}};
-
-//  	std::pair<double,double> minmax1, minmax2, minmax3;
-
-//  	for(size_t i=0; i<intExs.size(); i++){
-//  		int intEx = intExs.at(i);
-//  		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_p8Be_ex0keV_1000k_tree_mult3.root", intEx);
-
-// 		B10ha_8BeHypothesis(filename.Data(), updateRecoilEx, updateIntermediateEx, permCheck);
-
-// 		std::cout << "Generated " << filename.Data() << std::endl << std::endl;
-
-//  	}
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+
+// 	std::string s = input_filename;
+// 	size_t last_dot = s.find_last_of(".");
+// 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+// 	std::string sabre_str = stem + "_SABREanalyzed8Be.root";
+// 	std::string kin4mc_str = stem + "_kin4mcanalyzed8Be.root";
+
+// 	const char* SABRE_output_filename = sabre_str.c_str();
+// 	const char* kin4mc_output_filename = kin4mc_str.c_str();
+
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+// 	Hypothesis4 b9_be8_hypothesis;
+// 	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
+
+// 	b9_be8_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_be8_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+// 	b9_be8_hypothesis.width_intermediate = width_int;
+// 	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_be8_hypothesis.beamEnergyMeV = 7.5;
+
+// 	// b9_be8_hypothesis.recoilEx = recoilEx;
+// 	// b9_be8_hypothesis.intermediateEx = intermediateEx;
+// 	// b9_be8_hypothesis.intermediateExGate = intermediateExGate;
+
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	long numentries = intree->GetEntries();
+
+// 	InvMass_Mult3 SABRE_analysis;;
+// 	SABRE_analysis.Init(SABRE_output_filename);
+// 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
+// 	// SABRE_analysis.SetGate1(gate1index);
+// 	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+// 	// SABRE_analysis.SetGate2(gate2index);
+// 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+// 	// SABRE_analysis.SetGate3(gate3index);
+// 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+// 	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	InvMass_Mult3 kin4mc_analysis;
+// 	kin4mc_analysis.Init(kin4mc_output_filename);
+// 	kin4mc_analysis.SetHypothesis(b9_be8_hypothesis);
+// 	// kin4mc_analysis.SetGate1(gate1index);
+// 	// kin4mc_analysis.SetGate1MinMax(gate1minmax);
+// 	// kin4mc_analysis.SetGate2(gate2index);
+// 	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
+// 	// kin4mc_analysis.SetGate3(gate3index);
+// 	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
+// 	cuthandler = kin4mc_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+// 	intree->SetBranchAddress("kin_e", kinmc_e);
+// 	intree->SetBranchAddress("kin_theta", kinmc_theta);
+// 	intree->SetBranchAddress("kin_phi", kinmc_phi);
+
+// 	double Ex, SPSE, SPSTheta, SPSPhi;
+// 	intree->SetBranchAddress("ExE", &Ex);
+// 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+// 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+// 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+// 	double E[3], theta[3], phi[3];
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+// 	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+// 	for(long i=0; i<numentries; i++){
+
+// 		intree->GetEntry(i);
+
+// 		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+// 		for(int j=0; j<3; j++){
+// 			kinmc_bue[j] = kinmc_e[j+1];
+// 			kinmc_butheta[j] = kinmc_theta[j+1];
+// 			kinmc_buphi[j] = kinmc_phi[j+1];
+// 		}
+
+// 		//pass along SPS-informed recoil Ex if enabled:
+// 		if(updateRecoilEx){
+// 			SABRE_analysis.SetRecoilEx(Ex);
+// 			//SABRE_analysis.SetExpectedCMValues();
+
+// 			kin4mc_analysis.SetRecoilEx(Ex);
+// 			//kin4mc_analysis.SetExpectedCMValues();
+// 		}
+
+// 		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, updateIntermediateEx);
+// 		SABRE_analysis.FillEventHistograms(Ex);
+// 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+// 		SABRE_analysis.FillPermCounter();
+// 		SABRE_analysis.FillSortedHisto(Ex);
+// 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		//if(numpasses_sabre == 2){
+// 		SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+// 		SABRE_analysis.FillPermCounter(true);
+// 		//}
+// 		SABRE_analysis.FillTree();
+// 		//SABRE_analysis.FillGatedEventHistograms(); 
+
+// 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
+// 		kin4mc_analysis.FillEventHistograms(Ex);
+// 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
+// 		kin4mc_analysis.FillPermCounter();
+// 		kin4mc_analysis.FillSortedHisto(Ex);
+// 		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		//if(numpasses_kin4mc == 2){
+// 		kin4mc_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+// 		kin4mc_analysis.FillPermCounter(true);
+// 		//}
+// 		kin4mc_analysis.FillTree();
+// 		//kin4mc_analysis.FillGatedEventHistograms();
+
+// 		if(i % 1000 == 0){
+// 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+// 			fflush(stdout);
+// 		}
+
+// 	}
+
+// 	SABRE_analysis.CloseAndWrite();
+// 	kin4mc_analysis.CloseAndWrite();
+// 	infile->Close();
+
+// 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+// 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+// 	std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
 
 // }
 
-void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void B10ha_8BeHypothesis(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
+
+// 	std::string s = input_filename;
+// 	size_t last_dot = s.find_last_of(".");
+// 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+// 	std::string sabre_str = stem + "_SABREanalyzed8Be.root";
+
+// 	const char* SABRE_output_filename = sabre_str.c_str();
+
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+// 	Hypothesis4 b9_be8_hypothesis;
+// 	b9_be8_hypothesis.name = "B10ha_8BeHypothesis";
+
+// 	b9_be8_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_be8_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_be8_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_be8_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_be8_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+// 	b9_be8_hypothesis.width_intermediate = width_int;
+// 	b9_be8_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_be8_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_be8_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_be8_hypothesis.beamEnergyMeV = 7.5;
+
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	long numentries = intree->GetEntries();
+
+// 	InvMass_Mult3 SABRE_analysis;;
+// 	SABRE_analysis.Init(SABRE_output_filename);
+// 	SABRE_analysis.SetHypothesis(b9_be8_hypothesis);
+// 	//SABRE_analysis.InitCorrelationPlots();
+// 	// SABRE_analysis.SetGate1(gate1index);
+// 	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+// 	// SABRE_analysis.SetGate2(gate2index);
+// 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+// 	// SABRE_analysis.SetGate3(gate3index);
+// 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+// 	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	double Ex, SPSE, SPSTheta, SPSPhi;
+// 	intree->SetBranchAddress("ExE", &Ex);
+// 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+// 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+// 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+// 	double E[3], theta[3], phi[3];
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+// 	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+// 	for(long i=0; i<numentries; i++){
+
+// 		intree->GetEntry(i);
+
+// 		//pass along SPS-informed recoil Ex if enabled:
+// 		if(updateRecoilEx){
+// 			SABRE_analysis.SetRecoilEx(Ex);
+// 		}
+
+// 		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 		SABRE_analysis.FillEventHistograms(Ex);
+// 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+// 		SABRE_analysis.FillPermCounter();
+// 		SABRE_analysis.FillSortedHisto(Ex);
+// 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		//if(numpasses_sabre == permCheck){ 
+// 		SABRE_analysis.FillGatedEventHistograms(Ex); //due to symmetry of 8Be -> a + a, cases 012, 021 are identical, so check if 2 permutations pass intsead of just 1
+// 		SABRE_analysis.FillPermCounter(true);
+// 		//}
+// 		SABRE_analysis.FillTree();
+
+// 		if(i % 1000 == 0){
+// 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+// 			fflush(stdout);
+// 		}
+
+// 	}
+
+// 	SABRE_analysis.CloseAndWrite();
+
+// 	infile->Close();
+
+// 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+// 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+// }
+
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+
+// 	std::string s = input_filename;
+// 	size_t last_dot = s.find_last_of(".");
+// 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+// 	std::string sabre_str = stem + "_SABREanalyzed5Li.root";
+// 	std::string kin4mc_str = stem + "_kin4mcanalyzed5Li.root";
+
+// 	const char* SABRE_output_filename = sabre_str.c_str();
+// 	const char* kin4mc_output_filename = kin4mc_str.c_str();
+
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+// 	Hypothesis4 b9_li5_hypothesis;
+// 	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
+
+// 	b9_li5_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_li5_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+// 	b9_li5_hypothesis.width_intermediate = width_int;
+// 	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_li5_hypothesis.beamEnergyMeV = 7.5;
+
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	long numentries = intree->GetEntries();
+
+// 	InvMass_Mult3 SABRE_analysis;;
+// 	SABRE_analysis.Init(SABRE_output_filename);
+// 	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
+// 	// SABRE_analysis.SetGate1(gate1index);
+// 	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+// 	// SABRE_analysis.SetGate2(gate2index);
+// 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+// 	// SABRE_analysis.SetGate3(gate3index);
+// 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+// 	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	InvMass_Mult3 kin4mc_analysis;
+// 	kin4mc_analysis.Init(kin4mc_output_filename);
+// 	kin4mc_analysis.SetHypothesis(b9_li5_hypothesis);
+// 	// kin4mc_analysis.SetGate1(gate1index);
+// 	// kin4mc_analysis.SetGate1MinMax(gate1minmax);
+// 	// kin4mc_analysis.SetGate2(gate2index);
+// 	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
+// 	// kin4mc_analysis.SetGate3(gate3index);
+// 	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
+// 	cuthandler = kin4mc_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
+// 	intree->SetBranchAddress("kin_e", kinmc_e);
+// 	intree->SetBranchAddress("kin_theta", kinmc_theta);
+// 	intree->SetBranchAddress("kin_phi", kinmc_phi);
+
+// 	double Ex, SPSE, SPSTheta, SPSPhi;
+// 	intree->SetBranchAddress("ExE", &Ex);
+// 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+// 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+// 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+// 	double E[3], theta[3], phi[3];
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+// 	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+
+// 	for(long i=0; i<numentries; i++){
+
+// 		intree->GetEntry(i);
+
+// 		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
+// 		for(int j=0; j<3; j++){
+// 			kinmc_bue[j] = kinmc_e[j+1];
+// 			kinmc_butheta[j] = kinmc_theta[j+1];
+// 			kinmc_buphi[j] = kinmc_phi[j+1];
+// 		}
+
+// 		//pass along SPS-informed recoil Ex if enabled:
+// 		if(updateRecoilEx){
+// 			SABRE_analysis.SetRecoilEx(Ex);
+// 			//SABRE_analysis.SetExpectedCMValues();
+
+// 			kin4mc_analysis.SetRecoilEx(Ex);
+// 			//kin4mc_analysis.SetExpectedCMValues();
+// 		}
+
+// 		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 		SABRE_analysis.FillEventHistograms(Ex);
+// 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+// 		SABRE_analysis.FillPermCounter();
+// 		SABRE_analysis.FillSortedHisto(Ex);
+// 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		//if(numpasses_sabre == 1){
+// 		SABRE_analysis.FillGatedEventHistograms(Ex);
+// 		SABRE_analysis.FillPermCounter(true);
+// 		//}
+// 		SABRE_analysis.FillTree();
+
+// 		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
+// 		kin4mc_analysis.FillEventHistograms(Ex);
+// 		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
+// 		kin4mc_analysis.FillPermCounter();
+// 		kin4mc_analysis.FillSortedHisto(Ex);
+// 		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		//if(numpasses_kin4mc == 1){
+// 		kin4mc_analysis.FillGatedEventHistograms(Ex);
+// 		kin4mc_analysis.FillPermCounter(true);
+// 		//}
+// 		kin4mc_analysis.FillTree();
+
+// 		if(i % 1000 == 0){
+// 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+// 			fflush(stdout);
+// 		}
+
+// 	}
+
+// 	SABRE_analysis.CloseAndWrite();
+// 	kin4mc_analysis.CloseAndWrite();
+// 	infile->Close();
+
+// 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+// 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+// 	std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
+
+// }
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+// 	std::string s = input_filename;
+// 	size_t last_dot = s.find_last_of(".");
+// 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+// 	std::string sabre_str = stem + "_SABREanalyzed5Li.root";
+// 	std::string kin4mc_str = stem + "_kin4mcanalyzed5Li.root";
+
+// 	const char* SABRE_output_filename = sabre_str.c_str();
+// 	const char* kin4mc_output_filename = kin4mc_str.c_str();
+
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+// 	Hypothesis4 b9_li5_hypothesis;
+// 	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
+
+// 	b9_li5_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_li5_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+// 	b9_li5_hypothesis.width_intermediate = width_int;
+// 	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_li5_hypothesis.beamEnergyMeV = 7.5;
+
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	long numentries = intree->GetEntries();
+
+// 	InvMass_Mult3 SABRE_analysis;;
+// 	//SABRE_analysis.Init(SABRE_output_filename);
+// 	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
+// 	// SABRE_analysis.SetGate1(gate1index);
+// 	// SABRE_analysis.SetGate1MinMax(gate1minmax);
+// 	// SABRE_analysis.SetGate2(gate2index);
+// 	// SABRE_analysis.SetGate2MinMax(gate2minmax);
+// 	// SABRE_analysis.SetGate3(gate3index);
+// 	// SABRE_analysis.SetGate3MinMax(gate3minmax);
+// 	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	double Ex, SPSE, SPSTheta, SPSPhi;
+// 	intree->SetBranchAddress("ExE", &Ex);
+// 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+// 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+// 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+// 	double E[3], theta[3], phi[3];
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+// 	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+
+// 	for(long i=0; i<numentries; i++){
+
+// 		intree->GetEntry(i);
+
+// 		//pass along SPS-informed recoil Ex if enabled:
+// 		if(updateRecoilEx){
+// 			SABRE_analysis.SetRecoilEx(Ex);
+// 		}
+
+// 		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 		SABRE_analysis.FillEventHistograms(Ex);
+// 		int numpasses_sabre = SABRE_analysis.CountPermPasses();
+// 		SABRE_analysis.FillPermCounter();
+// 		SABRE_analysis.FillSortedHisto(Ex);
+// 		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		//std::cout << "numpasses_sabre = " << numpasses_sabre << "\n";
+// 		//if(numpasses_sabre == 1){
+// 		SABRE_analysis.FillGatedEventHistograms(Ex);
+// 		SABRE_analysis.FillPermCounter(true);
+// 		//}
+// 		SABRE_analysis.FillTree();
+
+// 		if(i % 1000 == 0){
+// 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+// 			fflush(stdout);
+// 		}
+
+// 	}
+
+// 	SABRE_analysis.CloseAndWrite();
+// 	infile->Close();
+
+// 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+// 	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
+
+// }
+
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void tempDoAll_5LiHypothesis(const char* cutlist_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
+
+// 	std::vector<int> intExs;
+// 	std::vector<std::pair<double,double>> intEminmax;
+// 	std::vector<std::pair<double,double>> intVCMminmax;
+// 	std::vector<std::pair<double,double>> frag1VCMminmax;
+
+// 	//update above values for 5Li case (just copied from 8Be)
+// 	std::pair<double,double> minmax1, minmax2, minmax3;
+
+// 	//for(auto const &intEx : intExs){
+// 	for(size_t i=0; i<intExs.size(); i++){
+// 		int intEx = intExs.at(i);
+// 		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree_mult3.root", intEx);
+
+// 		B10ha_5LiHypothesis(filename.Data(), cutlist_filename, updateRecoilEx, updateIntermediateEx);
+// 	}
+// }
+
+
+void B10ha_CombinedAnalysis(const char* input_filename, const char* cutlist_8Be, const char* cutlist_5Li, double width_8Be = 0.00000557, double width_5Li = 1.23, bool updateRecoilEx=true, bool updateIntermediateEx=true){
 
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
-	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
-
-	std::string sabre_str = stem + "_SABREanalyzed5Li.root";
-	std::string kin4mc_str = stem + "_kin4mcanalyzed5Li.root";
-
-	const char* SABRE_output_filename = sabre_str.c_str();
-	const char* kin4mc_output_filename = kin4mc_str.c_str();
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_SABRE_GlobalMinAnalysis.root";
 
 	TMassTable fMassTable;
 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
-	Hypothesis4 b9_li5_hypothesis;
-	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
+	Hypothesis4 hyp_8Be;
+	hyp_8Be.name = "B10ha_8BeHypothesis";
+	hyp_8Be.mass_target        = fMassTable.GetNuclearMassMeV("B", 10);
+	hyp_8Be.mass_beam          = fMassTable.GetNuclearMassMeV("He", 3);
+	hyp_8Be.mass_ejectile      = fMassTable.GetNuclearMassMeV("He", 4);
+	hyp_8Be.mass_recoil        = fMassTable.GetNuclearMassMeV("B", 9);
+	hyp_8Be.mass_intermediate  = fMassTable.GetNuclearMassMeV("Be", 8);
+	hyp_8Be.width_intermediate = width_8Be;
+	hyp_8Be.masses[0]          = fMassTable.GetNuclearMassMeV("H", 1);  // Proton
+	hyp_8Be.masses[1]          = fMassTable.GetNuclearMassMeV("He", 4); // Alpha 1
+	hyp_8Be.masses[2]          = fMassTable.GetNuclearMassMeV("He", 4); // Alpha 2
+	hyp_8Be.beamEnergyMeV      = 7.5;
 
-	b9_li5_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_li5_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
-	b9_li5_hypothesis.width_intermediate = width_int;
-	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_li5_hypothesis.beamEnergyMeV = 7.5;
+	Hypothesis4 hyp_5Li;
+	hyp_5Li.name = "B10ha_5LiHypothesis";
+	hyp_5Li.mass_target       = fMassTable.GetNuclearMassMeV("B", 10);
+	hyp_5Li.mass_beam         = fMassTable.GetNuclearMassMeV("He", 3);
+	hyp_5Li.mass_ejectile     = fMassTable.GetNuclearMassMeV("He", 4);
+	hyp_5Li.mass_recoil       = fMassTable.GetNuclearMassMeV("B", 9);
+	hyp_5Li.mass_intermediate = fMassTable.GetNuclearMassMeV("Li", 5);
+	hyp_5Li.width_intermediate = width_5Li;
+	hyp_5Li.masses[0]         = fMassTable.GetNuclearMassMeV("He", 4); // Alpha
+	hyp_5Li.masses[1]         = fMassTable.GetNuclearMassMeV("H", 1);  // Proton
+	hyp_5Li.masses[2]         = fMassTable.GetNuclearMassMeV("He", 4); // Alpha
+	hyp_5Li.beamEnergyMeV     = 7.5;
 
-	TFile *infile = new TFile(input_filename, "READ");
+	TFile *infile = TFile::Open(input_filename, "READ");
 	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
+		std::cerr << "Error: Cannot open input file " << input_filename << std::endl;
 		return;
 	}
 
 	TTree *intree = (TTree*)infile->Get("mult3");
 	if(!intree){
-		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+		std::cerr << "Error: Cannot get TTree 'mult3'!" << std::endl;
+		infile->Close();
 		return;
 	}
 
 	long numentries = intree->GetEntries();
+
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+
+	TDirectory* dir_8Be = outfile->mkdir("p8Be");
+	TDirectory* dir_5Li = outfile->mkdir("a5Li");
+
+/*outtree = new 
 
 	InvMass_Mult3 SABRE_analysis;;
 	SABRE_analysis.Init(SABRE_output_filename);
@@ -417,27 +713,38 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char
 	//test by printing cuts here:
 	cuthandler.PrintCuts();
 
-	InvMass_Mult3 kin4mc_analysis;
-	kin4mc_analysis.Init(kin4mc_output_filename);
-	kin4mc_analysis.SetHypothesis(b9_li5_hypothesis);
-	// kin4mc_analysis.SetGate1(gate1index);
-	// kin4mc_analysis.SetGate1MinMax(gate1minmax);
-	// kin4mc_analysis.SetGate2(gate2index);
-	// kin4mc_analysis.SetGate2MinMax(gate2minmax);
-	// kin4mc_analysis.SetGate3(gate3index);
-	// kin4mc_analysis.SetGate3MinMax(gate3minmax);
-	cuthandler = kin4mc_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
+*/
+
+	InvMass_Mult3 analysis_8Be;
+	analysis_8Be.Init(dir_8Be);
+	analysis_8Be.SetHypothesis(hyp_8Be);
+	if(!analysis_8Be.GetCutHandler().LoadCutsFromConfig(cutlist_8Be)){
+		std::cerr << "Warning: Could not load 8Be cut list from " << cutlist_8Be << std::endl;
+	}
+	analysis_8Be.GetCutHandler().PrintCuts();
+
+	InvMass_Mult3 analysis_5Li;
+	analysis_5Li.Init(dir_5Li);
+	analysis_5Li.SetHypothesis(hyp_5Li);
+	if (!analysis_5Li.GetCutHandler().LoadCutsFromConfig(cutlist_5Li)) {
+		std::cerr << "Warning: Could not load 5Li cuts from " << cutlist_5Li << std::endl;
+	}
+	analysis_5Li.GetCutHandler().PrintCuts();
+
+	outfile->cd();
+	TH1D* hChannelSelection = new TH1D("hChannelSelection", "Winning Channel Assignment; Channel; Counts", 3, -0.5, 2.5);
+	hChannelSelection->GetXaxis()->SetBinLabel(1, "8Be Chosen");
+	hChannelSelection->GetXaxis()->SetBinLabel(2, "5Li Chosen");
+	hChannelSelection->GetXaxis()->SetBinLabel(3, "Neither Chosen");
+
+	TH1D* hGlobalPermutationSelection = new TH1D("hGlobalPermutationSelection", "Global Minimum Selected Permutation; (8Be: bin 1-6, 5Li: bin 7-12)", 12, 0.5, 12.5);
+	const char* permLabels[6] = {"012", "021", "102", "120", "201", "210"};
+	for(int k=0; k<6; k++){
+		hGlobalPermutationSelection->GetXaxis()->SetBinLabel(k+1, Form("8Be_%s", permLabels[k]));
+		hGlobalPermutationSelection->GetXaxis()->SetBinLabel(k+7, Form("5Li_%s", permLabels[k]));
 	}
 
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	double kinmc_e[4], kinmc_theta[4], kinmc_phi[4];
-	intree->SetBranchAddress("kin_e", kinmc_e);
-	intree->SetBranchAddress("kin_theta", kinmc_theta);
-	intree->SetBranchAddress("kin_phi", kinmc_phi);
+	TH2D* hChi2Comparison = new TH2D("hChi2Comparison", "Best Perm #chi^{2}, 8Be vs 5Li; 5Li; 8Be", 150, 0, 15, 150, 0, 15);
 
 	double Ex, SPSE, SPSTheta, SPSPhi;
 	intree->SetBranchAddress("ExE", &Ex);
@@ -458,497 +765,376 @@ void B10ha_5LiHypothesis_kin4mcComparison(const char* input_filename, const char
 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 
-	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+	std::cout << "Starting global minimum comparison on " << numentries << " entries..." << std::endl;
 
 	for(long i=0; i<numentries; i++){
-
 		intree->GetEntry(i);
 
-		double kinmc_bue[3], kinmc_butheta[3], kinmc_buphi[3];
-		for(int j=0; j<3; j++){
-			kinmc_bue[j] = kinmc_e[j+1];
-			kinmc_butheta[j] = kinmc_theta[j+1];
-			kinmc_buphi[j] = kinmc_phi[j+1];
-		}
-
-		//pass along SPS-informed recoil Ex if enabled:
 		if(updateRecoilEx){
-			SABRE_analysis.SetRecoilEx(Ex);
-			//SABRE_analysis.SetExpectedCMValues();
-
-			kin4mc_analysis.SetRecoilEx(Ex);
-			//kin4mc_analysis.SetExpectedCMValues();
+			analysis_8Be.SetRecoilEx(Ex);
+			analysis_5Li.SetRecoilEx(Ex);
 		}
 
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms(Ex);
-		int numpasses_sabre = SABRE_analysis.CountPermPasses();
-		SABRE_analysis.FillPermCounter();
-		SABRE_analysis.FillSortedHisto(Ex);
-		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		//if(numpasses_sabre == 1){
-		SABRE_analysis.FillGatedEventHistograms(Ex);
-		SABRE_analysis.FillPermCounter(true);
-		//}
-		SABRE_analysis.FillTree();
+		analysis_8Be.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+		analysis_5Li.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
 
-		kin4mc_analysis.AnalyzeEvent(kinmc_bue, kinmc_butheta, kinmc_buphi, kinmc_e[0], kinmc_theta[0], kinmc_phi[0], Ex, updateIntermediateEx);
-		kin4mc_analysis.FillEventHistograms(Ex);
-		int numpasses_kin4mc = kin4mc_analysis.CountPermPasses();
-		kin4mc_analysis.FillPermCounter();
-		kin4mc_analysis.FillSortedHisto(Ex);
-		kin4mc_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		//if(numpasses_kin4mc == 1){
-		kin4mc_analysis.FillGatedEventHistograms(Ex);
-		kin4mc_analysis.FillPermCounter(true);
-		//}
-		kin4mc_analysis.FillTree();
+		const auto& chi2_8Be = analysis_8Be.GetEventChi2s();
+		const auto& chi2_5Li = analysis_5Li.GetEventChi2s();
 
-		if(i % 1000 == 0){
-			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+		auto it_8Be = std::min_element(chi2_8Be.begin(), chi2_8Be.end());
+		auto it_5Li = std::min_element(chi2_5Li.begin(), chi2_5Li.end());
+
+		double min_chi2_8Be = (it_8Be != chi2_8Be.end()) ? *it_8Be : 1e9;
+		double min_chi2_5Li = (it_5Li != chi2_5Li.end()) ? *it_5Li : 1e9;
+
+		int idx_8Be = (it_8Be != chi2_8Be.end()) ? std::distance(chi2_8Be.begin(), it_8Be) : -1;
+		int idx_5Li = (it_5Li != chi2_5Li.end()) ? std::distance(chi2_5Li.begin(), it_5Li) : -1;
+
+		hChi2Comparison->Fill(min_chi2_5Li, min_chi2_8Be);
+
+		if(min_chi2_8Be <= min_chi2_5Li && min_chi2_8Be < 1e8){//note that for now, <= check picks 8Be for tie breaker
+			//8Be channel wins
+			hChannelSelection->Fill(0);
+
+			if(idx_8Be >= 0 && idx_8Be < 6){
+				hGlobalPermutationSelection->Fill(idx_8Be+1);
+			}
+
+			analysis_8Be.FillEventHistograms(Ex);
+			analysis_8Be.FillPermCounter();
+			analysis_8Be.FillSortedHisto(Ex);
+			analysis_8Be.FillSABRESumEVsSPS_Ex(Ex, E[0] + E[1] + E[2]);
+			analysis_8Be.FillGatedEventHistograms(Ex);
+			analysis_8Be.FillPermCounter(true);
+			analysis_8Be.FillTree();
+
+		} else if(min_chi2_5Li < min_chi2_8Be && min_chi2_5Li < 1e8) {
+			//5Li channel wins
+			hChannelSelection->Fill(1);
+
+			if (idx_5Li >= 0 && idx_5Li < 6) {
+				hGlobalPermutationSelection->Fill(idx_5Li + 7);
+			}
+
+			analysis_5Li.FillEventHistograms(Ex);
+			analysis_5Li.FillPermCounter();
+			analysis_5Li.FillSortedHisto(Ex);
+			analysis_5Li.FillSABRESumEVsSPS_Ex(Ex, E[0] + E[1] + E[2]);
+			analysis_5Li.FillGatedEventHistograms(Ex);
+			analysis_5Li.FillPermCounter(true);
+			analysis_5Li.FillTree();
+		} else {
+			hChannelSelection->Fill(2);
+		}
+
+
+		if(i % 10000 == 0){
+			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)", (float)i*100./numentries, i, numentries);
 			fflush(stdout);
 		}
 
 	}
 
-	SABRE_analysis.CloseAndWrite();
-	kin4mc_analysis.CloseAndWrite();
+	outfile->Write();
+	outfile->Close();
 	infile->Close();
 
-	std::cout << "\n\nAnalysis complete!\n" << std::endl;
-	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
-	std::cout << "kin4mc output: " << kin4mc_output_filename << std::endl;
-
-}
-
-void B10ha_5LiHypothesis(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true){
-
-	std::string s = input_filename;
-	size_t last_dot = s.find_last_of(".");
-	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
-
-	std::string sabre_str = stem + "_SABREanalyzed5Li.root";
-	std::string kin4mc_str = stem + "_kin4mcanalyzed5Li.root";
-
-	const char* SABRE_output_filename = sabre_str.c_str();
-	const char* kin4mc_output_filename = kin4mc_str.c_str();
-
-	TMassTable fMassTable;
-	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
-
-	Hypothesis4 b9_li5_hypothesis;
-	b9_li5_hypothesis.name = "B10ha_5LiHypothesis";
-
-	b9_li5_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_li5_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_li5_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_li5_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_li5_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
-	b9_li5_hypothesis.width_intermediate = width_int;
-	b9_li5_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_li5_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_li5_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_li5_hypothesis.beamEnergyMeV = 7.5;
-
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
-
-	TTree *intree = (TTree*)infile->Get("mult3");
-	if(!intree){
-		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
-		return;
-	}
-
-	long numentries = intree->GetEntries();
-
-	InvMass_Mult3 SABRE_analysis;;
-	SABRE_analysis.Init(SABRE_output_filename);
-	SABRE_analysis.SetHypothesis(b9_li5_hypothesis);
-	// SABRE_analysis.SetGate1(gate1index);
-	// SABRE_analysis.SetGate1MinMax(gate1minmax);
-	// SABRE_analysis.SetGate2(gate2index);
-	// SABRE_analysis.SetGate2MinMax(gate2minmax);
-	// SABRE_analysis.SetGate3(gate3index);
-	// SABRE_analysis.SetGate3MinMax(gate3minmax);
-	CutHandler& cuthandler = SABRE_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	double Ex, SPSE, SPSTheta, SPSPhi;
-	intree->SetBranchAddress("ExE", &Ex);
-	intree->SetBranchAddress("SPSEnergy", &SPSE);
-	intree->SetBranchAddress("SPSTheta", &SPSTheta);
-	intree->SetBranchAddress("SPSPhi", &SPSPhi);
-
-	double E[3], theta[3], phi[3];
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
-
-	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
-
-	for(long i=0; i<numentries; i++){
-
-		intree->GetEntry(i);
-
-		//pass along SPS-informed recoil Ex if enabled:
-		if(updateRecoilEx){
-			SABRE_analysis.SetRecoilEx(Ex);
-		}
-
-		SABRE_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		SABRE_analysis.FillEventHistograms(Ex);
-		int numpasses_sabre = SABRE_analysis.CountPermPasses();
-		SABRE_analysis.FillPermCounter();
-		SABRE_analysis.FillSortedHisto(Ex);
-		SABRE_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		//std::cout << "numpasses_sabre = " << numpasses_sabre << "\n";
-		//if(numpasses_sabre == 1){
-		SABRE_analysis.FillGatedEventHistograms(Ex);
-		SABRE_analysis.FillPermCounter(true);
-		//}
-		SABRE_analysis.FillTree();
-
-		if(i % 1000 == 0){
-			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
-			fflush(stdout);
-		}
-
-	}
-
-	SABRE_analysis.CloseAndWrite();
-	infile->Close();
-
-	std::cout << "\n\nAnalysis complete!\n" << std::endl;
-	std::cout << "SABRE output:  " << SABRE_output_filename << std::endl;
-
-}
-
-void tempDoAll_5LiHypothesis(const char* cutlist_filename, bool updateRecoilEx = false, bool updateIntermediateEx = false){
-
-	std::vector<int> intExs;
-	std::vector<std::pair<double,double>> intEminmax;
-	std::vector<std::pair<double,double>> intVCMminmax;
-	std::vector<std::pair<double,double>> frag1VCMminmax;
-
-	//update above values for 5Li case (just copied from 8Be)
-	std::pair<double,double> minmax1, minmax2, minmax3;
-
-	//for(auto const &intEx : intExs){
-	for(size_t i=0; i<intExs.size(); i++){
-		int intEx = intExs.at(i);
-		TString filename = Form("may16/det/b10ha_7.5MeV_9B_ex%dkeV_a5Li_ex0keV_1000k_tree_mult3.root", intEx);
-
-		B10ha_5LiHypothesis(filename.Data(), cutlist_filename, updateRecoilEx, updateIntermediateEx);
-	}
+	std::cout << "\n\nGlobal Minimum Analysis Complete!\n";
+	std::cout << "Output saved to: " << out_str << std::endl;
 }
 
 
 //------------------------------DATA BELOW-------------------------------------
-void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, const char* cutlist_p8Be_filename, const char* cutlist_a5Li_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
-
-	std::string s = input_filename;
-	size_t last_dot = s.find_last_of(".");
-	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
-
-	std::string p8Be_str = stem + "_aboveAlphaThreshAnalyzed8Be.root";
-	std::string a5Li_str = stem + "_aboveAlphaThreshAnalyzed5Li.root";
-
-	const char* p8Be_output_filename = p8Be_str.c_str();
-	const char* a5Li_output_filename = a5Li_str.c_str();
-
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
-
-	TTree *intree = (TTree*)infile->Get("mult3");
-	if(!intree){
-		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
-		return;
-	}
-
-	long numentries = intree->GetEntries();
-
-	TMassTable fMassTable;
-	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
-
-	Hypothesis4 b9_p8Be_hypothesis, b9_a5Li_hypothesis;
-
-	b9_p8Be_hypothesis.name = "B10ha_8BeHypothesis";
-	b9_p8Be_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_p8Be_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_p8Be_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_p8Be_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_p8Be_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
-	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_p8Be_hypothesis.beamEnergyMeV = 7.5;
-
-
-	b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
-	b9_a5Li_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_a5Li_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_a5Li_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_a5Li_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_a5Li_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
-	b9_a5Li_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_a5Li_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_a5Li_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_a5Li_hypothesis.beamEnergyMeV = 7.5;
-
-
-	InvMass_Mult3 b9_p8Be_analysis, b9_a5Li_analysis;
-
-	b9_p8Be_analysis.Init(p8Be_output_filename);
-	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
-	CutHandler& cuthandler = b9_p8Be_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_p8Be_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_p8Be_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	b9_a5Li_analysis.Init(a5Li_output_filename);
-	b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
-	cuthandler = b9_a5Li_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_a5Li_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_a5Li_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-
-	double Ex, SPSE, SPSTheta, SPSPhi;
-	intree->SetBranchAddress("ExE", &Ex);
-	intree->SetBranchAddress("SPSEnergy", &SPSE);
-	intree->SetBranchAddress("SPSTheta", &SPSTheta);
-	intree->SetBranchAddress("SPSPhi", &SPSPhi);
-
-	double E[3], theta[3], phi[3];
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
-
-	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
-	for(long i=0; i<numentries; i++){
-
-		intree->GetEntry(i);
-
-		if(updateRecoilEx){
-			b9_p8Be_analysis.SetRecoilEx(Ex);
-			b9_a5Li_analysis.SetRecoilEx(Ex);
-			//std::cout << "Ex = " << Ex << std::endl;
-		}
-
-		if(Ex >= 1.7){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
-			b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-			b9_p8Be_analysis.FillEventHistograms(Ex);
-			int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
-			b9_p8Be_analysis.FillPermCounter();
-			b9_p8Be_analysis.FillSortedHisto(Ex);
-			b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-			b9_p8Be_analysis.FillTree();
-
-			b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-			b9_a5Li_analysis.FillEventHistograms(Ex);
-			int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
-			b9_a5Li_analysis.FillPermCounter();
-			b9_a5Li_analysis.FillSortedHisto(Ex);
-			b9_a5Li_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-			b9_a5Li_analysis.FillTree();
-			//std::cout << "test" << std::endl;
-		}
-
-		if(i % 1000 == 0){
-			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
-			fflush(stdout);
-		}
-
-	}
-
-	b9_p8Be_analysis.CloseAndWrite();
-	b9_a5Li_analysis.CloseAndWrite();
-
-	infile->Close();
-
-	std::cout << "\n\nAnalysis complete!\n" << std::endl;
-	std::cout << "b9_p8Be output: " << p8Be_output_filename << std::endl;
-	std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
-}
-
-void B10ha_3par_exp_allEx(const char* input_filename, const char* cutlist_p8Be_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
-
-	std::string s = input_filename;
-	size_t last_dot = s.find_last_of(".");
-	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
-
-	std::string p8Be_str = stem + "_allExAnalyzed8Be.root";
-	// std::string a5Li_str = stem + "_analyzed5Li.root";
-
-	const char* p8Be_output_filename = p8Be_str.c_str();
-	//const char* a5Li_output_filename = a5Li_str.c_str();
-
-	TFile *infile = new TFile(input_filename, "READ");
-	if(!infile || infile->IsZombie()){
-		std::cerr << "Input file is bad: " << input_filename << std::endl;
-		return;
-	}
-
-	TTree *intree = (TTree*)infile->Get("mult3");
-	if(!intree){
-		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
-		return;
-	}
-
-	long numentries = intree->GetEntries();
-
-	TMassTable fMassTable;
-	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
-
-	Hypothesis4 b9_p8Be_hypothesis;//, b9_a5Li_hypothesis;
-
-	b9_p8Be_hypothesis.name = "B10ha_8BeHypothesis";
-	b9_p8Be_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	b9_p8Be_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	b9_p8Be_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	b9_p8Be_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	b9_p8Be_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
-	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
-	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	b9_p8Be_hypothesis.beamEnergyMeV = 7.5;
-
-
-	// b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
-	// b9_a5Li_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
-	// b9_a5Li_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
-	// b9_a5Li_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
-	// b9_a5Li_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
-	// b9_a5Li_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
-	// b9_a5Li_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
-	// b9_a5Li_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
-	// b9_a5Li_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-
-
-	InvMass_Mult3 b9_p8Be_analysis;//, b9_a5Li_analysis;
-
-	b9_p8Be_analysis.Init(p8Be_output_filename);
-	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
-	// b9_p8Be_analysis.SetGate1(NOCHECK);
-	// b9_p8Be_analysis.SetGate1MinMax({0,0});
-	// b9_p8Be_analysis.SetGate2(NOCHECK);
-	// b9_p8Be_analysis.SetGate2MinMax({0,0});
-	// b9_p8Be_analysis.SetGate3(NOCHECK);
-	// b9_p8Be_analysis.SetGate3MinMax({0,0});
-	CutHandler& cuthandler = b9_p8Be_analysis.GetCutHandler();
-	if(!cuthandler.LoadCutsFromConfig(cutlist_p8Be_filename)){
-		std::cerr << "Warning: could not load at least one cut from " << cutlist_p8Be_filename << "!\n";
-	}
-
-	//test by printing cuts here:
-	cuthandler.PrintCuts();
-
-	// b9_a5Li_analysis.Init(a5Li_output_filename);
-	// b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
-	// b9_a5Li_analysis.SetGate1(NOCHECK);
-	// b9_a5Li_analysis.SetGate1MinMax({0,0});
-	// b9_a5Li_analysis.SetGate2(NOCHECK);
-	// b9_a5Li_analysis.SetGate2MinMax({0,0});
-	// b9_a5Li_analysis.SetGate3(NOCHECK);
-	// b9_a5Li_analysis.SetGate3MinMax({0,0});
-	//cuthandler = b9_a5Li_analysis.GetCutHandler();
-	// if(!cuthandler.LoadCutsFromConfig(cutlist_a5Li_filename)){
-	// 	std::cerr << "Warning: could not load at least one cut from " << cutlist_a5Li_filename << "!\n";
-	// }
-
-	// //test by printing cuts here:
-	// cuthandler.PrintCuts();
-
-	double Ex, SPSE, SPSTheta, SPSPhi;
-	intree->SetBranchAddress("ExE", &Ex);
-	intree->SetBranchAddress("SPSEnergy", &SPSE);
-	intree->SetBranchAddress("SPSTheta", &SPSTheta);
-	intree->SetBranchAddress("SPSPhi", &SPSPhi);
-
-	double E[3], theta[3], phi[3];
-	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
-	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
-	intree->SetBranchAddress("philab_hit1", &phi[0]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
-	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
-	intree->SetBranchAddress("philab_hit2", &phi[1]);
-
-	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
-	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
-	intree->SetBranchAddress("philab_hit3", &phi[2]);
-
-	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
-	for(long i=0; i<numentries; i++){
-
-		intree->GetEntry(i);
-
-		if(updateRecoilEx){
-			b9_p8Be_analysis.SetRecoilEx(Ex);
-			//b9_a5Li_analysis.SetRecoilEx(Ex);
-		}
-
-
-		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		b9_p8Be_analysis.FillEventHistograms(Ex);
-		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
-		b9_p8Be_analysis.FillPermCounter();
-		b9_p8Be_analysis.FillSortedHisto(Ex);
-		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
-		b9_p8Be_analysis.FillTree();
-
-		// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
-		// b9_a5Li_analysis.FillEventHistograms(Ex);
-		// int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
-		// b9_a5Li_analysis.FillPermCounter();
-
-
-		if(i % 1000 == 0){
-			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
-			fflush(stdout);
-		}
-
-	}
-
-	b9_p8Be_analysis.CloseAndWrite();
-	//b9_a5Li_analysis.CloseAndWrite();
-
-	infile->Close();
-
-	std::cout << "\n\nAnalysis complete!\n" << std::endl;
-	std::cout << "b9_p8Be output: " << p8Be_output_filename << std::endl;
-	//std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
-}
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void B10ha_3par_exp_aboveAlphaThresh(const char* input_filename, const char* cutlist_p8Be_filename, const char* cutlist_a5Li_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+// 	std::string s = input_filename;
+// 	size_t last_dot = s.find_last_of(".");
+// 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+// 	std::string p8Be_str = stem + "_aboveAlphaThreshAnalyzed8Be.root";
+// 	std::string a5Li_str = stem + "_aboveAlphaThreshAnalyzed5Li.root";
+
+// 	const char* p8Be_output_filename = p8Be_str.c_str();
+// 	const char* a5Li_output_filename = a5Li_str.c_str();
+
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	long numentries = intree->GetEntries();
+
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+// 	Hypothesis4 b9_p8Be_hypothesis, b9_a5Li_hypothesis;
+
+// 	b9_p8Be_hypothesis.name = "B10ha_8BeHypothesis";
+// 	b9_p8Be_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_p8Be_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_p8Be_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_p8Be_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_p8Be_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+// 	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_p8Be_hypothesis.beamEnergyMeV = 7.5;
+
+
+// 	b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
+// 	b9_a5Li_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_a5Li_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_a5Li_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_a5Li_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_a5Li_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+// 	b9_a5Li_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_a5Li_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_a5Li_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_a5Li_hypothesis.beamEnergyMeV = 7.5;
+
+
+// 	InvMass_Mult3 b9_p8Be_analysis, b9_a5Li_analysis;
+
+// 	b9_p8Be_analysis.Init(p8Be_output_filename);
+// 	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
+// 	CutHandler& cuthandler = b9_p8Be_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_p8Be_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_p8Be_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	b9_a5Li_analysis.Init(a5Li_output_filename);
+// 	b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
+// 	cuthandler = b9_a5Li_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_a5Li_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_a5Li_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+
+// 	double Ex, SPSE, SPSTheta, SPSPhi;
+// 	intree->SetBranchAddress("ExE", &Ex);
+// 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+// 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+// 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+// 	double E[3], theta[3], phi[3];
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+// 	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+// 	for(long i=0; i<numentries; i++){
+
+// 		intree->GetEntry(i);
+
+// 		if(updateRecoilEx){
+// 			b9_p8Be_analysis.SetRecoilEx(Ex);
+// 			b9_a5Li_analysis.SetRecoilEx(Ex);
+// 			//std::cout << "Ex = " << Ex << std::endl;
+// 		}
+
+// 		if(Ex >= 1.7){//only look at events we suspect are energetically capable of decaying via p+8Be OR a+5Li
+// 			b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 			b9_p8Be_analysis.FillEventHistograms(Ex);
+// 			int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
+// 			b9_p8Be_analysis.FillPermCounter();
+// 			b9_p8Be_analysis.FillSortedHisto(Ex);
+// 			b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 			b9_p8Be_analysis.FillTree();
+
+// 			b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 			b9_a5Li_analysis.FillEventHistograms(Ex);
+// 			int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
+// 			b9_a5Li_analysis.FillPermCounter();
+// 			b9_a5Li_analysis.FillSortedHisto(Ex);
+// 			b9_a5Li_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 			b9_a5Li_analysis.FillTree();
+// 			//std::cout << "test" << std::endl;
+// 		}
+
+// 		if(i % 1000 == 0){
+// 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+// 			fflush(stdout);
+// 		}
+
+// 	}
+
+// 	b9_p8Be_analysis.CloseAndWrite();
+// 	b9_a5Li_analysis.CloseAndWrite();
+
+// 	infile->Close();
+
+// 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+// 	std::cout << "b9_p8Be output: " << p8Be_output_filename << std::endl;
+// 	std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
+// }
+//commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
+// void B10ha_3par_exp_allEx(const char* input_filename, const char* cutlist_p8Be_filename, bool updateRecoilEx = true, bool updateIntermediateEx = true){
+
+// 	std::string s = input_filename;
+// 	size_t last_dot = s.find_last_of(".");
+// 	std::string stem = (last_dot == std::string::npos) ? s : s.substr(0, last_dot);
+
+// 	std::string p8Be_str = stem + "_allExAnalyzed8Be.root";
+// 	// std::string a5Li_str = stem + "_analyzed5Li.root";
+
+// 	const char* p8Be_output_filename = p8Be_str.c_str();
+// 	//const char* a5Li_output_filename = a5Li_str.c_str();
+
+// 	TFile *infile = new TFile(input_filename, "READ");
+// 	if(!infile || infile->IsZombie()){
+// 		std::cerr << "Input file is bad: " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	TTree *intree = (TTree*)infile->Get("mult3");
+// 	if(!intree){
+// 		std::cerr << "Could not get TTree 'mult3' from " << input_filename << std::endl;
+// 		return;
+// 	}
+
+// 	long numentries = intree->GetEntries();
+
+// 	TMassTable fMassTable;
+// 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+// 	Hypothesis4 b9_p8Be_hypothesis;//, b9_a5Li_hypothesis;
+
+// 	b9_p8Be_hypothesis.name = "B10ha_8BeHypothesis";
+// 	b9_p8Be_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	b9_p8Be_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	b9_p8Be_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_p8Be_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	b9_p8Be_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Be",8);
+// 	b9_p8Be_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+// 	b9_p8Be_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_p8Be_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+// 	b9_p8Be_hypothesis.beamEnergyMeV = 7.5;
+
+
+// 	// b9_a5Li_hypothesis.name = "B10ha_5LiHypothesis";
+// 	// b9_a5Li_hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+// 	// b9_a5Li_hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+// 	// b9_a5Li_hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+// 	// b9_a5Li_hypothesis.mass_recoil = fMassTable.GetNuclearMassMeV("B",9);
+// 	// b9_a5Li_hypothesis.mass_intermediate = fMassTable.GetNuclearMassMeV("Li",5);
+// 	// b9_a5Li_hypothesis.masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+// 	// b9_a5Li_hypothesis.masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+// 	// b9_a5Li_hypothesis.masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+
+
+// 	InvMass_Mult3 b9_p8Be_analysis;//, b9_a5Li_analysis;
+
+// 	b9_p8Be_analysis.Init(p8Be_output_filename);
+// 	b9_p8Be_analysis.SetHypothesis(b9_p8Be_hypothesis);
+// 	// b9_p8Be_analysis.SetGate1(NOCHECK);
+// 	// b9_p8Be_analysis.SetGate1MinMax({0,0});
+// 	// b9_p8Be_analysis.SetGate2(NOCHECK);
+// 	// b9_p8Be_analysis.SetGate2MinMax({0,0});
+// 	// b9_p8Be_analysis.SetGate3(NOCHECK);
+// 	// b9_p8Be_analysis.SetGate3MinMax({0,0});
+// 	CutHandler& cuthandler = b9_p8Be_analysis.GetCutHandler();
+// 	if(!cuthandler.LoadCutsFromConfig(cutlist_p8Be_filename)){
+// 		std::cerr << "Warning: could not load at least one cut from " << cutlist_p8Be_filename << "!\n";
+// 	}
+
+// 	//test by printing cuts here:
+// 	cuthandler.PrintCuts();
+
+// 	// b9_a5Li_analysis.Init(a5Li_output_filename);
+// 	// b9_a5Li_analysis.SetHypothesis(b9_a5Li_hypothesis);
+// 	// b9_a5Li_analysis.SetGate1(NOCHECK);
+// 	// b9_a5Li_analysis.SetGate1MinMax({0,0});
+// 	// b9_a5Li_analysis.SetGate2(NOCHECK);
+// 	// b9_a5Li_analysis.SetGate2MinMax({0,0});
+// 	// b9_a5Li_analysis.SetGate3(NOCHECK);
+// 	// b9_a5Li_analysis.SetGate3MinMax({0,0});
+// 	//cuthandler = b9_a5Li_analysis.GetCutHandler();
+// 	// if(!cuthandler.LoadCutsFromConfig(cutlist_a5Li_filename)){
+// 	// 	std::cerr << "Warning: could not load at least one cut from " << cutlist_a5Li_filename << "!\n";
+// 	// }
+
+// 	// //test by printing cuts here:
+// 	// cuthandler.PrintCuts();
+
+// 	double Ex, SPSE, SPSTheta, SPSPhi;
+// 	intree->SetBranchAddress("ExE", &Ex);
+// 	intree->SetBranchAddress("SPSEnergy", &SPSE);
+// 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+// 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+// 	double E[3], theta[3], phi[3];
+// 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+// 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+// 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+// 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+// 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+// 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+// 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+// 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+// 	std::cout << "Starting analysis on " << numentries << " entries..." << std::endl;
+// 	for(long i=0; i<numentries; i++){
+
+// 		intree->GetEntry(i);
+
+// 		if(updateRecoilEx){
+// 			b9_p8Be_analysis.SetRecoilEx(Ex);
+// 			//b9_a5Li_analysis.SetRecoilEx(Ex);
+// 		}
+
+
+// 		b9_p8Be_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 		b9_p8Be_analysis.FillEventHistograms(Ex);
+// 		int numpasses_p8Be = b9_p8Be_analysis.CountPermPasses();
+// 		b9_p8Be_analysis.FillPermCounter();
+// 		b9_p8Be_analysis.FillSortedHisto(Ex);
+// 		b9_p8Be_analysis.FillSABRESumEVsSPS_Ex(Ex, E[0]+E[1]+E[2]);
+// 		b9_p8Be_analysis.FillTree();
+
+// 		// b9_a5Li_analysis.AnalyzeEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi, Ex, updateIntermediateEx);
+// 		// b9_a5Li_analysis.FillEventHistograms(Ex);
+// 		// int numpasses_a5Li = b9_a5Li_analysis.CountPermPasses();
+// 		// b9_a5Li_analysis.FillPermCounter();
+
+
+// 		if(i % 1000 == 0){
+// 			fprintf(stdout, "\rProgress: %.1f%% (%ld/%ld)",(float)i/numentries*100., i, numentries);
+// 			fflush(stdout);
+// 		}
+
+// 	}
+
+// 	b9_p8Be_analysis.CloseAndWrite();
+// 	//b9_a5Li_analysis.CloseAndWrite();
+
+// 	infile->Close();
+
+// 	std::cout << "\n\nAnalysis complete!\n" << std::endl;
+// 	std::cout << "b9_p8Be output: " << p8Be_output_filename << std::endl;
+// 	//std::cout << "b9_a5Li output: " << a5Li_output_filename << std::endl;
+// }

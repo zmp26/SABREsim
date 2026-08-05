@@ -49,7 +49,7 @@ std::array<std::array<double, 3>, 3> GetMomentumCovariance(double E, double thet
 }
 
 InvMass_Mult3::InvMass_Mult3()
-	: outfile(nullptr), intermediateMass(0), recoilMass(0), recoilEx(0), beamEnergyMeV(0), intermediateEx(0){
+	: intermediateMass(0), recoilMass(0), recoilEx(0), beamEnergyMeV(0), intermediateEx(0){
 
 		permNames = {"012", "021", "102", "120", "201", "210", "allCases"};
 
@@ -66,19 +66,14 @@ InvMass_Mult3::InvMass_Mult3()
 	}
 
 InvMass_Mult3::~InvMass_Mult3(){
-	if(outfile && !outfile->IsZombie()){
-		outfile->Close();
-		delete outfile;
-	}
-
 	delete correlationPlotter;
 }
 
-void InvMass_Mult3::Init(const char* output_filename){
+void InvMass_Mult3::Init(TDirectory* targetDir){
 	
-	outfile = new TFile(output_filename, "RECREATE");
 	if(writeTree){
 	outtree = new TTree("InvMass_Mult3", "InvMass_Mult3");
+	outtree->SetDirectory(outdir);
 
 		TString leaflist =  "SPSEnergy/D:SPSTheta/D:SPSPhi/D:SPS_Ex/D:" 
 							"imIM/D:imEx/D:reconEx/D:imVCM/D:imKECM/D:imTHCM/D:imPHCM/D:imComp[3]/D:"
@@ -103,7 +98,7 @@ void InvMass_Mult3::Init(const char* output_filename){
 	}
 
 	for(auto &cn : permNames){
-		TDirectory *permdir = outfile->mkdir(cn);
+		TDirectory *permdir = outdir->mkdir(cn);
 		//dir->cd();
 
 		TDirectory *ungateDir = permdir->mkdir("ungated");
@@ -112,10 +107,10 @@ void InvMass_Mult3::Init(const char* output_filename){
 		groups_ungated[cn] = new permHisto_mult3(cn + "_ungated", ungateDir);
 		groups_gated[cn] = new permHisto_mult3(cn + "_gated", gateDir);
 
-		outfile->cd();
+		outdir->cd();
 	}
 
-	TDirectory *correlationdir = outfile->mkdir("Correlations");
+	TDirectory *correlationdir = outdir->mkdir("Correlations");
 	InitCorrelationPlotter(correlationdir);
 
 	hPermCounter = new TH1D("hPermCounter", "hPermCounter", 7, -0.5, 6.5);
@@ -794,7 +789,7 @@ void InvMass_Mult3::FillSABRESumEVsSPS_Ex(double SPS_Ex, double SABREsumE){
 }
 
 void InvMass_Mult3::CloseAndWrite(){
-	outfile->cd();
+	outdir->cd();
 	// hPermCounter->Write();
 	// hPermCounter_gated->Write();
 	// hSortedIntermediateExIMvsSPS->Write();
@@ -804,10 +799,6 @@ void InvMass_Mult3::CloseAndWrite(){
 	// hSortedIMRecEx_gate8Be->Write();
 	// hSortedIMRecEx_gate5Li->Write();
 	// hSABRESumE_vs_ExSPS->Write();
-	if(outfile && outfile->IsOpen()){
-		outfile->Write();
-		outfile->Close();
-	}
 	// delete hPermCounter;
 	// delete hPermCounter_gated;
 }

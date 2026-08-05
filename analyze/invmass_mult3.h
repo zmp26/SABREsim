@@ -70,7 +70,8 @@ private:
 	const double DEGRAD = M_PI / 180.;
 	const double RADDEG = 180. / M_PI;
 
-	TFile *outfile;
+	//TFile *outfile;
+	TDirectory* outdir;
 	TTree *outtree;
 	bool writeTree = false;
 
@@ -267,7 +268,8 @@ public:
 	InvMass_Mult3();
 	~InvMass_Mult3();
 
-	void Init(const char* output_filename);
+	//void Init(const char* output_filename);
+	void Init(TDirectory* targetDir);
 	//void SetMasses(double mass_frag1, double mass_frag2, double mass_frag3, double mass_recoil, double mass_intermediate);
 	void SetHypothesis(const Hypothesis4& hypo);
 
@@ -293,6 +295,8 @@ public:
 	void SetIntermediateEx(double Ex) { intermediateEx = Ex; SetExpectedCMValues(); }// hypothesis.intermediateEx = Ex; SetExpectedCMValues(); }
 
 	CutHandler& GetCutHandler() { return fCutHandler; }
+
+	std::vector<double> GetEventChi2s() { return eventReducedChi2s; }
 
 	int CountPermPasses();
 };
