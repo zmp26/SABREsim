@@ -997,6 +997,10 @@ void B10ha_SABREPID(const char* input_filename){
 	TMassTable fMassTable;
 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
 
+	double massgs_5Li = fMassTable.GetNuclearMassMeV("Li",5);
+	double massgs_8Be = fMassTable.GetNuclearMassMeV("Be",8);
+	double massgs_9B = fMassTable.GetNuclearMassMeV("B", 9);
+
 	PIDHypothesis hypothesis;
 	hypothesis.name = "paa";
 	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
@@ -1046,8 +1050,55 @@ void B10ha_SABREPID(const char* input_filename){
 
 	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
 	outfile->cd();
+
 	TH1D *hProtonPicks = new TH1D("hProtonPicks", "Hit Index Assigned to Proton", 3, -0.5, 2.5);
 	hProtonPicks->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									80, 55.572e6, 55.58e6,
+									80, 21.784e6, 21.792);
+	hDalitzInvMass->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_a1 = new TH2D("hDalitzInvMass_a1", "M^{2}_{p+#alpha_{1}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{1}}",
+									80, 55.572e6, 55.58e6,
+									80, 21.784e6, 21.792);
+	hDalitzInvMass_a1->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_a2 = new TH2D("hDalitzInvMass_a2", "M^{2}_{p+#alpha_{2}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{2}}",
+									80, 55.572e6, 55.58e6,
+									80, 21.784e6, 21.792);
+	hDalitzInvMass_a2->SetDirectory(outfile);
+
+	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li)", 100, 0, 2, 100, 0, 2);
+	hDalitzEx->SetDirectory(outfile);
+
+	TH2D *hDalitzEx_a1 = new TH2D("hDalitzEx_a1", "Ex(^{5}Li = p+#alpha_{1}) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li = p+#alpha_{1})", 100, 0, 2, 100, 0, 2);
+	hDalitzEx_a1->SetDirectory(outfile);
+
+	TH2D *hDalitzEx_a2 = new TH2D("hDalitzEx_a2", "Ex(^{5}Li = p+#alpha_{2}) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li = p+#alpha_{2})", 100, 0, 2, 100, 0, 2);
+	hDalitzEx_a2->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil Ex (^{8}Be_{gs} cut)", 100, 0, 10);
+	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Recoil Ex (^{5}Li_{gs} cut)", 100, 0, 10);
+
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex SABRE (8Begs Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_5LigsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_5LigsGated", "Recoil Ex SPS vs Recoil Ex SABRE (5Ligs Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+
+	int lsuPurple = TColor::GetColor("#461D7C");
+	int lsuGold   = TColor::GetColor("#FDD023");
+
+	TGraph *gDalitzScatter_alpha1 = new TGraph();
+	gDalitzScatter_alpha1->SetName("alpha1");
+	//gDalitzScatter_alpha1->SetDirectory(outfile);
+	gDalitzScatter_alpha1->SetMarkerStyle(1);
+	gDalitzScatter_alpha1->SetMarkerColor(lsuPurple);
+
+	TGraph *gDalitzScatter_alpha2 = new TGraph();
+	gDalitzScatter_alpha2->SetName("alpha2");
+	//gDalitzScatter_alpha2->SetDirectory(outfile);
+	gDalitzScatter_alpha2->SetMarkerStyle(1);
+	gDalitzScatter_alpha2->SetMarkerColor(lsuGold);
 
 	PID_Mult3 pidSolver;
 	pidSolver.SetHypothesis(hypothesis);
@@ -1107,7 +1158,7 @@ void B10ha_SABREPID(const char* input_filename){
 		residual_pz = res.missing_pz;
 		residual_pmag = res.missing_Pmag;
 
-		if(bestPermIndex >= 0){
+		if(bestPermIndex >= 0 && Ex > 1.7){//checks if above alpha threshold
 			auto buildP4 = [](double E, double theta, double phi, double m){
 				double p = std::sqrt(E*(E+2.*m));
 				double rad_th = theta*M_PI/180.;
@@ -1125,6 +1176,43 @@ void B10ha_SABREPID(const char* input_filename){
 			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], hypothesis.final_masses[1]);
 			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], hypothesis.final_masses[2]);
 			recoil = proton + alpha1 + alpha2;
+
+			//now we can do invariant mass stuff here, but remember we must double fill any p+a (p+a1 and p+a2 since we cannot tell a1 from a2)
+
+			double m2_aa = (alpha1+alpha2).M2();
+			double m2_pa1 = (proton+alpha1).M2();
+			double m2_pa2 = (proton+alpha2).M2();
+
+			hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
+			hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
+
+			hDalitzInvMass->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a
+			hDalitzInvMass_a2->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a2
+
+			gDalitzScatter_alpha1->SetPoint(gDalitzScatter_alpha1->GetN(), m2_aa, m2_pa1);
+			gDalitzScatter_alpha2->SetPoint(gDalitzScatter_alpha2->GetN(), m2_aa, m2_pa2);
+
+			hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
+			hDalitzEx_a1->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
+
+			hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+			hDalitzEx_a2->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+
+			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoil.M() - massgs_9B, Ex);
+			if(std::sqrt(m2_aa) - massgs_8Be > 0 && std::sqrt(m2_aa) - massgs_8Be < 0.5){
+				hRecoilEx_8BegsGated->Fill(recoil.M() - massgs_9B);
+				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoil.M() - massgs_9B, Ex);
+				//std::cout << "Filled hRecoilEx_8BegsGated" << std::endl;
+			} else if(std::sqrt(m2_pa1) - massgs_5Li > 0 && std::sqrt(m2_pa1) - massgs_5Li < 1){
+				hRecoilEx_5LigsGated->Fill(recoil.M() - massgs_9B);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoil.M() - massgs_9B, Ex);
+				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
+			} else if(std::sqrt(m2_pa2) - massgs_5Li > 0 && std::sqrt(m2_pa2) - massgs_5Li < 1){
+				hRecoilEx_5LigsGated->Fill(recoil.M() - massgs_9B);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoil.M() - massgs_9B, Ex);
+				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
+			}
+
 		} else {
 			proton.SetPxPyPzE(0.,0.,0.,0.);
 			alpha1.SetPxPyPzE(0.,0.,0.,0.);
@@ -1143,6 +1231,8 @@ void B10ha_SABREPID(const char* input_filename){
 	infile->Close();
 
 	outfile->cd();
+	gDalitzScatter_alpha1->Write();
+	gDalitzScatter_alpha2->Write();
 	outfile->Write();
 	outfile->Close();
 	delete outfile;
