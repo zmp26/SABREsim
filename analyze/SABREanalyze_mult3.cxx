@@ -43,9 +43,11 @@
 #include "CutHandler.cpp"//" above "
 #include "PixelHandler.h"//" above "
 #include "PixelHandler.cpp"//" above "
+#include "PID_Mult3.h"
+#include "PID_Mult3.cpp"
 
-const double DEGRAD = M_PI / 180.;
-const double RADDEG = 180. / M_PI;
+// const double DEGRAD = M_PI / 180.;
+// const double RADDEG = 180. / M_PI;
 
 //commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026
 // void B10ha_8BeHypothesis_kin4mcComparison(const char* input_filename, const char* cutlist_filename, double width_int, bool updateRecoilEx = true, bool updateIntermediateEx = true, int permCheck = 2){
@@ -841,6 +843,311 @@ void B10ha_CombinedAnalysis(const char* input_filename, const char* cutlist_8Be,
 
 	std::cout << "\n\nGlobal Minimum Analysis Complete!\n";
 	std::cout << "Output saved to: " << out_str << std::endl;
+}
+
+void B10ha_PID(const char* input_filename){
+
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_SABRE_PID.root";
+
+	TMassTable fMassTable;
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+	PIDHypothesis hypothesis;
+	hypothesis.name = "paa";
+	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.beamEnergyMeV = 7.5;
+	hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	hypothesis.final_particles[0] = "p";
+	hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[1] = "#alpha";
+	hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[2] = "#alpha";
+
+	std::ifstream infile(input_filename);
+	if (!infile.is_open()) {
+		std::cerr << "Error: Could not open input file " << input_filename << std::endl;
+		return;
+	}
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+	outfile->cd();
+	TH1D *hProtonPicks = new TH1D("hProtonPicks", "Hit Index Assigned to Proton", 3, -0.5, 2.5);
+	hProtonPicks->SetDirectory(outfile);
+
+	PID_Mult3 pidSolver;
+	pidSolver.SetHypothesis(hypothesis);
+
+	pidSolver.SetResolution(0.05, 1.0, 1.0);
+	pidSolver.SetSPSResolution(0.015, 0.5, 0.5);
+
+	pidSolver.SetChi2Cut(10.);
+
+	pidSolver.InitDiagnostics(outfile);
+
+
+	TTree *outtree = new TTree("PID_Mult3", "PID_Mult3");
+	outtree->SetDirectory(outfile);
+
+	double sps_e, sps_theta, sps_phi;
+	double e[3], theta[3], phi[3];
+
+	int bestPermIndex;
+	double bestChi2;
+	bool passesCut;
+	int proton_hit_index, alpha_hit_index1, alpha_hit_index2;//alpha_hit_index 1/2 does NOT necessarily refer to alpha1/alpha2 (we cannot tell these apart yet)
+
+	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
+	double residual_px, residual_py, residual_pz, residual_pmag;
+
+	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
+	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
+	outtree->Branch("passesCut", &passesCut, "passesCut/O");
+
+	outtree->Branch("protonHitIndex", &proton_hit_index, "protonHitIndex/I");
+	outtree->Branch("alphaHitIndex1", &alpha_hit_index1, "alphaHitIndex1/I");
+	outtree->Branch("alphaHitIndex2", &alpha_hit_index2, "alphaHitIndex2/I");
+
+	// Reconstructed 4-vectors
+	outtree->Branch("P4_proton", &proton);
+	outtree->Branch("P4_alpha1", &alpha1);
+	outtree->Branch("P4_alpha2", &alpha2);
+	outtree->Branch("P4_recoil", &recoil); // Invariant mass of (p + a1 + a2)
+
+	// Residual momentum
+	outtree->Branch("residual_px", &residual_px, "residual_px/D");
+	outtree->Branch("residual_py", &residual_py, "residual_py/D");
+	outtree->Branch("residual_pz", &residual_pz, "residual_pz/D");
+	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
+
+	long eventCount = 0;
+	while(infile >> sps_e >> sps_theta >> sps_phi >> e[0] >> theta[0] >> phi[0] >> e[1] >> theta[1] >> phi[1] >> e[2] >> theta[2] >> phi[2]){
+
+		PIDResult res = pidSolver.EvaluateEvent(e, theta, phi, sps_e, sps_theta, sps_phi);
+
+		bestPermIndex = res.bestChi2Index;
+		bestChi2 = res.bestChi2;
+		passesCut = res.passesCut;
+
+		//std::cout << "bestPermIndex = " << bestPermIndex << "\tbestChi2 = " << bestChi2 << "\npassesCut = " << passesCut << "\n";
+
+		proton_hit_index = res.hit_indices[0];
+		alpha_hit_index1 = res.hit_indices[1];
+		alpha_hit_index2 = res.hit_indices[2];
+
+		residual_px = res.missing_px;
+		residual_py = res.missing_py;
+		residual_pz = res.missing_pz;
+		residual_pmag = res.missing_Pmag;
+
+		if(bestPermIndex >= 0){
+			auto buildP4 = [](double E, double theta, double phi, double m){
+				double p = std::sqrt(E*(E+2.*m));
+				double rad_th = theta*M_PI/180.;
+				double rad_ph = phi*M_PI/180.;
+				return TLorentzVector(
+						p*std::sin(rad_th)*std::cos(rad_ph),
+						p*std::sin(rad_th)*std::sin(rad_ph),
+						p*std::cos(rad_th),
+						E+m
+					);
+			};
+			hProtonPicks->Fill(proton_hit_index);
+			proton = buildP4(e[proton_hit_index], theta[proton_hit_index], phi[proton_hit_index], hypothesis.final_masses[0]);
+			alpha1 = buildP4(e[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], hypothesis.final_masses[1]);
+			alpha2 = buildP4(e[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], hypothesis.final_masses[2]);
+			recoil = proton + alpha1 + alpha2;
+		} else {
+			proton.SetPxPyPzE(0.,0.,0.,0.);
+			alpha1.SetPxPyPzE(0.,0.,0.,0.);
+			alpha2.SetPxPyPzE(0.,0.,0.,0.);
+			recoil.SetPxPyPzE(0.,0.,0.,0.);
+		}
+
+		outtree->Fill();
+		eventCount++;
+
+		if(eventCount % 10000 == 0){
+			std::cout << "Processed " << eventCount << " events..." << std::endl;
+		}
+
+	}
+
+	infile.close();
+
+	outfile->cd();
+	outfile->Write();
+	outfile->Close();
+	delete outfile;
+
+	std::cout << "Finished! Processed " << eventCount << " events. Output stored in " << out_str.c_str() << std::endl;
+
+}
+
+void B10ha_SABREPID(const char* input_filename){
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_SABREPID.root";
+
+	TMassTable fMassTable;
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+	PIDHypothesis hypothesis;
+	hypothesis.name = "paa";
+	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.beamEnergyMeV = 7.5;
+	hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	hypothesis.final_particles[0] = "p";
+	hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[1] = "#alpha";
+	hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[2] = "#alpha";
+
+	TFile *infile = TFile::Open(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Error: Cannot open input file " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult3");
+	if(!intree){
+		std::cerr << "Error: cannot get TTree 'mult3' from " << input_filename << std::endl;
+		infile->Close();
+		return;
+	}
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	double E[3], theta[3], phi[3];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+	intree->SetBranchAddress("philab_hit3", &phi[2]);
+
+	long numentries = intree->GetEntries();
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+	outfile->cd();
+	TH1D *hProtonPicks = new TH1D("hProtonPicks", "Hit Index Assigned to Proton", 3, -0.5, 2.5);
+	hProtonPicks->SetDirectory(outfile);
+
+	PID_Mult3 pidSolver;
+	pidSolver.SetHypothesis(hypothesis);
+	pidSolver.SetResolution(0.05, 1.0, 1.0);
+	pidSolver.SetSPSResolution(0.015, 0.5, 0.5);
+	pidSolver.SetChi2Cut(10.);
+	pidSolver.InitDiagnostics(outfile);
+
+	TTree *outtree = new TTree("PID_Mult3","PID_Mult3");
+	outtree->SetDirectory(outfile);
+
+	int bestPermIndex;
+	double bestChi2;
+	bool passesCut;
+	int proton_hit_index, alpha_hit_index1, alpha_hit_index2;//alpha_hit_index 1/2 does NOT necessarily refer to alpha1/alpha2 (we cannot tell these apart yet)
+
+	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
+	double residual_px, residual_py, residual_pz, residual_pmag;
+
+	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
+	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
+	outtree->Branch("passesCut", &passesCut, "passesCut/O");
+
+	outtree->Branch("protonHitIndex", &proton_hit_index, "protonHitIndex/I");
+	outtree->Branch("alphaHitIndex1", &alpha_hit_index1, "alphaHitIndex1/I");
+	outtree->Branch("alphaHitIndex2", &alpha_hit_index2, "alphaHitIndex2/I");
+
+	// Reconstructed 4-vectors
+	outtree->Branch("P4_proton", &proton);
+	outtree->Branch("P4_alpha1", &alpha1);
+	outtree->Branch("P4_alpha2", &alpha2);
+	outtree->Branch("P4_recoil", &recoil); // Invariant mass of (p + a1 + a2)
+
+	// Residual momentum
+	outtree->Branch("residual_px", &residual_px, "residual_px/D");
+	outtree->Branch("residual_py", &residual_py, "residual_py/D");
+	outtree->Branch("residual_pz", &residual_pz, "residual_pz/D");
+	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
+
+	for(long i=0; i<numentries; i++){
+		intree->GetEntry(i);
+
+		PIDResult res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
+
+		bestPermIndex = res.bestChi2Index;
+		bestChi2 = res.bestChi2;
+		passesCut = res.passesCut;
+
+		//std::cout << "bestPermIndex = " << bestPermIndex << "\tbestChi2 = " << bestChi2 << "\npassesCut = " << passesCut << "\n";
+
+		proton_hit_index = res.hit_indices[0];
+		alpha_hit_index1 = res.hit_indices[1];
+		alpha_hit_index2 = res.hit_indices[2];
+
+		residual_px = res.missing_px;
+		residual_py = res.missing_py;
+		residual_pz = res.missing_pz;
+		residual_pmag = res.missing_Pmag;
+
+		if(bestPermIndex >= 0){
+			auto buildP4 = [](double E, double theta, double phi, double m){
+				double p = std::sqrt(E*(E+2.*m));
+				double rad_th = theta*M_PI/180.;
+				double rad_ph = phi*M_PI/180.;
+				return TLorentzVector(
+						p*std::sin(rad_th)*std::cos(rad_ph),
+						p*std::sin(rad_th)*std::sin(rad_ph),
+						p*std::cos(rad_th),
+						E+m
+					);
+			};
+
+			hProtonPicks->Fill(proton_hit_index);
+			proton = buildP4(E[proton_hit_index], theta[proton_hit_index], phi[proton_hit_index], hypothesis.final_masses[0]);
+			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], hypothesis.final_masses[1]);
+			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], hypothesis.final_masses[2]);
+			recoil = proton + alpha1 + alpha2;
+		} else {
+			proton.SetPxPyPzE(0.,0.,0.,0.);
+			alpha1.SetPxPyPzE(0.,0.,0.,0.);
+			alpha2.SetPxPyPzE(0.,0.,0.,0.);
+			recoil.SetPxPyPzE(0.,0.,0.,0.);
+		}
+
+		outtree->Fill();
+
+		if(i % 10000 == 0){
+			std::cout << "Processed " << i << " events..." << std::endl;
+		}
+	}
+
+
+	infile->Close();
+
+	outfile->cd();
+	outfile->Write();
+	outfile->Close();
+	delete outfile;
+
+	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str.c_str() << std::endl;
 }
 
 
