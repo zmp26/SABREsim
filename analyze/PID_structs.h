@@ -7,6 +7,7 @@
 
 constexpr double DEGRAD = M_PI / 180.;
 constexpr double RADDEG = 180. / M_PI;
+constexpr double AMU_IN_MEV = 931.5;
 
 // Shared Reaction Hypothesis Configuration
 struct PIDHypothesis {
