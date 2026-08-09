@@ -1310,14 +1310,16 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH1D *hAssignedSpeciesHit1 = new TH1D("hAssignedSpeciesHit1", "Species Assigned to Hit 1", 3, -0.5, 2.5);
 	TH1D *hMissingSpecies = new TH1D("hMissingSpecies", "Species Assigned as Missing", 3, -0.5, 2.5);
 
-	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", 80, 55.572e6, 55.58e6, 80, 21.784e6, 21.792e6);
-	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 100, 0, 2, 100, 0, 2);
-	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 100, 0, 10);
-	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 100, 0, 10);
+	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", 100, 55.55e6, 55.75e6, 50, 21.75e6, 21.85e6);
+	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
+	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
 
-	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE; SABRE; SPS", 100, 0, 10, 100, 0, 10);
-	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex (^{8}Be_{gs} Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
-	TH2D *hRecoilExSPS_vs_RecoilExSABRE_5LigsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_5LigsGated", "Recoil Ex SPS vs Recoil Ex (^{5}Li_{gs} Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hCatania = new TH2D("catania_plot", "Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q)", 100, 0, 10, 100, 0, 10);
+
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE; SABRE; SPS", 100, 0, 8, 100, 0, 8);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex (^{8}Be_{gs} Gated);SABRE;SPS", 100, 0, 8, 100, 0, 8);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_5LigsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_5LigsGated", "Recoil Ex SPS vs Recoil Ex (^{5}Li_{gs} Gated);SABRE;SPS", 100, 0, 8, 100, 0, 8);
 
 	PID_Mult2 pidSolver;
 	pidSolver.SetHypothesis(hypothesis);
@@ -1343,6 +1345,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TLorentzVector *p4_miss_ptr = &P4_missing;
 	TLorentzVector *p4_rec_ptr = &recoil;
 
+	double m2_aa, m2_pa1, m2_pa2;
+	double ExSPS;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -1355,6 +1360,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("P4_hit1", &p4_1_ptr);
 	outtree->Branch("P4_missing", &p4_miss_ptr);
 	outtree->Branch("P4_recoil", &p4_rec_ptr);
+
+	outtree->Branch("m2_aa", &m2_aa);
+	outtree->Branch("m2_pa1", &m2_pa1);
+	outtree->Branch("m2_pa2", &m2_pa2);
+
+	outtree->Branch("ExSPS", &ExSPS);
 
 	auto buildP4 = [](double E_kin, double th_deg, double ph_deg, double mass) {
 		double p = std::sqrt(E_kin * (E_kin + 2.0 * mass));
@@ -1372,11 +1383,13 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	for(long i=0; i<numentries; i++){
 		intree->GetEntry(i);
 
+		ExSPS = Ex;
+
 		PIDResult_Mult2 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
 
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
-		passesCut = res.passesCut;
+		passesCut = true;//res.passesCut;
 
 		hit0_species = res.hit_indices[0];
 		hit1_species = res.hit_indices[1];
@@ -1412,12 +1425,17 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			}
 
 			//invariant mass calculations:
-			double m2_aa = (alpha1+alpha2).M2();
-			double m2_pa1 = (proton+alpha1).M2();
-			double m2_pa2 = (proton+alpha2).M2();
+			m2_aa = (alpha1+alpha2).M2();
+			m2_pa1 = (proton+alpha1).M2();
+			m2_pa2 = (proton+alpha2).M2();
 			//double fill p+a combinations due to alpha indistinguishability
 			hDalitzInvMass->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass->Fill(m2_aa, m2_pa2);
+
+			double catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
+			double catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
+			//if(catania_y < 0) std::cout << "E[0] = " << E[0] << "\tE[1] = " << E[1] << "\ty = " << catania_y << std::endl;
+			hCatania->Fill(catania_x, catania_y);
 
 			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
 			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
