@@ -11,48 +11,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 
-// Streamlined hypothesis: Only global reaction and final state particle masses
-struct PIDHypothesis {
-	std::string name;
-
-	// Reaction components (in MeV or MeV/c^2)
-	double mass_target{0.0};     
-	double mass_beam{0.0};       
-	double mass_ejectile{0.0};   
-	double beamEnergyMeV{0.0};
-
-	// Final state particles: [0], [1], [2]
-	double final_masses[3]{0.0, 0.0, 0.0};//holds the masses of final state particles [0], [1], [2] (for calculations)
-	TString final_particles[3]{"","",""};//holds the symbol of final state particles [0], [1], [2] (for histogram labeling)
-	//note there is not check for consistency between final_particles and final_masses, it assumes it is correct! You have been warned!
-};
-
-struct PIDResult { 
-	// Index mapping: hit_indices[i] gives the detector hit index assigned to final_masses[i]
-	std::array<int, 3> hit_indices = {-1, -1, -1};
-
-	int bestChi2Index = -1;
-	double bestChi2 = 1e9;
-
-	double missing_px = 0.0;
-	double missing_py = 0.0;
-	double missing_pz = 0.0;
-	double missing_E  = 0.0;
-	double missing_Pmag = 0.0;
-
-	std::array<double, 6> permChi2s;
-
-	bool passesCut = false;
-
-	void Reset() {
-		hit_indices = {-1, -1, -1};
-		bestChi2 = 1e9;
-		missing_px = missing_py = missing_pz = missing_E = missing_Pmag = 0.0;
-		bestChi2Index = -1;
-		permChi2s.fill(1e9);
-		passesCut = false;
-	}
-};
+#include "PID_structs.h"
 
 class PID_Mult3 {
 private:
@@ -106,7 +65,7 @@ public:
 	void InitDiagnostics(TDirectory* targetDir);
 
 	// Core PID solver
-	PIDResult EvaluateEvent(const double E[3], const double theta[3], const double phi[3],
+	PIDResult_Mult3 EvaluateEvent(const double E[3], const double theta[3], const double phi[3],
 							double SPS_E, double SPSTheta, double SPSPhi);
 
 	// Single-permutation Chi2 evaluator

@@ -43,8 +43,11 @@
 #include "CutHandler.cpp"//" above "
 #include "PixelHandler.h"//" above "
 #include "PixelHandler.cpp"//" above "
+#include "PID_structs.h"
 #include "PID_Mult3.h"
 #include "PID_Mult3.cpp"
+#include "PID_Mult2.h"
+#include "PID_Mult2.cpp"
 
 // const double DEGRAD = M_PI / 180.;
 // const double RADDEG = 180. / M_PI;
@@ -927,7 +930,7 @@ void B10ha_PID(const char* input_filename){
 	long eventCount = 0;
 	while(infile >> sps_e >> sps_theta >> sps_phi >> e[0] >> theta[0] >> phi[0] >> e[1] >> theta[1] >> phi[1] >> e[2] >> theta[2] >> phi[2]){
 
-		PIDResult res = pidSolver.EvaluateEvent(e, theta, phi, sps_e, sps_theta, sps_phi);
+		PIDResult_Mult3 res = pidSolver.EvaluateEvent(e, theta, phi, sps_e, sps_theta, sps_phi);
 
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
@@ -1141,7 +1144,7 @@ void B10ha_SABREPID(const char* input_filename){
 	for(long i=0; i<numentries; i++){
 		intree->GetEntry(i);
 
-		PIDResult res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
+		PIDResult_Mult3 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
 
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
@@ -1240,6 +1243,228 @@ void B10ha_SABREPID(const char* input_filename){
 	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str.c_str() << std::endl;
 }
 
+void B10ha_SABREPID_Mult2(const char* input_filename){
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_SABREPID_Mult2.root";
+
+	TMassTable fMassTable;
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+	double massgs_5Li = fMassTable.GetNuclearMassMeV("Li", 5);
+	double massgs_8Be = fMassTable.GetNuclearMassMeV("Be", 8);
+	double massgs_9B  = fMassTable.GetNuclearMassMeV("B", 9);
+
+	//hypothesis: final state = {p, alpha, alpha}
+	//we expect 2 detected hits in SABRE and 1 reconstructed missing particle
+	PIDHypothesis hypothesis;
+	hypothesis.name = "paa_missing";
+	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.beamEnergyMeV = 7.5;
+
+	hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	hypothesis.final_particles[0] = "p";
+	hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[1] = "a";
+	hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[2] = "a";
+
+	TFile *infile = TFile::Open(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Error: Cannot open input file " << input_filename << std::endl;
+		return;
+	}
+
+	//input ttree for 2 detected hits:
+	TTree *intree = (TTree*)infile->Get("mult2");
+	if(!intree){
+		std::cerr << "Error: Cannot get TTree 'mult2' from " << input_filename << std::endl;
+		infile->Close();
+		return;
+	}
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	double E[2], theta[2], phi[2];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+
+	long numentries = intree->GetEntries();
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+	outfile->cd();
+
+	TH1D *hAssignedSpeciesHit0 = new TH1D("hAssignedSpeciesHit0", "Species Assigned to Hit 0", 3, -0.5, 2.5);
+	TH1D *hAssignedSpeciesHit1 = new TH1D("hAssignedSpeciesHit1", "Species Assigned to Hit 1", 3, -0.5, 2.5);
+	TH1D *hMissingSpecies = new TH1D("hMissingSpecies", "Species Assigned as Missing", 3, -0.5, 2.5);
+
+	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", 80, 55.572e6, 55.58e6, 80, 21.784e6, 21.792e6);
+	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 100, 0, 2, 100, 0, 2);
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 100, 0, 10);
+	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 100, 0, 10);
+
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE; SABRE; SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex (^{8}Be_{gs} Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_5LigsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_5LigsGated", "Recoil Ex SPS vs Recoil Ex (^{5}Li_{gs} Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+
+	PID_Mult2 pidSolver;
+	pidSolver.SetHypothesis(hypothesis);
+	pidSolver.SetResolution(0.05, 1.0, 1.0);//eventually, update this per run w/ pixel handler map
+	pidSolver.SetSPSResolution(0.015, 0.5, 0.5); //eventuall, update this per run w/ pixel handler map
+	pidSolver.SetChi2Cut(10.);
+	pidSolver.InitDiagnostics(outfile);
+
+	TTree *outtree = new TTree("PID_Mult2", "PID_Mult2");
+	outtree->SetDirectory(outfile);
+
+	int bestPermIndex;
+	double bestChi2;
+	bool passesCut;
+	int hit0_species, hit1_species, missing_species;
+
+	//stack objects for intermediate operations
+	TLorentzVector P4_hit0, P4_hit1, P4_missing, recoil;
+
+	//pointers to pass to TTree:Branch (ROOT requires this for TLorentzVector type)
+	TLorentzVector *p4_0_ptr = &P4_hit0;
+	TLorentzVector *p4_1_ptr = &P4_hit1;
+	TLorentzVector *p4_miss_ptr = &P4_missing;
+	TLorentzVector *p4_rec_ptr = &recoil;
+
+	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
+	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
+	outtree->Branch("passesCut", &passesCut, "passesCut/O");
+
+	outtree->Branch("hit0species", &hit0_species, "hit0species/I");
+	outtree->Branch("hit1species", &hit1_species, "hit1species/I");
+	outtree->Branch("missingSpecies", &missing_species, "missingSpecies/I");
+
+	outtree->Branch("P4_hit0", &p4_0_ptr);
+	outtree->Branch("P4_hit1", &p4_1_ptr);
+	outtree->Branch("P4_missing", &p4_miss_ptr);
+	outtree->Branch("P4_recoil", &p4_rec_ptr);
+
+	auto buildP4 = [](double E_kin, double th_deg, double ph_deg, double mass) {
+		double p = std::sqrt(E_kin * (E_kin + 2.0 * mass));
+		double rad_th = th_deg * DEGRAD;
+		double rad_ph = ph_deg * DEGRAD;
+		return TLorentzVector(
+			p * std::sin(rad_th) * std::cos(rad_ph),
+			p * std::sin(rad_th) * std::sin(rad_ph),
+			p * std::cos(rad_th),
+			E_kin + mass
+		);
+	};
+
+
+	for(long i=0; i<numentries; i++){
+		intree->GetEntry(i);
+
+		PIDResult_Mult2 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
+
+		bestPermIndex = res.bestChi2Index;
+		bestChi2 = res.bestChi2;
+		passesCut = res.passesCut;
+
+		hit0_species = res.hit_indices[0];
+		hit1_species = res.hit_indices[1];
+		missing_species = res.missing_species_index;
+
+		if(passesCut && bestPermIndex >= 0 && Ex > 1.7){
+			hAssignedSpeciesHit0->Fill(hit0_species);
+			hAssignedSpeciesHit1->Fill(hit1_species);
+			hMissingSpecies->Fill(missing_species);
+
+			P4_hit0 = buildP4(E[0], theta[0], phi[0], hypothesis.final_masses[hit0_species]);
+			P4_hit1 = buildP4(E[1], theta[1], phi[1], hypothesis.final_masses[hit1_species]);
+
+			P4_missing.SetPxPyPzE(res.missing_px, res.missing_py, res.missing_pz, res.missing_Etot);
+
+			//determine recoil using objects on stack:
+			recoil = P4_hit0 + P4_hit1 + P4_missing;
+
+			TLorentzVector proton, alpha1, alpha2;
+
+			if(hit0_species == 0){//hit0 is the proton
+				proton = P4_hit0;
+				alpha1 = P4_hit1;
+				alpha2 = P4_missing;
+			} else if(hit1_species == 0){//hit1 is the proton
+				proton = P4_hit1;
+				alpha1 = P4_hit0;
+				alpha2 = P4_missing;
+			} else {//missing particle is the proton
+				proton = P4_missing;
+				alpha1 = P4_hit0;
+				alpha2 = P4_hit1;
+			}
+
+			//invariant mass calculations:
+			double m2_aa = (alpha1+alpha2).M2();
+			double m2_pa1 = (proton+alpha1).M2();
+			double m2_pa2 = (proton+alpha2).M2();
+			//double fill p+a combinations due to alpha indistinguishability
+			hDalitzInvMass->Fill(m2_aa, m2_pa1);
+			hDalitzInvMass->Fill(m2_aa, m2_pa2);
+
+			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
+			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
+			double ex_5Li2 = std::sqrt(m2_pa2) - massgs_5Li;
+			//double fill p+a combinations due to alpha indistinguishability
+			hDalitzEx->Fill(ex_8Be, ex_5Li1);
+			hDalitzEx->Fill(ex_8Be, ex_5Li2);
+
+			double recoilEx = recoil.M() - massgs_9B;
+			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
+
+			if(ex_8Be > 0. && ex_8Be < 0.5){
+				hRecoilEx_8BegsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
+			} else if((ex_5Li1 > 0. && ex_5Li1 < 1.) || (ex_5Li2 > 0. && ex_5Li2 < 1.)){
+				hRecoilEx_5LigsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
+			}
+		} else {
+			P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
+			P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
+			P4_missing.SetPxPyPzE(0., 0., 0., 0.);
+			recoil.SetPxPyPzE(0., 0., 0., 0.);
+		}
+
+		outtree->Fill();
+
+		if(i % 10000 == 0){
+			std::cout << "Processed " << i << " events..." << std::endl;
+		}
+	}
+	
+	// outfile->cd();
+	// outfile->Write();
+	// outfile->Close();
+	// infile->Close();
+	// delete infile;
+
+	infile->Close();
+
+	outfile->cd();
+	outfile->Write();
+	outfile->Close();
+	delete outfile;
+
+	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str << std::endl;
+}
 
 //------------------------------DATA BELOW-------------------------------------
 //commented below function until rewritten for updated TDirectory argument vs string filename 08/05/2026

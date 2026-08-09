@@ -5,9 +5,6 @@
 #include <numeric>
 #include <algorithm>
 
-constexpr double DEGRAD = M_PI/180.;
-constexpr double RADDEG = 180./M_PI;
-
 //helper function to get 3x3 covariance matrix in MeV^2/c^2 for (px, py, pz)
 std::array<std::array<double, 3>, 3> PID_Mult3::GetMomentumCovariance(double E, double theta_deg, double phi_deg, double mass, double sigE, double sigTheta_deg, double sigPhi_deg) const {
 	double theta = theta_deg * DEGRAD;
@@ -218,11 +215,11 @@ double PID_Mult3::ComputePermutationChi2(const std::array<int,3>& perm,
 	return ComputeCovarianceChi2(Sigma_tot, P_residual_out);
 }
 
-PIDResult PID_Mult3::EvaluateEvent(
+PIDResult_Mult3 PID_Mult3::EvaluateEvent(
 	const double E[3], const double theta[3], const double phi[3],
 	double SPS_E, double SPSTheta, double SPSPhi) 
 {
-	PIDResult res;
+	PIDResult_Mult3 res;
 	res.Reset();
 
 	// Reconstruct expected 4-momentum of recoil from initial kinematics
