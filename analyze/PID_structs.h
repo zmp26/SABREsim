@@ -35,6 +35,11 @@ struct PIDResult_Mult3 {
 	double missing_E{0.0};
 	double missing_Pmag{0.0};
 
+	double m2_aa{0.};
+	double m2_pa1{0.};
+	double m2_pa2{0.};
+	double ExSPS{0.};
+
 	std::array<double, 6> permChi2s;
 
 	void Reset() {
@@ -48,6 +53,10 @@ struct PIDResult_Mult3 {
 		missing_E = 0.0;
 		missing_Pmag = 0.0;
 		permChi2s.fill(1e9);
+		m2_aa = 0.;
+		m2_pa1 = 0.;
+		m2_pa2 = 0.;
+		ExSPS = 0.;
 	}
 };
 

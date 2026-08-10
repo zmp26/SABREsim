@@ -85,11 +85,13 @@ void PID_Mult2::InitDiagnostics(TDirectory* targetDir){
 	hSigmaMBest = new TH1D("hSigmaMBest", "Calculated Mass Resolution #sigma_{M} (Best Permutation);#sigma_{M} [MeV/c^{2}];Counts", 200, 0, 20);
 	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 50, 500, 0, 50);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by permutation;Permutation;#chi^{2}", 6, -0.5, 5.5, 500, 0, 500);
+	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "#(chi^{2}_{i} - #chi^{2}_{best}) by Permutation;Permutation;#(chi^{2}_{i} - #chi^{2}_{best})",6, -0.5, 5.5, 500, 0, 500);
 
 	for(int i=0; i<6; i++){
 		TString label = Form("P%d: H0=%s, H1=%s, Miss=%s", i, fHypothesis.final_particles[allPerms[i][0]].Data(), fHypothesis.final_particles[allPerms[i][1]].Data(),fHypothesis.final_particles[allPerms[i][2]].Data());
 		h2Chi2ByPermutation->GetXaxis()->SetBinLabel(i+1, label.Data());
 		hBestPermutation->GetXaxis()->SetBinLabel(i+1, label.Data());
+		h2Chi2DifByPermutation->GetXaxis()->SetBinLabel(i+1, label.Data());
 	}
 }
 
@@ -197,6 +199,11 @@ PIDResult_Mult2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2
 		} else if(chi2 < second_best_chi2){
 			second_best_chi2 = chi2;
 		}
+
+		if(h2Chi2DifByPermutation){
+			h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
+		}
+
 	}
 
 	if(best_perm_index >= 0){

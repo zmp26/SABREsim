@@ -50,6 +50,7 @@ private:
     TH1D* hSigmaMBest{nullptr};
     TH2D* hChi2_BestVsNext{nullptr};
     TH2D* h2Chi2ByPermutation{nullptr};
+    TH2D* h2Chi2DifByPermutation{nullptr};
 
     TLorentzVector Build4Vector(double EMeV, double thetadeg, double phideg, double massMeV) const;
 

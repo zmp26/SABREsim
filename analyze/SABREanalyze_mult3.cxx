@@ -907,6 +907,9 @@ void B10ha_PID(const char* input_filename){
 	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
 	double residual_px, residual_py, residual_pz, residual_pmag;
 
+	double m2_aa, m2_pa1, m2_pa2;
+	double ExSPS;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -921,11 +924,18 @@ void B10ha_PID(const char* input_filename){
 	outtree->Branch("P4_alpha2", &alpha2);
 	outtree->Branch("P4_recoil", &recoil); // Invariant mass of (p + a1 + a2)
 
+	outtree->Branch("m2_aa", &m2_aa);
+	outtree->Branch("m2_pa1", &m2_pa1);
+	outtree->Branch("m2_pa2", &m2_pa2);
+
+	outtree->Branch("ExSPS", &ExSPS);
+
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
 	outtree->Branch("residual_py", &residual_py, "residual_py/D");
 	outtree->Branch("residual_pz", &residual_pz, "residual_pz/D");
 	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
+
 
 	long eventCount = 0;
 	while(infile >> sps_e >> sps_theta >> sps_phi >> e[0] >> theta[0] >> phi[0] >> e[1] >> theta[1] >> phi[1] >> e[2] >> theta[2] >> phi[2]){
@@ -946,6 +956,10 @@ void B10ha_PID(const char* input_filename){
 		residual_py = res.missing_py;
 		residual_pz = res.missing_pz;
 		residual_pmag = res.missing_Pmag;
+
+		m2_aa = res.m2_aa;
+		m2_pa1 = res.m2_pa1;
+		m2_pa2 = res.m2_pa2;
 
 		if(bestPermIndex >= 0){
 			auto buildP4 = [](double E, double theta, double phi, double m){
@@ -991,7 +1005,7 @@ void B10ha_PID(const char* input_filename){
 
 }
 
-void B10ha_SABREPID(const char* input_filename){
+void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
@@ -1005,17 +1019,27 @@ void B10ha_SABREPID(const char* input_filename){
 	double massgs_9B = fMassTable.GetNuclearMassMeV("B", 9);
 
 	PIDHypothesis hypothesis;
-	hypothesis.name = "paa";
 	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
 	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
 	hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
 	hypothesis.beamEnergyMeV = 7.5;
-	hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
-	hypothesis.final_particles[0] = "p";
-	hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
-	hypothesis.final_particles[1] = "#alpha";
-	hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
-	hypothesis.final_particles[2] = "#alpha";
+	if(simchan.EqualTo("paa")){
+		hypothesis.name = "paa";
+		hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+		hypothesis.final_particles[0] = "p";
+		hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[1] = "#alpha";
+		hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[2] = "#alpha";
+	} else if(simchan.EqualTo("apa")){
+		hypothesis.name = "apa";
+		hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[0] = "#alpha";
+		hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+		hypothesis.final_particles[1] = "p";
+		hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[2] = "#alpha";
+	}
 
 	TFile *infile = TFile::Open(input_filename, "READ");
 	if(!infile || infile->IsZombie()){
@@ -1058,19 +1082,21 @@ void B10ha_SABREPID(const char* input_filename){
 	hProtonPicks->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									80, 55.572e6, 55.58e6,
-									80, 21.784e6, 21.792);
+									480, 55.572e6, 55.62e6,
+									400, 21.76e6, 21.80e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a1 = new TH2D("hDalitzInvMass_a1", "M^{2}_{p+#alpha_{1}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{1}}",
-									80, 55.572e6, 55.58e6,
-									80, 21.784e6, 21.792);
+									480, 55.572e6, 55.62e6,
+									400, 21.76e6, 21.80e6);
 	hDalitzInvMass_a1->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a2 = new TH2D("hDalitzInvMass_a2", "M^{2}_{p+#alpha_{2}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{2}}",
-									80, 55.572e6, 55.58e6,
-									80, 21.784e6, 21.792);
+									480, 55.572e6, 55.62e6,
+									400, 21.76e6, 21.80e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
+
+	std::cout << "Dalitz Plots set!" << std::endl;
 
 	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li)", 100, 0, 2, 100, 0, 2);
 	hDalitzEx->SetDirectory(outfile);
@@ -1121,6 +1147,8 @@ void B10ha_SABREPID(const char* input_filename){
 	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
 	double residual_px, residual_py, residual_pz, residual_pmag;
 
+	double ExSPS, m2aa, m2pa1, m2pa2;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -1133,7 +1161,13 @@ void B10ha_SABREPID(const char* input_filename){
 	outtree->Branch("P4_proton", &proton);
 	outtree->Branch("P4_alpha1", &alpha1);
 	outtree->Branch("P4_alpha2", &alpha2);
-	outtree->Branch("P4_recoil", &recoil); // Invariant mass of (p + a1 + a2)
+	outtree->Branch("P4_recoil", &recoil); // Sum of (p + a1 + a2)
+
+	outtree->Branch("m2_aa", &m2aa);
+	outtree->Branch("m2_pa1", &m2pa1);
+	outtree->Branch("m2_pa2", &m2pa2);
+
+	outtree->Branch("ExSPS", &ExSPS);
 
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
@@ -1146,15 +1180,32 @@ void B10ha_SABREPID(const char* input_filename){
 
 		PIDResult_Mult3 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
 
+		ExSPS = Ex;
+
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
 		passesCut = res.passesCut;
 
 		//std::cout << "bestPermIndex = " << bestPermIndex << "\tbestChi2 = " << bestChi2 << "\npassesCut = " << passesCut << "\n";
+		double proton_mass, alpha1_mass, alpha2_mass;
+		if(simchan.EqualTo("paa")){
+			//mass hypothesis: 0=p, 1=a, 2=a
+			proton_hit_index = res.hit_indices[0];
+			alpha_hit_index1 = res.hit_indices[1];
+			alpha_hit_index2 = res.hit_indices[2];
+			proton_mass = hypothesis.final_masses[0];
+			alpha1_mass = hypothesis.final_masses[1];
+			alpha2_mass = hypothesis.final_masses[2];
+		} else if(simchan.EqualTo("apa")){
+			//mass hypothesis: 0=a, 1=p, 2=a
+			proton_hit_index = res.hit_indices[1];
+			alpha_hit_index1 = res.hit_indices[0];
+			alpha_hit_index2 = res.hit_indices[2];
+			proton_mass = hypothesis.final_masses[1];
+			alpha1_mass = hypothesis.final_masses[0];
+			alpha2_mass = hypothesis.final_masses[2];
+		}
 
-		proton_hit_index = res.hit_indices[0];
-		alpha_hit_index1 = res.hit_indices[1];
-		alpha_hit_index2 = res.hit_indices[2];
 
 		residual_px = res.missing_px;
 		residual_py = res.missing_py;
@@ -1175,9 +1226,9 @@ void B10ha_SABREPID(const char* input_filename){
 			};
 
 			hProtonPicks->Fill(proton_hit_index);
-			proton = buildP4(E[proton_hit_index], theta[proton_hit_index], phi[proton_hit_index], hypothesis.final_masses[0]);
-			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], hypothesis.final_masses[1]);
-			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], hypothesis.final_masses[2]);
+			proton = buildP4(E[proton_hit_index], theta[proton_hit_index], phi[proton_hit_index], proton_mass);
+			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], alpha1_mass);
+			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], alpha2_mass);
 			recoil = proton + alpha1 + alpha2;
 
 			//now we can do invariant mass stuff here, but remember we must double fill any p+a (p+a1 and p+a2 since we cannot tell a1 from a2)
@@ -1185,6 +1236,10 @@ void B10ha_SABREPID(const char* input_filename){
 			double m2_aa = (alpha1+alpha2).M2();
 			double m2_pa1 = (proton+alpha1).M2();
 			double m2_pa2 = (proton+alpha2).M2();
+
+			m2aa = m2_aa;
+			m2pa1 = m2_pa1;
+			m2pa2 = m2_pa2;
 
 			hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
 			hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
@@ -1310,7 +1365,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH1D *hAssignedSpeciesHit1 = new TH1D("hAssignedSpeciesHit1", "Species Assigned to Hit 1", 3, -0.5, 2.5);
 	TH1D *hMissingSpecies = new TH1D("hMissingSpecies", "Species Assigned as Missing", 3, -0.5, 2.5);
 
-	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", 100, 55.55e6, 55.75e6, 50, 21.75e6, 21.85e6);
+	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									400, 55.57e6, 55.67e6,
+									400, 21.75e6, 21.85e6);
 	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
 	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
 	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
@@ -1347,6 +1404,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 	double m2_aa, m2_pa1, m2_pa2;
 	double ExSPS;
+	double catania_x, catania_y;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
@@ -1366,6 +1424,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("m2_pa2", &m2_pa2);
 
 	outtree->Branch("ExSPS", &ExSPS);
+
+	outtree->Branch("catania_x", &catania_x);
+	outtree->Branch("catania_y", &catania_y);
 
 	auto buildP4 = [](double E_kin, double th_deg, double ph_deg, double mass) {
 		double p = std::sqrt(E_kin * (E_kin + 2.0 * mass));
@@ -1432,8 +1493,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hDalitzInvMass->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass->Fill(m2_aa, m2_pa2);
 
-			double catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
-			double catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
+			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
+			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
 			//if(catania_y < 0) std::cout << "E[0] = " << E[0] << "\tE[1] = " << E[1] << "\ty = " << catania_y << std::endl;
 			hCatania->Fill(catania_x, catania_y);
 

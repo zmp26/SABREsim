@@ -135,11 +135,14 @@ void PID_Mult3::InitDiagnostics(TDirectory* targetDir){
 	hBestPermutation = new TH1D("hBestPermutation", "Permutation with lowest #chi^{2};Permutation;Counts", 6, -0.5, 5.5);
 	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 1, 500, 0, 1);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by permutation;permutation;#chi^{2}", 6, -0.5, 5.5, 500, 0, 500);
+	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "(#chi^{2}_{i} - #chi^{2}_{best}) vs Permutation;Permutation;(#chi^{2}_{i} - #chi^{2}_{best})", 6, -0.6, 5.5, 500, 0, 500);
+
 
 	for(int i=0; i<6; i++){
 		TString label = Form("P%d: (%s,%s,%s)", i, fHypothesis.final_particles[allPerms[i][0]].Data(), fHypothesis.final_particles[allPerms[i][1]].Data(), fHypothesis.final_particles[allPerms[i][2]].Data());
 		h2Chi2ByPermutation->GetXaxis()->SetBinLabel(i+1, label.Data());
 		hBestPermutation->GetXaxis()->SetBinLabel(i+1, label.Data());
+		h2Chi2DifByPermutation->GetXaxis()->SetBinLabel(i+1, label.Data());
 	}
 }
 
@@ -248,7 +251,7 @@ PIDResult_Mult3 PID_Mult3::EvaluateEvent(
 
 		// Store Chi2 per permutation
 		res.permChi2s[permindex] = chi2;
-		h2Chi2ByPermutation->Fill(permindex, chi2);
+		if(h2Chi2ByPermutation)	h2Chi2ByPermutation->Fill(permindex, chi2);
 
 		if (chi2 < min_chi2) {
 			second_best_chi2 = min_chi2;
@@ -258,6 +261,8 @@ PIDResult_Mult3 PID_Mult3::EvaluateEvent(
 		} else if (chi2 < second_best_chi2) {
 			second_best_chi2 = chi2;
 		}
+
+		if(h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
 	}
 
 	if (best_perm_index >= 0) {
