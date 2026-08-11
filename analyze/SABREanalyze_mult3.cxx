@@ -1076,6 +1076,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	long numentries = intree->GetEntries();
 
 	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+	TDirectory *sliceDir = outfile->mkdir("slices");
+
 	outfile->cd();
 
 	TH1D *hProtonPicks = new TH1D("hProtonPicks", "Hit Index Assigned to Proton", 3, -0.5, 2.5);
@@ -1101,7 +1103,28 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 									400, 21.75e6, 21.85e6,
 									70, 0, 7);
 
-	std::cout << "Dalitz Plots set!" << std::endl;
+	//prep vector of Dalitz slices here:
+	double eMin=0.;
+	double eMax=7.;
+	double eStep=0.1;
+	int nSlices = static_cast<int>((eMax-eMin)/eStep);
+	std::vector<TH2D*> vDalitz(nSlices, nullptr);
+
+	for(int i=0; i<nSlices; i++){
+		double currentEMin = eMin + i*eStep;
+		double currentEMax = eMin + (i+1)*eStep;
+
+		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+
+		vDalitz[i] = new TH2D(name.Data(), title.Data(),
+							  200, 55.57e6, 55.67e6,
+							  200, 21.75e6, 21.85e6);
+		vDalitz[i]->SetDirectory(sliceDir);
+
+	}
+
+	//std::cout << "Dalitz Plots set!" << std::endl;
 
 	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li)", 100, 0, 2, 100, 0, 2);
 	hDalitzEx->SetDirectory(outfile);
@@ -1152,7 +1175,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
 	double residual_px, residual_py, residual_pz, residual_pmag;
 
-	double ExSPS, m2aa, m2pa1, m2pa2;
+	double ExSPS, recoilEx, m2aa, m2pa1, m2pa2;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
@@ -1173,6 +1196,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("m2_pa2", &m2pa2);
 
 	outtree->Branch("ExSPS", &ExSPS);
+	outtree->Branch("RecEx", &recoilEx);
 
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
@@ -1222,7 +1246,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 		residual_pz = res.missing_pz;
 		residual_pmag = res.missing_Pmag;
 
-		if(bestPermIndex >= 0 && Ex > 1.7){//checks if above alpha threshold
+		if(bestPermIndex >= 0){
 			auto buildP4 = [](double E, double theta, double phi, double m){
 				double p = std::sqrt(E*(E+2.*m));
 				double rad_th = theta*M_PI/180.;
@@ -1250,49 +1274,59 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			m2aa = m2_aa;
 			m2pa1 = m2_pa1;
 			m2pa2 = m2_pa2;
+			if(Ex > 1.7){
+				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
+				hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
 
-			hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
-			hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
+				hDalitzInvMass->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a
+				hDalitzInvMass_a2->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a2
 
-			hDalitzInvMass->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a
-			hDalitzInvMass_a2->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a2
+				hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+				hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
 
-			hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
-			hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+				gDalitzScatter_alpha1->SetPoint(gDalitzScatter_alpha1->GetN(), m2_aa, m2_pa1);
+				gDalitzScatter_alpha2->SetPoint(gDalitzScatter_alpha2->GetN(), m2_aa, m2_pa2);
 
-			gDalitzScatter_alpha1->SetPoint(gDalitzScatter_alpha1->GetN(), m2_aa, m2_pa1);
-			gDalitzScatter_alpha2->SetPoint(gDalitzScatter_alpha2->GetN(), m2_aa, m2_pa2);
+				hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
+				hDalitzEx_a1->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
 
-			hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
-			hDalitzEx_a1->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
+				hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+				hDalitzEx_a2->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+			}
 
-			hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
-			hDalitzEx_a2->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+			int sliceIndex = static_cast<int>((Ex-eMin)/eStep);
+			if(sliceIndex >= 0 && sliceIndex < nSlices){
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa2);
+			}
 
-			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoil.M() - massgs_9B, Ex);
+			recoilEx = recoil.M() - massgs_9B;
+			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
 			if(std::sqrt(m2_aa) - massgs_8Be > 0 && std::sqrt(m2_aa) - massgs_8Be < 0.5){
-				hRecoilEx_8BegsGated->Fill(recoil.M() - massgs_9B);
-				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoil.M() - massgs_9B, Ex);
+				hRecoilEx_8BegsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
 				//std::cout << "Filled hRecoilEx_8BegsGated" << std::endl;
 			} else if(std::sqrt(m2_pa1) - massgs_5Li > 0 && std::sqrt(m2_pa1) - massgs_5Li < 1){
-				hRecoilEx_5LigsGated->Fill(recoil.M() - massgs_9B);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoil.M() - massgs_9B, Ex);
+				hRecoilEx_5LigsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
 				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
 			} else if(std::sqrt(m2_pa2) - massgs_5Li > 0 && std::sqrt(m2_pa2) - massgs_5Li < 1){
-				hRecoilEx_5LigsGated->Fill(recoil.M() - massgs_9B);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoil.M() - massgs_9B, Ex);
+				hRecoilEx_5LigsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
 				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
 			}
+
 			outtree->Fill();
-		} else {
-			m2aa = -666.;
-			m2pa1 = -666.;
-			m2pa2 = -666.;
-			proton.SetPxPyPzE(0.,0.,0.,0.);
-			alpha1.SetPxPyPzE(0.,0.,0.,0.);
-			alpha2.SetPxPyPzE(0.,0.,0.,0.);
-			recoil.SetPxPyPzE(0.,0.,0.,0.);
-		}
+
+		}// else {
+		// 	m2aa = -666.;
+		// 	m2pa1 = -666.;
+		// 	m2pa2 = -666.;
+		// 	proton.SetPxPyPzE(0.,0.,0.,0.);
+		// 	alpha1.SetPxPyPzE(0.,0.,0.,0.);
+		// 	alpha2.SetPxPyPzE(0.,0.,0.,0.);
+		// 	recoil.SetPxPyPzE(0.,0.,0.,0.);
+		// }
 
 		//outtree->Fill();
 
@@ -1375,6 +1409,11 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	long numentries = intree->GetEntries();
 
 	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+
+	TDirectory *sliceDir = outfile->mkdir("slices");
+	TDirectory *dalitzSlicesDir = sliceDir->mkdir("Dalitz");
+	TDirectory *cataniaSlicesDir = sliceDir->mkdir("Catania");
+
 	outfile->cd();
 
 	TH1D *hAssignedSpeciesHit0 = new TH1D("hAssignedSpeciesHit0", "Species Assigned to Hit 0", 3, -0.5, 2.5);
@@ -1389,6 +1428,37 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 									400, 55.57e6, 55.67e6,
 									400, 21.75e6, 21.85e6,
 									70, 0, 7);
+
+	//prep vectors of Dalitz, Catania slices here:
+	double eMin=0.;
+	double eMax=7.;
+	double eStep=0.1;
+	int nSlices = static_cast<int>((eMax-eMin)/eStep);
+	std::vector<TH2D*> vDalitz(nSlices, nullptr);
+	std::vector<TH2D*> vCatania(nSlices, nullptr);
+
+	for(int i=0; i<nSlices; i++){
+		double currentEMin = eMin + i*eStep;
+		double currentEMax = eMin + (i+1)*eStep;
+
+		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+
+		vDalitz[i] = new TH2D(name.Data(), title.Data(),
+							  200, 55.57e6, 55.67e6,
+							  200, 21.75e6, 21.85e6);
+		vDalitz[i]->SetDirectory(dalitzSlicesDir);
+
+		name = Form("hCatania_%d_%.1f_%.1f", i, currentEMin, currentEMax);
+		title = Form("Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q) [%.1f - %.1f MeV]", currentEMin, currentEMax);
+
+		vCatania[i] = new TH2D(name.Data(), title.Data(),
+							   50, 0, 10,
+							   50, 0, 10);
+		vCatania[i]->SetDirectory(cataniaSlicesDir);
+
+	}
+
 
 	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
 	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
@@ -1425,7 +1495,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TLorentzVector *p4_rec_ptr = &recoil;
 
 	double m2_aa, m2_pa1, m2_pa2;
-	double ExSPS;
+	double ExSPS, recoilEx;
 	double catania_x, catania_y;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
@@ -1446,6 +1516,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("m2_pa2", &m2_pa2);
 
 	outtree->Branch("ExSPS", &ExSPS);
+	outtree->Branch("RecEx", &recoilEx);
 
 	outtree->Branch("catania_x", &catania_x);
 	outtree->Branch("catania_y", &catania_y);
@@ -1483,7 +1554,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		hit1_species = res.hit_indices[1];
 		missing_species = res.missing_species_index;
 
-		if(passesCut && bestPermIndex >= 0 && Ex > 1.7){
+		if(bestPermIndex >= 0){
 			hAssignedSpeciesHit0->Fill(hit0_species);
 			hAssignedSpeciesHit1->Fill(hit1_species);
 			hMissingSpecies->Fill(missing_species);
@@ -1512,30 +1583,46 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 				alpha2 = P4_hit1;
 			}
 
+			int sliceIndex = static_cast<int>((Ex-eMin)/eStep);
+
+			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
+			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
+			hCatania->Fill(catania_x, catania_y);
+
 			//invariant mass calculations:
 			m2_aa = (alpha1+alpha2).M2();
 			m2_pa1 = (proton+alpha1).M2();
 			m2_pa2 = (proton+alpha2).M2();
+
 			//double fill p+a combinations due to alpha indistinguishability
-			hDalitzInvMass->Fill(m2_aa, m2_pa1);
-			hDalitzInvMass->Fill(m2_aa, m2_pa2);
+			if(Ex>1.7){
+				hDalitzInvMass->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass->Fill(m2_aa, m2_pa2);
 
-			hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
-			hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+				hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+				hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+			}
 
-			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
-			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
-			//if(catania_y < 0) std::cout << "E[0] = " << E[0] << "\tE[1] = " << E[1] << "\ty = " << catania_y << std::endl;
-			hCatania->Fill(catania_x, catania_y);
+
+			if(sliceIndex >= 0 && sliceIndex < nSlices){
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa2);
+
+				vCatania[sliceIndex]->Fill(catania_x, catania_y);
+			}
+
+
 
 			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
 			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
 			double ex_5Li2 = std::sqrt(m2_pa2) - massgs_5Li;
 			//double fill p+a combinations due to alpha indistinguishability
-			hDalitzEx->Fill(ex_8Be, ex_5Li1);
-			hDalitzEx->Fill(ex_8Be, ex_5Li2);
+			if(Ex>1.7){	
+				hDalitzEx->Fill(ex_8Be, ex_5Li1);
+				hDalitzEx->Fill(ex_8Be, ex_5Li2);
+			}
 
-			double recoilEx = recoil.M() - massgs_9B;
+			recoilEx = recoil.M() - massgs_9B;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
 
 			if(ex_8Be > 0. && ex_8Be < 0.5){
@@ -1546,15 +1633,15 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
 			}
 			outtree->Fill();
-		} else {
-			m2_aa = -666.;
-			m2_pa1 = -666.;
-			m2_pa2 = -666.;
-			P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
-			P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
-			P4_missing.SetPxPyPzE(0., 0., 0., 0.);
-			recoil.SetPxPyPzE(0., 0., 0., 0.);
-		}
+		}// else {
+		// 	m2_aa = -666.;
+		// 	m2_pa1 = -666.;
+		// 	m2_pa2 = -666.;
+		// 	P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
+		// 	P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
+		// 	P4_missing.SetPxPyPzE(0., 0., 0., 0.);
+		// 	recoil.SetPxPyPzE(0., 0., 0., 0.);
+		// }
 
 		//outtree->Fill();
 
