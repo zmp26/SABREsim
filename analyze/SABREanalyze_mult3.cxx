@@ -1082,19 +1082,24 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	hProtonPicks->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									480, 55.572e6, 55.62e6,
-									400, 21.76e6, 21.80e6);
+									400, 55.57e6, 55.67e6,
+									400, 21.75e6, 21.85e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a1 = new TH2D("hDalitzInvMass_a1", "M^{2}_{p+#alpha_{1}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{1}}",
-									480, 55.572e6, 55.62e6,
-									400, 21.76e6, 21.80e6);
+									400, 55.57e6, 55.67e6,
+									400, 21.75e6, 21.85e6);
 	hDalitzInvMass_a1->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a2 = new TH2D("hDalitzInvMass_a2", "M^{2}_{p+#alpha_{2}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{2}}",
-									480, 55.572e6, 55.62e6,
-									400, 21.76e6, 21.80e6);
+									400, 55.57e6, 55.67e6,
+									400, 21.75e6, 21.85e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
+
+	TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
+									400, 55.57e6, 55.67e6,
+									400, 21.75e6, 21.85e6,
+									70, 0, 7);
 
 	std::cout << "Dalitz Plots set!" << std::endl;
 
@@ -1176,6 +1181,11 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
 
 	for(long i=0; i<numentries; i++){
+		//skip if Ex < 1.7:
+		// if(Ex < 1.7){
+		// 	continue;
+		// }
+
 		intree->GetEntry(i);
 
 		PIDResult_Mult3 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
@@ -1247,6 +1257,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hDalitzInvMass->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a
 			hDalitzInvMass_a2->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a2
 
+			hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+			hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+
 			gDalitzScatter_alpha1->SetPoint(gDalitzScatter_alpha1->GetN(), m2_aa, m2_pa1);
 			gDalitzScatter_alpha2->SetPoint(gDalitzScatter_alpha2->GetN(), m2_aa, m2_pa2);
 
@@ -1270,15 +1283,18 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoil.M() - massgs_9B, Ex);
 				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
 			}
-
+			outtree->Fill();
 		} else {
+			m2aa = -666.;
+			m2pa1 = -666.;
+			m2pa2 = -666.;
 			proton.SetPxPyPzE(0.,0.,0.,0.);
 			alpha1.SetPxPyPzE(0.,0.,0.,0.);
 			alpha2.SetPxPyPzE(0.,0.,0.,0.);
 			recoil.SetPxPyPzE(0.,0.,0.,0.);
 		}
 
-		outtree->Fill();
+		//outtree->Fill();
 
 		if(i % 10000 == 0){
 			std::cout << "Processed " << i << " events..." << std::endl;
@@ -1368,6 +1384,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 									400, 55.57e6, 55.67e6,
 									400, 21.75e6, 21.85e6);
+
+	TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
+									400, 55.57e6, 55.67e6,
+									400, 21.75e6, 21.85e6,
+									70, 0, 7);
+
 	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
 	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
 	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
@@ -1444,6 +1466,11 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	for(long i=0; i<numentries; i++){
 		intree->GetEntry(i);
 
+		//skip if Ex < 1.7:
+		// if(Ex < 1.7){
+		// 	continue;
+		// }
+
 		ExSPS = Ex;
 
 		PIDResult_Mult2 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
@@ -1493,6 +1520,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hDalitzInvMass->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass->Fill(m2_aa, m2_pa2);
 
+			hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+			hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+
 			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
 			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
 			//if(catania_y < 0) std::cout << "E[0] = " << E[0] << "\tE[1] = " << E[1] << "\ty = " << catania_y << std::endl;
@@ -1515,14 +1545,18 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 				hRecoilEx_5LigsGated->Fill(recoilEx);
 				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
 			}
+			outtree->Fill();
 		} else {
+			m2_aa = -666.;
+			m2_pa1 = -666.;
+			m2_pa2 = -666.;
 			P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
 			P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
 			P4_missing.SetPxPyPzE(0., 0., 0., 0.);
 			recoil.SetPxPyPzE(0., 0., 0., 0.);
 		}
 
-		outtree->Fill();
+		//outtree->Fill();
 
 		if(i % 10000 == 0){
 			std::cout << "Processed " << i << " events..." << std::endl;
