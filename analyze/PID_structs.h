@@ -95,4 +95,9 @@ struct PIDResult_Mult2 {
 	}
 };
 
+double Kallen(double a, double b, double c){
+	//the Kallen function, or triangle function, often denoted lambda(a,b,c) = a^2 + b^2 + c^2 - 2ab - 2ac - 2bc
+	return a*a + b*b + c*c - 2.*(a*b + a*c + b*c);
+}
+
 #endif // PID_STRUCTS_H
