@@ -1089,23 +1089,28 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	hProtonPicks->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									400, 55.57e6, 55.67e6,
-									400, 21.75e6, 21.85e6);
+									400, 55.57e6, 55.69e6,
+									400, 21.76e6, 21.84e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
+	TH2D *hDalitzInvMass_pa1_pa2 = new TH2D("hDalitzInvMass_pa1_pa2", "M^{2}_{p#alpha_{1}} vs M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{1}}",
+									400, 21.76e6, 21.84e6,
+									400, 21.76e6, 21.84e6);
+	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
+
 	TH2D *hDalitzInvMass_a1 = new TH2D("hDalitzInvMass_a1", "M^{2}_{p+#alpha_{1}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{1}}",
-									400, 55.57e6, 55.67e6,
-									400, 21.75e6, 21.85e6);
+									400, 55.57e6, 55.69e6,
+									400, 21.76e6, 21.84e6);
 	hDalitzInvMass_a1->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a2 = new TH2D("hDalitzInvMass_a2", "M^{2}_{p+#alpha_{2}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{2}}",
-									400, 55.57e6, 55.67e6,
-									400, 21.75e6, 21.85e6);
+									400, 55.57e6, 55.69e6,
+									400, 21.76e6, 21.84e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
 
 	TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
-									400, 55.57e6, 55.67e6,
-									400, 21.75e6, 21.85e6,
+									400, 55.57e6, 55.69e6,
+									400, 21.76e6, 21.84e6,
 									70, 0, 7);
 
 	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
@@ -1201,8 +1206,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
 
 		vDalitz[i] = new TH2D(name.Data(), title.Data(),
-							  200, 55.57e6, 55.67e6,
-							  200, 21.75e6, 21.85e6);
+							  200, 55.57e6, 55.69e6,
+							  200, 21.76e6, 21.84e6);
 		vDalitz[i]->SetDirectory(sliceDir);
 
 		const double W = massgs_9B + currentECenter;
@@ -1418,6 +1423,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 				hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
 				hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
 
+				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
+
 				gDalitzScatter_alpha1->SetPoint(gDalitzScatter_alpha1->GetN(), m2_aa, m2_pa1);
 				gDalitzScatter_alpha2->SetPoint(gDalitzScatter_alpha2->GetN(), m2_aa, m2_pa2);
 
@@ -1570,12 +1577,17 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH1D *hMissingSpecies = new TH1D("hMissingSpecies", "Species Assigned as Missing", 3, -0.5, 2.5);
 
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									400, 55.57e6, 55.67e6,
-									400, 21.75e6, 21.85e6);
+									400, 55.57e6, 55.69e6,
+									400, 21.76e6, 21.84e6);
+
+	TH2D *hDalitzInvMass_pa1_pa2 = new TH2D("hDalitzInvMass_pa1_pa2", "M^{2}_{p#alpha_{1}} vs M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{1}}",
+									400, 21.76e6, 21.84e6,
+									400, 21.76e6, 21.84e6);
+	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
 
 	TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
-									400, 55.57e6, 55.67e6,
-									400, 21.75e6, 21.85e6,
+									400, 55.57e6, 55.69e6,
+									400, 21.76e6, 21.84e6,
 									70, 0, 7);
 
 	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
@@ -1672,8 +1684,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
 
 		vDalitz[i] = new TH2D(name.Data(), title.Data(),
-							  200, 55.57e6, 55.67e6,
-							  200, 21.75e6, 21.85e6);
+							  200, 55.57e6, 55.69e6,
+							  200, 21.76e6, 21.84e6);
 		vDalitz[i]->SetDirectory(dalitzSlicesDir);
 
 		name = Form("hCatania_%d_%.1f_%.1f", i, currentEMin, currentEMax);
@@ -1879,6 +1891,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 				hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
 				hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+
+				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
+
 			//}
 
 
