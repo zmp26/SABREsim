@@ -1018,6 +1018,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	double massgs_8Be = fMassTable.GetNuclearMassMeV("Be",8);
 	double massgs_9B = fMassTable.GetNuclearMassMeV("B", 9);
 
+	double mass_p = fMassTable.GetNuclearMassMeV("H",1);
+	double mass_a = fMassTable.GetNuclearMassMeV("He",4);
+
 	PIDHypothesis hypothesis;
 	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
 	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
@@ -1103,16 +1106,85 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 									400, 21.75e6, 21.85e6,
 									70, 0, 7);
 
+	//lambda to calculate dalitz boundary as function of excitation energy
+	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
+	{
+		// W = invariant mass of parent resonance, W = E_tot = M(9B_gs) + AVGEX(sliceindex)
+		// (take the average Ex to be the middle value between the Ex min and max for the given slice)
+
+		//Plot axes:
+		// x = M^2_{aa} = M^2{23} = s_aa = s_23
+		// y = M^2_{pa} = M^2{12} = s_pa = s_12
+
+		const double xmin = 4.*mass_a*mass_a;			// (2m_a)^2
+		const double xmax = std::pow(W - mass_p, 2);	// (W - m_p)^2
+
+		std::vector<double> x;
+		std::vector<double> y;
+
+		x.reserve(2*npoints);
+		y.reserve(2*npoints);
+
+		//upper branch: ymax(x)
+		for(int j=0; j<npoints; j++){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax-xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yPlus = center + radical/(2.0*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yPlus);
+		}
+
+		//loewr branch: ymin(x)
+		for(int j=npoints-1; j>=0; j--){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax - xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yMinus = center - radical/(2.*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yMinus);
+		}
+
+		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
+
+		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
+		graph->SetLineColor(kRed+1);
+		graph->SetLineWidth(2);
+		graph->SetLineStyle(1);
+		graph->SetFillStyle(0);
+
+		return graph;
+	};
+
 	//prep vector of Dalitz slices here:
 	double eMin=0.;
 	double eMax=7.;
 	double eStep=0.1;
 	int nSlices = static_cast<int>((eMax-eMin)/eStep);
 	std::vector<TH2D*> vDalitz(nSlices, nullptr);
+	std::vector<TGraph*> vDalitzBoundary(nSlices, nullptr);
 
 	for(int i=0; i<nSlices; i++){
 		double currentEMin = eMin + i*eStep;
 		double currentEMax = eMin + (i+1)*eStep;
+		double currentECenter = 0.5*(currentEMin+currentEMax);
 
 		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
 		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
@@ -1121,6 +1193,10 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 							  200, 55.57e6, 55.67e6,
 							  200, 21.75e6, 21.85e6);
 		vDalitz[i]->SetDirectory(sliceDir);
+
+		const double W = massgs_9B + currentECenter;
+
+		vDalitzBoundary[i] = MakeDalitzBoundary(W, i, currentEMin, currentEMax);
 
 	}
 
@@ -1341,6 +1417,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outfile->cd();
 	gDalitzScatter_alpha1->Write();
 	gDalitzScatter_alpha2->Write();
+	sliceDir->cd();
+	for(int i=0; i<nSlices; i++) if(vDalitzBoundary[i]) vDalitzBoundary[i]->Write();
+	outfile->cd();
 	outfile->Write();
 	outfile->Close();
 	delete outfile;
@@ -1360,6 +1439,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	double massgs_5Li = fMassTable.GetNuclearMassMeV("Li", 5);
 	double massgs_8Be = fMassTable.GetNuclearMassMeV("Be", 8);
 	double massgs_9B  = fMassTable.GetNuclearMassMeV("B", 9);
+
+	double mass_p = fMassTable.GetNuclearMassMeV("H",1);
+	double mass_a = fMassTable.GetNuclearMassMeV("He",4);
 
 	//hypothesis: final state = {p, alpha, alpha}
 	//we expect 2 detected hits in SABRE and 1 reconstructed missing particle
@@ -1429,6 +1511,73 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 									400, 21.75e6, 21.85e6,
 									70, 0, 7);
 
+	//lambda to calculate dalitz boundary as function of excitation energy
+	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
+	{
+		// W = invariant mass of parent resonance, W = E_tot = M(9B_gs) + AVGEX(sliceindex)
+		// (take the average Ex to be the middle value between the Ex min and max for the given slice)
+
+		//Plot axes:
+		// x = M^2_{aa} = M^2{23} = s_aa = s_23
+		// y = M^2_{pa} = M^2{12} = s_pa = s_12
+
+		const double xmin = 4.*mass_a*mass_a;			// (2m_a)^2
+		const double xmax = std::pow(W - mass_p, 2);	// (W - m_p)^2
+
+		std::vector<double> x;
+		std::vector<double> y;
+
+		x.reserve(2*npoints);
+		y.reserve(2*npoints);
+
+		//upper branch: ymax(x)
+		for(int j=0; j<npoints; j++){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax-xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yPlus = center + radical/(2.0*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yPlus);
+		}
+
+		//loewr branch: ymin(x)
+		for(int j=npoints-1; j>=0; j--){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax - xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yMinus = center - radical/(2.*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yMinus);
+		}
+
+		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
+
+		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
+		graph->SetLineColor(kRed+1);
+		graph->SetLineWidth(2);
+		graph->SetLineStyle(1);
+		graph->SetFillStyle(0);
+
+		return graph;
+	};
+
 	//prep vectors of Dalitz, Catania slices here:
 	double eMin=0.;
 	double eMax=7.;
@@ -1436,10 +1585,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	int nSlices = static_cast<int>((eMax-eMin)/eStep);
 	std::vector<TH2D*> vDalitz(nSlices, nullptr);
 	std::vector<TH2D*> vCatania(nSlices, nullptr);
+	std::vector<TGraph*> vDalitzBoundary(nSlices, nullptr);
 
 	for(int i=0; i<nSlices; i++){
 		double currentEMin = eMin + i*eStep;
 		double currentEMax = eMin + (i+1)*eStep;
+		double currentECenter = 0.5*(currentEMin+currentEMax);
 
 		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
 		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
@@ -1456,6 +1607,10 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 							   50, 0, 10,
 							   50, 0, 10);
 		vCatania[i]->SetDirectory(cataniaSlicesDir);
+
+		const double W = massgs_9B + currentECenter;
+
+		vDalitzBoundary[i] = MakeDalitzBoundary(W, i, currentEMin, currentEMax);
 
 	}
 
@@ -1657,7 +1812,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	// delete infile;
 
 	infile->Close();
-
+	dalitzSlicesDir->cd();
+	for(int i=0; i<nSlices; i++) if(vDalitzBoundary[i]) vDalitzBoundary[i]->Write();
 	outfile->cd();
 	outfile->Write();
 	outfile->Close();
