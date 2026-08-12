@@ -102,7 +102,7 @@ void slices2gif(const char* filename, const char* dirname){
 		canvas->cd();
 		canvas->Clear();
 
-		h->SetMinimum(0);
+		//h->SetMinimum(0);
 		h->Draw("COLZ");
 
 		if(boundary){
