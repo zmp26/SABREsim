@@ -98,6 +98,7 @@ void slices2gif(const char* filename, const char* dirname){
 		const int sliceIndex = GetSliceIndex(h->GetName());
 		TString boundaryname = Form("gDalitzBoundary_%02d",sliceIndex);
 		TGraph* boundary = dynamic_cast<TGraph*>(dir->Get(boundaryname));
+		//TGraph* boundary = nullptr;
 
 		canvas->cd();
 		canvas->Clear();
@@ -122,7 +123,7 @@ void slices2gif(const char* filename, const char* dirname){
 		canvas->SaveAs(pngPath);
 
 		if(i == histograms.size() - 1){
-			canvas->Print(gifFilename + "+20");
+			canvas->Print(gifFilename + "++");
 		} else {
 			canvas->Print(gifFilename + "+50");
 		}
