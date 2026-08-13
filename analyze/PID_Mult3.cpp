@@ -262,7 +262,11 @@ PIDResult_Mult3 PID_Mult3::EvaluateEvent(
 			second_best_chi2 = chi2;
 		}
 
-		if(h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
+		//if(h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
+	}
+
+	for (size_t permIndex = 0; permIndex < allPerms.size(); ++permIndex) {
+    	if (h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permIndex, res.permChi2s[permIndex] - res.bestChi2);
 	}
 
 	if (best_perm_index >= 0) {
