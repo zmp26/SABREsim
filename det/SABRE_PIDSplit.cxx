@@ -14,6 +14,8 @@ std::string MakePairOutputName(const char* infile, const std::string& pairSuffix
     return name;
 }
 
+
+//N=3, M=2
 void SABRE_ParticleID_Splitter(const char* infile, const char* intree = "SABREsim") {
     TFile *fin = TFile::Open(infile, "READ");
     if (!fin || fin->IsZombie()) {
@@ -163,3 +165,13 @@ void SABRE_ParticleID_Splitter(const char* infile, const char* intree = "SABREsi
 
     std::cout << "Splitting complete. Subfiles maintain native simulation ordering (ascending particle ID numbers)." << std::endl;
 }
+
+
+
+//N=2, M=2
+void SABRE_ParticleID_Splitter_N2(const char* infile, const char* intree = "SABREsim"){
+	std::cout << "nothing for now" << std::endl;
+}
+
+
+
