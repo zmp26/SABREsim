@@ -36,16 +36,16 @@ permHisto_mult2::permHisto_mult2(TString permName, TDirectory* targetDir){
 	Register1D(permName, "ecm_meas", "E_{cm} Decay (meas);MeV", 150, -1, 5);
 	//Register1D(permName, "ecm_expect", "E_{cm} Decay (expect);MeV", 150, -1, 5);
 	//Register1D(permName, "ecm_delta", "E_{cm} Decay (meas - expect);MeV", 250, -5, 5);
-    
+
 	Register2D(permName, "ecmmeasVSfrag1thetacm", "E_{cm} Decay (meas) vs frag1 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
 	Register2D(permName, "ecmmeasVSfrag2thetacm", "E_{cm} Decay (meas) vs frag2 ThetaCM;MeV;deg", 180, 0, 180, 150, -1, 5);
-    
+
 	Register1D(permName, "decay_VCM", "VCM Decay;c", 1000, 0, 0.1);
 	Register2D(permName, "decay_VCM_TransverseVSLongitudinal", "Decay VCM Transverse Vs Longitudinal", 100, 0, 0.10, 100, 0, 0.10);
 	Register1D(permName, "decay_thetaCMsum", "Decay Theta CM Sum", 80, 170, 190);
 	Register1D(permName, "decay_phiCMdiff", "Decay Phi CM Diff", 80, 170, 190);
 	Register1D(permName, "decay_relLabAngle", "Decay Relative Lab Angle", 360, 0, 180);
-    
+
 	Register2D(permName, "frag1vcmVSfrag2vcm", "frag1 Vcm VS frag2 Vcm", 1000, 0, 0.1, 1000, 0, 0.1);
 	Register2D(permName, "frag1kecmVSfrag2kecm", "frag1 KEcm VS frag2 KEcm", 600, -1, 5, 600, -1, 5);
 }

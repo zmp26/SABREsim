@@ -9,7 +9,7 @@ constexpr double DEGRAD = M_PI / 180.;
 constexpr double RADDEG = 180. / M_PI;
 constexpr double AMU_IN_MEV = 931.5;
 
-// Shared Reaction Hypothesis Configuration
+// Shared N=3 Reaction Hypothesis Configuration
 struct PIDHypothesis {
 	TString name;
 	double beamEnergyMeV{0.0};
@@ -20,7 +20,19 @@ struct PIDHypothesis {
 	TString final_particles[3]{"", "", ""};    // Names/labels (e.g. "p", "alpha", "alpha")
 };
 
+// Shared N=2 Reaction Hypothesis Configuration
+struct PIDHypothesis_N2{
+	TString name;
+	double beamEnergyMeV{0.};
+	double mass_beam{0.0};
+	double mass_target{0.0};
+	double mass_ejectile{0.0};
+	double final_masses[2]{0.,0.};
+	TString final_particles[2]{"", ""};
+};
+
 // Result Container for Complete Kinematics (3 Hits Detected)
+//TODO: Update PIDResult_Mult3 to PIDResult_N3_M3
 struct PIDResult_Mult3 {
 	int bestChi2Index{-1};
 	double bestChi2{1e9};
@@ -61,6 +73,7 @@ struct PIDResult_Mult3 {
 };
 
 // Result Container for Incomplete Kinematics (2 Hits Detected, 1 Missing)
+//TODO: Update PIDResult_Mult2 to PIDResult_N3_M2
 struct PIDResult_Mult2 {
 	int bestChi2Index{-1};
 	double bestChi2{1e9};
@@ -93,6 +106,39 @@ struct PIDResult_Mult2 {
 		missing_MassCalc = 0.0;
 		permChi2s.fill(1e9);
 	}
+};
+
+// result container for complete kinematics in N=2
+struct PIDResult_N2_M2 {
+	double bestChi2{1e9};
+	int bestChi2Index{-1};
+
+	std::array<double,2> permChi2s{{1e9,1e9}};
+	std::array<int,2> hit_indices{{-1,-1}};
+
+	double missing_px{0.};
+	double missing_py{0.};
+	double missing_pz{0.};
+	double missing_E{0.};
+	double missing_Pmag{0.};
+
+	bool passesCut{false};
+
+	void Reset(){
+		bestChi2 = 1e9;
+		bestChi2Index = -1;
+		permChi2s = {{1e9, 1e9}};
+		hit_indices = {{-1, -1}};
+
+		missing_px = 0.0;
+		missing_py = 0.0;
+		missing_pz = 0.0;
+		missing_E = 0.0;
+		missing_Pmag = 0.0;
+
+		passesCut = false;
+	}
+
 };
 
 double Kallen(double a, double b, double c){
