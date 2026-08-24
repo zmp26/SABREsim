@@ -141,6 +141,43 @@ struct PIDResult_N2_M2 {
 
 };
 
+
+struct PIDResult_N2_M1 {
+	int bestChi2Index{-1};
+	double bestChi2{1e9};
+	bool passesCut{false};
+
+	int detected_hit_index{-1};			// Hit index (0, since only 1 hit given)
+	int detected_species_index{-1};		// 0 or 1
+	int missing_species_index{-1};		// 1 or 0
+
+	// Physical reconstructed 4-momentum of missing particle
+	double missing_px{0.0};
+	double missing_py{0.0};
+	double missing_pz{0.0};
+	double missing_E{0.0};
+	double missing_Pmag{0.0};
+	double missing_MassCalc{0.0};		// Reconstructed invariant mass: sqrt(P4_missing^2)
+
+	std::array<double, 2> permChi2s{{1e9, 1e9}};
+
+	void Reset() {
+		bestChi2Index = -1;
+		bestChi2 = 1e9;
+		passesCut = false;
+		detected_hit_index = -1;
+		detected_species_index = -1;
+		missing_species_index = -1;
+		missing_px = 0.0;
+		missing_py = 0.0;
+		missing_pz = 0.0;
+		missing_E = 0.0;
+		missing_Pmag = 0.0;
+		missing_MassCalc = 0.0;
+		permChi2s = {{1e9, 1e9}};
+	}
+};
+
 double Kallen(double a, double b, double c){
 	//the Kallen function, or triangle function, often denoted lambda(a,b,c) = a^2 + b^2 + c^2 - 2ab - 2ac - 2bc
 	return a*a + b*b + c*c - 2.*(a*b + a*c + b*c);
