@@ -252,3 +252,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 
 	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str.c_str() << std::endl;
 }
+
+void Li7ha_SABREPID_N2_M1(const char* input_filename){
+	
+}
