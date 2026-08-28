@@ -15,6 +15,8 @@
 #include "permHisto_mult2.cpp"
 #include "SABREPID_N2_M2.h"
 #include "SABREPID_N2_M2.cpp"
+#include "SABREPID_N2_M1.h"
+#include "SABREPID_N2_M1.cpp"
 
 void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	std::string s = input_filename;
@@ -254,5 +256,220 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 }
 
 void Li7ha_SABREPID_N2_M1(const char* input_filename){
-	
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_SABREPID_N2_M1.root";
+
+	TMassTable fMassTable;
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+	double massgs_6Li = fMassTable.GetNuclearMassMeV("Li", 6);
+	double massgs_4He = fMassTable.GetNuclearMassMeV("He", 4);
+	double massgs_2H  = fMassTable.GetNuclearMassMeV("H",  2);
+
+	PIDHypothesis_N2 hypothesis;
+	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("Li", 7);
+	hypothesis.mass_beam   = fMassTable.GetNuclearMassMeV("He", 3);
+	hypothesis.mass_ejectile = massgs_4He;
+	hypothesis.beamEnergyMeV = 7.5;
+
+	hypothesis.name = "ad";
+	hypothesis.final_masses[0] = massgs_4He;
+	hypothesis.final_particles[0] = "#alpha";
+	hypothesis.final_masses[1] = massgs_2H;
+	hypothesis.final_particles[1] = "d";
+
+	TFile *infile = TFile::Open(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Error: Cannot open input file " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult1");
+	if(!intree){
+		std::cerr << "Error: cannot get TTree 'mult1' from " << input_filename << std::endl;
+		infile->Close();
+		return;
+	}
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	//single detected hit arrays for M=1 --> eventually, may update this to just single scalar values (avoids pointer decay, not that it really matters...)
+	double E[1], theta[1], phi[1];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+
+	long numentries = intree->GetEntries();
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+	outfile->cd();
+
+	//histos
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	hRecoilExSPS_vs_RecoilExSABRE->SetDirectory(outfile);
+
+	TH1D *hRecoilExSABRE = new TH1D("hRecoilExSABRE", "Recoil Ex SABRE", 100, 0, 10);
+	hRecoilExSABRE->SetDirectory(outfile);
+
+	TH1D *hDetectedSpecies = new TH1D("hDetectedSpecies", "Assigned Detected Species Index;Species Index;Counts", 2, -0.5, 1.5);
+	hDetectedSpecies->GetXaxis()->SetBinLabel(1, "#alpha");
+	hDetectedSpecies->GetXaxis()->SetBinLabel(2, "d");
+	hDetectedSpecies->SetDirectory(outfile);
+
+	TH1D *hThetaHAlpha = new TH1D("hThetaHAlpha", "#theta^{h}_{#alpha}", 360, 0., 180.);
+	hThetaHAlpha->SetDirectory(outfile);
+
+	TH1D *hThetaHDeuteron = new TH1D("hThetaHDeuteron", "#theta^{h}_{d}", 360, 0., 180.);
+	hThetaHDeuteron->SetDirectory(outfile);
+
+	TH1D *hThetaHSum = new TH1D("hThetaHSum", "#theta^{h}_{sum}", 360, 0., 360.);
+	hThetaHSum->SetDirectory(outfile);
+
+	TH1D *hCosThetaHAlpha = new TH1D("hCosThetaHAlpha", "cos(#theta^{h}_{#alpha})", 100, -1., 1.);
+	hCosThetaHAlpha->SetDirectory(outfile);
+
+	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
+	hCosThetaHDeuteron->SetDirectory(outfile);
+
+	TH1D *hCalcMissingMass = new TH1D("hCalcMissingMass", "Calculated Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0., 5000.);
+	hCalcMissingMass->SetDirectory(outfile);
+
+	//init solver here
+	SABREPID_N2_M1 pidSolver;
+	pidSolver.SetHypothesis(hypothesis);
+	pidSolver.SetResolution(0.05, 1.0, 1.0);
+	pidSolver.SetSPSResolution(0.015, 0.5, 0.5);
+	pidSolver.SetChi2Cut(10.);
+	pidSolver.InitDiagnostics(outfile);
+
+	TTree *outtree = new TTree("PID_N2_M1", "PID_N2_M1");
+	outtree->SetDirectory(outfile);
+
+	int bestPermIndex;
+	double bestChi2;
+	bool passesCut;
+	int detected_species_index, missing_species_index;
+
+	TLorentzVector alpha, deuteron, recoil, missingP4;
+	double ExSPS, recoilEx, missingMassCalc;
+	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
+
+	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
+	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
+	outtree->Branch("passesCut", &passesCut, "passesCut/O");
+
+	outtree->Branch("detectedSpeciesIndex", &detected_species_index, "detectedSpeciesIndex/I");
+	outtree->Branch("missingSpeciesIndex", &missing_species_index, "missingSpeciesIndex/I");
+
+	outtree->Branch("P4_alpha", &alpha);
+	outtree->Branch("P4_deuteron", &deuteron);
+	outtree->Branch("P4_recoil", &recoil);
+	outtree->Branch("P4_missing", &missingP4);
+
+	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
+	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("missingMassCalc", &missingMassCalc, "missingMassCalc/D");
+
+	outtree->Branch("thetaH_alpha", &thetaH_alpha, "thetaH_alpha/D");
+	outtree->Branch("thetaH_deuteron", &thetaH_deuteron, "thetaH_deuteron/D");
+	outtree->Branch("cosThetaH_alpha", &cosThetaH_alpha, "cosThetaH_alpha/D");
+	outtree->Branch("cosThetaH_deuteron", &cosThetaH_deuteron, "cosThetaH_deuteron/D");
+
+	auto buildP4 = [](double E, double theta, double phi, double m){
+		double p = std::sqrt(E * (E + 2. * m));
+		double rad_th = theta * M_PI / 180.;
+		double rad_ph = phi * M_PI / 180.;
+		return TLorentzVector(
+			p * std::sin(rad_th) * std::cos(rad_ph),
+			p * std::sin(rad_th) * std::sin(rad_ph),
+			p * std::cos(rad_th),
+			E + m
+		);
+	};
+
+	for(long i = 0; i < numentries; i++){
+		intree->GetEntry(i);
+
+		PIDResult_N2_M1 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
+
+		ExSPS = Ex;
+		bestPermIndex = res.bestChi2Index;
+		bestChi2 = res.bestChi2;
+		passesCut = res.passesCut;
+
+		detected_species_index = res.detected_species_index;
+		missing_species_index  = res.missing_species_index;
+		missingMassCalc		= res.missing_MassCalc;
+
+		missingP4.SetPxPyPzE(res.missing_px, res.missing_py, res.missing_pz, res.missing_E);
+
+		if(bestPermIndex >= 0){
+			hDetectedSpecies->Fill(detected_species_index);
+			hCalcMissingMass->Fill(missingMassCalc);
+
+			// Permutation 0: Det = Alpha (0), Missing = Deuteron (1)
+			// Permutation 1: Det = Deuteron (1), Missing = Alpha (0)
+			if(detected_species_index == 0) {
+				alpha = buildP4(E[0], theta[0], phi[0], massgs_4He);
+				deuteron = missingP4;
+			} else {
+				deuteron = buildP4(E[0], theta[0], phi[0], massgs_2H);
+				alpha = missingP4;
+			}
+
+			recoil = alpha + deuteron;
+			TVector3 betaLabToCM = -recoil.BoostVector();
+
+			TLorentzVector alphaCM = alpha;
+			TLorentzVector deuteronCM = deuteron;
+			alphaCM.Boost(betaLabToCM);
+			deuteronCM.Boost(betaLabToCM);
+
+			thetaH_alpha = -666.;
+			cosThetaH_alpha = -666.;
+			thetaH_deuteron = -666.;
+			cosThetaH_deuteron = -666.;
+
+			if(betaLabToCM.Mag() > 1e-12 && alphaCM.P() > 1e-12 && deuteronCM.P() > 1e-12){
+				TVector3 helicityAxis = betaLabToCM.Unit();
+
+				cosThetaH_alpha = std::max(-1., std::min(1., alphaCM.Vect().Unit().Dot(helicityAxis)));
+				cosThetaH_deuteron = std::max(-1., std::min(1., deuteronCM.Vect().Unit().Dot(helicityAxis)));
+
+				thetaH_alpha = std::acos(cosThetaH_alpha) * RADDEG;
+				thetaH_deuteron = std::acos(cosThetaH_deuteron) * RADDEG;
+			}
+
+			hThetaHAlpha->Fill(thetaH_alpha);
+			hCosThetaHAlpha->Fill(cosThetaH_alpha);
+			hThetaHDeuteron->Fill(thetaH_deuteron);
+			hCosThetaHDeuteron->Fill(cosThetaH_deuteron);
+			hThetaHSum->Fill(thetaH_alpha + thetaH_deuteron);
+
+			recoilEx = recoil.M() - massgs_6Li;
+			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
+			hRecoilExSABRE->Fill(recoilEx);
+
+			outtree->Fill();
+		}
+
+		if(i % 10000 == 0){
+			std::cout << "Processed " << i << " events..." << std::endl;
+		}
+	}
+
+	infile->Close();
+	outfile->cd();
+	outfile->Write();
+	outfile->Close();
+	delete outfile;
+
+	std::cout << "Finished! Processed " << numentries << " mult1 events. Output stored in " << out_str.c_str() << std::endl;
+
 }
