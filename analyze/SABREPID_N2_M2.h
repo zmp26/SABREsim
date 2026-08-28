@@ -52,9 +52,9 @@ private:
 
 	TLorentzVector Build4Vector(double EMeV, double thetaDeg, double phiDeg, double massMeV) const;
 
-	std::array<std::array<double,3>,3> GetMomentumCovariance(double E, double thetaDeg, double phiDeg, double mass, double sigE, double sigThetaDeg, double sigPhiDeg) const;
-
 	double ComputeCovarianceChi2(const std::array<std::array<double,3>,3>& Cov, const TLorentzVector& residual) const;
+
+	std::array<std::array<double,3>,3> GetMomentumCovariance(double E, double thetaDeg, double phiDeg, double mass, double sigE, double sigThetaDeg, double sigPhiDeg) const;
 
 	double ComputePermutationChi2(const std::array<int,2>& perm, const double E[2], const double theta[2], const double phi[2], double SPS_E, double SPSTheta, double SPSPhi, const TLorentzVector& P_recoil_expected, TLorentzVector& P_residual_out) const;
 	
