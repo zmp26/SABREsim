@@ -32,8 +32,6 @@ struct PIDHypothesis_N2{
 };
 
 // Result Container for Complete Kinematics (3 Hits Detected)
-//TODO: Update PIDResult_Mult3 to PIDResult_N3_M3
-//struct PIDResult_Mult3 {
 struct PIDResult_N3_M3{
 	int bestChi2Index{-1};
 	double bestChi2{1e9};
@@ -74,8 +72,6 @@ struct PIDResult_N3_M3{
 };
 
 // Result Container for Incomplete Kinematics (2 Hits Detected, 1 Missing)
-//TODO: Update PIDResult_Mult2 to PIDResult_N3_M2
-//struct PIDResult_Mult2 {
 struct PIDResult_N3_M2{
 	int bestChi2Index{-1};
 	double bestChi2{1e9};
