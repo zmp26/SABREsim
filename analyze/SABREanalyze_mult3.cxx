@@ -51,11 +51,12 @@
 #include "PID_Mult2.h"
 #include "PID_Mult2.cpp"
 
+//B10ha_SABREPID_N3_M3
 void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
-	std::string out_str = stem + "_SABREPID.root";
+	std::string out_str = stem + "_SABREPID_Mult3.root";
 
 	TMassTable fMassTable;
 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
@@ -165,6 +166,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hCosThetaH_vs_M2aa = new TH2D("hCosThetaH_vs_M2aa", "Cos(Helicty Angle) vs M^{2}_{#alpha#alpha};M^{2}_{#alpha#alpha};cos(#theta^{h}_{#alpha})", 400, 55.57e6, 55.67e6, 100, -1., 1.);
 	hCosThetaH_vs_M2aa->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -311,7 +315,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
 	double residual_px, residual_py, residual_pz, residual_pmag;
 
-	double ExSPS, recoilEx, m2aa, m2pa1, m2pa2;
+	double ExSPS, recoilEx, SABREsumE, m2aa, m2pa1, m2pa2;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 
@@ -335,6 +339,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	outtree->Branch("ExSPS", &ExSPS);
 	outtree->Branch("RecEx", &recoilEx);
+	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 	outtree->Branch("cosThetaH_a1", &cosThetaH_a1, "cosThetaH_a1/D");
 	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
@@ -358,6 +363,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 		PIDResult_N3_M3 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
 
 		ExSPS = Ex;
+		SABREsumE = res.SABREsumE;
+
 
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
@@ -488,6 +495,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a2);
 			//}
 
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
+
 			int sliceIndex = static_cast<int>((Ex-eMin)/eStep);
 			if(sliceIndex >= 0 && sliceIndex < nSlices){
 				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
@@ -545,6 +554,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str.c_str() << std::endl;
 }
 
+//B10ha_SABREPID_N3_M2
 void B10ha_SABREPID_Mult2(const char* input_filename){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
@@ -642,6 +652,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 	TH2D *hCosThetaH_vs_M2aa = new TH2D("hCosThetaH_vs_M2aa", "Cos(Helicty Angle) vs M^{2}_{#alpha#alpha};M^{2}_{#alpha#alpha};cos(#theta^{h}_{#alpha})", 400, 55.57e6, 55.67e6, 100, -1., 1.);
 	hCosThetaH_vs_M2aa->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -782,7 +795,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TLorentzVector *p4_rec_ptr = &recoil;
 
 	double m2_aa, m2_pa1, m2_pa2;
-	double ExSPS, recoilEx;
+	double ExSPS, recoilEx, SABREsumE;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 	double catania_x, catania_y;
@@ -800,20 +813,21 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("P4_missing", &p4_miss_ptr);
 	outtree->Branch("P4_recoil", &p4_rec_ptr);
 
-	outtree->Branch("m2_aa", &m2_aa);
-	outtree->Branch("m2_pa1", &m2_pa1);
-	outtree->Branch("m2_pa2", &m2_pa2);
+	outtree->Branch("m2_aa", &m2_aa, "m2_aa/D");
+	outtree->Branch("m2_pa1", &m2_pa1, "m2_pa1/D");
+	outtree->Branch("m2_pa2", &m2_pa2, "m2_pa2/D");
 
-	outtree->Branch("ExSPS", &ExSPS);
-	outtree->Branch("RecEx", &recoilEx);
+	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
+	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 	outtree->Branch("cosThetaH_a1", &cosThetaH_a1, "cosThetaH_a1/D");
 	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
 	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
 
-	outtree->Branch("catania_x", &catania_x);
-	outtree->Branch("catania_y", &catania_y);
+	outtree->Branch("catania_x", &catania_x, "catania_x/D");
+	outtree->Branch("catania_y", &catania_y, "catania_y/D");
 
 	auto buildP4 = [](double E_kin, double th_deg, double ph_deg, double mass) {
 		double p = std::sqrt(E_kin * (E_kin + 2.0 * mass));
@@ -836,9 +850,10 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		// 	continue;
 		// }
 
-		ExSPS = Ex;
-
 		PIDResult_N3_M2 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
+
+		ExSPS = Ex;
+		SABREsumE = res.SABREsumE;
 
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
@@ -939,6 +954,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
 
 			//}
+
+			//
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
 
 			if(sliceIndex >= 0 && sliceIndex < nSlices){

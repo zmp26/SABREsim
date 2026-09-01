@@ -111,6 +111,9 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
 	hCosThetaHDeuteron->SetDirectory(outfile);
 
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
+
 	SABREPID_N2_M2 pidSolver;
 	pidSolver.SetHypothesis(hypothesis);
 	pidSolver.SetResolution(0.05, 1.0, 1.0);
@@ -129,7 +132,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	TLorentzVector alpha, alphaflip, deuteron, deuteronflip, recoil, recoilflip;
 	double residual_px, residual_py, residual_pz, residual_Pmag;
 
-	double ExSPS, recoilEx, recoilFlipEx;
+	double ExSPS, recoilEx, recoilFlipEx, SABREsumE;
 	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
@@ -145,6 +148,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 
 	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
 	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
 	outtree->Branch("residual_py", &residual_py, "residual_py/D");
@@ -164,6 +168,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 		PIDResult_N2_M2 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
 
 		ExSPS = Ex;
+		SABREsumE = res.SABREsumE;
 
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
@@ -227,6 +232,8 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 			hThetaHDeuteron->Fill(thetaH_deuteron);
 			hCosThetaHDeuteron->Fill(cosThetaH_deuteron);
 			hThetaHSum->Fill(thetaH_alpha + thetaH_deuteron);
+
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
 			recoilEx = recoil.M() - massgs_6Li;
 			recoilFlipEx = recoilflip.M() - massgs_6Li;
@@ -337,6 +344,9 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
 	hCosThetaHDeuteron->SetDirectory(outfile);
 
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
+
 	TH1D *hCalcMissingMass = new TH1D("hCalcMissingMass", "Calculated Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0., 5000.);
 	hCalcMissingMass->SetDirectory(outfile);
 
@@ -357,7 +367,7 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	int detected_species_index, missing_species_index;
 
 	TLorentzVector alpha, deuteron, recoil, missingP4;
-	double ExSPS, recoilEx, missingMassCalc;
+	double ExSPS, recoilEx, SABREsumE, missingMassCalc;
 	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
@@ -374,6 +384,7 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 
 	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
 	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 	outtree->Branch("missingMassCalc", &missingMassCalc, "missingMassCalc/D");
 
 	outtree->Branch("thetaH_alpha", &thetaH_alpha, "thetaH_alpha/D");
@@ -399,6 +410,7 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 		PIDResult_N2_M1 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
 
 		ExSPS = Ex;
+		SABREsumE = res.SABREsumE;
 		bestPermIndex = res.bestChi2Index;
 		bestChi2 = res.bestChi2;
 		passesCut = res.passesCut;
@@ -451,6 +463,8 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 			hThetaHDeuteron->Fill(thetaH_deuteron);
 			hCosThetaHDeuteron->Fill(cosThetaH_deuteron);
 			hThetaHSum->Fill(thetaH_alpha + thetaH_deuteron);
+
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
 			recoilEx = recoil.M() - massgs_6Li;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
