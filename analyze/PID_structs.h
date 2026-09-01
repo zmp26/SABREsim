@@ -9,6 +9,8 @@ constexpr double DEGRAD = M_PI / 180.;
 constexpr double RADDEG = 180. / M_PI;
 constexpr double AMU_IN_MEV = 931.5;
 
+constexpr double BORON9_ALPHATHRESH_MEV = 1.69;//taken from NNDC: https://www.nndc.bnl.gov/nudat3/getdataset.jsp?nucleus=9B&unc=NDS
+
 // Shared N=3 Reaction Hypothesis Configuration
 struct PIDHypothesis {
 	TString name;

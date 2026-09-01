@@ -464,7 +464,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			m2aa = m2_aa;
 			m2pa1 = m2_pa1;
 			m2pa2 = m2_pa2;
-			//if(Ex > 1.7){
+			if(Ex >= BORON9_ALPHATHRESH_MEV){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
 				hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
 
@@ -493,7 +493,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a1);
 				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a2);
-			//}
+			}
 
 			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
@@ -943,8 +943,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			m2_pa1 = (proton+alpha1).M2();
 			m2_pa2 = (proton+alpha2).M2();
 
+			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
+			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
+			double ex_5Li2 = std::sqrt(m2_pa2) - massgs_5Li;
+
 			//double fill p+a combinations due to alpha indistinguishability
-			//if(Ex>1.7){
+			if(Ex>=BORON9_ALPHATHRESH_MEV){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);
 				hDalitzInvMass->Fill(m2_aa, m2_pa2);
 
@@ -953,26 +957,6 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
 
-			//}
-
-			//
-			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
-
-
-			if(sliceIndex >= 0 && sliceIndex < nSlices){
-				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
-				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa2);
-
-				vCatania[sliceIndex]->Fill(catania_x, catania_y);
-			}
-
-
-
-			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
-			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
-			double ex_5Li2 = std::sqrt(m2_pa2) - massgs_5Li;
-			//double fill p+a combinations due to alpha indistinguishability
-			//if(Ex>1.7){	
 				hDalitzEx->Fill(ex_8Be, ex_5Li1);
 				hDalitzEx->Fill(ex_8Be, ex_5Li2);
 
@@ -984,7 +968,19 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a1);
 				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a2);
-			//}
+
+			}
+
+			//
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
+
+
+			if(sliceIndex >= 0 && sliceIndex < nSlices){
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa2);
+
+				vCatania[sliceIndex]->Fill(catania_x, catania_y);
+			}
 
 			recoilEx = recoil.M() - massgs_9B;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
