@@ -27,8 +27,8 @@ struct PIDHypothesis_N2{
 	double mass_beam{0.0};
 	double mass_target{0.0};
 	double mass_ejectile{0.0};
-	double final_masses[2]{0.,0.};
-	TString final_particles[2]{"", ""};
+	double final_masses[2]{0.,0.};				// rest masses for species 0, 1
+	TString final_particles[2]{"", ""};			// names/labels for species 0, 1 (e.g. "alpha", "d")
 };
 
 // Result Container for Complete Kinematics (3 Hits Detected)
@@ -108,7 +108,7 @@ struct PIDResult_Mult2 {
 	}
 };
 
-// result container for complete kinematics in N=2
+// result container for complete kinematics in N=2 (2 detections, 0 missed)
 struct PIDResult_N2_M2 {
 	double bestChi2{1e9};
 	int bestChi2Index{-1};
@@ -141,7 +141,7 @@ struct PIDResult_N2_M2 {
 
 };
 
-
+// result container for incomplete kinematics in N=2 (1 detection, 1 missed)
 struct PIDResult_N2_M1 {
 	int bestChi2Index{-1};
 	double bestChi2{1e9};

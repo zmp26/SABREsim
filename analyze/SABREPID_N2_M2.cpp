@@ -187,11 +187,11 @@ void SABREPID_N2_M2::InitDiagnostics(TDirectory* targetDir) {
 
 	outdir->cd();
 
-	hBestChi2 = new TH1D("hBestChi2","Best assignment reduced #chi^{2};#chi^{2}/3;Counts",500,0.0,20.0);
+	hBestChi2 = new TH1D("hBestChi2","Best assignment reduced #chi^{2};#chi^{2}/3;Counts",500,0.0,500.0);
 
 
 	hBestPermutation = new TH1D("hBestPermutation","Best particle assignment;Assignment;Counts",2,-0.5,1.5);
-	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext","Best #chi^{2} vs next-best #chi^{2};Best #chi^{2}/3;Next-best #chi^{2}/3",500,0.0,20.0,500,0.0,20.0);
+	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext","Best #chi^{2} vs next-best #chi^{2};Best #chi^{2}/3;Next-best #chi^{2}/3",500,0.0,500.0,500,0.0,500.0);
 
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by particle assignment;Assignment;#chi^{2}", 2, -0.5, 1.5, 500, 0.0, 500.0);
 
