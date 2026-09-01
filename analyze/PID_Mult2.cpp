@@ -220,6 +220,8 @@ PIDResult_N3_M2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2
 		res.missing_Pmag = best_p_missing.P();
 		res.missing_MassCalc = best_p_missing.M();
 
+		res.SABREsumE = E[0] + E[1];
+
 		res.passesCut = (res.bestChi2 <= fMaxChi2Cut);
 
 		if(outdir){

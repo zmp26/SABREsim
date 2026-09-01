@@ -50,6 +50,7 @@ struct PIDResult_N3_M3{
 	double m2_pa1{0.};
 	double m2_pa2{0.};
 	double ExSPS{0.};
+	double SABREsumE{0.};
 
 	std::array<double, 6> permChi2s;
 
@@ -68,6 +69,7 @@ struct PIDResult_N3_M3{
 		m2_pa1 = 0.;
 		m2_pa2 = 0.;
 		ExSPS = 0.;
+		SABREsumE = 0.;
 	}
 };
 
@@ -87,6 +89,7 @@ struct PIDResult_N3_M2{
 	double missing_Etot{0.0};
 	double missing_Pmag{0.0};
 	double missing_MassCalc{0.0};            // Reconstructed invariant mass: sqrt(P4_missing^2)
+	double SABREsumE{0.};
 
 	std::array<double, 6> permChi2s;
 
@@ -103,6 +106,7 @@ struct PIDResult_N3_M2{
 		missing_Pmag = 0.0;
 		missing_MassCalc = 0.0;
 		permChi2s.fill(1e9);
+		SABREsumE = 0.;
 	}
 };
 
@@ -119,6 +123,7 @@ struct PIDResult_N2_M2 {
 	double missing_pz{0.};
 	double missing_E{0.};
 	double missing_Pmag{0.};
+	double SABREsumE{0.};
 
 	bool passesCut{false};
 
@@ -133,6 +138,7 @@ struct PIDResult_N2_M2 {
 		missing_pz = 0.0;
 		missing_E = 0.0;
 		missing_Pmag = 0.0;
+		SABREsumE = 0.;
 
 		passesCut = false;
 	}
@@ -156,6 +162,7 @@ struct PIDResult_N2_M1 {
 	double missing_E{0.0};
 	double missing_Pmag{0.0};
 	double missing_MassCalc{0.0};		// Reconstructed invariant mass: sqrt(P4_missing^2)
+	double SABREsumE{0.};
 
 	std::array<double, 2> permChi2s{{1e9, 1e9}};
 
@@ -173,6 +180,7 @@ struct PIDResult_N2_M1 {
 		missing_Pmag = 0.0;
 		missing_MassCalc = 0.0;
 		permChi2s = {{1e9, 1e9}};
+		SABREsumE = 0.;
 	}
 };
 

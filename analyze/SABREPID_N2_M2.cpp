@@ -263,6 +263,8 @@ PIDResult_N2_M2 SABREPID_N2_M2::EvaluateEvent(const double E[2],const double the
 	res.missing_E = best_residual.E();
 	res.missing_Pmag = best_residual.P();
 
+	res.SABREsumE = E[0] + E[1];
+
 	const double reducedChi2 = res.bestChi2 / 3.0;
 	res.passesCut = (reducedChi2 <= fMaxChi2Cut);
 

@@ -281,6 +281,8 @@ PIDResult_N3_M3 PID_Mult3::EvaluateEvent(
 		res.missing_E    = best_p_missing.E();
 		res.missing_Pmag = best_p_missing.P();
 
+		res.SABREsumE = E[0] + E[1] + E[2];
+
 		// Reduced Chi2 with 4 degrees of freedom (px, py, pz)
 		double reducedChi2 = res.bestChi2 / 3.0;
 		res.passesCut = (reducedChi2 <= fMaxChi2Cut);

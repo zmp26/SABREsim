@@ -206,6 +206,8 @@ PIDResult_N2_M1 SABREPID_N2_M1::EvaluateEvent(const double E[1], const double th
 	res.missing_Pmag = best_P_missing.P();
 	res.missing_MassCalc = best_missing_mass;
 
+	res.SABREsumE = E[0];
+
 	//1 degree of freedom (invariant mass constraint)
 	const double reducedChi2 = res.bestChi2;
 	res.passesCut = (reducedChi2 <= fMaxChi2Cut);
