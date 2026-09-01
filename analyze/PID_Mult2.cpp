@@ -79,11 +79,11 @@ void PID_Mult2::InitDiagnostics(TDirectory* targetDir){
 	if(!outdir) outdir = targetDir->GetDirectory("PID_Mult2_Diagnostics");
 
 	outdir->cd();
-	hBestChi2 = new TH1D("hBestChi2", "Best Permutation #chi^{2};#chi^{2};Counts", 500, 0, 50);
+	hBestChi2 = new TH1D("hBestChi2", "Best Permutation #chi^{2};#chi^{2};Counts", 500, 0, 500);
 	hBestPermutation = new TH1D("hBestPermutation", "Permutation with lowest #chi^{2};Permutation;Counts", 6, -0.5, 5.5);
 	hMissingMassBest = new TH1D("hMissingMassBest", "Reconstructed Missing Mass (Best Permutation);M_{calc} [MeV/c^{2}];Counts", 500, 0, 3000);
 	hSigmaMBest = new TH1D("hSigmaMBest", "Calculated Mass Resolution #sigma_{M} (Best Permutation);#sigma_{M} [MeV/c^{2}];Counts", 200, 0, 20);
-	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 50, 500, 0, 50);
+	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 500, 500, 0, 500);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by permutation;Permutation;#chi^{2}", 6, -0.5, 5.5, 500, 0, 500);
 	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "#(chi^{2}_{i} - #chi^{2}_{best}) by Permutation;Permutation;#(chi^{2}_{i} - #chi^{2}_{best})",6, -0.5, 5.5, 500, 0, 500);
 
@@ -159,10 +159,10 @@ double PID_Mult2::ComputePermutationChi2(const std::array<int,3>& perm, const do
 	return chi2_mass;
 }
 
-PIDResult_Mult2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2], const double phi[2],
+PIDResult_N3_M2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2], const double phi[2],
 								  const double SPS_E, const double SPSTheta, const double SPSPhi){
 
-	PIDResult_Mult2 res;
+	PIDResult_N3_M2 res;
 	res.Reset();
 
 	double beam_p = std::sqrt(fHypothesis.beamEnergyMeV * fHypothesis.beamEnergyMeV + 2.*fHypothesis.beamEnergyMeV*fHypothesis.mass_beam);

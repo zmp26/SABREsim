@@ -131,9 +131,9 @@ void PID_Mult3::InitDiagnostics(TDirectory* targetDir){
 	}
 
 	outdir->cd();
-	hBestChi2 = new TH1D("hBestChi2", "Best Permutation Reduced #chi^{2}", 500, 0, 5);
+	hBestChi2 = new TH1D("hBestChi2", "Best Permutation Reduced #chi^{2}", 500, 0, 500);
 	hBestPermutation = new TH1D("hBestPermutation", "Permutation with lowest #chi^{2};Permutation;Counts", 6, -0.5, 5.5);
-	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 1, 500, 0, 1);
+	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 500, 500, 0, 500);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by permutation;permutation;#chi^{2}", 6, -0.5, 5.5, 500, 0, 500);
 	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "(#chi^{2}_{i} - #chi^{2}_{best}) vs Permutation;Permutation;(#chi^{2}_{i} - #chi^{2}_{best})", 6, -0.6, 5.5, 500, 0, 500);
 
@@ -218,11 +218,11 @@ double PID_Mult3::ComputePermutationChi2(const std::array<int,3>& perm,
 	return ComputeCovarianceChi2(Sigma_tot, P_residual_out);
 }
 
-PIDResult_Mult3 PID_Mult3::EvaluateEvent(
+PIDResult_N3_M3 PID_Mult3::EvaluateEvent(
 	const double E[3], const double theta[3], const double phi[3],
 	double SPS_E, double SPSTheta, double SPSPhi) 
 {
-	PIDResult_Mult3 res;
+	PIDResult_N3_M3 res;
 	res.Reset();
 
 	// Reconstruct expected 4-momentum of recoil from initial kinematics

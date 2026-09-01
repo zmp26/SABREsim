@@ -66,7 +66,7 @@ public:
 	void InitDiagnostics(TDirectory* targetDir);
 
 	// Core PID solver
-	PIDResult_Mult3 EvaluateEvent(const double E[3], const double theta[3], const double phi[3],
+	PIDResult_N3_M3 EvaluateEvent(const double E[3], const double theta[3], const double phi[3],
 							double SPS_E, double SPSTheta, double SPSPhi);
 
 	// Single-permutation Chi2 evaluator

@@ -26,7 +26,7 @@ public:
 
 	void InitDiagnostics(TDirectory* targetDir);
 
-	PIDResult_Mult2 EvaluateEvent(const double E[2], const double theta[2], const double phi[2],
+	PIDResult_N3_M2 EvaluateEvent(const double E[2], const double theta[2], const double phi[2],
 								  const double SPS_E, const double SPSTheta, const double SPSPhi);
 
 private:
