@@ -111,17 +111,24 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[3], theta[3], phi[3];
+	int ringStrip[3], wedgeStrip[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
+	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
+	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
 	intree->SetBranchAddress("philab_hit3", &phi[2]);
+	intree->SetBranchAddress("SabreWedge_hit3", &wedgeStrip[2]);
+	intree->SetBranchAddress("SabreRing_hit3", &ringStrip[2]);
 
 	long numentries = intree->GetEntries();
 
@@ -319,6 +326,14 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 
+	int protonring;// = ringStrip[proton_hit_index];
+	int alpha1ring;// = ringStrip[alpha_hit_index1];
+	int alpha2ring;// = ringStrip[alpha_hit_index2];
+
+	int protonwedge;// = wedgeStrip[proton_hit_index];
+	int alpha1wedge;// = wedgeStrip[alpha_hit_index1];
+	int alpha2wedge;// = wedgeStrip[alpha_hit_index2];
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -326,6 +341,14 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("protonHitIndex", &proton_hit_index, "protonHitIndex/I");
 	outtree->Branch("alphaHitIndex1", &alpha_hit_index1, "alphaHitIndex1/I");
 	outtree->Branch("alphaHitIndex2", &alpha_hit_index2, "alphaHitIndex2/I");
+
+	outtree->Branch("protonRingStrip", &protonring, "protonRingStrip/I");
+	outtree->Branch("alpha1RingStrip", &alpha1ring, "alpha1RingStrip/I");
+	outtree->Branch("alpha2RingStrip", &alpha2ring, "alpha2RingStrip/I");
+
+	outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
+	outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
+	outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
 
 	// Reconstructed 4-vectors
 	outtree->Branch("P4_proton", &proton);
@@ -390,6 +413,15 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			alpha2_mass = hypothesis.final_masses[2];
 		}
 
+
+		protonring = ringStrip[proton_hit_index];
+		protonwedge = wedgeStrip[proton_hit_index];
+
+		alpha1ring = ringStrip[alpha_hit_index1];
+		alpha1wedge = wedgeStrip[alpha_hit_index1];
+
+		alpha2ring = ringStrip[alpha_hit_index2];
+		alpha2wedge = wedgeStrip[alpha_hit_index2];
 
 		residual_px = res.missing_px;
 		residual_py = res.missing_py;
@@ -608,13 +640,18 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[2], theta[2], phi[2];
+	int ringStrip[2], wedgeStrip[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
+	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
+	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
 
 	long numentries = intree->GetEntries();
 
@@ -784,6 +821,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	double bestChi2;
 	bool passesCut;
 	int hit0_species, hit1_species, missing_species;
+	int hit0ringstrip, hit1ringstrip;
+	int hit0wedgestrip, hit1wedgestrip;
 
 	//stack objects for intermediate operations
 	TLorentzVector P4_hit0, P4_hit1, P4_missing, recoil;
@@ -807,6 +846,19 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("hit0species", &hit0_species, "hit0species/I");
 	outtree->Branch("hit1species", &hit1_species, "hit1species/I");
 	outtree->Branch("missingSpecies", &missing_species, "missingSpecies/I");
+
+	outtree->Branch("hit0ringstrip", &hit0ringstrip, "hit0ringstrip/I");
+	outtree->Branch("hit0wedgestrip", &hit0wedgestrip, "hit0wedgestrip/I");
+	outtree->Branch("hit1ringstrip", &hit1ringstrip, "hit1ringstrip/I");
+	outtree->Branch("hit1wedgestrip", &hit1wedgestrip, "hit1wedgestrip/I");
+
+	// outtree->Branch("protonRingStrip", &protonring, "protonRingStrip/I");
+	// outtree->Branch("alpha1RingStrip", &alpha1ring, "alpha1RingStrip/I");
+	// outtree->Branch("alpha2RingStrip", &alpha2ring, "alpha2RingStrip/I");
+
+	// outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
+	// outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
+	// outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
 
 	outtree->Branch("P4_hit0", &p4_0_ptr);
 	outtree->Branch("P4_hit1", &p4_1_ptr);
@@ -862,6 +914,17 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		hit0_species = res.hit_indices[0];
 		hit1_species = res.hit_indices[1];
 		missing_species = res.missing_species_index;
+
+		// std::cout << "ringStrip[0] = " << ringStrip[0] << "\t"
+		// 		  << "wedgeStrip[0] = " << wedgeStrip[0] << "\t"
+		// 		  << "ringStrip[1] = " << ringStrip[1] << "\t"
+		// 		  << "wedgeStrip[1] = " << wedgeStrip[1] << std::endl;
+
+		hit0ringstrip = ringStrip[0];
+		hit0wedgestrip = wedgeStrip[0];
+
+		hit1ringstrip = ringStrip[1];
+		hit1wedgestrip = wedgeStrip[1];
 
 		if(bestPermIndex >= 0){
 			hAssignedSpeciesHit0->Fill(hit0_species);
