@@ -62,14 +62,19 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
-	double E[3], theta[3], phi[3];
+	double E[2], theta[2], phi[2];
+	int ringStrip[2], wedgeStrip[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
+	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
+	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
+	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
 
 	long numentries = intree->GetEntries();
 
@@ -135,12 +140,20 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	double ExSPS, recoilEx, recoilFlipEx, SABREsumE;
 	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
 
+	int alpharing, alphawedge, deuteronring, deuteronwedge;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
 
 	outtree->Branch("alphaHitIndex", &alpha_hit_index, "alphaHitIndex/I");
 	outtree->Branch("deuteronHitIndex", &deuteron_hit_index, "deuteronHitIndex/I");
+
+	outtree->Branch("alphaRingStrip", &alpharing, "alphaRingStrip/I");
+	outtree->Branch("deuteronRingStrip", &deuteronring, "deuteronRingStrip/I");
+
+	outtree->Branch("alphaWedgeStrip", &alphawedge, "alphaWedgeStrip/I");
+	outtree->Branch("deuteronWedgeStrip", &deuteronwedge, "deuteronWedgeStrip/I");
 
 	outtree->Branch("P4_alpha", &alpha);
 	outtree->Branch("P4_deuteron", &deuteron);
@@ -206,6 +219,14 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 			recoil = alpha + deuteron;
 			recoilflip = alphaflip + deuteronflip;
 			TVector3 betaLabToCM = -recoil.BoostVector();
+
+			alpharing = ringStrip[alpha_hit_index];
+			alphawedge = wedgeStrip[alpha_hit_index];
+
+			deuteronring = ringStrip[deuteron_hit_index];
+			deuteronwedge = wedgeStrip[deuteron_hit_index];
+
+			std::cout << "alpha R=" << alpharing << ", W=" << alphawedge << "\tdeuteron R=" << deuteronring << ", W=" << deuteronwedge << "\tRDif=" << std::abs(alpharing-deuteronring) << ", WDif=" << std::abs(alphawedge-deuteronwedge) <<std::endl;
 
 			TLorentzVector alphaCM = alpha;
 			TLorentzVector deuteronCM = deuteron;
@@ -308,9 +329,12 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 
 	//single detected hit arrays for M=1 --> eventually, may update this to just single scalar values (avoids pointer decay, not that it really matters...)
 	double E[1], theta[1], phi[1];
+	int ringStrip[1], wedgeStrip[1];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
+	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	long numentries = intree->GetEntries();
 
@@ -366,6 +390,8 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	bool passesCut;
 	int detected_species_index, missing_species_index;
 
+	int detectedringstrip, detectedwedgestrip;
+
 	TLorentzVector alpha, deuteron, recoil, missingP4;
 	double ExSPS, recoilEx, SABREsumE, missingMassCalc;
 	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
@@ -376,6 +402,9 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 
 	outtree->Branch("detectedSpeciesIndex", &detected_species_index, "detectedSpeciesIndex/I");
 	outtree->Branch("missingSpeciesIndex", &missing_species_index, "missingSpeciesIndex/I");
+
+	outtree->Branch("detectedringstrip", &detectedringstrip, "detectedringstrip/I");
+	outtree->Branch("detectedwedgestrip", &detectedwedgestrip, "detectedwedgestrip/I");
 
 	outtree->Branch("P4_alpha", &alpha);
 	outtree->Branch("P4_deuteron", &deuteron);
@@ -418,6 +447,9 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 		detected_species_index = res.detected_species_index;
 		missing_species_index  = res.missing_species_index;
 		missingMassCalc		= res.missing_MassCalc;
+
+		detectedringstrip = ringStrip[0];
+		detectedwedgestrip = wedgeStrip[0];
 
 		missingP4.SetPxPyPzE(res.missing_px, res.missing_py, res.missing_pz, res.missing_E);
 
