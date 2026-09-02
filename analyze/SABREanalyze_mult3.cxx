@@ -160,10 +160,10 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 									400, 21.76e6, 21.84e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
 
-	TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
-									400, 55.57e6, 55.69e6,
-									400, 21.76e6, 21.84e6,
-									70, 0, 7);
+	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
+	// 								400, 55.57e6, 55.69e6,
+	// 								400, 21.76e6, 21.84e6,
+	// 								70, 0, 7);
 
 	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
 	hCosThetaH->SetDirectory(outfile);
@@ -247,7 +247,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	//prep vector of Dalitz slices here:
 	double eMin=0.;
 	double eMax=7.;
-	double eStep=0.1;
+	double eStep=0.02;//updated to 20 keV steps from 100 keV steps
 	int nSlices = static_cast<int>((eMax-eMin)/eStep);
 	std::vector<TH2D*> vDalitz(nSlices, nullptr);
 	std::vector<TGraph*> vDalitzBoundary(nSlices, nullptr);
@@ -258,7 +258,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 		double currentECenter = 0.5*(currentEMin+currentEMax);
 
 		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
-		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.2f - %.2f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
 
 		vDalitz[i] = new TH2D(name.Data(), title.Data(),
 							  200, 55.57e6, 55.69e6,
@@ -503,8 +503,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 				hDalitzInvMass->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a
 				hDalitzInvMass_a2->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a2
 
-				hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
-				hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+				// hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+				// hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
 
 				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
 
@@ -676,10 +676,10 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 									400, 21.76e6, 21.84e6);
 	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
 
-	TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
-									400, 55.57e6, 55.69e6,
-									400, 21.76e6, 21.84e6,
-									70, 0, 7);
+	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
+	// 								400, 55.57e6, 55.69e6,
+	// 								400, 21.76e6, 21.84e6,
+	// 								70, 0, 7);
 
 	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
 	hCosThetaH->SetDirectory(outfile);
@@ -763,7 +763,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	//prep vectors of Dalitz, Catania slices here:
 	double eMin=0.;
 	double eMax=7.;
-	double eStep=0.1;
+	double eStep=0.02;//updated from 0.1 (100keV) to 0.02 (20 keV)
 	int nSlices = static_cast<int>((eMax-eMin)/eStep);
 	std::vector<TH2D*> vDalitz(nSlices, nullptr);
 	std::vector<TH2D*> vCatania(nSlices, nullptr);
@@ -775,7 +775,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		double currentECenter = 0.5*(currentEMin+currentEMax);
 
 		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
-		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.1f - %.1f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.2f - %.2f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
 
 		vDalitz[i] = new TH2D(name.Data(), title.Data(),
 							  200, 55.57e6, 55.69e6,
@@ -783,7 +783,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		vDalitz[i]->SetDirectory(dalitzSlicesDir);
 
 		name = Form("hCatania_%d_%.1f_%.1f", i, currentEMin, currentEMax);
-		title = Form("Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q) [%.1f - %.1f MeV]", currentEMin, currentEMax);
+		title = Form("Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q) [%.2f - %.2f MeV]", currentEMin, currentEMax);
 
 		vCatania[i] = new TH2D(name.Data(), title.Data(),
 							   50, 0, 10,
@@ -1015,8 +1015,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);
 				hDalitzInvMass->Fill(m2_aa, m2_pa2);
 
-				hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
-				hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+				// hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+				// hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
 
 				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
 

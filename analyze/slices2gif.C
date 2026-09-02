@@ -125,7 +125,7 @@ void slices2gif(const char* filename, const char* dirname){
 		if(i == histograms.size() - 1){
 			canvas->Print(gifFilename + "++");
 		} else {
-			canvas->Print(gifFilename + "+50");
+			canvas->Print(gifFilename + "+1");
 		}
 	}
 
