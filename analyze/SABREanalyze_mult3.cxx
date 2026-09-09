@@ -141,28 +141,73 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	hProtonPicks->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									400, 55.57e6, 55.69e6,
-									400, 21.76e6, 21.84e6);
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
+	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begs->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsright->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
+	hExSPS_8begs->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
+	hExSPS_8begsleft->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
+	hExSPS_8begsright->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsright", 1200, 0, 6);
+	hExSPS_8begsleft2right->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
+	hExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_all->SetDirectory(outfile);
+
 	TH2D *hDalitzInvMass_pa1_pa2 = new TH2D("hDalitzInvMass_pa1_pa2", "M^{2}_{p#alpha_{1}} vs M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{1}}",
-									400, 21.76e6, 21.84e6,
-									400, 21.76e6, 21.84e6);
+									800, 21.76e6, 21.84e6,
+									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a1 = new TH2D("hDalitzInvMass_a1", "M^{2}_{p+#alpha_{1}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{1}}",
-									400, 55.57e6, 55.69e6,
-									400, 21.76e6, 21.84e6);
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_a1->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_a2 = new TH2D("hDalitzInvMass_a2", "M^{2}_{p+#alpha_{2}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{2}}",
-									400, 55.57e6, 55.69e6,
-									400, 21.76e6, 21.84e6);
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
 
 	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
-	// 								400, 55.57e6, 55.69e6,
-	// 								400, 21.76e6, 21.84e6,
+	// 								800, 55.57e6, 55.69e6,
+	// 								800, 21.76e6, 21.84e6,
 	// 								70, 0, 7);
 
 	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
@@ -176,6 +221,24 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -496,6 +559,739 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			m2aa = m2_aa;
 			m2pa1 = m2_pa1;
 			m2pa2 = m2_pa2;
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
+
+			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hExSPS_8begs->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft->Fill(ExSPS);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+
+			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsright->Fill(ExSPS);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+			} else {
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+			}
+
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
+
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+
+			if(Ex >= BORON9_ALPHATHRESH_MEV){
+				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
+				hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
+
+				hDalitzInvMass->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a
+				hDalitzInvMass_a2->Fill(m2_aa, m2_pa2);//x = a+a, y = p+a2
+
+				// hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+				// hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+
+				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
+
+				gDalitzScatter_alpha1->SetPoint(gDalitzScatter_alpha1->GetN(), m2_aa, m2_pa1);
+				gDalitzScatter_alpha2->SetPoint(gDalitzScatter_alpha2->GetN(), m2_aa, m2_pa2);
+
+				hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
+				hDalitzEx_a1->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa1) - massgs_5Li);
+
+				hDalitzEx->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+				hDalitzEx_a2->Fill(std::sqrt(m2_aa) - massgs_8Be, std::sqrt(m2_pa2) - massgs_5Li);
+
+				hCosThetaH->Fill(cosThetaH_a1);
+				hCosThetaH->Fill(cosThetaH_a2);
+
+				hThetaH->Fill(thetaH_a1_deg);
+				hThetaH->Fill(thetaH_a2_deg);
+
+				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a1);
+				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a2);
+			}
+
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
+
+			int sliceIndex = static_cast<int>((Ex-eMin)/eStep);
+			if(sliceIndex >= 0 && sliceIndex < nSlices){
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa2);
+			}
+
+			recoilEx = recoil.M() - massgs_9B;
+			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
+			if(std::sqrt(m2_aa) - massgs_8Be > 0 && std::sqrt(m2_aa) - massgs_8Be < 0.5){
+				hRecoilEx_8BegsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
+				//std::cout << "Filled hRecoilEx_8BegsGated" << std::endl;
+			} else if(std::sqrt(m2_pa1) - massgs_5Li > 0 && std::sqrt(m2_pa1) - massgs_5Li < 1){
+				hRecoilEx_5LigsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
+				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
+			} else if(std::sqrt(m2_pa2) - massgs_5Li > 0 && std::sqrt(m2_pa2) - massgs_5Li < 1){
+				hRecoilEx_5LigsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
+				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
+			}
+
+			outtree->Fill();
+
+		}// else {
+		// 	m2aa = -666.;
+		// 	m2pa1 = -666.;
+		// 	m2pa2 = -666.;
+		// 	proton.SetPxPyPzE(0.,0.,0.,0.);
+		// 	alpha1.SetPxPyPzE(0.,0.,0.,0.);
+		// 	alpha2.SetPxPyPzE(0.,0.,0.,0.);
+		// 	recoil.SetPxPyPzE(0.,0.,0.,0.);
+		// }
+
+		//outtree->Fill();
+
+		if(i % 10000 == 0){
+			std::cout << "Processed " << i << " events..." << std::endl;
+		}
+	}
+
+
+	infile->Close();
+
+	outfile->cd();
+	gDalitzScatter_alpha1->Write();
+	gDalitzScatter_alpha2->Write();
+	sliceDir->cd();
+	for(int i=0; i<nSlices; i++) if(vDalitzBoundary[i]) vDalitzBoundary[i]->Write();
+	outfile->cd();
+	outfile->Write();
+	outfile->Close();
+	delete outfile;
+
+	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str.c_str() << std::endl;
+}
+
+void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_kin4mcPID_Mult3.root";
+
+	TMassTable fMassTable;
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+	double massgs_5Li = fMassTable.GetNuclearMassMeV("Li",5);
+	double massgs_8Be = fMassTable.GetNuclearMassMeV("Be",8);
+	double massgs_9B = fMassTable.GetNuclearMassMeV("B", 9);
+
+	double mass_p = fMassTable.GetNuclearMassMeV("H",1);
+	double mass_a = fMassTable.GetNuclearMassMeV("He",4);
+
+	PIDHypothesis hypothesis;
+	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.beamEnergyMeV = 7.5;
+	if(simchan.EqualTo("paa")){
+		hypothesis.name = "paa";
+		hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+		hypothesis.final_particles[0] = "p";
+		hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[1] = "#alpha";
+		hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[2] = "#alpha";
+	} else if(simchan.EqualTo("apa")){
+		hypothesis.name = "apa";
+		hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[0] = "#alpha";
+		hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("H",1);
+		hypothesis.final_particles[1] = "p";
+		hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+		hypothesis.final_particles[2] = "#alpha";
+	}
+
+	TFile *infile = TFile::Open(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Error: Cannot open input file " << input_filename << std::endl;
+		return;
+	}
+
+	TTree *intree = (TTree*)infile->Get("mult3");
+	if(!intree){
+		std::cerr << "Error: cannot get TTree 'mult3' from " << input_filename << std::endl;
+		infile->Close();
+		return;
+	}
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	double E[3], theta[3], phi[3];
+	double kinE[4], kintheta[4], kinphi[4];//[0] = ejectile, [1] = decay1/bu1,	[2] = decay2/bu2,	[3] = decay3/bu3
+	int ringStrip[3], wedgeStrip[3];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
+	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
+	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
+	intree->SetBranchAddress("philab_hit3", &phi[2]);
+	intree->SetBranchAddress("SabreWedge_hit3", &wedgeStrip[2]);
+	intree->SetBranchAddress("SabreRing_hit3", &ringStrip[2]);
+
+	intree->SetBranchAddress("kin_e", kinE);
+	intree->SetBranchAddress("kin_theta", kintheta);
+	intree->SetBranchAddress("kin_phi", kinphi);
+
+	long numentries = intree->GetEntries();
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+	TDirectory *sliceDir = outfile->mkdir("slices");
+
+	outfile->cd();
+
+	TH1D *hProtonPicks = new TH1D("hProtonPicks", "Hit Index Assigned to Proton", 3, -0.5, 2.5);
+	hProtonPicks->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begs->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsright->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
+	hExSPS_8begs->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
+	hExSPS_8begsleft->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
+	hExSPS_8begsright->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsright", 1200, 0, 6);
+	hExSPS_8begsleft2right->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
+	hExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_all->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_pa1_pa2 = new TH2D("hDalitzInvMass_pa1_pa2", "M^{2}_{p#alpha_{1}} vs M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{1}}",
+									800, 21.76e6, 21.84e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_a1 = new TH2D("hDalitzInvMass_a1", "M^{2}_{p+#alpha_{1}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{1}}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_a1->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_a2 = new TH2D("hDalitzInvMass_a2", "M^{2}_{p+#alpha_{2}} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha_{2}}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_a2->SetDirectory(outfile);
+
+	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
+	// 								800, 55.57e6, 55.69e6,
+	// 								800, 21.76e6, 21.84e6,
+	// 								70, 0, 7);
+
+	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
+	hCosThetaH->SetDirectory(outfile);
+	
+	TH1D *hThetaH = new TH1D("hThetaH", "Helicity Angle Distribution, #alpha#alpha intermediate;#theta^{h}_{#alpha} [deg]",90,0.,180.);
+	hThetaH->SetDirectory(outfile);
+
+	TH2D *hCosThetaH_vs_M2aa = new TH2D("hCosThetaH_vs_M2aa", "Cos(Helicty Angle) vs M^{2}_{#alpha#alpha};M^{2}_{#alpha#alpha};cos(#theta^{h}_{#alpha})", 400, 55.57e6, 55.67e6, 100, -1., 1.);
+	hCosThetaH_vs_M2aa->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
+
+	//lambda to calculate dalitz boundary as function of excitation energy
+	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
+	{
+		// W = invariant mass of parent resonance, W = E_tot = M(9B_gs) + AVGEX(sliceindex)
+		// (take the average Ex to be the middle value between the Ex min and max for the given slice)
+
+		//Plot axes:
+		// x = M^2_{aa} = M^2{23} = s_aa = s_23
+		// y = M^2_{pa} = M^2{12} = s_pa = s_12
+
+		const double xmin = 4.*mass_a*mass_a;			// (2m_a)^2
+		const double xmax = std::pow(W - mass_p, 2);	// (W - m_p)^2
+
+		std::vector<double> x;
+		std::vector<double> y;
+
+		x.reserve(2*npoints);
+		y.reserve(2*npoints);
+
+		//upper branch: ymax(x)
+		for(int j=0; j<npoints; j++){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax-xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yPlus = center + radical/(2.0*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yPlus);
+		}
+
+		//loewr branch: ymin(x)
+		for(int j=npoints-1; j>=0; j--){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax - xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yMinus = center - radical/(2.*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yMinus);
+		}
+
+		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
+
+		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
+		graph->SetLineColor(kRed+1);
+		graph->SetLineWidth(2);
+		graph->SetLineStyle(1);
+		graph->SetFillStyle(0);
+
+		return graph;
+	};
+
+	//prep vector of Dalitz slices here:
+	double eMin=0.;
+	double eMax=7.;
+	double eStep=0.02;//updated to 20 keV steps from 100 keV steps
+	int nSlices = static_cast<int>((eMax-eMin)/eStep);
+	std::vector<TH2D*> vDalitz(nSlices, nullptr);
+	std::vector<TGraph*> vDalitzBoundary(nSlices, nullptr);
+
+	for(int i=0; i<nSlices; i++){
+		double currentEMin = eMin + i*eStep;
+		double currentEMax = eMin + (i+1)*eStep;
+		double currentECenter = 0.5*(currentEMin+currentEMax);
+
+		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.2f - %.2f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+
+		vDalitz[i] = new TH2D(name.Data(), title.Data(),
+							  200, 55.57e6, 55.69e6,
+							  200, 21.76e6, 21.84e6);
+		vDalitz[i]->SetDirectory(sliceDir);
+
+		const double W = massgs_9B + currentECenter;
+
+		vDalitzBoundary[i] = MakeDalitzBoundary(W, i, currentEMin, currentEMax);
+
+	}
+
+	//std::cout << "Dalitz Plots set!" << std::endl;
+
+	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li)", 100, 0, 2, 100, 0, 2);
+	hDalitzEx->SetDirectory(outfile);
+
+	TH2D *hDalitzEx_a1 = new TH2D("hDalitzEx_a1", "Ex(^{5}Li = p+#alpha_{1}) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li = p+#alpha_{1})", 100, 0, 2, 100, 0, 2);
+	hDalitzEx_a1->SetDirectory(outfile);
+
+	TH2D *hDalitzEx_a2 = new TH2D("hDalitzEx_a2", "Ex(^{5}Li = p+#alpha_{2}) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li = p+#alpha_{2})", 100, 0, 2, 100, 0, 2);
+	hDalitzEx_a2->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil Ex (^{8}Be_{gs} cut)", 100, 0, 10);
+	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Recoil Ex (^{5}Li_{gs} cut)", 100, 0, 10);
+
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex SABRE (8Begs Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_5LigsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_5LigsGated", "Recoil Ex SPS vs Recoil Ex SABRE (5Ligs Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
+
+	int lsuPurple = TColor::GetColor("#461D7C");
+	int lsuGold   = TColor::GetColor("#FDD023");
+
+	TGraph *gDalitzScatter_alpha1 = new TGraph();
+	gDalitzScatter_alpha1->SetName("alpha1");
+	//gDalitzScatter_alpha1->SetDirectory(outfile);
+	gDalitzScatter_alpha1->SetMarkerStyle(1);
+	gDalitzScatter_alpha1->SetMarkerColor(lsuPurple);
+
+	TGraph *gDalitzScatter_alpha2 = new TGraph();
+	gDalitzScatter_alpha2->SetName("alpha2");
+	//gDalitzScatter_alpha2->SetDirectory(outfile);
+	gDalitzScatter_alpha2->SetMarkerStyle(1);
+	gDalitzScatter_alpha2->SetMarkerColor(lsuGold);
+
+	PID_Mult3 pidSolver;
+	pidSolver.SetHypothesis(hypothesis);
+	pidSolver.SetResolution(0.05, 1.0, 1.0);
+	pidSolver.SetSPSResolution(0.015, 0.5, 0.5);
+	pidSolver.SetChi2Cut(10.);
+	pidSolver.InitDiagnostics(outfile);
+
+	TTree *outtree = new TTree("PID_Mult3","PID_Mult3");
+	outtree->SetDirectory(outfile);
+
+	int bestPermIndex;
+	double bestChi2;
+	bool passesCut;
+	int proton_hit_index, alpha_hit_index1, alpha_hit_index2;//alpha_hit_index 1/2 does NOT necessarily refer to alpha1/alpha2 (we cannot tell these apart yet)
+
+	TLorentzVector proton, alpha1, alpha2, recoil, intermediate;//again, alpha1/alpha2 are NOT necessarily the first/second alpha if sequential decay!
+	double residual_px, residual_py, residual_pz, residual_pmag;
+
+	double ExSPS, recoilEx, SABREsumE, m2aa, m2pa1, m2pa2;
+	double cosThetaH_a1, cosThetaH_a2;
+	double thetaH_a1_deg, thetaH_a2_deg;
+
+	int protonring;// = ringStrip[proton_hit_index];
+	int alpha1ring;// = ringStrip[alpha_hit_index1];
+	int alpha2ring;// = ringStrip[alpha_hit_index2];
+
+	int protonwedge;// = wedgeStrip[proton_hit_index];
+	int alpha1wedge;// = wedgeStrip[alpha_hit_index1];
+	int alpha2wedge;// = wedgeStrip[alpha_hit_index2];
+
+	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
+	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
+	outtree->Branch("passesCut", &passesCut, "passesCut/O");
+
+	outtree->Branch("protonHitIndex", &proton_hit_index, "protonHitIndex/I");
+	outtree->Branch("alphaHitIndex1", &alpha_hit_index1, "alphaHitIndex1/I");
+	outtree->Branch("alphaHitIndex2", &alpha_hit_index2, "alphaHitIndex2/I");
+
+	outtree->Branch("protonRingStrip", &protonring, "protonRingStrip/I");
+	outtree->Branch("alpha1RingStrip", &alpha1ring, "alpha1RingStrip/I");
+	outtree->Branch("alpha2RingStrip", &alpha2ring, "alpha2RingStrip/I");
+
+	outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
+	outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
+	outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
+
+	// Reconstructed 4-vectors
+	outtree->Branch("P4_proton", &proton);
+	outtree->Branch("P4_alpha1", &alpha1);
+	outtree->Branch("P4_alpha2", &alpha2);
+	outtree->Branch("P4_recoil", &recoil); // Sum of (p + a1 + a2)
+
+	outtree->Branch("m2_aa", &m2aa);
+	outtree->Branch("m2_pa1", &m2pa1);
+	outtree->Branch("m2_pa2", &m2pa2);
+
+	outtree->Branch("ExSPS", &ExSPS);
+	outtree->Branch("RecEx", &recoilEx);
+	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
+
+	outtree->Branch("cosThetaH_a1", &cosThetaH_a1, "cosThetaH_a1/D");
+	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
+	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
+	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
+
+	// Residual momentum
+	outtree->Branch("residual_px", &residual_px, "residual_px/D");
+	outtree->Branch("residual_py", &residual_py, "residual_py/D");
+	outtree->Branch("residual_pz", &residual_pz, "residual_pz/D");
+	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
+
+	double kin4mc_E[3], kin4mc_theta[3], kin4mc_phi[3];
+	for(int i=1; i<4; i++){
+		kin4mc_E[i-1] = kinE[i];
+		kin4mc_theta[i-1] = kintheta[i];
+		kin4mc_phi[i-1] = kinphi[i];
+	}
+
+	for(long i=0; i<numentries; i++){
+		//skip if Ex < 1.7:
+		// if(Ex < 1.7){
+		// 	continue;
+		// }
+
+		intree->GetEntry(i);
+
+		PIDResult_N3_M3 res = pidSolver.EvaluateEvent(kin4mc_E, kin4mc_theta, kin4mc_phi, SPSE, SPSTheta, SPSPhi);
+
+		ExSPS = Ex;
+		SABREsumE = res.SABREsumE;
+
+
+		bestPermIndex = res.bestChi2Index;
+		bestChi2 = res.bestChi2;
+		passesCut = res.passesCut;
+
+		//std::cout << "bestPermIndex = " << bestPermIndex << "\tbestChi2 = " << bestChi2 << "\npassesCut = " << passesCut << "\n";
+		double proton_mass, alpha1_mass, alpha2_mass;
+		if(simchan.EqualTo("paa")){
+			//mass hypothesis: 0=p, 1=a, 2=a
+			proton_hit_index = res.hit_indices[0];
+			alpha_hit_index1 = res.hit_indices[1];
+			alpha_hit_index2 = res.hit_indices[2];
+			proton_mass = hypothesis.final_masses[0];
+			alpha1_mass = hypothesis.final_masses[1];
+			alpha2_mass = hypothesis.final_masses[2];
+		} else if(simchan.EqualTo("apa")){
+			//mass hypothesis: 0=a, 1=p, 2=a
+			proton_hit_index = res.hit_indices[1];
+			alpha_hit_index1 = res.hit_indices[0];
+			alpha_hit_index2 = res.hit_indices[2];
+			proton_mass = hypothesis.final_masses[1];
+			alpha1_mass = hypothesis.final_masses[0];
+			alpha2_mass = hypothesis.final_masses[2];
+		}
+
+
+		protonring = ringStrip[proton_hit_index];
+		protonwedge = wedgeStrip[proton_hit_index];
+
+		alpha1ring = ringStrip[alpha_hit_index1];
+		alpha1wedge = wedgeStrip[alpha_hit_index1];
+
+		alpha2ring = ringStrip[alpha_hit_index2];
+		alpha2wedge = wedgeStrip[alpha_hit_index2];
+
+		residual_px = res.missing_px;
+		residual_py = res.missing_py;
+		residual_pz = res.missing_pz;
+		residual_pmag = res.missing_Pmag;
+
+		if(bestPermIndex >= 0){
+			auto buildP4 = [](double E, double theta, double phi, double m){
+				double p = std::sqrt(E*(E+2.*m));
+				double rad_th = theta*M_PI/180.;
+				double rad_ph = phi*M_PI/180.;
+				return TLorentzVector(
+						p*std::sin(rad_th)*std::cos(rad_ph),
+						p*std::sin(rad_th)*std::sin(rad_ph),
+						p*std::cos(rad_th),
+						E+m
+					);
+			};
+
+			hProtonPicks->Fill(proton_hit_index);
+			proton = buildP4(E[proton_hit_index], theta[proton_hit_index], phi[proton_hit_index], proton_mass);
+			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], alpha1_mass);
+			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], alpha2_mass);
+			recoil = proton + alpha1 + alpha2;
+
+			//get helicty angle here:
+			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
+			//	intermediate: 			alpha1 + alpha2
+			//
+			//calculation follows "General Properties of Three-body Decays" by Curtis Meyer, Carnegie Mellon University
+			//the paper uses the direction of the lorentz boost that takes parent CM frame -> a1+a2 rest frame.
+			//Thus, we can say the reference direction is  -beta_aa_in_parent_CM
+			TLorentzVector protonCM = proton;
+			TLorentzVector alpha1CM = alpha1;
+			TLorentzVector alpha2CM = alpha2;
+
+			TVector3 betaLabToParentCM = -recoil.BoostVector();
+			protonCM.Boost(betaLabToParentCM);
+			alpha1CM.Boost(betaLabToParentCM);
+			alpha2CM.Boost(betaLabToParentCM);
+
+			TLorentzVector intermediateCM = alpha1CM + alpha2CM;
+			TVector3 betaCMtoIntermediateCM = -intermediateCM.BoostVector();
+
+			cosThetaH_a1 = -666.;
+			cosThetaH_a2 = -666.;
+			thetaH_a1_deg = -666.;
+			thetaH_a2_deg = -666.;
+
+
+			if(betaCMtoIntermediateCM.Mag() > 1e-12 && alpha1CM.P() > 1e-12 && alpha2CM.P() > 1e-12 ){
+				TVector3 helicityAxis = betaCMtoIntermediateCM.Unit();
+				TLorentzVector alpha1AA = alpha1CM;
+				TLorentzVector alpha2AA = alpha2CM;
+
+				alpha1AA.Boost(betaCMtoIntermediateCM);
+				alpha2AA.Boost(betaCMtoIntermediateCM);
+
+				cosThetaH_a1 = std::max(-1.,std::min(1., alpha1CM.Vect().Unit().Dot(helicityAxis)));
+				cosThetaH_a2 = std::max(-1.,std::min(1., alpha1CM.Vect().Unit().Dot(helicityAxis)));
+
+				thetaH_a1_deg = std::acos(cosThetaH_a1)*RADDEG;
+				thetaH_a2_deg = std::acos(cosThetaH_a2)*RADDEG;
+			}
+
+			//now we can do invariant mass stuff here, but remember we must double fill any p+a (p+a1 and p+a2 since we cannot tell a1 from a2)
+
+			double m2_aa = (alpha1+alpha2).M2();
+			double m2_pa1 = (proton+alpha1).M2();
+			double m2_pa2 = (proton+alpha2).M2();
+
+			m2aa = m2_aa;
+			m2pa1 = m2_pa1;
+			m2pa2 = m2_pa2;
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
+
+			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hExSPS_8begs->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft->Fill(ExSPS);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+
+			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsright->Fill(ExSPS);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+			} else {
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+			}
+
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
+
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+
 			if(Ex >= BORON9_ALPHATHRESH_MEV){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
 				hDalitzInvMass_a1->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a1
@@ -668,17 +1464,63 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH1D *hMissingSpecies = new TH1D("hMissingSpecies", "Species Assigned as Missing", 3, -0.5, 2.5);
 
 	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									400, 55.57e6, 55.69e6,
-									400, 21.76e6, 21.84e6);
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begs->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsright->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
+	hExSPS_8begs->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
+	hExSPS_8begsleft->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
+	hExSPS_8begsright->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsleft2right", 1200, 0, 6);
+	hExSPS_8begsleft2right->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
+	hExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_all->SetDirectory(outfile);
 
 	TH2D *hDalitzInvMass_pa1_pa2 = new TH2D("hDalitzInvMass_pa1_pa2", "M^{2}_{p#alpha_{1}} vs M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{1}}",
-									400, 21.76e6, 21.84e6,
-									400, 21.76e6, 21.84e6);
+									800, 21.76e6, 21.84e6,
+									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
 
 	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
-	// 								400, 55.57e6, 55.69e6,
-	// 								400, 21.76e6, 21.84e6,
+	// 								800, 55.57e6, 55.69e6,
+	// 								800, 21.76e6, 21.84e6,
 	// 								70, 0, 7);
 
 	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
@@ -692,6 +1534,24 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1009,6 +1869,701 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
 			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
 			double ex_5Li2 = std::sqrt(m2_pa2) - massgs_5Li;
+
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
+			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hExSPS_8begs->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsright->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+			} else {
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+			}
+
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
+			//hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
+
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[1]);
+			//hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[2]);
+
+			//double fill p+a combinations due to alpha indistinguishability
+			if(Ex>=BORON9_ALPHATHRESH_MEV){
+				hDalitzInvMass->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass->Fill(m2_aa, m2_pa2);
+
+				// hDalitzSlices->Fill(m2_aa, m2_pa1, ExSPS);
+				// hDalitzSlices->Fill(m2_aa, m2_pa2, ExSPS);
+
+				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
+
+				hDalitzEx->Fill(ex_8Be, ex_5Li1);
+				hDalitzEx->Fill(ex_8Be, ex_5Li2);
+
+				hCosThetaH->Fill(cosThetaH_a1);
+				hCosThetaH->Fill(cosThetaH_a2);
+
+				hThetaH->Fill(thetaH_a1_deg);
+				hThetaH->Fill(thetaH_a2_deg);
+
+				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a1);
+				hCosThetaH_vs_M2aa->Fill(m2_aa, cosThetaH_a2);
+
+			}
+
+			//
+			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
+
+
+			if(sliceIndex >= 0 && sliceIndex < nSlices){
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa1);
+				vDalitz[sliceIndex]->Fill(m2_aa, m2_pa2);
+
+				vCatania[sliceIndex]->Fill(catania_x, catania_y);
+			}
+
+			recoilEx = recoil.M() - massgs_9B;
+			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
+
+			if(ex_8Be > 0. && ex_8Be < 0.5){
+				hRecoilEx_8BegsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
+			} else if((ex_5Li1 > 0. && ex_5Li1 < 1.) || (ex_5Li2 > 0. && ex_5Li2 < 1.)){
+				hRecoilEx_5LigsGated->Fill(recoilEx);
+				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
+			}
+			outtree->Fill();
+		}// else {
+		// 	m2_aa = -666.;
+		// 	m2_pa1 = -666.;
+		// 	m2_pa2 = -666.;
+		// 	P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
+		// 	P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
+		// 	P4_missing.SetPxPyPzE(0., 0., 0., 0.);
+		// 	recoil.SetPxPyPzE(0., 0., 0., 0.);
+		// }
+
+		//outtree->Fill();
+
+		if(i % 10000 == 0){
+			std::cout << "Processed " << i << " events..." << std::endl;
+		}
+	}
+	
+	// outfile->cd();
+	// outfile->Write();
+	// outfile->Close();
+	// infile->Close();
+	// delete infile;
+
+	infile->Close();
+	dalitzSlicesDir->cd();
+	for(int i=0; i<nSlices; i++) if(vDalitzBoundary[i]) vDalitzBoundary[i]->Write();
+	outfile->cd();
+	outfile->Write();
+	outfile->Close();
+	delete outfile;
+
+	std::cout << "Finished! Processed " << numentries << " events. Output stored in " << out_str << std::endl;
+}
+
+void B10ha_kin4mcPID_Mult2(const char* input_filename){
+	std::string s = input_filename;
+	size_t last_dot = s.find_last_of(".");
+	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
+	std::string out_str = stem + "_kin4mcPID_Mult2.root";
+
+	TMassTable fMassTable;
+	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
+
+	double massgs_5Li = fMassTable.GetNuclearMassMeV("Li", 5);
+	double massgs_8Be = fMassTable.GetNuclearMassMeV("Be", 8);
+	double massgs_9B  = fMassTable.GetNuclearMassMeV("B", 9);
+
+	double mass_p = fMassTable.GetNuclearMassMeV("H",1);
+	double mass_a = fMassTable.GetNuclearMassMeV("He",4);
+
+	//hypothesis: final state = {p, alpha, alpha}
+	//we expect 2 detected hits in SABRE and 1 reconstructed missing particle
+	PIDHypothesis hypothesis;
+	hypothesis.name = "paa_missing";
+	hypothesis.mass_target = fMassTable.GetNuclearMassMeV("B",10);
+	hypothesis.mass_beam = fMassTable.GetNuclearMassMeV("He",3);
+	hypothesis.mass_ejectile = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.beamEnergyMeV = 7.5;
+
+	hypothesis.final_masses[0] = fMassTable.GetNuclearMassMeV("H",1);
+	hypothesis.final_particles[0] = "p";
+	hypothesis.final_masses[1] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[1] = "a";
+	hypothesis.final_masses[2] = fMassTable.GetNuclearMassMeV("He",4);
+	hypothesis.final_particles[2] = "a";
+
+	TFile *infile = TFile::Open(input_filename, "READ");
+	if(!infile || infile->IsZombie()){
+		std::cerr << "Error: Cannot open input file " << input_filename << std::endl;
+		return;
+	}
+
+	//input ttree for 2 detected hits:
+	TTree *intree = (TTree*)infile->Get("mult2");
+	if(!intree){
+		std::cerr << "Error: Cannot get TTree 'mult2' from " << input_filename << std::endl;
+		infile->Close();
+		return;
+	}
+
+	double Ex, SPSE, SPSTheta, SPSPhi;
+	intree->SetBranchAddress("ExE", &Ex);
+	intree->SetBranchAddress("SPSEnergy", &SPSE);
+	intree->SetBranchAddress("SPSTheta", &SPSTheta);
+	intree->SetBranchAddress("SPSPhi", &SPSPhi);
+
+	double E[2], theta[2], phi[2];
+	double kinE[4], kintheta[4], kinphi[4];
+	int ringStrip[2], wedgeStrip[2];
+	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
+	intree->SetBranchAddress("philab_hit1", &phi[0]);
+	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
+	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
+
+	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
+	intree->SetBranchAddress("philab_hit2", &phi[1]);
+	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
+	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
+
+	intree->SetBranchAddress("kin_e", kinE);
+	intree->SetBranchAddress("kin_theta", kintheta);
+	intree->SetBranchAddress("kin_phi", kinphi);
+
+	long numentries = intree->GetEntries();
+
+	TFile *outfile = new TFile(out_str.c_str(), "RECREATE");
+
+	TDirectory *sliceDir = outfile->mkdir("slices");
+	TDirectory *dalitzSlicesDir = sliceDir->mkdir("Dalitz");
+	TDirectory *cataniaSlicesDir = sliceDir->mkdir("Catania");
+
+	outfile->cd();
+
+	TH1D *hAssignedSpeciesHit0 = new TH1D("hAssignedSpeciesHit0", "Species Assigned to Hit 0", 3, -0.5, 2.5);
+	TH1D *hAssignedSpeciesHit1 = new TH1D("hAssignedSpeciesHit1", "Species Assigned to Hit 1", 3, -0.5, 2.5);
+	TH1D *hMissingSpecies = new TH1D("hMissingSpecies", "Species Assigned as Missing", 3, -0.5, 2.5);
+
+	TH2D *hDalitzInvMass = new TH2D("hDalitzInvMass", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begs->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsright->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
+	hExSPS_8begs->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
+	hExSPS_8begsleft->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
+	hExSPS_8begsright->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsleft2right", 1200, 0, 6);
+	hExSPS_8begsleft2right->SetDirectory(outfile);
+
+	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
+	hExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+									800, 55.57e6, 55.69e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_all->SetDirectory(outfile);
+
+	TH2D *hDalitzInvMass_pa1_pa2 = new TH2D("hDalitzInvMass_pa1_pa2", "M^{2}_{p#alpha_{1}} vs M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{2}};M^{2}_{p#alpha_{1}}",
+									800, 21.76e6, 21.84e6,
+									800, 21.76e6, 21.84e6);
+	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
+
+	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
+	// 								800, 55.57e6, 55.69e6,
+	// 								800, 21.76e6, 21.84e6,
+	// 								70, 0, 7);
+
+	TH1D *hCosThetaH = new TH1D("hCosThetaH", "Cos(Helicity Angle) Distribution, #alpha#alpha intermediate;cos(#theta^{h}_{#alpha})", 100, -1., 1.);
+	hCosThetaH->SetDirectory(outfile);
+	
+	TH1D *hThetaH = new TH1D("hThetaH", "Helicity Angle Distribution, #alpha#alpha intermediate;#theta^{h}_{#alpha} [deg]",90,0.,180.);
+	hThetaH->SetDirectory(outfile);
+
+	TH2D *hCosThetaH_vs_M2aa = new TH2D("hCosThetaH_vs_M2aa", "Cos(Helicty Angle) vs M^{2}_{#alpha#alpha};M^{2}_{#alpha#alpha};cos(#theta^{h}_{#alpha})", 400, 55.57e6, 55.67e6, 100, -1., 1.);
+	hCosThetaH_vs_M2aa->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
+
+	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
+
+	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
+
+	//lambda to calculate dalitz boundary as function of excitation energy
+	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
+	{
+		// W = invariant mass of parent resonance, W = E_tot = M(9B_gs) + AVGEX(sliceindex)
+		// (take the average Ex to be the middle value between the Ex min and max for the given slice)
+
+		//Plot axes:
+		// x = M^2_{aa} = M^2{23} = s_aa = s_23
+		// y = M^2_{pa} = M^2{12} = s_pa = s_12
+
+		const double xmin = 4.*mass_a*mass_a;			// (2m_a)^2
+		const double xmax = std::pow(W - mass_p, 2);	// (W - m_p)^2
+
+		std::vector<double> x;
+		std::vector<double> y;
+
+		x.reserve(2*npoints);
+		y.reserve(2*npoints);
+
+		//upper branch: ymax(x)
+		for(int j=0; j<npoints; j++){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax-xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yPlus = center + radical/(2.0*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yPlus);
+		}
+
+		//loewr branch: ymin(x)
+		for(int j=npoints-1; j>=0; j--){
+			const double frac = static_cast<double>(j)/(npoints-1);
+			const double s_aa = xmin + frac*(xmax - xmin);
+
+			const double lambda_aa = Kallen(s_aa, mass_a*mass_a, mass_a*mass_a);
+			const double lambda_W = Kallen(W*W, s_aa, mass_p*mass_p);
+
+			const double radical = std::sqrt(std::max(0., lambda_aa*lambda_W));
+
+			const double center = mass_p*mass_p + mass_a*mass_a + ((W*W - mass_p*mass_p - s_aa)*s_aa)/(2.*s_aa);
+
+			const double yMinus = center - radical/(2.*s_aa);
+
+			x.push_back(s_aa);
+			y.push_back(yMinus);
+		}
+
+		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
+
+		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
+		graph->SetLineColor(kRed+1);
+		graph->SetLineWidth(2);
+		graph->SetLineStyle(1);
+		graph->SetFillStyle(0);
+
+		return graph;
+	};
+
+	//prep vectors of Dalitz, Catania slices here:
+	double eMin=0.;
+	double eMax=7.;
+	double eStep=0.02;//updated from 0.1 (100keV) to 0.02 (20 keV)
+	int nSlices = static_cast<int>((eMax-eMin)/eStep);
+	std::vector<TH2D*> vDalitz(nSlices, nullptr);
+	std::vector<TH2D*> vCatania(nSlices, nullptr);
+	std::vector<TGraph*> vDalitzBoundary(nSlices, nullptr);
+
+	for(int i=0; i<nSlices; i++){
+		double currentEMin = eMin + i*eStep;
+		double currentEMax = eMin + (i+1)*eStep;
+		double currentECenter = 0.5*(currentEMin+currentEMax);
+
+		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.2f - %.2f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+
+		vDalitz[i] = new TH2D(name.Data(), title.Data(),
+							  200, 55.57e6, 55.69e6,
+							  200, 21.76e6, 21.84e6);
+		vDalitz[i]->SetDirectory(dalitzSlicesDir);
+
+		name = Form("hCatania_%d_%.1f_%.1f", i, currentEMin, currentEMax);
+		title = Form("Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q) [%.2f - %.2f MeV]", currentEMin, currentEMax);
+
+		vCatania[i] = new TH2D(name.Data(), title.Data(),
+							   50, 0, 10,
+							   50, 0, 10);
+		vCatania[i]->SetDirectory(cataniaSlicesDir);
+
+		const double W = massgs_9B + currentECenter;
+
+		vDalitzBoundary[i] = MakeDalitzBoundary(W, i, currentEMin, currentEMax);
+
+	}
+
+
+	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
+	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
+
+	TH2D *hCatania = new TH2D("catania_plot", "Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q)", 100, 0, 10, 100, 0, 10);
+
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE; SABRE; SPS", 100, 0, 8, 100, 0, 8);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex (^{8}Be_{gs} Gated);SABRE;SPS", 100, 0, 8, 100, 0, 8);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE_5LigsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_5LigsGated", "Recoil Ex SPS vs Recoil Ex (^{5}Li_{gs} Gated);SABRE;SPS", 100, 0, 8, 100, 0, 8);
+
+	PID_Mult2 pidSolver;
+	pidSolver.SetHypothesis(hypothesis);
+	pidSolver.SetResolution(0.05, 1.0, 1.0);//eventually, update this per run w/ pixel handler map
+	pidSolver.SetSPSResolution(0.015, 0.5, 0.5); //eventuall, update this per run w/ pixel handler map
+	pidSolver.SetChi2Cut(10.);
+	pidSolver.InitDiagnostics(outfile);
+
+	TTree *outtree = new TTree("PID_Mult2", "PID_Mult2");
+	outtree->SetDirectory(outfile);
+
+	int bestPermIndex;
+	double bestChi2;
+	bool passesCut;
+	int hit0_species, hit1_species, missing_species;
+	int hit0ringstrip, hit1ringstrip;
+	int hit0wedgestrip, hit1wedgestrip;
+
+	//stack objects for intermediate operations
+	TLorentzVector P4_hit0, P4_hit1, P4_missing, recoil;
+
+	//pointers to pass to TTree:Branch (ROOT requires this for TLorentzVector type)
+	TLorentzVector *p4_0_ptr = &P4_hit0;
+	TLorentzVector *p4_1_ptr = &P4_hit1;
+	TLorentzVector *p4_miss_ptr = &P4_missing;
+	TLorentzVector *p4_rec_ptr = &recoil;
+
+	double m2_aa, m2_pa1, m2_pa2;
+	double ExSPS, recoilEx, SABREsumE;
+	double cosThetaH_a1, cosThetaH_a2;
+	double thetaH_a1_deg, thetaH_a2_deg;
+	double catania_x, catania_y;
+
+	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
+	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
+	outtree->Branch("passesCut", &passesCut, "passesCut/O");
+
+	outtree->Branch("hit0species", &hit0_species, "hit0species/I");
+	outtree->Branch("hit1species", &hit1_species, "hit1species/I");
+	outtree->Branch("missingSpecies", &missing_species, "missingSpecies/I");
+
+	outtree->Branch("hit0ringstrip", &hit0ringstrip, "hit0ringstrip/I");
+	outtree->Branch("hit0wedgestrip", &hit0wedgestrip, "hit0wedgestrip/I");
+	outtree->Branch("hit1ringstrip", &hit1ringstrip, "hit1ringstrip/I");
+	outtree->Branch("hit1wedgestrip", &hit1wedgestrip, "hit1wedgestrip/I");
+
+	// outtree->Branch("protonRingStrip", &protonring, "protonRingStrip/I");
+	// outtree->Branch("alpha1RingStrip", &alpha1ring, "alpha1RingStrip/I");
+	// outtree->Branch("alpha2RingStrip", &alpha2ring, "alpha2RingStrip/I");
+
+	// outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
+	// outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
+	// outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
+
+	outtree->Branch("P4_hit0", &p4_0_ptr);
+	outtree->Branch("P4_hit1", &p4_1_ptr);
+	outtree->Branch("P4_missing", &p4_miss_ptr);
+	outtree->Branch("P4_recoil", &p4_rec_ptr);
+
+	outtree->Branch("m2_aa", &m2_aa, "m2_aa/D");
+	outtree->Branch("m2_pa1", &m2_pa1, "m2_pa1/D");
+	outtree->Branch("m2_pa2", &m2_pa2, "m2_pa2/D");
+
+	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
+	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
+
+	outtree->Branch("cosThetaH_a1", &cosThetaH_a1, "cosThetaH_a1/D");
+	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
+	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
+	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
+
+	outtree->Branch("catania_x", &catania_x, "catania_x/D");
+	outtree->Branch("catania_y", &catania_y, "catania_y/D");
+
+	auto buildP4 = [](double E_kin, double th_deg, double ph_deg, double mass) {
+		double p = std::sqrt(E_kin * (E_kin + 2.0 * mass));
+		double rad_th = th_deg * DEGRAD;
+		double rad_ph = ph_deg * DEGRAD;
+		return TLorentzVector(
+			p * std::sin(rad_th) * std::cos(rad_ph),
+			p * std::sin(rad_th) * std::sin(rad_ph),
+			p * std::cos(rad_th),
+			E_kin + mass
+		);
+	};
+
+
+	double kin4mc_E[2], kin4mc_theta[2], kin4mc_phi[2];
+	
+
+	for(long i=0; i<numentries; i++){
+		intree->GetEntry(i);
+
+		//skip if Ex < 1.7:
+		// if(Ex < 1.7){
+		// 	continue;
+		// }
+
+		PIDResult_N3_M2 res = pidSolver.EvaluateEvent(E, theta, phi, SPSE, SPSTheta, SPSPhi);
+
+		ExSPS = Ex;
+		SABREsumE = res.SABREsumE;
+
+		bestPermIndex = res.bestChi2Index;
+		bestChi2 = res.bestChi2;
+		passesCut = true;//res.passesCut;
+
+		hit0_species = res.hit_indices[0];
+		hit1_species = res.hit_indices[1];
+		missing_species = res.missing_species_index;
+
+		// std::cout << "ringStrip[0] = " << ringStrip[0] << "\t"
+		// 		  << "wedgeStrip[0] = " << wedgeStrip[0] << "\t"
+		// 		  << "ringStrip[1] = " << ringStrip[1] << "\t"
+		// 		  << "wedgeStrip[1] = " << wedgeStrip[1] << std::endl;
+
+		hit0ringstrip = ringStrip[0];
+		hit0wedgestrip = wedgeStrip[0];
+
+		hit1ringstrip = ringStrip[1];
+		hit1wedgestrip = wedgeStrip[1];
+
+		if(bestPermIndex >= 0){
+			hAssignedSpeciesHit0->Fill(hit0_species);
+			hAssignedSpeciesHit1->Fill(hit1_species);
+			hMissingSpecies->Fill(missing_species);
+
+			P4_hit0 = buildP4(E[0], theta[0], phi[0], hypothesis.final_masses[hit0_species]);
+			P4_hit1 = buildP4(E[1], theta[1], phi[1], hypothesis.final_masses[hit1_species]);
+
+			P4_missing.SetPxPyPzE(res.missing_px, res.missing_py, res.missing_pz, res.missing_Etot);
+
+			//determine recoil using objects on stack:
+			recoil = P4_hit0 + P4_hit1 + P4_missing;
+
+			TLorentzVector proton, alpha1, alpha2;
+
+			if(hit0_species == 0){//hit0 is the proton
+				proton = P4_hit0;
+				alpha1 = P4_hit1;
+				alpha2 = P4_missing;
+			} else if(hit1_species == 0){//hit1 is the proton
+				proton = P4_hit1;
+				alpha1 = P4_hit0;
+				alpha2 = P4_missing;
+			} else {//missing particle is the proton
+				proton = P4_missing;
+				alpha1 = P4_hit0;
+				alpha2 = P4_hit1;
+			}
+
+			int sliceIndex = static_cast<int>((Ex-eMin)/eStep);
+
+			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
+			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
+			hCatania->Fill(catania_x, catania_y);
+
+			//get helicty angle here:
+			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
+			//	intermediate: 			alpha1 + alpha2
+			//
+			//calculation follows "General Properties of Three-body Decays" by Curtis Meyer, Carnegie Mellon University
+			//the paper uses the direction of the lorentz boost that takes parent CM frame -> a1+a2 rest frame.
+			//Thus, we can say the reference direction is  -beta_aa_in_parent_CM
+			TLorentzVector protonCM = proton;
+			TLorentzVector alpha1CM = alpha1;
+			TLorentzVector alpha2CM = alpha2;
+
+			TVector3 betaLabToParentCM = -recoil.BoostVector();
+			protonCM.Boost(betaLabToParentCM);
+			alpha1CM.Boost(betaLabToParentCM);
+			alpha2CM.Boost(betaLabToParentCM);
+
+			TLorentzVector intermediateCM = alpha1CM + alpha2CM;
+			TVector3 betaCMtoIntermediateCM = -intermediateCM.BoostVector();
+
+			cosThetaH_a1 = -666.;
+			cosThetaH_a2 = -666.;
+			thetaH_a1_deg = -666.;
+			thetaH_a2_deg = -666.;
+
+
+			if(betaCMtoIntermediateCM.Mag() > 1e-12 && alpha1CM.P() > 1e-12 && alpha2CM.P() > 1e-12 ){
+				TVector3 helicityAxis = betaCMtoIntermediateCM.Unit();
+				TLorentzVector alpha1AA = alpha1CM;
+				TLorentzVector alpha2AA = alpha2CM;
+
+				alpha1AA.Boost(betaCMtoIntermediateCM);
+				alpha2AA.Boost(betaCMtoIntermediateCM);
+
+				cosThetaH_a1 = std::max(-1.,std::min(1., alpha1CM.Vect().Unit().Dot(helicityAxis)));
+				cosThetaH_a2 = std::max(-1.,std::min(1., alpha1CM.Vect().Unit().Dot(helicityAxis)));
+
+				thetaH_a1_deg = std::acos(cosThetaH_a1)*RADDEG;
+				thetaH_a2_deg = std::acos(cosThetaH_a2)*RADDEG;
+			}
+
+			//invariant mass calculations:
+			m2_aa = (alpha1+alpha2).M2();
+			m2_pa1 = (proton+alpha1).M2();
+			m2_pa2 = (proton+alpha2).M2();
+
+			double ex_8Be = std::sqrt(m2_aa) - massgs_8Be;
+			double ex_5Li1 = std::sqrt(m2_pa1) - massgs_5Li;
+			double ex_5Li2 = std::sqrt(m2_pa2) - massgs_5Li;
+
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
+			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
+			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
+				hExSPS_8begs->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsright->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsleft2right->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+			} else {
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
+				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
+				hExSPS_8begsANTI->Fill(ExSPS);
+
+				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
+			}
+
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
+			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
+			//hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
+
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[1]);
+			//hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[2]);
 
 			//double fill p+a combinations due to alpha indistinguishability
 			if(Ex>=BORON9_ALPHATHRESH_MEV){

@@ -116,7 +116,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
 	hCosThetaHDeuteron->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 350, 0, 7, 350, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
 	SABREPID_N2_M2 pidSolver;
@@ -226,7 +226,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 			deuteronring = ringStrip[deuteron_hit_index];
 			deuteronwedge = wedgeStrip[deuteron_hit_index];
 
-			std::cout << "alpha R=" << alpharing << ", W=" << alphawedge << "\tdeuteron R=" << deuteronring << ", W=" << deuteronwedge << "\tRDif=" << std::abs(alpharing-deuteronring) << ", WDif=" << std::abs(alphawedge-deuteronwedge) <<std::endl;
+			//std::cout << "alpha R=" << alpharing << ", W=" << alphawedge << "\tdeuteron R=" << deuteronring << ", W=" << deuteronwedge << "\tRDif=" << std::abs(alpharing-deuteronring) << ", WDif=" << std::abs(alphawedge-deuteronwedge) <<std::endl;
 
 			TLorentzVector alphaCM = alpha;
 			TLorentzVector deuteronCM = deuteron;
@@ -368,7 +368,7 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
 	hCosThetaHDeuteron->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 350, 0, 7, 350, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
 	TH1D *hCalcMissingMass = new TH1D("hCalcMissingMass", "Calculated Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0., 5000.);

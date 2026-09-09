@@ -273,8 +273,10 @@ void SABREslicer(const char* infile, const char* intree = "SABREsim", int omnisc
 
 			key[k] = j;//key[k] holds the index that particle k USED to have in the input (0 = f1, 1 = f2, 2 = f3) to match the 012/021/102/120/201/210 naming scheme from my IM analysis
 
-			*SR[k] = tin_localRing[j];
-			*SW[k] = tin_localWedge[j];
+			//*SR[k] = tin_localRing[j];
+			//*SW[k] = tin_localWedge[j];
+			*SR[k] = tin_ringChannel[j];
+			*SW[k] = tin_wedgeChannel[j];
 			*SRE[k] = tin_ringEnergy[j];
 			*SWE[k] = tin_wedgeEnergy[j];
 			*Stheta[k] = tin_ringTheta[j];

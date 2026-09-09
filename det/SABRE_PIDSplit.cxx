@@ -92,6 +92,7 @@ void SABRE_ParticleID_Splitter(const char* infile, const char* intree = "SABREsi
 	double tin_SPSEnergy, tin_SPSTheta, tin_SPSPhi, tin_ExE;
 	int tin_multiplicity;
 	int tin_particleID[4], tin_localRing[4], tin_localWedge[4];
+	int tin_ringChannel[4], tin_wedgeChannel[4];
 	double tin_ringEnergy[4], tin_wedgeEnergy[4], tin_ringTheta[4], tin_wedgePhi[4];
 
 	tin->SetBranchAddress("kin_e", tin_kine);
@@ -107,6 +108,8 @@ void SABRE_ParticleID_Splitter(const char* infile, const char* intree = "SABREsi
 	tin->SetBranchAddress("particleID", tin_particleID);
 	tin->SetBranchAddress("localRing", tin_localRing);
 	tin->SetBranchAddress("localWedge", tin_localWedge);
+	tin->SetBranchAddress("ringChannel", tin_ringChannel);
+	tin->SetBranchAddress("wedgeChannel", tin_wedgeChannel);
 	tin->SetBranchAddress("ringEnergy", tin_ringEnergy);
 	tin->SetBranchAddress("wedgeEnergy", tin_wedgeEnergy);
 	tin->SetBranchAddress("ringTheta", tin_ringTheta);
@@ -138,11 +141,11 @@ void SABRE_ParticleID_Splitter(const char* infile, const char* intree = "SABREsi
 		key[0] = 0;
 		key[1] = 1;
 
-		SR1 = tin_localRing[0];     SW1 = tin_localWedge[0];
+		SR1 = tin_ringChannel[0];   SW1 = tin_wedgeChannel[0];
 		SRE1 = tin_ringEnergy[0];   SWE1 = tin_wedgeEnergy[0];
 		Stheta1 = tin_ringTheta[0]; Sphi1 = tin_wedgePhi[0];
 
-		SR2 = tin_localRing[1];     SW2 = tin_localWedge[1];
+		SR2 = tin_ringChannel[1];   SW2 = tin_wedgeChannel[1];
 		SRE2 = tin_ringEnergy[1];   SWE2 = tin_wedgeEnergy[1];
 		Stheta2 = tin_ringTheta[1]; Sphi2 = tin_wedgePhi[1];
 
@@ -231,6 +234,7 @@ void SABRE_ParticleID_Splitter_N2(const char* infile, const char* intree = "SABR
 	double tin_SPSEnergy, tin_SPSTheta, tin_SPSPhi, tin_ExE;
 	int tin_multiplicity;
 	int tin_particleID[4], tin_localRing[4], tin_localWedge[4];
+	int tin_ringChannel[4], tin_wedgeChannel[4];
 	double tin_ringEnergy[4], tin_wedgeEnergy[4], tin_ringTheta[4], tin_wedgePhi[4];
 
 	tin->SetBranchAddress("kin_e", tin_kine);
@@ -246,6 +250,8 @@ void SABRE_ParticleID_Splitter_N2(const char* infile, const char* intree = "SABR
 	tin->SetBranchAddress("particleID", tin_particleID);
 	tin->SetBranchAddress("localRing", tin_localRing);
 	tin->SetBranchAddress("localWedge", tin_localWedge);
+	tin->SetBranchAddress("ringChannel", tin_ringChannel);
+	tin->SetBranchAddress("wedgeChannel", tin_wedgeChannel);
 	tin->SetBranchAddress("ringEnergy", tin_ringEnergy);
 	tin->SetBranchAddress("wedgeEnergy", tin_wedgeEnergy);
 	tin->SetBranchAddress("ringTheta", tin_ringTheta);

@@ -11,6 +11,23 @@ constexpr double AMU_IN_MEV = 931.5;
 
 constexpr double BORON9_ALPHATHRESH_MEV = 1.69;//taken from NNDC: https://www.nndc.bnl.gov/nudat3/getdataset.jsp?nucleus=9B&unc=NDS
 
+constexpr double BE8GS_CUT_MIN = 55.574142e6;
+constexpr double BE8GS_CUT_MAX = 55.575158e6;
+
+constexpr double BE8GS_CUTLEFT_MIN = 55.573126e6;
+constexpr double BE8GS_CUTLEFT_MAX = 55.574142e6;
+
+constexpr double BE8GS_CUTRIGHT_MIN = 55.575158e6;
+constexpr double BE8GS_CUTRIGHT_MAX = 55.576174e6;
+
+constexpr std::pair<int,int> offsets[] = {
+		{112,40},	//detector0 {ringOffset,wedgeOffset}
+		{96,32},	//detector1 {ringOffset,wedgeOffset}
+		{80,16},	//detector2 {ringOffset,wedgeOffset}
+		{64,24},	//detector3 {ringOffset,wedgeOffset}
+		{48,0}		//detector4 {ringOffset,wedgeOffset}
+};
+
 // Shared N=3 Reaction Hypothesis Configuration
 struct PIDHypothesis {
 	TString name;
