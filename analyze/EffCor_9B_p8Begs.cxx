@@ -5,7 +5,7 @@
 #include <TH1D.h>
 #include <TDirectory.h>
 
-void EffCor_9B_p8Be(const char* histName = "h", int effIndex = 9, const char* effFile = "/home/zachpurcell/efficiencies/9B_p_4He_eff_0_6000_SABREres50keV_thresh100keV.txt"){
+void EffCor_9B_p8Begs(const char* histName = "h", int effIndex = 9, const char* effFile = "/home/zachpurcell/efficiencies/9B_p_4He_eff_0_6000_SABREres50keV_thresh100keV.txt"){
 
 	//histName -> name in ROOT session of histogram to be efficiency-corrected (default is "h", but can be whatever name you choose)
 	//effFile  -> absolute path to txt file containing efficiency parameters for 9B->p+8Be->a+a
