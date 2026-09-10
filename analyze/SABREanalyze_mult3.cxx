@@ -110,21 +110,24 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
-	double E[3], theta[3], phi[3];
+	double E[3], theta[3], phi[3], wedgeE[3];
 	int ringStrip[3], wedgeStrip[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit1", &wedgeE[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
 	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
 	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit2", &wedgeE[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
 	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
 	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit3", &wedgeE[2]);
 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 	intree->SetBranchAddress("SabreWedge_hit3", &wedgeStrip[2]);
@@ -237,8 +240,17 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
+	TH2D *hSABRERingNumber_vs_SABRERingE = new TH2D("hSABRERingNumber_vs_SABRERingE", "hSABRERingNumber_vs_SABRERingE", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_SABRERingE->SetDirectory(outfile);
+
 	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
 	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_SABREWedgeE = new TH2D("hSABREWedgeNumber_vs_SABREWedgeE", "hSABREWedgeNumber_vs_SABREWedgeE", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_SABREWedgeE->SetDirectory(outfile);
+
+	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
+	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -617,9 +629,19 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
 
+			hSABRERingNumber_vs_SABRERingE->Fill(E[0], ringStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(E[1], ringStrip[1]);
+			hSABRERingNumber_vs_SABRERingE->Fill(E[2], ringStrip[2]);
+
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[0], wedgeStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[1], wedgeStrip[1]);
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[2], wedgeStrip[2]);
+
+			hEx8Be_VS_Ex9B->Fill(ExSPS, std::sqrt(m2_aa)-massgs_8Be);
 
 			if(Ex >= BORON9_ALPHATHRESH_MEV){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
@@ -769,22 +791,25 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
-	double E[3], theta[3], phi[3];
+	double E[3], theta[3], phi[3], wedgeE[3];
 	double kinE[4], kintheta[4], kinphi[4];//[0] = ejectile, [1] = decay1/bu1,	[2] = decay2/bu2,	[3] = decay3/bu3
 	int ringStrip[3], wedgeStrip[3];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit1", &wedgeE[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
 	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
 	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit2", &wedgeE[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
 	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
 	intree->SetBranchAddress("SabreRing_hit2", &ringStrip[1]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit3", &E[2]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit3", &wedgeE[2]);
 	intree->SetBranchAddress("thetalab_hit3", &theta[2]);
 	intree->SetBranchAddress("philab_hit3", &phi[2]);
 	intree->SetBranchAddress("SabreWedge_hit3", &wedgeStrip[2]);
@@ -901,8 +926,17 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
+	TH2D *hSABRERingNumber_vs_SABRERingE = new TH2D("hSABRERingNumber_vs_SABRERingE", "hSABRERingNumber_vs_SABRERingE", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_SABRERingE->SetDirectory(outfile);
+
 	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
 	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_SABREWedgeE = new TH2D("hSABREWedgeNumber_vs_SABREWedgeE", "hSABREWedgeNumber_vs_SABREWedgeE", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_SABREWedgeE->SetDirectory(outfile);
+
+	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
+	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1103,11 +1137,10 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
 
 	double kin4mc_E[3], kin4mc_theta[3], kin4mc_phi[3];
-	for(int i=1; i<4; i++){
-		kin4mc_E[i-1] = kinE[i];
-		kin4mc_theta[i-1] = kintheta[i];
-		kin4mc_phi[i-1] = kinphi[i];
-	}
+
+	// kin4mc_E[0] = kinE[1]; kin4mc_E[1] = kinE[2]; kin4mc_E[2] = kinE[3];
+	// kin4mc_theta[0] = kintheta[1]; kin4mc_theta[1] = kintheta[2]; kin4mc_theta[2] = kintheta[3];
+	// kin4mc_phi[0] = kinphi[1]; kin4mc_phi[1] = kinphi[2]; kin4mc_phi[2] = kinphi[3];
 
 	for(long i=0; i<numentries; i++){
 		//skip if Ex < 1.7:
@@ -1116,6 +1149,15 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 		// }
 
 		intree->GetEntry(i);
+
+		for(int i=1; i<4; i++){
+			kin4mc_E[i-1] = kinE[i];
+			kin4mc_theta[i-1] = kintheta[i];
+			kin4mc_phi[i-1] = kinphi[i];
+		}
+
+		// for(int i=0; i<3; i++) std::cout << "bu" << i << " = (" << kinE[i] << ", " << kintheta[i] << ", " << kinphi[i] << ")" << std::endl;
+		// std::cout << std::endl;
 
 		PIDResult_N3_M3 res = pidSolver.EvaluateEvent(kin4mc_E, kin4mc_theta, kin4mc_phi, SPSE, SPSTheta, SPSPhi);
 
@@ -1288,9 +1330,21 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
 
+			hSABRERingNumber_vs_SABRERingE->Fill(E[0], ringStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(E[1], ringStrip[1]);
+			hSABRERingNumber_vs_SABRERingE->Fill(E[2], ringStrip[2]);
+
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[0], wedgeStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[1], wedgeStrip[1]);
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[2], wedgeStrip[2]);
+
+			hEx8Be_VS_Ex9B->Fill(ExSPS, std::sqrt(m2_aa)-massgs_8Be);
+
+			//std::cout << "...here?" << std::endl;
 
 			if(Ex >= BORON9_ALPHATHRESH_MEV){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
@@ -1435,15 +1489,17 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
-	double E[2], theta[2], phi[2];
+	double E[2], theta[2], phi[2], wedgeE[2];
 	int ringStrip[2], wedgeStrip[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit1", &wedgeE[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
 	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
 	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit2", &wedgeE[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
 	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
@@ -1550,8 +1606,17 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
+	TH2D *hSABRERingNumber_vs_SABRERingE = new TH2D("hSABRERingNumber_vs_SABRERingE", "hSABRERingNumber_vs_SABRERingE", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_SABRERingE->SetDirectory(outfile);
+
 	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
 	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_SABREWedgeE = new TH2D("hSABREWedgeNumber_vs_SABREWedgeE", "hSABREWedgeNumber_vs_SABREWedgeE", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_SABREWedgeE->SetDirectory(outfile);
+
+	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
+	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1926,9 +1991,19 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
 			//hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
 
+			hSABRERingNumber_vs_SABRERingE->Fill(E[0], ringStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(E[1], ringStrip[1]);
+			//hSABRERingNumber_vs_SABRERingE->Fill(E[2], ringStrip[2]);
+
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
-			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[1]);
-			//hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[2]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			//hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[0], wedgeStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[1], wedgeStrip[1]);
+			//hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[2], wedgeStrip[2]);
+
+			hEx8Be_VS_Ex9B->Fill(ExSPS, std::sqrt(m2_aa)-massgs_8Be);
 
 			//double fill p+a combinations due to alpha indistinguishability
 			if(Ex>=BORON9_ALPHATHRESH_MEV){
@@ -2062,16 +2137,18 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	intree->SetBranchAddress("SPSTheta", &SPSTheta);
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
-	double E[2], theta[2], phi[2];
+	double E[2], theta[2], phi[2], wedgeE[2];
 	double kinE[4], kintheta[4], kinphi[4];
 	int ringStrip[2], wedgeStrip[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit1", &wedgeE[0]);
 	intree->SetBranchAddress("thetalab_hit1", &theta[0]);
 	intree->SetBranchAddress("philab_hit1", &phi[0]);
 	intree->SetBranchAddress("SabreWedge_hit1", &wedgeStrip[0]);
 	intree->SetBranchAddress("SabreRing_hit1", &ringStrip[0]);
 
 	intree->SetBranchAddress("SabreRingEnergy_hit2", &E[1]);
+	intree->SetBranchAddress("SabreWedgeEnergy_hit2", &wedgeE[1]);
 	intree->SetBranchAddress("thetalab_hit2", &theta[1]);
 	intree->SetBranchAddress("philab_hit2", &phi[1]);
 	intree->SetBranchAddress("SabreWedge_hit2", &wedgeStrip[1]);
@@ -2182,8 +2259,17 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
+	TH2D *hSABRERingNumber_vs_SABRERingE = new TH2D("hSABRERingNumber_vs_SABRERingE", "hSABRERingNumber_vs_SABRERingE", 1400, 0, 7, 80, 47.5, 127.5);
+	hSABRERingNumber_vs_SABRERingE->SetDirectory(outfile);
+
 	TH2D *hSABREWedgeNumber_vs_ExSPS = new TH2D("hSABREWedgeNumber_vs_ExSPS", "hSABREWedgeNumber_vs_ExSPS", 1400, 0, 7, 48, -0.5, 47.5);
 	hSABREWedgeNumber_vs_ExSPS->SetDirectory(outfile);
+
+	TH2D *hSABREWedgeNumber_vs_SABREWedgeE = new TH2D("hSABREWedgeNumber_vs_SABREWedgeE", "hSABREWedgeNumber_vs_SABREWedgeE", 1400, 0, 7, 48, -0.5, 47.5);
+	hSABREWedgeNumber_vs_SABREWedgeE->SetDirectory(outfile);
+
+	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
+	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -2561,9 +2647,19 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
 			//hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[2]);
 
+			hSABRERingNumber_vs_SABRERingE->Fill(E[0], ringStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(E[1], ringStrip[1]);
+			//hSABRERingNumber_vs_SABRERingE->Fill(E[2], ringStrip[2]);
+
 			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
-			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[1]);
-			//hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[2]);
+			hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+			//hSABREWedgeNumber_vs_ExSPS->Fill(ExSPS, wedgeStrip[0]);
+
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[0], wedgeStrip[0]);
+			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[1], wedgeStrip[1]);
+			//hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[2], wedgeStrip[2]);
+
+			hEx8Be_VS_Ex9B->Fill(ExSPS, std::sqrt(m2_aa)-massgs_8Be);
 
 			//double fill p+a combinations due to alpha indistinguishability
 			if(Ex>=BORON9_ALPHATHRESH_MEV){
