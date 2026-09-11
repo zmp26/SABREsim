@@ -51,6 +51,17 @@
 #include "PID_Mult2.h"
 #include "PID_Mult2.cpp"
 
+//helper function for jacobi kx, ky coordinates given k1, k2, k3, and masses m1, m2, m3:
+std::pair<TVector3,TVector3> getJacobiMomenta(TVector3 k1, TVector3 k2, TVector3 k3, double m1, double m2, double m3){
+
+	TVector3 kx, ky;
+
+	kx = (m2*k1 + m1*k2)*(1./(m1+m2));
+	ky = (m3*(k1+k2) - (m1+m2)*k3)*(1./(m1+m2+m3));
+
+	return std::make_pair(kx,ky);
+}
+
 //B10ha_SABREPID_N3_M3
 void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	std::string s = input_filename;
@@ -252,20 +263,73 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
-	hCosThetaK->SetDirectory(outfile);
+	//jacobi T histograms
 
-	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
-	hExEt->SetDirectory(outfile);
+	TH1D *hCosThetaK_T = new TH1D("hCosThetaK_T","hCosThetaK_T", 200, -1, 1);
+	hCosThetaK_T->SetDirectory(outfile);
 
-	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
-	hEyEt->SetDirectory(outfile);
+	TH1D *hExEt_T = new TH1D("hExEt_T","hExEt_T",100, 0, 1);
+	hExEt_T->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
-	hExEt_CosThetaK->SetDirectory(outfile);
+	TH1D *hEyEt_T = new TH1D("hEyEt_T", "hEyEt_T", 100, 0, 1);
+	hEyEt_T->SetDirectory(outfile);
 
-	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
-	hEyEt_CosThetaK->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_T = new TH2D("hExEt_CosThetaK_T","hExEt_CosThetaK_T",200,-1,1,100,0,1);
+	hExEt_CosThetaK_T->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_T->SetDirectory(outfile);
+
+	//jacobi Y1 histograms
+
+	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
+	hCosThetaK_Y1->SetDirectory(outfile);
+
+	TH1D *hExEt_Y1 = new TH1D("hExEt_Y1","hExEt_Y1",100, 0, 1);
+	hExEt_Y1->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y1 = new TH1D("hEyEt_Y1", "hEyEt_Y1", 100, 0, 1);
+	hEyEt_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y1 = new TH2D("hExEt_CosThetaK_Y1","hExEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	//jacobi Y2 histograms
+
+	TH1D *hCosThetaK_Y2 = new TH1D("hCosThetaK_Y2","hCosThetaK_Y2", 200, -1, 1);
+	hCosThetaK_Y2->SetDirectory(outfile);
+
+	TH1D *hExEt_Y2 = new TH1D("hExEt_Y2","hExEt_Y2",100, 0, 1);
+	hExEt_Y2->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y2 = new TH1D("hEyEt_Y2", "hEyEt_Y2", 100, 0, 1);
+	hEyEt_Y2->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y2 = new TH2D("hExEt_CosThetaK_Y2","hExEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	//jacobi Y histograms
+
+	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
+	hCosThetaK_Y->SetDirectory(outfile);
+
+	TH1D *hExEt_Y = new TH1D("hExEt_Y","hExEt_Y",100, 0, 1);
+	hExEt_Y->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y = new TH1D("hEyEt_Y", "hEyEt_Y", 100, 0, 1);
+	hEyEt_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y = new TH2D("hExEt_CosThetaK_Y","hExEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -416,7 +480,10 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 
-	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	double kxTMag, kyTMag, costhetakT, E_xT, E_yT, E_Txy_T; //only one set, as exchange of 1,2 -> 2,1 of a1 and a2 in T system changes only cos(thetak) -> -cos(thetak)
+	double kxY1Mag, kyY1Mag, costhetakY1, E_xY1, E_yY1, E_Txy_Y1;//need this set and below as exchange of 1,2 -> 2,1 of a1 and a2 in Y system is more complicated! (cos(thetak) -/> -cos(thetak), generally)
+	double kxY2Mag, kyY2Mag, costhetakY2, E_xY2, E_yY2, E_Txy_Y2;// '' /\/\/\/\ see above /\/\/\/\  ''
+	double E_TIM;
 	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 
 	int protonring;// = ringStrip[proton_hit_index];
@@ -463,12 +530,28 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
 
 	//jacobi branches
-	outtree->Branch("kxMag", &kxMag, "kxMag/D");
-	outtree->Branch("kyMag", &kyMag, "kyMag/D");
-	outtree->Branch("costhetak", &costhetak, "costhetak/D");
-	outtree->Branch("E_x", &E_x, "E_x/D");
-	outtree->Branch("E_y", &E_y, "E_y/D");
-	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
+	//jacobi T
+	outtree->Branch("kxTMag", &kxTMag, "kxTMag/D");
+	outtree->Branch("kyTMag", &kyTMag, "kyTMag/D");
+	outtree->Branch("costhetakT", &costhetakT, "costhetakT/D");
+	outtree->Branch("E_xT", &E_xT, "E_xT/D");
+	outtree->Branch("E_yT", &E_yT, "E_yT/D");
+	outtree->Branch("E_Txy_T", &E_Txy_T, "E_Txy_T/D");
+
+	outtree->Branch("kxY1Mag", &kxY1Mag, "kxY1Mag/D");
+	outtree->Branch("kyY1Mag", &kyY1Mag, "kyY1Mag/D");
+	outtree->Branch("costhetakY1", &costhetakY1, "costhetakY1/D");
+	outtree->Branch("E_xY1", &E_xY1, "E_xY1/D");
+	outtree->Branch("E_yY1", &E_yY1, "E_yY1/D");
+	outtree->Branch("E_Txy_Y1", &E_Txy_Y1, "E_Txy_Y1/D");
+
+	outtree->Branch("kxY2Mag", &kxY2Mag, "kxY2Mag/D");
+	outtree->Branch("kyY2Mag", &kyY2Mag, "kyY2Mag/D");
+	outtree->Branch("costhetakY2", &costhetakY2, "costhetakY2/D");
+	outtree->Branch("E_xY2", &E_xY2, "E_xY2/D");
+	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
+	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
+
 	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
 
 	// Residual momentum
@@ -559,54 +642,106 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 		
-			//jacobi T system, with 1 = alpha1, 2 = alpha2
+
+			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
 			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
 
-			TVector3 k1_A, k2_A, k3_A;
-			k3_A = jacobi_proton.Vect();
-			k1_A = jacobi_alpha1.Vect();
-			k2_A = jacobi_alpha2.Vect();
+			TVector3 k1_T, k2_T, k3_T;
+			k1_T = jacobi_alpha1.Vect();
+			k2_T = jacobi_alpha2.Vect();
+			k3_T = jacobi_proton.Vect();
 
-			TVector3 kx_A = 0.5*(k1_A - k2_A);
-			TVector3 ky_A = -k3_A;
+			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
+			TVector3 kx_T = jacobiMomenta.first;
+			TVector3 ky_T = jacobiMomenta.second;
 
-			kxMag = kx_A.Mag();
-			kyMag = ky_A.Mag();
-			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
-			E_Txy = E_x + E_y;
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
-			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+			// TVector3 kx_A = 0.5*(k1_A - k2_A);
+			// TVector3 ky_A = -k3_A;
+
+			kxTMag = kx_T.Mag();
+			kyTMag = ky_T.Mag();
+			E_xT = kxTMag*kxTMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_yT = kyTMag*kyTMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy_T = E_xT + E_yT;	
+			costhetakT = (kx_T.Dot(ky_T))/(kx_T.Mag()*ky_T.Mag());
 
 
-			hCosThetaK->Fill(costhetak);
-			hExEt->Fill(E_x/E_TIM);
-			hEyEt->Fill(E_y/E_TIM);
-			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
-			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
+			hCosThetaK_T->Fill(costhetakT);
+			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_TIM);
+			hEyEt_T->Fill(E_yT/E_TIM);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
-			//jacobi T system, with 1 = alpha2, 2 = alpha1
-			// TVector3 k3_B = jacobi_proton.Vect();
-			// TVector3 k1_B = jacobi_alpha2.Vect();
-			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			// TVector3 kx_B = 0.5*(k1_B - k2_B);
-			// TVector3 ky_B = -k3_B;
+			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
+			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
 
-			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			TVector3 k1_Y, k2_Y, k3_Y;
+			k1_Y = jacobi_alpha1.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha2.Vect();
 
-			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y1 = jacobiMomenta.first;
+			TVector3 ky_Y1 = jacobiMomenta.second;
 
-			// hCosThetaK_B->Fill(costhetak_B);
-			// hExEt_B->Fill(ex_B/eT_B);
-			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			kxY1Mag = kx_Y1.Mag();
+			kyY1Mag = ky_Y1.Mag();
+			E_xY1 = kxY1Mag*kxY1Mag/(2.*mu_x);
+			E_yY1 = kyY1Mag*kyY1Mag/(2.*mu_y);
+			E_Txy_Y1 = E_xY1 + E_yY1;
+			costhetakY1 = (kx_Y1.Dot(ky_Y1))/(kxY1Mag*kyY1Mag);
 
-			// jacobi a vs b:
-			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			hCosThetaK_Y1->Fill(costhetakY1);//y1
+			hCosThetaK_Y->Fill(costhetakY1);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
+			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
+			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+
+
+			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
+			//mux, muy do not change here but calculate anyway
+			mu_x = (mass_a*mass_p)/(mass_a+mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
+
+			k1_Y = jacobi_alpha2.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha1.Vect();
+
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y2 = jacobiMomenta.first;
+			TVector3 ky_Y2 = jacobiMomenta.second;
+
+			kxY2Mag = kx_Y2.Mag();
+			kyY2Mag = ky_Y2.Mag();
+			E_xY2 = kxY2Mag*kxY2Mag/(2.*mu_x);
+			E_yY2 = kyY2Mag*kyY2Mag/(2.*mu_y);
+			E_Txy_Y2 = E_xY2 + E_yY2;
+			costhetakY2 = (kx_Y2.Dot(ky_Y2))/(kxY2Mag*kyY2Mag);
+
+			hCosThetaK_Y2->Fill(costhetakY2);//y2
+			hCosThetaK_Y->Fill(costhetakY2);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
+			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
+			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -1024,20 +1159,73 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
-	hCosThetaK->SetDirectory(outfile);
+	//jacobi T histograms
 
-	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
-	hExEt->SetDirectory(outfile);
+	TH1D *hCosThetaK_T = new TH1D("hCosThetaK_T","hCosThetaK_T", 200, -1, 1);
+	hCosThetaK_T->SetDirectory(outfile);
 
-	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
-	hEyEt->SetDirectory(outfile);
+	TH1D *hExEt_T = new TH1D("hExEt_T","hExEt_T",100, 0, 1);
+	hExEt_T->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
-	hExEt_CosThetaK->SetDirectory(outfile);
+	TH1D *hEyEt_T = new TH1D("hEyEt_T", "hEyEt_T", 100, 0, 1);
+	hEyEt_T->SetDirectory(outfile);
 
-	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
-	hEyEt_CosThetaK->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_T = new TH2D("hExEt_CosThetaK_T","hExEt_CosThetaK_T",200,-1,1,100,0,1);
+	hExEt_CosThetaK_T->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_T->SetDirectory(outfile);
+
+	//jacobi Y1 histograms
+
+	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
+	hCosThetaK_Y1->SetDirectory(outfile);
+
+	TH1D *hExEt_Y1 = new TH1D("hExEt_Y1","hExEt_Y1",100, 0, 1);
+	hExEt_Y1->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y1 = new TH1D("hEyEt_Y1", "hEyEt_Y1", 100, 0, 1);
+	hEyEt_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y1 = new TH2D("hExEt_CosThetaK_Y1","hExEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	//jacobi Y2 histograms
+
+	TH1D *hCosThetaK_Y2 = new TH1D("hCosThetaK_Y2","hCosThetaK_Y2", 200, -1, 1);
+	hCosThetaK_Y2->SetDirectory(outfile);
+
+	TH1D *hExEt_Y2 = new TH1D("hExEt_Y2","hExEt_Y2",100, 0, 1);
+	hExEt_Y2->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y2 = new TH1D("hEyEt_Y2", "hEyEt_Y2", 100, 0, 1);
+	hEyEt_Y2->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y2 = new TH2D("hExEt_CosThetaK_Y2","hExEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	//jacobi Y histograms
+
+	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
+	hCosThetaK_Y->SetDirectory(outfile);
+
+	TH1D *hExEt_Y = new TH1D("hExEt_Y","hExEt_Y",100, 0, 1);
+	hExEt_Y->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y = new TH1D("hEyEt_Y", "hEyEt_Y", 100, 0, 1);
+	hEyEt_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y = new TH2D("hExEt_CosThetaK_Y","hExEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1188,7 +1376,10 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 
-	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	double kxTMag, kyTMag, costhetakT, E_xT, E_yT, E_Txy_T; //only one set, as exchange of 1,2 -> 2,1 of a1 and a2 in T system changes only cos(thetak) -> -cos(thetak)
+	double kxY1Mag, kyY1Mag, costhetakY1, E_xY1, E_yY1, E_Txy_Y1;//need this set and below as exchange of 1,2 -> 2,1 of a1 and a2 in Y system is more complicated! (cos(thetak) -/> -cos(thetak), generally)
+	double kxY2Mag, kyY2Mag, costhetakY2, E_xY2, E_yY2, E_Txy_Y2;// '' /\/\/\/\ see above /\/\/\/\  ''
+	double E_TIM;
 	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 
 	int protonring;// = ringStrip[proton_hit_index];
@@ -1235,13 +1426,26 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
 
 	//jacobi branches
-	outtree->Branch("kxMag", &kxMag, "kxMag/D");
-	outtree->Branch("kyMag", &kyMag, "kyMag/D");
-	outtree->Branch("costhetak", &costhetak, "costhetak/D");
-	outtree->Branch("E_x", &E_x, "E_x/D");
-	outtree->Branch("E_y", &E_y, "E_y/D");
-	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
-	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
+	outtree->Branch("kxTMag", &kxTMag, "kxTMag/D");
+	outtree->Branch("kyTMag", &kyTMag, "kyTMag/D");
+	outtree->Branch("costhetakT", &costhetakT, "costhetakT/D");
+	outtree->Branch("E_xT", &E_xT, "E_xT/D");
+	outtree->Branch("E_yT", &E_yT, "E_yT/D");
+	outtree->Branch("E_Txy_T", &E_Txy_T, "E_Txy_T/D");
+
+	outtree->Branch("kxY1Mag", &kxY1Mag, "kxY1Mag/D");
+	outtree->Branch("kyY1Mag", &kyY1Mag, "kyY1Mag/D");
+	outtree->Branch("costhetakY1", &costhetakY1, "costhetakY1/D");
+	outtree->Branch("E_xY1", &E_xY1, "E_xY1/D");
+	outtree->Branch("E_yY1", &E_yY1, "E_yY1/D");
+	outtree->Branch("E_Txy_Y1", &E_Txy_Y1, "E_Txy_Y1/D");
+
+	outtree->Branch("kxY2Mag", &kxY2Mag, "kxY2Mag/D");
+	outtree->Branch("kyY2Mag", &kyY2Mag, "kyY2Mag/D");
+	outtree->Branch("costhetakY2", &costhetakY2, "costhetakY2/D");
+	outtree->Branch("E_xY2", &E_xY2, "E_xY2/D");
+	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
+	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
 
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
@@ -1346,34 +1550,103 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
-			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
 			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
 
-			TVector3 k1_A, k2_A, k3_A;
-			k3_A = jacobi_proton.Vect();
-			k1_A = jacobi_alpha1.Vect();
-			k2_A = jacobi_alpha2.Vect();
+			TVector3 k1_T, k2_T, k3_T;
+			k1_T = jacobi_alpha1.Vect();
+			k2_T = jacobi_alpha2.Vect();
+			k3_T = jacobi_proton.Vect();
 
-			TVector3 kx_A = 0.5*(k1_A - k2_A);
-			TVector3 ky_A = -k3_A;
+			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
+			TVector3 kx_T = jacobiMomenta.first;
+			TVector3 ky_T = jacobiMomenta.second;
 
-			kxMag = kx_A.Mag();
-			kyMag = ky_A.Mag();
-			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
-			E_Txy = E_x + E_y;
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
-			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+			// TVector3 kx_A = 0.5*(k1_A - k2_A);
+			// TVector3 ky_A = -k3_A;
+
+			kxTMag = kx_T.Mag();
+			kyTMag = ky_T.Mag();
+			E_xT = kxTMag*kxTMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_yT = kyTMag*kyTMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy_T = E_xT + E_yT;	
+			costhetakT = (kx_T.Dot(ky_T))/(kx_T.Mag()*ky_T.Mag());
 
 
-			hCosThetaK->Fill(costhetak);
-			hExEt->Fill(E_x/E_TIM);
-			hEyEt->Fill(E_y/E_TIM);
-			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
-			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
+			hCosThetaK_T->Fill(costhetakT);
+			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_TIM);
+			hEyEt_T->Fill(E_yT/E_TIM);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
-			//jacobi T system, with 1 = alpha2, 2 = alpha1
+
+			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
+			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
+
+			TVector3 k1_Y, k2_Y, k3_Y;
+			k1_Y = jacobi_alpha1.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha2.Vect();
+
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y1 = jacobiMomenta.first;
+			TVector3 ky_Y1 = jacobiMomenta.second;
+
+			kxY1Mag = kx_Y1.Mag();
+			kyY1Mag = ky_Y1.Mag();
+			E_xY1 = kxY1Mag*kxY1Mag/(2.*mu_x);
+			E_yY1 = kyY1Mag*kyY1Mag/(2.*mu_y);
+			E_Txy_Y1 = E_xY1 + E_yY1;
+			costhetakY1 = (kx_Y1.Dot(ky_Y1))/(kxY1Mag*kyY1Mag);
+
+			hCosThetaK_Y1->Fill(costhetakY1);//y1
+			hCosThetaK_Y->Fill(costhetakY1);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
+			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
+			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+
+
+			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
+			//mux, muy do not change here but calculate anyway
+			mu_x = (mass_a*mass_p)/(mass_a+mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
+
+			k1_Y = jacobi_alpha2.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha1.Vect();
+
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y2 = jacobiMomenta.first;
+			TVector3 ky_Y2 = jacobiMomenta.second;
+
+			kxY2Mag = kx_Y2.Mag();
+			kyY2Mag = ky_Y2.Mag();
+			E_xY2 = kxY2Mag*kxY2Mag/(2.*mu_x);
+			E_yY2 = kyY2Mag*kyY2Mag/(2.*mu_y);
+			E_Txy_Y2 = E_xY2 + E_yY2;
+			costhetakY2 = (kx_Y2.Dot(ky_Y2))/(kxY2Mag*kyY2Mag);
+
+			hCosThetaK_Y2->Fill(costhetakY2);//y2
+			hCosThetaK_Y->Fill(costhetakY2);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
+			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
+			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
+
 			// TVector3 k3_B = jacobi_proton.Vect();
 			// TVector3 k1_B = jacobi_alpha2.Vect();
 			// TVector3 k2_B = jacobi_alpha1.Vect();
@@ -1789,20 +2062,73 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
-	hCosThetaK->SetDirectory(outfile);
+	//jacobi T histograms
 
-	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
-	hExEt->SetDirectory(outfile);
+	TH1D *hCosThetaK_T = new TH1D("hCosThetaK_T","hCosThetaK_T", 200, -1, 1);
+	hCosThetaK_T->SetDirectory(outfile);
 
-	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
-	hEyEt->SetDirectory(outfile);
+	TH1D *hExEt_T = new TH1D("hExEt_T","hExEt_T",100, 0, 1);
+	hExEt_T->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
-	hExEt_CosThetaK->SetDirectory(outfile);
+	TH1D *hEyEt_T = new TH1D("hEyEt_T", "hEyEt_T", 100, 0, 1);
+	hEyEt_T->SetDirectory(outfile);
 
-	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
-	hEyEt_CosThetaK->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_T = new TH2D("hExEt_CosThetaK_T","hExEt_CosThetaK_T",200,-1,1,100,0,1);
+	hExEt_CosThetaK_T->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_T->SetDirectory(outfile);
+
+	//jacobi Y1 histograms
+
+	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
+	hCosThetaK_Y1->SetDirectory(outfile);
+
+	TH1D *hExEt_Y1 = new TH1D("hExEt_Y1","hExEt_Y1",100, 0, 1);
+	hExEt_Y1->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y1 = new TH1D("hEyEt_Y1", "hEyEt_Y1", 100, 0, 1);
+	hEyEt_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y1 = new TH2D("hExEt_CosThetaK_Y1","hExEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	//jacobi Y2 histograms
+
+	TH1D *hCosThetaK_Y2 = new TH1D("hCosThetaK_Y2","hCosThetaK_Y2", 200, -1, 1);
+	hCosThetaK_Y2->SetDirectory(outfile);
+
+	TH1D *hExEt_Y2 = new TH1D("hExEt_Y2","hExEt_Y2",100, 0, 1);
+	hExEt_Y2->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y2 = new TH1D("hEyEt_Y2", "hEyEt_Y2", 100, 0, 1);
+	hEyEt_Y2->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y2 = new TH2D("hExEt_CosThetaK_Y2","hExEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	//jacobi Y histograms
+
+	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
+	hCosThetaK_Y->SetDirectory(outfile);
+
+	TH1D *hExEt_Y = new TH1D("hExEt_Y","hExEt_Y",100, 0, 1);
+	hExEt_Y->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y = new TH1D("hEyEt_Y", "hEyEt_Y", 100, 0, 1);
+	hEyEt_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y = new TH2D("hExEt_CosThetaK_Y","hExEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1948,7 +2274,11 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	double ExSPS, recoilEx, SABREsumE;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
-	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+
+	double kxTMag, kyTMag, costhetakT, E_xT, E_yT, E_Txy_T; //only one set, as exchange of 1,2 -> 2,1 of a1 and a2 in T system changes only cos(thetak) -> -cos(thetak)
+	double kxY1Mag, kyY1Mag, costhetakY1, E_xY1, E_yY1, E_Txy_Y1;//need this set and below as exchange of 1,2 -> 2,1 of a1 and a2 in Y system is more complicated! (cos(thetak) -/> -cos(thetak), generally)
+	double kxY2Mag, kyY2Mag, costhetakY2, E_xY2, E_yY2, E_Txy_Y2;// '' /\/\/\/\ see above /\/\/\/\  ''
+	double E_TIM;
 	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 	double catania_x, catania_y;
 
@@ -1992,13 +2322,26 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
 
 	//jacobi branches
-	outtree->Branch("kxMag", &kxMag, "kxMag/D");
-	outtree->Branch("kyMag", &kyMag, "kyMag/D");
-	outtree->Branch("costhetak", &costhetak, "costhetak/D");
-	outtree->Branch("E_x", &E_x, "E_x/D");
-	outtree->Branch("E_y", &E_y, "E_y/D");
-	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
-	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
+	outtree->Branch("kxTMag", &kxTMag, "kxTMag/D");
+	outtree->Branch("kyTMag", &kyTMag, "kyTMag/D");
+	outtree->Branch("costhetakT", &costhetakT, "costhetakT/D");
+	outtree->Branch("E_xT", &E_xT, "E_xT/D");
+	outtree->Branch("E_yT", &E_yT, "E_yT/D");
+	outtree->Branch("E_Txy_T", &E_Txy_T, "E_Txy_T/D");
+
+	outtree->Branch("kxY1Mag", &kxY1Mag, "kxY1Mag/D");
+	outtree->Branch("kyY1Mag", &kyY1Mag, "kyY1Mag/D");
+	outtree->Branch("costhetakY1", &costhetakY1, "costhetakY1/D");
+	outtree->Branch("E_xY1", &E_xY1, "E_xY1/D");
+	outtree->Branch("E_yY1", &E_yY1, "E_yY1/D");
+	outtree->Branch("E_Txy_Y1", &E_Txy_Y1, "E_Txy_Y1/D");
+
+	outtree->Branch("kxY2Mag", &kxY2Mag, "kxY2Mag/D");
+	outtree->Branch("kyY2Mag", &kyY2Mag, "kyY2Mag/D");
+	outtree->Branch("costhetakY2", &costhetakY2, "costhetakY2/D");
+	outtree->Branch("E_xY2", &E_xY2, "E_xY2/D");
+	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
+	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
 
 	outtree->Branch("catania_x", &catania_x, "catania_x/D");
 	outtree->Branch("catania_y", &catania_y, "catania_y/D");
@@ -2093,53 +2436,102 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
-			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
 			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
 
-			TVector3 k1_A, k2_A, k3_A;
-			k3_A = jacobi_proton.Vect();
-			k1_A = jacobi_alpha1.Vect();
-			k2_A = jacobi_alpha2.Vect();
+			TVector3 k1_T, k2_T, k3_T;
+			k1_T = jacobi_alpha1.Vect();
+			k2_T = jacobi_alpha2.Vect();
+			k3_T = jacobi_proton.Vect();
 
-			TVector3 kx_A = 0.5*(k1_A - k2_A);
-			TVector3 ky_A = -k3_A;
+			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
+			TVector3 kx_T = jacobiMomenta.first;
+			TVector3 ky_T = jacobiMomenta.second;
 
-			kxMag = kx_A.Mag();
-			kyMag = ky_A.Mag();
-			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
-			E_Txy = E_x + E_y;
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
-			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+			// TVector3 kx_A = 0.5*(k1_A - k2_A);
+			// TVector3 ky_A = -k3_A;
+
+			kxTMag = kx_T.Mag();
+			kyTMag = ky_T.Mag();
+			E_xT = kxTMag*kxTMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_yT = kyTMag*kyTMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy_T = E_xT + E_yT;	
+			costhetakT = (kx_T.Dot(ky_T))/(kx_T.Mag()*ky_T.Mag());
 
 
-			hCosThetaK->Fill(costhetak);
-			hExEt->Fill(E_x/E_TIM);
-			hEyEt->Fill(E_y/E_TIM);
-			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
-			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
+			hCosThetaK_T->Fill(costhetakT);
+			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_TIM);
+			hEyEt_T->Fill(E_yT/E_TIM);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
-			// //jacobi T system, with 1 = alpha2, 2 = alpha1
-			// TVector3 k3_B = jacobi_proton.Vect();
-			// TVector3 k1_B = jacobi_alpha2.Vect();
-			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			// TVector3 kx_B = 0.5*(k1_B - k2_B);
-			// TVector3 ky_B = -k3_B;
+			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
+			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
 
-			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			TVector3 k1_Y, k2_Y, k3_Y;
+			k1_Y = jacobi_alpha1.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha2.Vect();
 
-			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y1 = jacobiMomenta.first;
+			TVector3 ky_Y1 = jacobiMomenta.second;
 
-			// hCosThetaK_B->Fill(costhetak_B);
-			// hExEt_B->Fill(ex_B/eT_B);
-			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			kxY1Mag = kx_Y1.Mag();
+			kyY1Mag = ky_Y1.Mag();
+			E_xY1 = kxY1Mag*kxY1Mag/(2.*mu_x);
+			E_yY1 = kyY1Mag*kyY1Mag/(2.*mu_y);
+			E_Txy_Y1 = E_xY1 + E_yY1;
+			costhetakY1 = (kx_Y1.Dot(ky_Y1))/(kxY1Mag*kyY1Mag);
 
-			// //jacobi a vs b:
-			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			hCosThetaK_Y1->Fill(costhetakY1);//y1
+			hCosThetaK_Y->Fill(costhetakY1);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
+			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
+			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+
+
+			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
+			//mux, muy do not change here but calculate anyway
+			mu_x = (mass_a*mass_p)/(mass_a+mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
+
+			k1_Y = jacobi_alpha2.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha1.Vect();
+
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y2 = jacobiMomenta.first;
+			TVector3 ky_Y2 = jacobiMomenta.second;
+
+			kxY2Mag = kx_Y2.Mag();
+			kyY2Mag = ky_Y2.Mag();
+			E_xY2 = kxY2Mag*kxY2Mag/(2.*mu_x);
+			E_yY2 = kyY2Mag*kyY2Mag/(2.*mu_y);
+			E_Txy_Y2 = E_xY2 + E_yY2;
+			costhetakY2 = (kx_Y2.Dot(ky_Y2))/(kxY2Mag*kyY2Mag);
+
+			hCosThetaK_Y2->Fill(costhetakY2);//y2
+			hCosThetaK_Y->Fill(costhetakY2);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
+			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
+			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -2526,20 +2918,73 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
-	hCosThetaK->SetDirectory(outfile);
+	//jacobi T histograms
 
-	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
-	hExEt->SetDirectory(outfile);
+	TH1D *hCosThetaK_T = new TH1D("hCosThetaK_T","hCosThetaK_T", 200, -1, 1);
+	hCosThetaK_T->SetDirectory(outfile);
 
-	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
-	hEyEt->SetDirectory(outfile);
+	TH1D *hExEt_T = new TH1D("hExEt_T","hExEt_T",100, 0, 1);
+	hExEt_T->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
-	hExEt_CosThetaK->SetDirectory(outfile);
+	TH1D *hEyEt_T = new TH1D("hEyEt_T", "hEyEt_T", 100, 0, 1);
+	hEyEt_T->SetDirectory(outfile);
 
-	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
-	hEyEt_CosThetaK->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_T = new TH2D("hExEt_CosThetaK_T","hExEt_CosThetaK_T",200,-1,1,100,0,1);
+	hExEt_CosThetaK_T->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_T->SetDirectory(outfile);
+
+	//jacobi Y1 histograms
+
+	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
+	hCosThetaK_Y1->SetDirectory(outfile);
+
+	TH1D *hExEt_Y1 = new TH1D("hExEt_Y1","hExEt_Y1",100, 0, 1);
+	hExEt_Y1->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y1 = new TH1D("hEyEt_Y1", "hEyEt_Y1", 100, 0, 1);
+	hEyEt_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y1 = new TH2D("hExEt_CosThetaK_Y1","hExEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	//jacobi Y2 histograms
+
+	TH1D *hCosThetaK_Y2 = new TH1D("hCosThetaK_Y2","hCosThetaK_Y2", 200, -1, 1);
+	hCosThetaK_Y2->SetDirectory(outfile);
+
+	TH1D *hExEt_Y2 = new TH1D("hExEt_Y2","hExEt_Y2",100, 0, 1);
+	hExEt_Y2->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y2 = new TH1D("hEyEt_Y2", "hEyEt_Y2", 100, 0, 1);
+	hEyEt_Y2->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y2 = new TH2D("hExEt_CosThetaK_Y2","hExEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
+
+	//jacobi Y histograms
+
+	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
+	hCosThetaK_Y->SetDirectory(outfile);
+
+	TH1D *hExEt_Y = new TH1D("hExEt_Y","hExEt_Y",100, 0, 1);
+	hExEt_Y->SetDirectory(outfile);
+
+	TH1D *hEyEt_Y = new TH1D("hEyEt_Y", "hEyEt_Y", 100, 0, 1);
+	hEyEt_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_Y = new TH2D("hExEt_CosThetaK_Y","hExEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hExEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
+	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -2685,7 +3130,10 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	double ExSPS, recoilEx, SABREsumE;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
-	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	double kxTMag, kyTMag, costhetakT, E_xT, E_yT, E_Txy_T; //only one set, as exchange of 1,2 -> 2,1 of a1 and a2 in T system changes only cos(thetak) -> -cos(thetak)
+	double kxY1Mag, kyY1Mag, costhetakY1, E_xY1, E_yY1, E_Txy_Y1;//need this set and below as exchange of 1,2 -> 2,1 of a1 and a2 in Y system is more complicated! (cos(thetak) -/> -cos(thetak), generally)
+	double kxY2Mag, kyY2Mag, costhetakY2, E_xY2, E_yY2, E_Txy_Y2;// '' /\/\/\/\ see above /\/\/\/\  ''
+	double E_TIM;
 	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 	double catania_x, catania_y;
 
@@ -2729,13 +3177,26 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
 
 	//jacobi branches
-	outtree->Branch("kxMag", &kxMag, "kxMag/D");
-	outtree->Branch("kyMag", &kyMag, "kyMag/D");
-	outtree->Branch("costhetak", &costhetak, "costhetak/D");
-	outtree->Branch("E_x", &E_x, "E_x/D");
-	outtree->Branch("E_y", &E_y, "E_y/D");
-	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
-	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
+	outtree->Branch("kxTMag", &kxTMag, "kxTMag/D");
+	outtree->Branch("kyTMag", &kyTMag, "kyTMag/D");
+	outtree->Branch("costhetakT", &costhetakT, "costhetakT/D");
+	outtree->Branch("E_xT", &E_xT, "E_xT/D");
+	outtree->Branch("E_yT", &E_yT, "E_yT/D");
+	outtree->Branch("E_Txy_T", &E_Txy_T, "E_Txy_T/D");
+
+	outtree->Branch("kxY1Mag", &kxY1Mag, "kxY1Mag/D");
+	outtree->Branch("kyY1Mag", &kyY1Mag, "kyY1Mag/D");
+	outtree->Branch("costhetakY1", &costhetakY1, "costhetakY1/D");
+	outtree->Branch("E_xY1", &E_xY1, "E_xY1/D");
+	outtree->Branch("E_yY1", &E_yY1, "E_yY1/D");
+	outtree->Branch("E_Txy_Y1", &E_Txy_Y1, "E_Txy_Y1/D");
+
+	outtree->Branch("kxY2Mag", &kxY2Mag, "kxY2Mag/D");
+	outtree->Branch("kyY2Mag", &kyY2Mag, "kyY2Mag/D");
+	outtree->Branch("costhetakY2", &costhetakY2, "costhetakY2/D");
+	outtree->Branch("E_xY2", &E_xY2, "E_xY2/D");
+	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
+	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
 
 	outtree->Branch("catania_x", &catania_x, "catania_x/D");
 	outtree->Branch("catania_y", &catania_y, "catania_y/D");
@@ -2833,53 +3294,102 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
-			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
 			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
 
-			TVector3 k1_A, k2_A, k3_A;
-			k3_A = jacobi_proton.Vect();
-			k1_A = jacobi_alpha1.Vect();
-			k2_A = jacobi_alpha2.Vect();
+			TVector3 k1_T, k2_T, k3_T;
+			k1_T = jacobi_alpha1.Vect();
+			k2_T = jacobi_alpha2.Vect();
+			k3_T = jacobi_proton.Vect();
 
-			TVector3 kx_A = 0.5*(k1_A - k2_A);
-			TVector3 ky_A = -k3_A;
+			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
+			TVector3 kx_T = jacobiMomenta.first;
+			TVector3 ky_T = jacobiMomenta.second;
 
-			kxMag = kx_A.Mag();
-			kyMag = ky_A.Mag();
-			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
-			E_Txy = E_x + E_y;
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
-			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+			// TVector3 kx_A = 0.5*(k1_A - k2_A);
+			// TVector3 ky_A = -k3_A;
+
+			kxTMag = kx_T.Mag();
+			kyTMag = ky_T.Mag();
+			E_xT = kxTMag*kxTMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_yT = kyTMag*kyTMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy_T = E_xT + E_yT;	
+			costhetakT = (kx_T.Dot(ky_T))/(kx_T.Mag()*ky_T.Mag());
 
 
-			hCosThetaK->Fill(costhetak);
-			hExEt->Fill(E_x/E_TIM);
-			hEyEt->Fill(E_y/E_TIM);
-			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
-			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
+			hCosThetaK_T->Fill(costhetakT);
+			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_TIM);
+			hEyEt_T->Fill(E_yT/E_TIM);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
-			// //jacobi T system, with 1 = alpha2, 2 = alpha1
-			// TVector3 k3_B = jacobi_proton.Vect();
-			// TVector3 k1_B = jacobi_alpha2.Vect();
-			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			// TVector3 kx_B = 0.5*(k1_B - k2_B);
-			// TVector3 ky_B = -k3_B;
+			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
+			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
 
-			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			TVector3 k1_Y, k2_Y, k3_Y;
+			k1_Y = jacobi_alpha1.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha2.Vect();
 
-			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y1 = jacobiMomenta.first;
+			TVector3 ky_Y1 = jacobiMomenta.second;
 
-			// hCosThetaK_B->Fill(costhetak_B);
-			// hExEt_B->Fill(ex_B/eT_B);
-			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			kxY1Mag = kx_Y1.Mag();
+			kyY1Mag = ky_Y1.Mag();
+			E_xY1 = kxY1Mag*kxY1Mag/(2.*mu_x);
+			E_yY1 = kyY1Mag*kyY1Mag/(2.*mu_y);
+			E_Txy_Y1 = E_xY1 + E_yY1;
+			costhetakY1 = (kx_Y1.Dot(ky_Y1))/(kxY1Mag*kyY1Mag);
 
-			// //jacobi a vs b:
-			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			hCosThetaK_Y1->Fill(costhetakY1);//y1
+			hCosThetaK_Y->Fill(costhetakY1);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
+			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
+			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+
+
+			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
+			//mux, muy do not change here but calculate anyway
+			mu_x = (mass_a*mass_p)/(mass_a+mass_p);
+			mu_y = (mass_a*(mass_a+mass_p))/(mass_a+mass_p+mass_a);
+
+			k1_Y = jacobi_alpha2.Vect();
+			k2_Y = jacobi_proton.Vect();
+			k3_Y = jacobi_alpha1.Vect();
+
+			jacobiMomenta = getJacobiMomenta(k1_Y, k2_Y, k3_Y, mass_a, mass_p, mass_a);
+			TVector3 kx_Y2 = jacobiMomenta.first;
+			TVector3 ky_Y2 = jacobiMomenta.second;
+
+			kxY2Mag = kx_Y2.Mag();
+			kyY2Mag = ky_Y2.Mag();
+			E_xY2 = kxY2Mag*kxY2Mag/(2.*mu_x);
+			E_yY2 = kyY2Mag*kyY2Mag/(2.*mu_y);
+			E_Txy_Y2 = E_xY2 + E_yY2;
+			costhetakY2 = (kx_Y2.Dot(ky_Y2))/(kxY2Mag*kyY2Mag);
+
+			hCosThetaK_Y2->Fill(costhetakY2);//y2
+			hCosThetaK_Y->Fill(costhetakY2);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
+			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
+			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
