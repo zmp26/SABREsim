@@ -252,24 +252,20 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
-	hCosThetaK_A->SetDirectory(outfile);
-	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
-	hCosThetaK_B->SetDirectory(outfile);
-	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
-	hCosThetaK_AvsB->SetDirectory(outfile);
+	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
+	hCosThetaK->SetDirectory(outfile);
 
-	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
-	hExEt_A->SetDirectory(outfile);
-	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
-	hExEt_B->SetDirectory(outfile);
-	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
-	hExEt_AvsB->SetDirectory(outfile);
+	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
+	hExEt->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
-	hExEt_CosThetaK_A->SetDirectory(outfile);
-	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
-	hExEt_CosThetaK_B->SetDirectory(outfile);
+	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
+	hEyEt->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
+	hExEt_CosThetaK->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
+	hEyEt_CosThetaK->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -420,6 +416,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 
+	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
+
 	int protonring;// = ringStrip[proton_hit_index];
 	int alpha1ring;// = ringStrip[alpha_hit_index1];
 	int alpha2ring;// = ringStrip[alpha_hit_index2];
@@ -462,6 +461,15 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
 	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
+
+	//jacobi branches
+	outtree->Branch("kxMag", &kxMag, "kxMag/D");
+	outtree->Branch("kyMag", &kyMag, "kyMag/D");
+	outtree->Branch("costhetak", &costhetak, "costhetak/D");
+	outtree->Branch("E_x", &E_x, "E_x/D");
+	outtree->Branch("E_y", &E_y, "E_y/D");
+	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
 
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
@@ -553,6 +561,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			double mu_x = mass_a*mass_a/(2.*mass_a);
+			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
+
 			TVector3 k1_A, k2_A, k3_A;
 			k3_A = jacobi_proton.Vect();
 			k1_A = jacobi_alpha1.Vect();
@@ -561,35 +572,41 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			TVector3 kx_A = 0.5*(k1_A - k2_A);
 			TVector3 ky_A = -k3_A;
 
-			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			kxMag = kx_A.Mag();
+			kyMag = ky_A.Mag();
+			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy = E_x + E_y;
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			hCosThetaK_A->Fill(costhetak_A);
-			hExEt_A->Fill(ex_A/eT_A);
-			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+			hCosThetaK->Fill(costhetak);
+			hExEt->Fill(E_x/E_TIM);
+			hEyEt->Fill(E_y/E_TIM);
+			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
+			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
 
 			//jacobi T system, with 1 = alpha2, 2 = alpha1
-			TVector3 k3_B = jacobi_proton.Vect();
-			TVector3 k1_B = jacobi_alpha2.Vect();
-			TVector3 k2_B = jacobi_alpha1.Vect();
+			// TVector3 k3_B = jacobi_proton.Vect();
+			// TVector3 k1_B = jacobi_alpha2.Vect();
+			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			TVector3 kx_B = 0.5*(k1_B - k2_B);
-			TVector3 ky_B = -k3_B;
+			// TVector3 kx_B = 0.5*(k1_B - k2_B);
+			// TVector3 ky_B = -k3_B;
 
-			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 
-			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
 
-			hCosThetaK_B->Fill(costhetak_B);
-			hExEt_B->Fill(ex_B/eT_B);
-			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			// hCosThetaK_B->Fill(costhetak_B);
+			// hExEt_B->Fill(ex_B/eT_B);
+			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
 
-			//jacobi a vs b:
-			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			// jacobi a vs b:
+			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -1007,24 +1024,20 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
-	hCosThetaK_A->SetDirectory(outfile);
-	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
-	hCosThetaK_B->SetDirectory(outfile);
-	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
-	hCosThetaK_AvsB->SetDirectory(outfile);
+	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
+	hCosThetaK->SetDirectory(outfile);
 
-	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
-	hExEt_A->SetDirectory(outfile);
-	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
-	hExEt_B->SetDirectory(outfile);
-	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
-	hExEt_AvsB->SetDirectory(outfile);
+	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
+	hExEt->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
-	hExEt_CosThetaK_A->SetDirectory(outfile);
-	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
-	hExEt_CosThetaK_B->SetDirectory(outfile);
+	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
+	hEyEt->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
+	hExEt_CosThetaK->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
+	hEyEt_CosThetaK->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1175,6 +1188,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
 
+	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
+
 	int protonring;// = ringStrip[proton_hit_index];
 	int alpha1ring;// = ringStrip[alpha_hit_index1];
 	int alpha2ring;// = ringStrip[alpha_hit_index2];
@@ -1217,6 +1233,15 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
 	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
+
+	//jacobi branches
+	outtree->Branch("kxMag", &kxMag, "kxMag/D");
+	outtree->Branch("kyMag", &kyMag, "kyMag/D");
+	outtree->Branch("costhetak", &costhetak, "costhetak/D");
+	outtree->Branch("E_x", &E_x, "E_x/D");
+	outtree->Branch("E_y", &E_y, "E_y/D");
+	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
 
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
@@ -1322,6 +1347,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			double mu_x = mass_a*mass_a/(2.*mass_a);
+			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
+
 			TVector3 k1_A, k2_A, k3_A;
 			k3_A = jacobi_proton.Vect();
 			k1_A = jacobi_alpha1.Vect();
@@ -1330,35 +1358,41 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			TVector3 kx_A = 0.5*(k1_A - k2_A);
 			TVector3 ky_A = -k3_A;
 
-			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			kxMag = kx_A.Mag();
+			kyMag = ky_A.Mag();
+			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy = E_x + E_y;
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			hCosThetaK_A->Fill(costhetak_A);
-			hExEt_A->Fill(ex_A/eT_A);
-			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+			hCosThetaK->Fill(costhetak);
+			hExEt->Fill(E_x/E_TIM);
+			hEyEt->Fill(E_y/E_TIM);
+			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
+			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
 
 			//jacobi T system, with 1 = alpha2, 2 = alpha1
-			TVector3 k3_B = jacobi_proton.Vect();
-			TVector3 k1_B = jacobi_alpha2.Vect();
-			TVector3 k2_B = jacobi_alpha1.Vect();
+			// TVector3 k3_B = jacobi_proton.Vect();
+			// TVector3 k1_B = jacobi_alpha2.Vect();
+			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			TVector3 kx_B = 0.5*(k1_B - k2_B);
-			TVector3 ky_B = -k3_B;
+			// TVector3 kx_B = 0.5*(k1_B - k2_B);
+			// TVector3 ky_B = -k3_B;
 
-			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 
-			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
 
-			hCosThetaK_B->Fill(costhetak_B);
-			hExEt_B->Fill(ex_B/eT_B);
-			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			// hCosThetaK_B->Fill(costhetak_B);
+			// hExEt_B->Fill(ex_B/eT_B);
+			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
 
-			//jacobi a vs b:
-			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			// //jacobi a vs b:
+			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -1755,24 +1789,20 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
-	hCosThetaK_A->SetDirectory(outfile);
-	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
-	hCosThetaK_B->SetDirectory(outfile);
-	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
-	hCosThetaK_AvsB->SetDirectory(outfile);
+	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
+	hCosThetaK->SetDirectory(outfile);
 
-	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
-	hExEt_A->SetDirectory(outfile);
-	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
-	hExEt_B->SetDirectory(outfile);
-	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
-	hExEt_AvsB->SetDirectory(outfile);
+	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
+	hExEt->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
-	hExEt_CosThetaK_A->SetDirectory(outfile);
-	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
-	hExEt_CosThetaK_B->SetDirectory(outfile);
+	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
+	hEyEt->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
+	hExEt_CosThetaK->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
+	hEyEt_CosThetaK->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1918,6 +1948,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	double ExSPS, recoilEx, SABREsumE;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
+	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 	double catania_x, catania_y;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
@@ -1958,6 +1990,15 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
 	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
+
+	//jacobi branches
+	outtree->Branch("kxMag", &kxMag, "kxMag/D");
+	outtree->Branch("kyMag", &kyMag, "kyMag/D");
+	outtree->Branch("costhetak", &costhetak, "costhetak/D");
+	outtree->Branch("E_x", &E_x, "E_x/D");
+	outtree->Branch("E_y", &E_y, "E_y/D");
+	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
 
 	outtree->Branch("catania_x", &catania_x, "catania_x/D");
 	outtree->Branch("catania_y", &catania_y, "catania_y/D");
@@ -2053,6 +2094,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			double mu_x = mass_a*mass_a/(2.*mass_a);
+			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
+
 			TVector3 k1_A, k2_A, k3_A;
 			k3_A = jacobi_proton.Vect();
 			k1_A = jacobi_alpha1.Vect();
@@ -2061,35 +2105,41 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			TVector3 kx_A = 0.5*(k1_A - k2_A);
 			TVector3 ky_A = -k3_A;
 
-			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			kxMag = kx_A.Mag();
+			kyMag = ky_A.Mag();
+			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy = E_x + E_y;
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			hCosThetaK_A->Fill(costhetak_A);
-			hExEt_A->Fill(ex_A/eT_A);
-			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+			hCosThetaK->Fill(costhetak);
+			hExEt->Fill(E_x/E_TIM);
+			hEyEt->Fill(E_y/E_TIM);
+			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
+			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
 
-			//jacobi T system, with 1 = alpha2, 2 = alpha1
-			TVector3 k3_B = jacobi_proton.Vect();
-			TVector3 k1_B = jacobi_alpha2.Vect();
-			TVector3 k2_B = jacobi_alpha1.Vect();
+			// //jacobi T system, with 1 = alpha2, 2 = alpha1
+			// TVector3 k3_B = jacobi_proton.Vect();
+			// TVector3 k1_B = jacobi_alpha2.Vect();
+			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			TVector3 kx_B = 0.5*(k1_B - k2_B);
-			TVector3 ky_B = -k3_B;
+			// TVector3 kx_B = 0.5*(k1_B - k2_B);
+			// TVector3 ky_B = -k3_B;
 
-			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 
-			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
 
-			hCosThetaK_B->Fill(costhetak_B);
-			hExEt_B->Fill(ex_B/eT_B);
-			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			// hCosThetaK_B->Fill(costhetak_B);
+			// hExEt_B->Fill(ex_B/eT_B);
+			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
 
-			//jacobi a vs b:
-			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			// //jacobi a vs b:
+			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -2476,24 +2526,20 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
-	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
-	hCosThetaK_A->SetDirectory(outfile);
-	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
-	hCosThetaK_B->SetDirectory(outfile);
-	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
-	hCosThetaK_AvsB->SetDirectory(outfile);
+	TH1D *hCosThetaK = new TH1D("hCosThetaK","hCosThetaK", 200, -1, 1);
+	hCosThetaK->SetDirectory(outfile);
 
-	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
-	hExEt_A->SetDirectory(outfile);
-	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
-	hExEt_B->SetDirectory(outfile);
-	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
-	hExEt_AvsB->SetDirectory(outfile);
+	TH1D *hExEt = new TH1D("hExEt","hExEt",100, 0, 1);
+	hExEt->SetDirectory(outfile);
 
-	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
-	hExEt_CosThetaK_A->SetDirectory(outfile);
-	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
-	hExEt_CosThetaK_B->SetDirectory(outfile);
+	TH1D *hEyEt = new TH1D("hEyEt", "hEyEt", 100, 0, 1);
+	hEyEt->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK = new TH2D("hExEt_CosThetaK","hExEt_CosThetaK",200,-1,1,100,0,1);
+	hExEt_CosThetaK->SetDirectory(outfile);
+
+	TH2D *hEyEt_CosThetaK = new TH2D("hEyEt_CosThetaK","hEyEt_CosThetaK",200,-1,1,100,0,1);
+	hEyEt_CosThetaK->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -2639,6 +2685,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	double ExSPS, recoilEx, SABREsumE;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
+	double kxMag, kyMag, costhetak, E_x, E_y, E_Txy, E_TIM;
+	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 	double catania_x, catania_y;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
@@ -2679,6 +2727,15 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	outtree->Branch("cosThetaH_a2", &cosThetaH_a2, "cosThetaH_a2/D");
 	outtree->Branch("thetaH_a1_deg", &thetaH_a1_deg, "thetaH_a1_deg/D");
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
+
+	//jacobi branches
+	outtree->Branch("kxMag", &kxMag, "kxMag/D");
+	outtree->Branch("kyMag", &kyMag, "kyMag/D");
+	outtree->Branch("costhetak", &costhetak, "costhetak/D");
+	outtree->Branch("E_x", &E_x, "E_x/D");
+	outtree->Branch("E_y", &E_y, "E_y/D");
+	outtree->Branch("E_Txy", &E_Txy, "E_Txy/D");
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
 
 	outtree->Branch("catania_x", &catania_x, "catania_x/D");
 	outtree->Branch("catania_y", &catania_y, "catania_y/D");
@@ -2777,6 +2834,9 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			double mu_x = mass_a*mass_a/(2.*mass_a);
+			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
+
 			TVector3 k1_A, k2_A, k3_A;
 			k3_A = jacobi_proton.Vect();
 			k1_A = jacobi_alpha1.Vect();
@@ -2785,35 +2845,41 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			TVector3 kx_A = 0.5*(k1_A - k2_A);
 			TVector3 ky_A = -k3_A;
 
-			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
-			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			kxMag = kx_A.Mag();
+			kyMag = ky_A.Mag();
+			E_x = kxMag*kxMag/(2.*mu_x); //(mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			E_y = kyMag*kyMag/(2.*mu_y); //(mass_p+mass_a+mass_a)*kyMag*kyMag/(2*(mass_p*2*mass_a));
+			E_Txy = E_x + E_y;
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			costhetak = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
 
-			hCosThetaK_A->Fill(costhetak_A);
-			hExEt_A->Fill(ex_A/eT_A);
-			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+			hCosThetaK->Fill(costhetak);
+			hExEt->Fill(E_x/E_TIM);
+			hEyEt->Fill(E_y/E_TIM);
+			hExEt_CosThetaK->Fill(costhetak, E_x/E_TIM);
+			hEyEt_CosThetaK->Fill(costhetak, E_y/E_TIM);
 
-			//jacobi T system, with 1 = alpha2, 2 = alpha1
-			TVector3 k3_B = jacobi_proton.Vect();
-			TVector3 k1_B = jacobi_alpha2.Vect();
-			TVector3 k2_B = jacobi_alpha1.Vect();
+			// //jacobi T system, with 1 = alpha2, 2 = alpha1
+			// TVector3 k3_B = jacobi_proton.Vect();
+			// TVector3 k1_B = jacobi_alpha2.Vect();
+			// TVector3 k2_B = jacobi_alpha1.Vect();
 
-			TVector3 kx_B = 0.5*(k1_B - k2_B);
-			TVector3 ky_B = -k3_B;
+			// TVector3 kx_B = 0.5*(k1_B - k2_B);
+			// TVector3 ky_B = -k3_B;
 
-			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 
-			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
 
-			hCosThetaK_B->Fill(costhetak_B);
-			hExEt_B->Fill(ex_B/eT_B);
-			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+			// hCosThetaK_B->Fill(costhetak_B);
+			// hExEt_B->Fill(ex_B/eT_B);
+			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
 
-			//jacobi a vs b:
-			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
+			// //jacobi a vs b:
+			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
