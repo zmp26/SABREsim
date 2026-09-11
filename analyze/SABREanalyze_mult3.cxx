@@ -1447,6 +1447,8 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
 	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
 
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
+
 	// Residual momentum
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
 	outtree->Branch("residual_py", &residual_py, "residual_py/D");
@@ -1549,6 +1551,8 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
@@ -2343,6 +2347,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
 	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
 
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
+
 	outtree->Branch("catania_x", &catania_x, "catania_x/D");
 	outtree->Branch("catania_y", &catania_y, "catania_y/D");
 
@@ -2435,6 +2441,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
@@ -3198,6 +3206,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	outtree->Branch("E_yY2", &E_yY2, "E_yY2/D");
 	outtree->Branch("E_Txy_Y2", &E_Txy_Y2, "E_Txy_Y2/D");
 
+	outtree->Branch("E_TIM", &E_TIM, "E_TIM/D");
+
 	outtree->Branch("catania_x", &catania_x, "catania_x/D");
 	outtree->Branch("catania_y", &catania_y, "catania_y/D");
 
@@ -3293,6 +3303,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+
+			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
