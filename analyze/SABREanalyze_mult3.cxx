@@ -252,6 +252,25 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
+	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
+	hCosThetaK_A->SetDirectory(outfile);
+	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
+	hCosThetaK_B->SetDirectory(outfile);
+	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
+	hCosThetaK_AvsB->SetDirectory(outfile);
+
+	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
+	hExEt_A->SetDirectory(outfile);
+	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
+	hExEt_B->SetDirectory(outfile);
+	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
+	hExEt_AvsB->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
+	hExEt_CosThetaK_A->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
+	hExEt_CosThetaK_B->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -521,6 +540,56 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], alpha1_mass);
 			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], alpha2_mass);
 			recoil = proton + alpha1 + alpha2;
+
+
+			//jacobi coordinates:
+			TLorentzVector jacobi_recoil = recoil;
+			jacobi_recoil.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_proton = proton;
+			jacobi_proton.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha1 = alpha1;
+			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha2 = alpha2;
+			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+		
+			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			TVector3 k1_A, k2_A, k3_A;
+			k3_A = jacobi_proton.Vect();
+			k1_A = jacobi_alpha1.Vect();
+			k2_A = jacobi_alpha2.Vect();
+
+			TVector3 kx_A = 0.5*(k1_A - k2_A);
+			TVector3 ky_A = -k3_A;
+
+			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+
+			hCosThetaK_A->Fill(costhetak_A);
+			hExEt_A->Fill(ex_A/eT_A);
+			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+
+			//jacobi T system, with 1 = alpha2, 2 = alpha1
+			TVector3 k3_B = jacobi_proton.Vect();
+			TVector3 k1_B = jacobi_alpha2.Vect();
+			TVector3 k2_B = jacobi_alpha1.Vect();
+
+			TVector3 kx_B = 0.5*(k1_B - k2_B);
+			TVector3 ky_B = -k3_B;
+
+			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+
+			hCosThetaK_B->Fill(costhetak_B);
+			hExEt_B->Fill(ex_B/eT_B);
+			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+
+			//jacobi a vs b:
+			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -938,6 +1007,25 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
+	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
+	hCosThetaK_A->SetDirectory(outfile);
+	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
+	hCosThetaK_B->SetDirectory(outfile);
+	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
+	hCosThetaK_AvsB->SetDirectory(outfile);
+
+	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
+	hExEt_A->SetDirectory(outfile);
+	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
+	hExEt_B->SetDirectory(outfile);
+	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
+	hExEt_AvsB->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
+	hExEt_CosThetaK_A->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
+	hExEt_CosThetaK_B->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -1222,6 +1310,55 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			alpha1 = buildP4(E[alpha_hit_index1], theta[alpha_hit_index1], phi[alpha_hit_index1], alpha1_mass);
 			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], alpha2_mass);
 			recoil = proton + alpha1 + alpha2;
+
+			//jacobi coordinates:
+			TLorentzVector jacobi_recoil = recoil;
+			jacobi_recoil.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_proton = proton;
+			jacobi_proton.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha1 = alpha1;
+			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha2 = alpha2;
+			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+		
+			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			TVector3 k1_A, k2_A, k3_A;
+			k3_A = jacobi_proton.Vect();
+			k1_A = jacobi_alpha1.Vect();
+			k2_A = jacobi_alpha2.Vect();
+
+			TVector3 kx_A = 0.5*(k1_A - k2_A);
+			TVector3 ky_A = -k3_A;
+
+			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+
+			hCosThetaK_A->Fill(costhetak_A);
+			hExEt_A->Fill(ex_A/eT_A);
+			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+
+			//jacobi T system, with 1 = alpha2, 2 = alpha1
+			TVector3 k3_B = jacobi_proton.Vect();
+			TVector3 k1_B = jacobi_alpha2.Vect();
+			TVector3 k2_B = jacobi_alpha1.Vect();
+
+			TVector3 kx_B = 0.5*(k1_B - k2_B);
+			TVector3 ky_B = -k3_B;
+
+			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+
+			hCosThetaK_B->Fill(costhetak_B);
+			hExEt_B->Fill(ex_B/eT_B);
+			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+
+			//jacobi a vs b:
+			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -1618,6 +1755,25 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
+	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
+	hCosThetaK_A->SetDirectory(outfile);
+	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
+	hCosThetaK_B->SetDirectory(outfile);
+	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
+	hCosThetaK_AvsB->SetDirectory(outfile);
+
+	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
+	hExEt_A->SetDirectory(outfile);
+	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
+	hExEt_B->SetDirectory(outfile);
+	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
+	hExEt_AvsB->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
+	hExEt_CosThetaK_A->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
+	hExEt_CosThetaK_B->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -1885,6 +2041,55 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
 			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
 			hCatania->Fill(catania_x, catania_y);
+
+			//jacobi coordinates:
+			TLorentzVector jacobi_recoil = recoil;
+			jacobi_recoil.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_proton = proton;
+			jacobi_proton.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha1 = alpha1;
+			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha2 = alpha2;
+			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+		
+			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			TVector3 k1_A, k2_A, k3_A;
+			k3_A = jacobi_proton.Vect();
+			k1_A = jacobi_alpha1.Vect();
+			k2_A = jacobi_alpha2.Vect();
+
+			TVector3 kx_A = 0.5*(k1_A - k2_A);
+			TVector3 ky_A = -k3_A;
+
+			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+
+			hCosThetaK_A->Fill(costhetak_A);
+			hExEt_A->Fill(ex_A/eT_A);
+			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+
+			//jacobi T system, with 1 = alpha2, 2 = alpha1
+			TVector3 k3_B = jacobi_proton.Vect();
+			TVector3 k1_B = jacobi_alpha2.Vect();
+			TVector3 k2_B = jacobi_alpha1.Vect();
+
+			TVector3 kx_B = 0.5*(k1_B - k2_B);
+			TVector3 ky_B = -k3_B;
+
+			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+
+			hCosThetaK_B->Fill(costhetak_B);
+			hExEt_B->Fill(ex_B/eT_B);
+			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+
+			//jacobi a vs b:
+			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -2271,6 +2476,25 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
+	TH1D *hCosThetaK_A = new TH1D("hCosThetaK_A","hCosThetaK_A", 200, -1, 1);
+	hCosThetaK_A->SetDirectory(outfile);
+	TH1D *hCosThetaK_B = new TH1D("hCosThetaK_B","hCosThetaK_B", 200, -1, 1);
+	hCosThetaK_B->SetDirectory(outfile);
+	TH2D *hCosThetaK_AvsB = new TH2D("hCosThetaK_AvsB","hCosThetaK_AvsB",200,-1,1,200,-1,1);
+	hCosThetaK_AvsB->SetDirectory(outfile);
+
+	TH1D *hExEt_A = new TH1D("hExEt_A","hExEt_A",100, 0, 1);
+	hExEt_A->SetDirectory(outfile);
+	TH1D *hExEt_B = new TH1D("hExEt_B","hExEt_B",100, 0, 1);
+	hExEt_B->SetDirectory(outfile);
+	TH2D *hExEt_AvsB = new TH2D("hExEt_AvsB", "hExEt_AvsB", 100, 0, 1, 100, 0, 1);
+	hExEt_AvsB->SetDirectory(outfile);
+
+	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
+	hExEt_CosThetaK_A->SetDirectory(outfile);
+	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
+	hExEt_CosThetaK_B->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -2541,6 +2765,55 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			catania_x = (P4_missing.P() * P4_missing.P()) / (2*AMU_IN_MEV);
 			catania_y = (hypothesis.beamEnergyMeV - E[0] - E[1]);// - SPSE);
 			hCatania->Fill(catania_x, catania_y);
+
+			//jacobi coordinates:
+			TLorentzVector jacobi_recoil = recoil;
+			jacobi_recoil.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_proton = proton;
+			jacobi_proton.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha1 = alpha1;
+			jacobi_alpha1.Boost(-jacobi_recoil.BoostVector());
+			TLorentzVector jacobi_alpha2 = alpha2;
+			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
+		
+			//jacobi T system, with 1 = alpha1, 2 = alpha2
+			TVector3 k1_A, k2_A, k3_A;
+			k3_A = jacobi_proton.Vect();
+			k1_A = jacobi_alpha1.Vect();
+			k2_A = jacobi_alpha2.Vect();
+
+			TVector3 kx_A = 0.5*(k1_A - k2_A);
+			TVector3 ky_A = -k3_A;
+
+			double ex_A = (mass_a+mass_a)*kx_A.Mag2()/(2.*mass_a*mass_a);
+			double eT_A = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_A = (kx_A.Dot(ky_A))/(kx_A.Mag()*ky_A.Mag());
+
+			hCosThetaK_A->Fill(costhetak_A);
+			hExEt_A->Fill(ex_A/eT_A);
+			hExEt_CosThetaK_A->Fill(costhetak_A, ex_A/eT_A);
+
+			//jacobi T system, with 1 = alpha2, 2 = alpha1
+			TVector3 k3_B = jacobi_proton.Vect();
+			TVector3 k1_B = jacobi_alpha2.Vect();
+			TVector3 k2_B = jacobi_alpha1.Vect();
+
+			TVector3 kx_B = 0.5*(k1_B - k2_B);
+			TVector3 ky_B = -k3_B;
+
+			double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
+			double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+
+			double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
+
+			hCosThetaK_B->Fill(costhetak_B);
+			hExEt_B->Fill(ex_B/eT_B);
+			hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
+
+			//jacobi a vs b:
+			hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
+			hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
