@@ -643,7 +643,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			//E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			E_TIM = (jacobi_alpha1.E() + jacobi_alpha2.E() + jacobi_proton.E());
 		
 
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
@@ -672,12 +673,12 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 			hCosThetaK_T->Fill(costhetakT);
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hExEt_T->Fill(E_xT/E_TIM);
-			hEyEt_T->Fill(E_yT/E_TIM);
-			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
-			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
-			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_Txy_T);
+			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
@@ -702,14 +703,14 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 			hCosThetaK_Y1->Fill(costhetakY1);//y1
 			hCosThetaK_Y->Fill(costhetakY1);//cumulative
-			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
-			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
-			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
-			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
-			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
-			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
-			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_Txy_Y1);//y1
+			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
+			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -734,14 +735,14 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 			hCosThetaK_Y2->Fill(costhetakY2);//y2
 			hCosThetaK_Y->Fill(costhetakY2);//cumulative
-			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
-			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
-			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
-			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
-			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
-			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
-			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_Txy_Y2);//y2
+			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
+			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -1552,7 +1553,8 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			//E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			E_TIM = (jacobi_alpha1.E() + jacobi_alpha2.E() + jacobi_proton.E());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
@@ -1580,12 +1582,12 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 			hCosThetaK_T->Fill(costhetakT);
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hExEt_T->Fill(E_xT/E_TIM);
-			hEyEt_T->Fill(E_yT/E_TIM);
-			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
-			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
-			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_Txy_T);
+			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
@@ -1610,14 +1612,14 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 			hCosThetaK_Y1->Fill(costhetakY1);//y1
 			hCosThetaK_Y->Fill(costhetakY1);//cumulative
-			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
-			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
-			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
-			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
-			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
-			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
-			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_Txy_Y1);//y1
+			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
+			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -1642,14 +1644,14 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 			hCosThetaK_Y2->Fill(costhetakY2);//y2
 			hCosThetaK_Y->Fill(costhetakY2);//cumulative
-			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
-			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
-			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
-			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
-			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
-			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
-			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_Txy_Y2);//y2
+			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
+			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
 
 			// TVector3 k3_B = jacobi_proton.Vect();
 			// TVector3 k1_B = jacobi_alpha2.Vect();
@@ -2442,7 +2444,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			//E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			E_TIM = (jacobi_alpha1.E() + jacobi_alpha2.E() + jacobi_proton.E());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
@@ -2470,12 +2473,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			hCosThetaK_T->Fill(costhetakT);
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hExEt_T->Fill(E_xT/E_TIM);
-			hEyEt_T->Fill(E_yT/E_TIM);
-			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
-			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
-			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_Txy_T);
+			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
@@ -2500,14 +2503,14 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			hCosThetaK_Y1->Fill(costhetakY1);//y1
 			hCosThetaK_Y->Fill(costhetakY1);//cumulative
-			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
-			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
-			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
-			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
-			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
-			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
-			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_Txy_Y1);//y1
+			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
+			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -2532,14 +2535,14 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			hCosThetaK_Y2->Fill(costhetakY2);//y2
 			hCosThetaK_Y->Fill(costhetakY2);//cumulative
-			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
-			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
-			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
-			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
-			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
-			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
-			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_Txy_Y2);//y2
+			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
+			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -3304,7 +3307,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 
-			E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			//E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
+			E_TIM = (jacobi_alpha1.E() + jacobi_alpha2.E() + jacobi_proton.E());
 		
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
@@ -3332,12 +3336,12 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			hCosThetaK_T->Fill(costhetakT);
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hExEt_T->Fill(E_xT/E_TIM);
-			hEyEt_T->Fill(E_yT/E_TIM);
-			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_TIM);
-			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_TIM);
-			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_TIM);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hExEt_T->Fill(E_xT/E_Txy_T);
+			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
+			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
+			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
+			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
@@ -3362,14 +3366,14 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			hCosThetaK_Y1->Fill(costhetakY1);//y1
 			hCosThetaK_Y->Fill(costhetakY1);//cumulative
-			hExEt_Y1->Fill(E_xY1/E_TIM);//y1
-			hExEt_Y->Fill(E_xY1/E_TIM);//cumulative
-			hEyEt_Y1->Fill(E_yY1/E_TIM);//y1
-			hEyEt_Y->Fill(E_yY1/E_TIM);//cumulative
-			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_TIM);//y1
-			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_TIM);//y1
-			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_TIM);//cumulative
+			hExEt_Y1->Fill(E_xY1/E_Txy_Y1);//y1
+			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
+			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
+			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
+			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
+			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -3394,14 +3398,14 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			hCosThetaK_Y2->Fill(costhetakY2);//y2
 			hCosThetaK_Y->Fill(costhetakY2);//cumulative
-			hExEt_Y2->Fill(E_xY2/E_TIM);//y2
-			hExEt_Y->Fill(E_xY2/E_TIM);//cumulative
-			hEyEt_Y2->Fill(E_yY2/E_TIM);//y2
-			hEyEt_Y->Fill(E_yY2/E_TIM);//cumulative
-			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_TIM);//y2
-			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_TIM);//cumulative
-			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_TIM);//y2
-			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_TIM);//cumulative
+			hExEt_Y2->Fill(E_xY2/E_Txy_Y2);//y2
+			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
+			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
+			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
+			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
+			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
