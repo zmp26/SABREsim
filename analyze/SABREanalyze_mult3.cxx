@@ -280,6 +280,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_T->SetDirectory(outfile);
+
 	//jacobi Y1 histograms
 
 	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
@@ -296,6 +299,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -314,6 +320,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y2->SetDirectory(outfile);
+
 	//jacobi Y histograms
 
 	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
@@ -330,6 +339,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -675,6 +687,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hExEt_T->Fill(E_xT/E_Txy_T);
 			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_Et_T->Fill(E_Txy_T, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
@@ -707,6 +720,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
 			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_Et_Y1->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
+			hExEt_Et_Y->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
 			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
@@ -739,6 +754,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
 			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_Et_Y2->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
+			hExEt_Et_Y->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
 			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
@@ -1177,6 +1194,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_T->SetDirectory(outfile);
+
 	//jacobi Y1 histograms
 
 	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
@@ -1193,6 +1213,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -1211,6 +1234,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y2->SetDirectory(outfile);
+
 	//jacobi Y histograms
 
 	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
@@ -1227,6 +1253,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -1584,6 +1613,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hExEt_T->Fill(E_xT/E_Txy_T);
 			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_Et_T->Fill(E_Txy_T, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
@@ -1616,6 +1646,8 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
 			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_Et_Y1->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
+			hExEt_Et_Y->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
 			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
@@ -1648,30 +1680,12 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
 			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_Et_Y2->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
+			hExEt_Et_Y->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
 			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
-
-			// TVector3 k3_B = jacobi_proton.Vect();
-			// TVector3 k1_B = jacobi_alpha2.Vect();
-			// TVector3 k2_B = jacobi_alpha1.Vect();
-
-			// TVector3 kx_B = 0.5*(k1_B - k2_B);
-			// TVector3 ky_B = -k3_B;
-
-			// double ex_B = (mass_a+mass_a)*kx_B.Mag2()/(2.*mass_a*mass_a);
-			// double eT_B = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
-
-			// double costhetak_B = (kx_B.Dot(ky_B))/(kx_B.Mag()*ky_B.Mag());
-
-			// hCosThetaK_B->Fill(costhetak_B);
-			// hExEt_B->Fill(ex_B/eT_B);
-			// hExEt_CosThetaK_B->Fill(costhetak_B, ex_B/eT_B);
-
-			// //jacobi a vs b:
-			// hCosThetaK_AvsB->Fill(costhetak_B, costhetak_A);
-			// hExEt_AvsB->Fill(ex_B/eT_B, ex_A/eT_A);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -2085,6 +2099,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_T->SetDirectory(outfile);
+
 	//jacobi Y1 histograms
 
 	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
@@ -2101,6 +2118,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -2119,6 +2139,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y2->SetDirectory(outfile);
+
 	//jacobi Y histograms
 
 	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
@@ -2135,6 +2158,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
@@ -2475,6 +2501,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hExEt_T->Fill(E_xT/E_Txy_T);
 			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_Et_T->Fill(E_Txy_T, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
@@ -2507,6 +2534,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
 			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_Et_Y1->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
+			hExEt_Et_Y->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
 			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
@@ -2539,11 +2568,14 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
 			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_Et_Y2->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
+			hExEt_Et_Y->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
 			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
 
+			
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
 			//	intermediate: 			alpha1 + alpha2
@@ -2946,6 +2978,9 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_T->SetDirectory(outfile);
+
 	//jacobi Y1 histograms
 
 	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
@@ -2962,6 +2997,9 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
+
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -2980,6 +3018,9 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y2->SetDirectory(outfile);
+
 	//jacobi Y histograms
 
 	TH1D *hCosThetaK_Y = new TH1D("hCosThetaK_Y","hCosThetaK_Y", 200, -1, 1);
@@ -2997,6 +3038,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	hExEt_Et_Y->SetDirectory(outfile);
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -3338,6 +3381,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hCosThetaK_T->Fill(-costhetakT);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hExEt_T->Fill(E_xT/E_Txy_T);
 			hEyEt_T->Fill(E_yT/E_Txy_T);
+			hExEt_Et_T->Fill(E_Txy_T, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(costhetakT, E_xT/E_Txy_T);
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
@@ -3370,6 +3414,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hExEt_Y->Fill(E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_Y1->Fill(E_yY1/E_Txy_Y1);//y1
 			hEyEt_Y->Fill(E_yY1/E_Txy_Y1);//cumulative
+			hExEt_Et_Y1->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
+			hExEt_Et_Y->Fill(E_Txy_Y1, E_xY1/E_Txy_Y1);
 			hExEt_CosThetaK_Y1->Fill(costhetakY1, E_xY1/E_Txy_Y1);//y1
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
@@ -3402,6 +3448,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hExEt_Y->Fill(E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_Y2->Fill(E_yY2/E_Txy_Y2);//y2
 			hEyEt_Y->Fill(E_yY2/E_Txy_Y2);//cumulative
+			hExEt_Et_Y2->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
+			hExEt_Et_Y->Fill(E_Txy_Y2, E_xY2/E_Txy_Y2);
 			hExEt_CosThetaK_Y2->Fill(costhetakY2, E_xY2/E_Txy_Y2);//y2
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
