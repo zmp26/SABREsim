@@ -343,6 +343,19 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
 
+	//CM angles (CM of recoil break up, so 9B CM)
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	hProtonThetaCM->SetDirectory(outfile);
+
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	hProtonPhiCM->SetDirectory(outfile);
+
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	hAlphaThetaCM->SetDirectory(outfile);
+
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	hAlphaPhiCM->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -506,6 +519,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	int alpha1wedge;// = wedgeStrip[alpha_hit_index1];
 	int alpha2wedge;// = wedgeStrip[alpha_hit_index2];
 
+	double protonThetaCM, alpha1ThetaCM, alpha2ThetaCM;
+	double protonPhiCM, alpha1PhiCM, alpha2PhiCM;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -521,6 +537,13 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
 	outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
 	outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
+
+	outtree->Branch("protonThetaCM", &protonThetaCM, "protonThetaCM/D");
+	outtree->Branch("protonPhiCM", &protonPhiCM, "protonPhiCM/D");
+	outtree->Branch("alpha1ThetaCM", &alpha1ThetaCM, "alpha1ThetaCM/D");
+	outtree->Branch("alpha1PhiCM", &alpha1PhiCM, "alpha1PhiCM/D");
+	outtree->Branch("alpha2ThetaCM", &alpha2ThetaCM, "alpha2ThetaCM/D");
+	outtree->Branch("alpha2PhiCM", &alpha2PhiCM, "alpha2PhiCM/D");
 
 	// Reconstructed 4-vectors
 	outtree->Branch("P4_proton", &proton);
@@ -655,6 +678,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 
+
 			//E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 			E_TIM = (jacobi_alpha1.E() + jacobi_alpha2.E() + jacobi_proton.E());
 		
@@ -667,6 +691,23 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			k1_T = jacobi_alpha1.Vect();
 			k2_T = jacobi_alpha2.Vect();
 			k3_T = jacobi_proton.Vect();
+
+			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
+			//thetacm = acos(pz/p) and phicm = atan2(py,px)
+			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
+			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			hProtonThetaCM->Fill(protonThetaCM);
+			hProtonPhiCM->Fill(protonPhiCM);
+
+			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
+			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha1ThetaCM);
+			hAlphaPhiCM->Fill(alpha1PhiCM);
+
+			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
+			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha2ThetaCM);
+			hAlphaPhiCM->Fill(alpha2PhiCM);
 
 			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
 			TVector3 kx_T = jacobiMomenta.first;
@@ -1257,6 +1298,19 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
 
+	//CM angles (CM of recoil break up, so 9B CM)
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	hProtonThetaCM->SetDirectory(outfile);
+
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	hProtonPhiCM->SetDirectory(outfile);
+
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	hAlphaThetaCM->SetDirectory(outfile);
+
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	hAlphaPhiCM->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -1420,6 +1474,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	int alpha1wedge;// = wedgeStrip[alpha_hit_index1];
 	int alpha2wedge;// = wedgeStrip[alpha_hit_index2];
 
+	double protonThetaCM, alpha1ThetaCM, alpha2ThetaCM;
+	double protonPhiCM, alpha1PhiCM, alpha2PhiCM;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -1435,6 +1492,13 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
 	outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
 	outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
+
+	outtree->Branch("protonThetaCM", &protonThetaCM, "protonThetaCM/D");
+	outtree->Branch("protonPhiCM", &protonPhiCM, "protonPhiCM/D");
+	outtree->Branch("alpha1ThetaCM", &alpha1ThetaCM, "alpha1ThetaCM/D");
+	outtree->Branch("alpha1PhiCM", &alpha1PhiCM, "alpha1PhiCM/D");
+	outtree->Branch("alpha2ThetaCM", &alpha2ThetaCM, "alpha2ThetaCM/D");
+	outtree->Branch("alpha2PhiCM", &alpha2PhiCM, "alpha2PhiCM/D");
 
 	// Reconstructed 4-vectors
 	outtree->Branch("P4_proton", &proton);
@@ -1593,6 +1657,23 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			k1_T = jacobi_alpha1.Vect();
 			k2_T = jacobi_alpha2.Vect();
 			k3_T = jacobi_proton.Vect();
+
+			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
+			//thetacm = acos(pz/p) and phicm = atan2(py,px)
+			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
+			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			hProtonThetaCM->Fill(protonThetaCM);
+			hProtonPhiCM->Fill(protonPhiCM);
+
+			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
+			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha1ThetaCM);
+			hAlphaPhiCM->Fill(alpha1PhiCM);
+
+			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
+			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha2ThetaCM);
+			hAlphaPhiCM->Fill(alpha2PhiCM);
 
 			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
 			TVector3 kx_T = jacobiMomenta.first;
@@ -2162,6 +2243,19 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
 
+	//CM angles (CM of recoil break up, so 9B CM)
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	hProtonThetaCM->SetDirectory(outfile);
+
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	hProtonPhiCM->SetDirectory(outfile);
+
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	hAlphaThetaCM->SetDirectory(outfile);
+
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	hAlphaPhiCM->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -2314,6 +2408,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 	double catania_x, catania_y;
 
+	double protonThetaCM, alpha1ThetaCM, alpha2ThetaCM;
+	double protonPhiCM, alpha1PhiCM, alpha2PhiCM;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -2334,6 +2431,13 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	// outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
 	// outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
 	// outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
+
+	outtree->Branch("protonThetaCM", &protonThetaCM, "protonThetaCM/D");
+	outtree->Branch("protonPhiCM", &protonPhiCM, "protonPhiCM/D");
+	outtree->Branch("alpha1ThetaCM", &alpha1ThetaCM, "alpha1ThetaCM/D");
+	outtree->Branch("alpha1PhiCM", &alpha1PhiCM, "alpha1PhiCM/D");
+	outtree->Branch("alpha2ThetaCM", &alpha2ThetaCM, "alpha2ThetaCM/D");
+	outtree->Branch("alpha2PhiCM", &alpha2PhiCM, "alpha2PhiCM/D");
 
 	outtree->Branch("P4_hit0", &p4_0_ptr);
 	outtree->Branch("P4_hit1", &p4_1_ptr);
@@ -2481,6 +2585,23 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			k1_T = jacobi_alpha1.Vect();
 			k2_T = jacobi_alpha2.Vect();
 			k3_T = jacobi_proton.Vect();
+
+			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
+			//thetacm = acos(pz/p) and phicm = atan2(py,px)
+			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
+			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			hProtonThetaCM->Fill(protonThetaCM);
+			hProtonPhiCM->Fill(protonPhiCM);
+
+			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
+			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha1ThetaCM);
+			hAlphaPhiCM->Fill(alpha1PhiCM);
+
+			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
+			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha2ThetaCM);
+			hAlphaPhiCM->Fill(alpha2PhiCM);
 
 			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
 			TVector3 kx_T = jacobiMomenta.first;
@@ -3040,6 +3161,20 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
+
+	//CM angles (CM of recoil break up, so 9B CM)
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	hProtonThetaCM->SetDirectory(outfile);
+
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	hProtonPhiCM->SetDirectory(outfile);
+
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	hAlphaThetaCM->SetDirectory(outfile);
+
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	hAlphaPhiCM->SetDirectory(outfile);
+
 	//lambda to calculate dalitz boundary as function of excitation energy
 	auto MakeDalitzBoundary = [&](double W, int sliceindex, double sliceEMin, double sliceEMax, int npoints=500) -> TGraph*
 	{
@@ -3191,6 +3326,9 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	//	   |kx|    |ky| 					  Ex+Ey recoil.M()-massgs_9B
 	double catania_x, catania_y;
 
+	double protonThetaCM, alpha1ThetaCM, alpha2ThetaCM;
+	double protonPhiCM, alpha1PhiCM, alpha2PhiCM;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -3211,6 +3349,13 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	// outtree->Branch("protonWedgeStrip", &protonwedge, "protonWedgeStrip/I");
 	// outtree->Branch("alpha1WedgeStrip", &alpha1wedge, "alpha1WedgeStrip/I");
 	// outtree->Branch("alpha2WedgeStrip", &alpha2wedge, "alpha2WedgeStrip/I");
+
+	outtree->Branch("protonThetaCM", &protonThetaCM, "protonThetaCM/D");
+	outtree->Branch("protonPhiCM", &protonPhiCM, "protonPhiCM/D");
+	outtree->Branch("alpha1ThetaCM", &alpha1ThetaCM, "alpha1ThetaCM/D");
+	outtree->Branch("alpha1PhiCM", &alpha1PhiCM, "alpha1PhiCM/D");
+	outtree->Branch("alpha2ThetaCM", &alpha2ThetaCM, "alpha2ThetaCM/D");
+	outtree->Branch("alpha2PhiCM", &alpha2PhiCM, "alpha2PhiCM/D");
 
 	outtree->Branch("P4_hit0", &p4_0_ptr);
 	outtree->Branch("P4_hit1", &p4_1_ptr);
@@ -3361,6 +3506,23 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			k1_T = jacobi_alpha1.Vect();
 			k2_T = jacobi_alpha2.Vect();
 			k3_T = jacobi_proton.Vect();
+
+			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
+			//thetacm = acos(pz/p) and phicm = atan2(py,px)
+			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
+			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			hProtonThetaCM->Fill(protonThetaCM);
+			hProtonPhiCM->Fill(protonPhiCM);
+
+			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
+			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha1ThetaCM);
+			hAlphaPhiCM->Fill(alpha1PhiCM);
+
+			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
+			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			hAlphaThetaCM->Fill(alpha2ThetaCM);
+			hAlphaPhiCM->Fill(alpha2PhiCM);
 
 			std::pair<TVector3,TVector3> jacobiMomenta = getJacobiMomenta(k1_T, k2_T, k3_T, mass_a, mass_a, mass_p);
 			TVector3 kx_T = jacobiMomenta.first;
