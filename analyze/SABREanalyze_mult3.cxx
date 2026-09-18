@@ -344,16 +344,16 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	hExEt_Et_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
-	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
 	hProtonThetaCM->SetDirectory(outfile);
 
-	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 180, 0, 360);
 	hProtonPhiCM->SetDirectory(outfile);
 
-	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 90, 0, 180);
 	hAlphaThetaCM->SetDirectory(outfile);
 
-	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 180, 0, 360);
 	hAlphaPhiCM->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
@@ -413,7 +413,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
 
-		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetName(Form("gDalitzBoundary_%03d", sliceindex));
 		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
 		graph->SetLineColor(kRed+1);
 		graph->SetLineWidth(2);
@@ -437,7 +437,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 		double currentECenter = 0.5*(currentEMin+currentEMax);
 
 		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
-		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.2f - %.2f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.3f - %.3f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
 
 		vDalitz[i] = new TH2D(name.Data(), title.Data(),
 							  200, 55.57e6, 55.69e6,
@@ -694,18 +694,21 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
 			//thetacm = acos(pz/p) and phicm = atan2(py,px)
-			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
-			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			protonThetaCM = (std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag()))*180./M_PI;
+			protonPhiCM = (std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]))*180./M_PI;
+			if(protonPhiCM < 0) protonPhiCM += 360.;
 			hProtonThetaCM->Fill(protonThetaCM);
 			hProtonPhiCM->Fill(protonPhiCM);
 
-			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
-			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			alpha1ThetaCM = (std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag()))*180./M_PI;
+			alpha1PhiCM = (std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]))*180./M_PI;
+			if(alpha1PhiCM < 0) alpha1PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha1ThetaCM);
 			hAlphaPhiCM->Fill(alpha1PhiCM);
 
-			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
-			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			alpha2ThetaCM = (std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag()))*180./M_PI;
+			alpha2PhiCM = (std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]))*180./M_PI;
+			if(alpha2PhiCM < 0) alpha2PhiCM += 360.;;
 			hAlphaThetaCM->Fill(alpha2ThetaCM);
 			hAlphaPhiCM->Fill(alpha2PhiCM);
 
@@ -1299,16 +1302,16 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	hExEt_Et_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
-	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
 	hProtonThetaCM->SetDirectory(outfile);
 
-	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 180, 0, 360);
 	hProtonPhiCM->SetDirectory(outfile);
 
-	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 90, 0, 180);
 	hAlphaThetaCM->SetDirectory(outfile);
 
-	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 180, 0, 360);
 	hAlphaPhiCM->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
@@ -1368,7 +1371,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
 
-		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetName(Form("gDalitzBoundary_%03d", sliceindex));
 		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
 		graph->SetLineColor(kRed+1);
 		graph->SetLineWidth(2);
@@ -1660,18 +1663,21 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
 			//thetacm = acos(pz/p) and phicm = atan2(py,px)
-			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
-			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			protonThetaCM = (std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag()))*180./M_PI;
+			protonPhiCM = (std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]))*180./M_PI;
+			if(protonPhiCM < 0) protonPhiCM += 360.;
 			hProtonThetaCM->Fill(protonThetaCM);
 			hProtonPhiCM->Fill(protonPhiCM);
 
-			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
-			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			alpha1ThetaCM = (std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag()))*180./M_PI;
+			alpha1PhiCM = (std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]))*180./M_PI;
+			if(alpha1PhiCM < 0) alpha1PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha1ThetaCM);
 			hAlphaPhiCM->Fill(alpha1PhiCM);
 
-			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
-			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			alpha2ThetaCM = (std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag()))*180./M_PI;
+			alpha2PhiCM = (std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]))*180./M_PI;
+			if(alpha2PhiCM < 0) alpha2PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha2ThetaCM);
 			hAlphaPhiCM->Fill(alpha2PhiCM);
 
@@ -2244,16 +2250,16 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	hExEt_Et_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
-	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
 	hProtonThetaCM->SetDirectory(outfile);
 
-	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 180, 0, 360);
 	hProtonPhiCM->SetDirectory(outfile);
 
-	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 90, 0, 180);
 	hAlphaThetaCM->SetDirectory(outfile);
 
-	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 180, 0, 360);
 	hAlphaPhiCM->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
@@ -2313,7 +2319,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
 
-		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetName(Form("gDalitzBoundary_%03d", sliceindex));
 		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
 		graph->SetLineColor(kRed+1);
 		graph->SetLineWidth(2);
@@ -2588,18 +2594,21 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
 			//thetacm = acos(pz/p) and phicm = atan2(py,px)
-			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
-			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			protonThetaCM = (std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag()))*180./M_PI;
+			protonPhiCM = (std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]))*180./M_PI;
+			if(protonPhiCM < 0) protonPhiCM += 360.;
 			hProtonThetaCM->Fill(protonThetaCM);
 			hProtonPhiCM->Fill(protonPhiCM);
 
-			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
-			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			alpha1ThetaCM = (std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag()))*180./M_PI;
+			alpha1PhiCM = (std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]))*180./M_PI;
+			if(alpha1PhiCM < 0) alpha1PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha1ThetaCM);
 			hAlphaPhiCM->Fill(alpha1PhiCM);
 
-			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
-			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			alpha2ThetaCM = (std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag()))*180./M_PI;
+			alpha2PhiCM = (std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]))*180./M_PI;
+			if(alpha2PhiCM < 0) alpha2PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha2ThetaCM);
 			hAlphaPhiCM->Fill(alpha2PhiCM);
 
@@ -3163,16 +3172,16 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	hExEt_Et_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
-	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 360, 0, 180);
+	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
 	hProtonThetaCM->SetDirectory(outfile);
 
-	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 720, 0, 360);
+	TH1D *hProtonPhiCM = new TH1D("hProtonPhiCM", "hProtonPhiCM", 180, 0, 360);
 	hProtonPhiCM->SetDirectory(outfile);
 
-	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 360, 0, 180);
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM", "hAlphaThetaCM", 90, 0, 180);
 	hAlphaThetaCM->SetDirectory(outfile);
 
-	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 720, 0, 360);
+	TH1D *hAlphaPhiCM = new TH1D("hAlphaPhiCM", "hAlphaPhiCM", 180, 0, 360);
 	hAlphaPhiCM->SetDirectory(outfile);
 
 	//lambda to calculate dalitz boundary as function of excitation energy
@@ -3232,7 +3241,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 		TGraph* graph = new TGraph(static_cast<int>(x.size()), x.data(), y.data());
 
-		graph->SetName(Form("gDalitzBoundary_%02d", sliceindex));
+		graph->SetName(Form("gDalitzBoundary_%03d", sliceindex));
 		graph->SetTitle(Form("Dalitz Boundary, E_{x}=%.2f-%.2f MeV;M^{2}_{#alpha#alpha};M^{2}_{p#alpha}",sliceEMin,sliceEMax));
 		graph->SetLineColor(kRed+1);
 		graph->SetLineWidth(2);
@@ -3509,18 +3518,21 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			//use the fact that jacobi_alpha1/2 and jacobi_proton are boosted to 9B CM frame to calculate and fill CM angle histograms
 			//thetacm = acos(pz/p) and phicm = atan2(py,px)
-			protonThetaCM = std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag());
-			protonPhiCM = std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]);
+			protonThetaCM = (std::acos(jacobi_proton.Vect()[2]/jacobi_proton.Vect().Mag()))*180./M_PI;
+			protonPhiCM = (std::atan2(jacobi_proton.Vect()[1],jacobi_proton.Vect()[0]))*180./M_PI;
+			if(protonPhiCM < 0) protonPhiCM += 360.;
 			hProtonThetaCM->Fill(protonThetaCM);
 			hProtonPhiCM->Fill(protonPhiCM);
 
-			alpha1ThetaCM = std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag());
-			alpha1PhiCM = std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]);
+			alpha1ThetaCM = (std::acos(jacobi_alpha1.Vect()[2]/jacobi_alpha1.Vect().Mag()))*180./M_PI;
+			alpha1PhiCM = (std::atan2(jacobi_alpha1.Vect()[1],jacobi_alpha1.Vect()[0]))*180./M_PI;
+			if(alpha1PhiCM < 0) alpha1PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha1ThetaCM);
 			hAlphaPhiCM->Fill(alpha1PhiCM);
 
-			alpha2ThetaCM = std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag());
-			alpha2PhiCM = std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]);
+			alpha2ThetaCM = (std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag()))*180./M_PI;
+			alpha2PhiCM = (std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]))*180./M_PI;
+			if(alpha2PhiCM < 0) alpha2PhiCM += 360.;
 			hAlphaThetaCM->Fill(alpha2ThetaCM);
 			hAlphaPhiCM->Fill(alpha2PhiCM);
 
