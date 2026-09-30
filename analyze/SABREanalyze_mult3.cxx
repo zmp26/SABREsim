@@ -56,7 +56,7 @@ std::pair<TVector3,TVector3> getJacobiMomenta(TVector3 k1, TVector3 k2, TVector3
 
 	TVector3 kx, ky;
 
-	kx = (m2*k1 + m1*k2)*(1./(m1+m2));
+	kx = (m2*k1 - m1*k2)*(1./(m1+m2));
 	ky = (m3*(k1+k2) - (m1+m2)*k3)*(1./(m1+m2+m3));
 
 	return std::make_pair(kx,ky);
@@ -280,8 +280,11 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_T->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_T = new TH2D("hExSPS_ExEt_T","hExSPS_ExEt_T",100,0,1,1400,0,7);
+	hExSPS_ExEt_T->SetDirectory(outfile);
 
 	//jacobi Y1 histograms
 
@@ -300,8 +303,11 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y1->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y1 = new TH2D("hExSPS_ExEt_Y1","hExSPS_ExEt_Y1",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -320,8 +326,11 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y2->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y2 = new TH2D("hExSPS_ExEt_Y2","hExSPS_ExEt_Y2",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y2->SetDirectory(outfile);
 
 	//jacobi Y histograms
 
@@ -340,8 +349,11 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y = new TH2D("hExSPS_ExEt_Y","hExSPS_ExEt_Y",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
 	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
@@ -736,7 +748,7 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
 			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-
+			hExSPS_ExEt_T->Fill(E_xT/E_Txy_T, ExSPS);
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
 			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
@@ -770,6 +782,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
 			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
+			hExSPS_ExEt_Y1->Fill(E_xY1/E_Txy_Y1, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY1/E_Txy_Y1, ExSPS);
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -804,6 +818,8 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
+			hExSPS_ExEt_Y2->Fill(E_xY2/E_Txy_Y2, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY2/E_Txy_Y2, ExSPS);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -1238,8 +1254,12 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_T->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_T = new TH2D("hExSPS_ExEt_T","hExSPS_ExEt_T",100,0,1,1400,0,7);
+	hExSPS_ExEt_T->SetDirectory(outfile);
+
 
 	//jacobi Y1 histograms
 
@@ -1258,8 +1278,12 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y1->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y1 = new TH2D("hExSPS_ExEt_Y1","hExSPS_ExEt_Y1",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y1->SetDirectory(outfile);
+
 
 	//jacobi Y2 histograms
 
@@ -1278,8 +1302,11 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y2->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y2 = new TH2D("hExSPS_ExEt_Y2","hExSPS_ExEt_Y2",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y2->SetDirectory(outfile);
 
 	//jacobi Y histograms
 
@@ -1298,8 +1325,11 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y = new TH2D("hExSPS_ExEt_Y","hExSPS_ExEt_Y",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
 	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
@@ -1705,7 +1735,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
 			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-
+			hExSPS_ExEt_T->Fill(E_xT/E_Txy_T, ExSPS);
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
 			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
@@ -1739,6 +1769,8 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
 			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
+			hExSPS_ExEt_Y1->Fill(E_xY1/E_Txy_Y1, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY1/E_Txy_Y1, ExSPS);
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -1773,6 +1805,8 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
+			hExSPS_ExEt_Y2->Fill(E_xY2/E_Txy_Y2, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY2/E_Txy_Y2, ExSPS);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -2186,8 +2220,11 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_T->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_T = new TH2D("hExSPS_ExEt_T","hExSPS_ExEt_T",100,0,1,1400,0,7);
+	hExSPS_ExEt_T->SetDirectory(outfile);
 
 	//jacobi Y1 histograms
 
@@ -2206,8 +2243,11 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y1->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y1 = new TH2D("hExSPS_ExEt_Y1","hExSPS_ExEt_Y1",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -2226,8 +2266,11 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y2->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y2 = new TH2D("hExSPS_ExEt_Y2","hExSPS_ExEt_Y2",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y2->SetDirectory(outfile);
 
 	//jacobi Y histograms
 
@@ -2246,8 +2289,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y = new TH2D("hExSPS_ExEt_Y","hExSPS_ExEt_Y",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y->SetDirectory(outfile);
+
 
 	//CM angles (CM of recoil break up, so 9B CM)
 	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
@@ -2636,7 +2683,7 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
 			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-
+			hExSPS_ExEt_T->Fill(E_xT/E_Txy_T, ExSPS);
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
 			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
@@ -2670,6 +2717,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
 			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
+			hExSPS_ExEt_Y1->Fill(E_xY1/E_Txy_Y1, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY1/E_Txy_Y1, ExSPS);
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -2704,7 +2753,8 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
-
+			hExSPS_ExEt_Y2->Fill(E_xY2/E_Txy_Y2, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY2/E_Txy_Y2, ExSPS);
 			
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
@@ -3108,8 +3158,11 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_T = new TH2D("hEyEt_CosThetaK_T","hEyEt_CosThetaK_T",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_T->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_T = new TH2D("hExEt_Et_T", "hExEt_Et_T", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_T->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_T = new TH2D("hExSPS_ExEt_T","hExSPS_ExEt_T",100,0,1,1400,0,7);
+	hExSPS_ExEt_T->SetDirectory(outfile);
 
 	//jacobi Y1 histograms
 
@@ -3128,8 +3181,11 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y1 = new TH2D("hEyEt_CosThetaK_Y1","hEyEt_CosThetaK_Y1",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y1->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y1 = new TH2D("hExEt_Et_Y1", "hExEt_Et_Y1", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y1->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y1 = new TH2D("hExSPS_ExEt_Y1","hExSPS_ExEt_Y1",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y1->SetDirectory(outfile);
 
 	//jacobi Y2 histograms
 
@@ -3148,8 +3204,11 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y2 = new TH2D("hEyEt_CosThetaK_Y2","hEyEt_CosThetaK_Y2",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y2->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y2->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y2 = new TH2D("hExSPS_ExEt_Y2","hExSPS_ExEt_Y2",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y2->SetDirectory(outfile);
 
 	//jacobi Y histograms
 
@@ -3168,8 +3227,11 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hEyEt_CosThetaK_Y = new TH2D("hEyEt_CosThetaK_Y","hEyEt_CosThetaK_Y",200,-1,1,100,0,1);
 	hEyEt_CosThetaK_Y->SetDirectory(outfile);
 
-	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 100, 0, 100, 100, 0, 1);
+	TH2D *hExEt_Et_Y = new TH2D("hExEt_Et_Y", "hExEt_Et_Y", 1000, 0, 10, 100, 0, 1);
 	hExEt_Et_Y->SetDirectory(outfile);
+
+	TH2D *hExSPS_ExEt_Y = new TH2D("hExSPS_ExEt_Y","hExSPS_ExEt_Y",100,0,1,1400,0,7);
+	hExSPS_ExEt_Y->SetDirectory(outfile);
 
 	//CM angles (CM of recoil break up, so 9B CM)
 	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
@@ -3560,7 +3622,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hExEt_CosThetaK_T->Fill(-costhetakT, E_xT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
 			hEyEt_CosThetaK_T->Fill(costhetakT, E_yT/E_Txy_T);
 			hEyEt_CosThetaK_T->Fill(-costhetakT, E_yT/E_Txy_T);//costhetak is negated under transformation of 1,2 -> 2,1, must fill both
-
+			hExSPS_ExEt_T->Fill(E_xT/E_Txy_T, ExSPS);
 
 			//jacobi Y system, with 1 = alpha1, 2 = proton, 3 = alpha2
 			mu_x = (mass_a*mass_p)/(mass_a + mass_p);
@@ -3594,6 +3656,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hExEt_CosThetaK_Y->Fill(costhetakY1, E_xY1/E_Txy_Y1);//cumulative
 			hEyEt_CosThetaK_Y1->Fill(costhetakY1, E_yY1/E_Txy_Y1);//y1
 			hEyEt_CosThetaK_Y->Fill(costhetakY1, E_yY1/E_Txy_Y1);//cumulative
+			hExSPS_ExEt_Y1->Fill(E_xY1/E_Txy_Y1, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY1/E_Txy_Y1, ExSPS);
 
 
 			//jacobi Y system, with 1 = alpha2, 2 = proton, 3 = alpha2
@@ -3628,6 +3692,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hExEt_CosThetaK_Y->Fill(costhetakY2, E_xY2/E_Txy_Y2);//cumulative
 			hEyEt_CosThetaK_Y2->Fill(costhetakY2, E_yY2/E_Txy_Y2);//y2
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
+			hExSPS_ExEt_Y2->Fill(E_xY2/E_Txy_Y2, ExSPS);
+			hExSPS_ExEt_Y->Fill(E_xY2/E_Txy_Y2, ExSPS);
 
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)

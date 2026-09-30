@@ -119,6 +119,15 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 350, 0, 7, 350, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM","#theta_{CM} of #alpha", 100, 0, TMath::Pi());
+	hAlphaThetaCM->SetDirectory(outfile);
+
+	TH1D *hDeuteronThetaCM = new TH1D("hDeuteronThetaCM", "#theta_{CM} of d", 100, 0, TMath::Pi());
+	hDeuteronThetaCM->SetDirectory(outfile);
+
+	TH1D *hRelativeAngleCM = new TH1D("hRelativeAngleCM", "Relative Angle Between #alpha, d in CM", 200, 0, 2.*TMath::Pi());
+	hRelativeAngleCM->SetDirectory(outfile);
+
 	SABREPID_N2_M2 pidSolver;
 	pidSolver.SetHypothesis(hypothesis);
 	pidSolver.SetResolution(0.05, 1.0, 1.0);
@@ -142,6 +151,10 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 
 	int alpharing, alphawedge, deuteronring, deuteronwedge;
 
+	double alphathetacm, deuteronthetacm, relangle;
+
+	double alphaIM, deuteronIM, alphaFlipIM, deuteronFlipIM;
+
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
 	outtree->Branch("passesCut", &passesCut, "passesCut/O");
@@ -161,6 +174,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 
 	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
 	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("RecFlipEx", &recoilFlipEx, "recoilFlipEx/D");
 	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 
 	outtree->Branch("residual_px", &residual_px, "residual_px/D");
@@ -172,6 +186,16 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	outtree->Branch("thetaH_deuteron", &thetaH_deuteron, "thetaH_deuteron/D");
 	outtree->Branch("cosThetaH_alpha", &cosThetaH_alpha, "cosThetaH_alpha/D");
 	outtree->Branch("cosThetaH_deuteron", &cosThetaH_deuteron, "cosThetaH_deuteron/D");
+
+	outtree->Branch("alphathetacm", &alphathetacm, "alphathetacm/D");
+	outtree->Branch("deuteronthetacm", &deuteronthetacm, "deuteronthetacm/D");
+	outtree->Branch("relangle", &relangle, "relangle/D");
+
+	outtree->Branch("alphaIM", &alphaIM, "alphaIM/D");			//invariant mass of alpha when using best chi2
+	outtree->Branch("deuteronIM", &deuteronIM, "deuteronIM/D"); //invariant mass of deuteron when using best chi2
+
+	outtree->Branch("alphaFlipIM", &alphaFlipIM, "alphaFlipIM/D");//invariant mass of alpha when using opposite chi2 choice 
+	outtree->Branch("deuteronFlipIM", &deuteronFlipIM, "deuteronFlipIM/D");//invariant mass of deuteron when using opposite chi2 choice
 
 
 	for(long i=0; i<numentries; i++){
@@ -220,6 +244,11 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 			recoilflip = alphaflip + deuteronflip;
 			TVector3 betaLabToCM = -recoil.BoostVector();
 
+			alphaIM = alpha.M();
+			deuteronIM = deuteron.M();
+			alphaFlipIM = alphaflip.M();
+			deuteronFlipIM = deuteronflip.M();
+
 			alpharing = ringStrip[alpha_hit_index];
 			alphawedge = wedgeStrip[alpha_hit_index];
 
@@ -232,6 +261,23 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 			TLorentzVector deuteronCM = deuteron;
 			alphaCM.Boost(betaLabToCM);
 			deuteronCM.Boost(betaLabToCM);
+
+			//calculate CM angles:
+			// alphathetacm = std::acos(alphaCM.Vect()[2]/alphaCM.Vect().Mag());
+			// deuteronthetacm = std::acos(deuteronCM.Vect()[2]/deuteronCM.Vect().Mag());
+			// relangle = alphaCM.Vect().Angle(deuteronCM.Vect());
+			//calculate CM angle here, but remember that we want theta where z axis is now direction of recoil in lab!
+			TVector3 recoilDirection = recoil.Vect().Unit();
+			double cosThetaAlpha = alphaCM.Vect().Unit().Dot(recoilDirection);
+			double cosThetaDeuteron = deuteronCM.Vect().Unit().Dot(recoilDirection); 
+			alphathetacm = std::acos(std::clamp(cosThetaAlpha, -1., 1.));
+			deuteronthetacm = std::acos(std::clamp(cosThetaDeuteron, -1., 1.));
+			relangle = alphaCM.Vect().Angle(deuteronCM.Vect()); 
+
+			hAlphaThetaCM->Fill(alphathetacm);
+			hDeuteronThetaCM->Fill(deuteronthetacm);
+			hRelativeAngleCM->Fill(relangle);
+
 
 			thetaH_alpha = -666.;
 			cosThetaH_alpha = -666.;
@@ -374,6 +420,15 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	TH1D *hCalcMissingMass = new TH1D("hCalcMissingMass", "Calculated Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0., 5000.);
 	hCalcMissingMass->SetDirectory(outfile);
 
+	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM","#theta_{CM} of #alpha", 100, 0, TMath::Pi());
+	hAlphaThetaCM->SetDirectory(outfile);
+
+	TH1D *hDeuteronThetaCM = new TH1D("hDeuteronThetaCM", "#theta_{CM} of d", 100, 0, TMath::Pi());
+	hDeuteronThetaCM->SetDirectory(outfile);
+
+	TH1D *hRelativeAngleCM = new TH1D("hRelativeAngleCM", "Relative Angle Between #alpha, d in CM", 200, 0, 2.*TMath::Pi());
+	hRelativeAngleCM->SetDirectory(outfile);
+
 	//init solver here
 	SABREPID_N2_M1 pidSolver;
 	pidSolver.SetHypothesis(hypothesis);
@@ -395,6 +450,10 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	TLorentzVector alpha, deuteron, recoil, missingP4;
 	double ExSPS, recoilEx, SABREsumE, missingMassCalc;
 	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
+
+	double alphathetacm, deuteronthetacm, relangle;
+
+	double alphaIM, alphaFlipIM, deuteornIM, deuteronFlipIM;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
@@ -420,6 +479,10 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	outtree->Branch("thetaH_deuteron", &thetaH_deuteron, "thetaH_deuteron/D");
 	outtree->Branch("cosThetaH_alpha", &cosThetaH_alpha, "cosThetaH_alpha/D");
 	outtree->Branch("cosThetaH_deuteron", &cosThetaH_deuteron, "cosThetaH_deuteron/D");
+
+	outtree->Branch("alphathetacm", &alphathetacm, "alphathetacm/D");
+	outtree->Branch("deuteronthetacm", &deuteronthetacm, "deuteronthetacm/D");
+	outtree->Branch("relangle", &relangle, "relangle/D");
 
 	auto buildP4 = [](double E, double theta, double phi, double m){
 		double p = std::sqrt(E * (E + 2. * m));
@@ -474,6 +537,22 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 			TLorentzVector deuteronCM = deuteron;
 			alphaCM.Boost(betaLabToCM);
 			deuteronCM.Boost(betaLabToCM);
+
+			//calculate CM angles:
+			// alphathetacm = std::acos(alphaCM.Vect()[2]/alphaCM.Vect().Mag());
+			// deuteronthetacm = std::acos(deuteronCM.Vect()[2]/deuteronCM.Vect().Mag());
+			// relangle = (alphaCM.Vect()).Angle(deuteronCM.Vect());
+			//calculate CM angle here, but remember that we want theta where z axis is now direction of recoil in lab!
+			TVector3 recoilDirection = recoil.Vect().Unit();
+			double cosThetaAlpha = alphaCM.Vect().Unit().Dot(recoilDirection);
+			double cosThetaDeuteron = deuteronCM.Vect().Unit().Dot(recoilDirection); 
+			alphathetacm = std::acos(std::clamp(cosThetaAlpha, -1., 1.));
+			deuteronthetacm = std::acos(std::clamp(cosThetaDeuteron, -1., 1.));
+			relangle = alphaCM.Vect().Angle(deuteronCM.Vect()); 
+
+			hAlphaThetaCM->Fill(alphathetacm);
+			hDeuteronThetaCM->Fill(deuteronthetacm);
+			hRelativeAngleCM->Fill(relangle);
 
 			thetaH_alpha = -666.;
 			cosThetaH_alpha = -666.;
