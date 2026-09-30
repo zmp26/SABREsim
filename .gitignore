@@ -27,3 +27,4 @@ analyze/testcuts.txt
 *cutlist.txt
 anglemaps/sigmas/*txt
 anglemaps/sigmas/rays
+*.json
