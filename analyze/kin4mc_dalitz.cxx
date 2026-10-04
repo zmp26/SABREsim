@@ -1,4 +1,5 @@
 #include <fstream>
+#include <string>
 
 #include "TLorentzVector.h"
 #include "TVector3.h"
@@ -15,6 +16,7 @@ std::pair<TVector3,TVector3> getJacobiMomenta(TVector3 k1, TVector3 k2, TVector3
 }
 
 //set up for 9B->...->paa (kin4mc decay1=p, decay2=a)
+//channel
 void kin4mc_dalitz(const char* filename){
 
 	TMassTable table;
@@ -77,14 +79,14 @@ void kin4mc_dalitz(const char* filename){
 
 	while(infile >> ejE >> ejTheta >> ejPhi >> bu1E >> bu1Theta >> bu1Phi >> bu2E >> bu2Theta >> bu2Phi >> bu3E >> bu3Theta >> bu3Phi){
 
-		//for kin4mc format apa:
-		//double mass_bu1 = massgs_a;
-		//double mass_bu2 = massgs_p;
-		//double mass_bu3 = massgs_a;
-
 		//for kin4mc format paa:
-		double mass_bu1 = massgs_p;
-		double mass_bu2 = massgs_a;
+		// double mass_bu1 = massgs_p;
+		// double mass_bu2 = massgs_a;
+		// double mass_bu3 = massgs_a;
+
+		//for kin4mc format apa:
+		double mass_bu1 = massgs_a;
+		double mass_bu2 = massgs_p;
 		double mass_bu3 = massgs_a;
 
 		//columns 1,2,3 are ejE,ejTheta,ejPhi
@@ -111,14 +113,14 @@ void kin4mc_dalitz(const char* filename){
 		bu3.SetPxPyPzE(P3x, P3y, P3z, bu3E+mass_bu3);
 
 		//decay1 = p (p+8Be or dem if decay1=p)
-		proton = bu1;
-		alpha1 = bu2;
-		alpha2 = bu3;
+		// proton = bu1;
+		// alpha1 = bu2;
+		// alpha2 = bu3;
 
 		//decay1 = a (a+5Li or dem if decay1=a)
-		// alpha1 = bu1;
-		// proton = bu2;
-		// alpha2 = bu3;
+		alpha1 = bu1;
+		proton = bu2;
+		alpha2 = bu3;
 
 		hInvMass_aa->Fill((alpha1+alpha2).M());
 		hEx8Be->Fill((alpha1+alpha2).M() - massgs_8Be);
@@ -211,7 +213,9 @@ void kin4mc_dalitz(const char* filename){
 }
 
 //set up for 9B->...->paa (kin4mc decay1=p, decay2=a)
-void kin4mc_dalitz(const char* filename, const char* outfilename){
+//channel = "paa" -> decay1 = p, decay2 = a (9B -> p+8Be, 8Be->a+a)
+//channel = "apa" -> decay1 = a, decay2 = p (9B -> a+5Li, 5Li->p+a)
+void kin4mc_dalitz(const char* filename, const char* outfilename, const std::string& channel = "paa"){
 
 	TMassTable table;
 	table.Init("/home/zachpurcell/masstable/masstable.dat");
@@ -381,15 +385,20 @@ void kin4mc_dalitz(const char* filename, const char* outfilename){
 
 	while(infile >> ejE >> ejTheta >> ejPhi >> bu1E >> bu1Theta >> bu1Phi >> bu2E >> bu2Theta >> bu2Phi >> bu3E >> bu3Theta >> bu3Phi){
 
-		//for kin4mc format apa:
-		//double mass_bu1 = massgs_a;
-		//double mass_bu2 = massgs_p;
-		//double mass_bu3 = massgs_a;
+		double mass_bu1, mass_bu2, mass_bu3;
 
-		//for kin4mc format paa:
-		double mass_bu1 = massgs_p;
-		double mass_bu2 = massgs_a;
-		double mass_bu3 = massgs_a;
+		if(channel == "paa"){
+			mass_bu1 = massgs_p;
+			mass_bu2 = massgs_a;
+			mass_bu3 = massgs_a;
+		} else if(channel == "apa"){
+			mass_bu1 = massgs_a;
+			mass_bu2 = massgs_p;
+			mass_bu3 = massgs_a;
+		} else {
+			std::cout << "Invalid channel!" << std::endl;
+			return;
+		}
 
 		//columns 1,2,3 are ejE,ejTheta,ejPhi
 		//columns 4,5,6 are bu1E, bu1Theta, bu1Phi
@@ -414,15 +423,15 @@ void kin4mc_dalitz(const char* filename, const char* outfilename){
 		double P3z = P3*std::cos(M_PI*bu3Theta/180.);
 		bu3.SetPxPyPzE(P3x, P3y, P3z, bu3E+mass_bu3);
 
-		//decay1 = p (p+8Be or dem if decay1=p)
-		proton = bu1;
-		alpha1 = bu2;
-		alpha2 = bu3;
-
-		//decay1 = a (a+5Li or dem if decay1=a)
-		// alpha1 = bu1;
-		// proton = bu2;
-		// alpha2 = bu3;
+		if(channel == "paa"){//decay1=p, decay2=a (9B->p+8Be, 8Be->a+a)
+			proton = bu1;
+			alpha1 = bu2;
+			alpha2 = bu3;
+		} else if(channel == "apa"){//decay1=a, decay2=p (9B->a+5Li, 5Li->p+a)
+			alpha1 = bu1;
+			proton = bu2;
+			alpha2 = bu3;
+		}
 
 		hInvMass_aa->Fill((alpha1+alpha2).M());
 		hEx8Be->Fill((alpha1+alpha2).M() - massgs_8Be);

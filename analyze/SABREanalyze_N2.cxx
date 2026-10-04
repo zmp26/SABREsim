@@ -429,6 +429,9 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	TH1D *hRelativeAngleCM = new TH1D("hRelativeAngleCM", "Relative Angle Between #alpha, d in CM", 200, 0, 2.*TMath::Pi());
 	hRelativeAngleCM->SetDirectory(outfile);
 
+	TH2D *hCatania = new TH2D("catania_plot", "Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q)", 100, 0, 10, 100, 0, 10);
+	hCatania->SetDirectory(outfile);
+
 	//init solver here
 	SABREPID_N2_M1 pidSolver;
 	pidSolver.SetHypothesis(hypothesis);
@@ -454,6 +457,8 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	double alphathetacm, deuteronthetacm, relangle;
 
 	double alphaIM, alphaFlipIM, deuteornIM, deuteronFlipIM;
+
+	double catania_x, catania_y;
 
 	outtree->Branch("bestPermIndex", &bestPermIndex, "bestPermIndex/I");
 	outtree->Branch("bestChi2", &bestChi2, "bestChi2/D");
@@ -483,6 +488,9 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	outtree->Branch("alphathetacm", &alphathetacm, "alphathetacm/D");
 	outtree->Branch("deuteronthetacm", &deuteronthetacm, "deuteronthetacm/D");
 	outtree->Branch("relangle", &relangle, "relangle/D");
+
+	outtree->Branch("catania_x", &catania_x, "catania_x/D");
+	outtree->Branch("catania_y", &catania_y, "catania_y/D");
 
 	auto buildP4 = [](double E, double theta, double phi, double m){
 		double p = std::sqrt(E * (E + 2. * m));
@@ -537,6 +545,10 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 			TLorentzVector deuteronCM = deuteron;
 			alphaCM.Boost(betaLabToCM);
 			deuteronCM.Boost(betaLabToCM);
+
+			catania_x = (missingP4.P()*missingP4.P()) / (2*AMU_IN_MEV);
+			catania_y = (hypothesis.beamEnergyMeV - E[0]);// - SPSE);
+			hCatania->Fill(catania_x, catania_y);
 
 			//calculate CM angles:
 			// alphathetacm = std::acos(alphaCM.Vect()[2]/alphaCM.Vect().Mag());

@@ -1,3 +1,25 @@
+/*
+	
+	SaveSession.cxx
+	Author: Zach Purcell (2026)
+
+	Purpose: Recursively saves ROOT objects stored in open ROOT files along with user-generated ROOT objects from
+			 within the ROOT interactive interpreter (such as TCutG, THD, etc)
+
+			 Saves all to root file located at outputFilename
+
+
+	Usage:	 From the ROOT interactive interpreter, run
+					.x SaveSession("path/to/output/file/here.root")
+
+			 Note that SaveSession.cxx must be in the same directory as where the ROOT session has been started.
+			 Otherwise, call it with:
+			 		.x path/to/SaveSession.cxx("path/to/output/file/here.root")
+
+
+*/
+
+
 #include <iostream>
 #include <TFile.h>
 #include <TDirectory.h>
