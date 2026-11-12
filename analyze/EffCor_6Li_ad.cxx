@@ -51,10 +51,10 @@ void EffCor_6Li_ad(const char* histName = "h", int effIndex=1, const char* effFi
 			double eff_percent = 0.;
 
 			switch(effIndex){
-				case 1: eff_percent = bu1; break;
-				case 2: eff_percent = bu2; break;
-				case 3: eff_percent = bu1 + bu2; break;
-				case 4: eff_percent = both; break;
+				case 1: eff_percent = bu1; break;//bu1
+				case 2: eff_percent = bu2; break;//bu2
+				case 3: eff_percent = bu1 + bu2; break;//bu1 or bu2
+				case 4: eff_percent = both; break; //bu1 and bu2
 			}
 
 			double energy_MeV = energy_keV / 1000.;

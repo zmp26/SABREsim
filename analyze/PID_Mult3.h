@@ -44,6 +44,7 @@ private:
 	TH2D* h2Chi2ByPermutation{nullptr};
 	TH2D* h2Chi2DifByPermutation{nullptr};
 	TH1D* hProtonPicks{nullptr};//which hit index is picked as the proton
+	TH1D* hChi2_NextMinusBest{nullptr};
 
 	TLorentzVector Build4Vector(double EMeV, double thetadeg, double phideg, double massMeV) const;
     

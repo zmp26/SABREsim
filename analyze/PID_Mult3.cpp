@@ -136,7 +136,7 @@ void PID_Mult3::InitDiagnostics(TDirectory* targetDir){
 	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 500, 500, 0, 500);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by permutation;permutation;#chi^{2}", 6, -0.5, 5.5, 500, 0, 500);
 	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "(#chi^{2}_{i} - #chi^{2}_{best}) vs Permutation;Permutation;(#chi^{2}_{i} - #chi^{2}_{best})", 6, -0.6, 5.5, 500, 0, 500);
-
+	hChi2_NextMinusBest = new TH1D("hChi2_NextMinusBest", "#chi^{2}_{Next} - #chi^{2}_{Best}", 500, 0, 250);
 
 	for(int i=0; i<6; i++){
 		TString label = Form("P%d: (%s,%s,%s)", i, fHypothesis.final_particles[allPerms[i][0]].Data(), fHypothesis.final_particles[allPerms[i][1]].Data(), fHypothesis.final_particles[allPerms[i][2]].Data());
@@ -238,62 +238,120 @@ PIDResult_N3_M3 PID_Mult3::EvaluateEvent(
 	int best_perm_index = -1;
 	TLorentzVector best_p_missing;
 
+	// // Evaluate all 6 permutations
+	// for (size_t permindex = 0; permindex < allPerms.size(); ++permindex) {
+	// 	const auto& perm = allPerms[permindex];
+
+	// 	TLorentzVector P_missing;
+	// 	double chi2 = ComputePermutationChi2(
+	// 		perm, E, theta, phi, 
+	// 		SPS_E, SPSTheta, SPSPhi, 
+	// 		P_recoil_expected, P_missing
+	// 	);
+
+	// 	// Store Chi2 per permutation
+	// 	res.permChi2s[permindex] = chi2;
+	// 	if(h2Chi2ByPermutation)	h2Chi2ByPermutation->Fill(permindex, chi2);
+
+	// 	if (chi2 < min_chi2) {
+	// 		second_best_chi2 = min_chi2;
+	// 		min_chi2 = chi2;
+	// 		best_perm_index = static_cast<int>(permindex);
+	// 		best_p_missing = P_missing;
+	// 	} else if (chi2 < second_best_chi2) {
+	// 		second_best_chi2 = chi2;
+	// 	}
+
+	// 	auto sortedChi2 = res.permChi2s;
+	// 	std::sort(sortedChi2.begin(), sortedChi2.end());
+	
+	// 	second_best_chi2 = sortedChi2[2];
+
+	// 	//if(h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
+	// }
+
 	// Evaluate all 6 permutations
 	for (size_t permindex = 0; permindex < allPerms.size(); ++permindex) {
-		const auto& perm = allPerms[permindex];
+	    const auto& perm = allPerms[permindex];
 
-		TLorentzVector P_missing;
-		double chi2 = ComputePermutationChi2(
-			perm, E, theta, phi, 
-			SPS_E, SPSTheta, SPSPhi, 
-			P_recoil_expected, P_missing
-		);
+	    TLorentzVector P_missing;
+	    double chi2 = ComputePermutationChi2(
+	        perm, E, theta, phi,
+	        SPS_E, SPSTheta, SPSPhi,
+	        P_recoil_expected, P_missing
+	    );
 
-		// Store Chi2 per permutation
-		res.permChi2s[permindex] = chi2;
-		if(h2Chi2ByPermutation)	h2Chi2ByPermutation->Fill(permindex, chi2);
+	    // Store chi2 per permutation
+	    res.permChi2s[permindex] = chi2;
 
-		if (chi2 < min_chi2) {
-			second_best_chi2 = min_chi2;
-			min_chi2 = chi2;
-			best_perm_index = static_cast<int>(permindex);
-			best_p_missing = P_missing;
-		} else if (chi2 < second_best_chi2) {
-			second_best_chi2 = chi2;
-		}
+	    if (h2Chi2ByPermutation) {
+	        h2Chi2ByPermutation->Fill(permindex, chi2);
+	    }
 
-		//if(h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
+	    // Track the best assignment and its reconstructed momentum
+	    if (chi2 < min_chi2) {
+	        min_chi2 = chi2;
+	        best_perm_index = static_cast<int>(permindex);
+	        best_p_missing = P_missing;
+	    }
 	}
 
-	for (size_t permIndex = 0; permIndex < allPerms.size(); ++permIndex) {
-    	if (h2Chi2DifByPermutation) h2Chi2DifByPermutation->Fill(permIndex, res.permChi2s[permIndex] - res.bestChi2);
-	}
+	// With two identical particles, take the third sorted score.
+auto sortedChi2 = res.permChi2s;
+std::sort(sortedChi2.begin(), sortedChi2.end());
+second_best_chi2 = sortedChi2[2];
 
-	if (best_perm_index >= 0) {
-		hBestPermutation->Fill(best_perm_index);
-		res.bestChi2Index = best_perm_index;
-		res.bestChi2 = min_chi2;
-		res.hit_indices = allPerms[best_perm_index];
+if (best_perm_index >= 0) {
+    res.bestChi2Index = best_perm_index;
+    res.bestChi2 = min_chi2;
+    res.hit_indices = allPerms[best_perm_index];
 
-		res.missing_px   = best_p_missing.Px();
-		res.missing_py   = best_p_missing.Py();
-		res.missing_pz   = best_p_missing.Pz();
-		res.missing_E    = best_p_missing.E();
-		res.missing_Pmag = best_p_missing.P();
+    res.missing_px   = best_p_missing.Px();
+    res.missing_py   = best_p_missing.Py();
+    res.missing_pz   = best_p_missing.Pz();
+    res.missing_E    = best_p_missing.E();
+    res.missing_Pmag = best_p_missing.P();
 
-		res.SABREsumE = E[0] + E[1] + E[2];
+    res.SABREsumE = E[0] + E[1] + E[2];
 
-		// Reduced Chi2 with 4 degrees of freedom (px, py, pz)
-		double reducedChi2 = res.bestChi2 / 3.0;
-		res.passesCut = (reducedChi2 <= fMaxChi2Cut);
+    // Reduced chi2 for the three momentum components.
+    double reducedChi2 = res.bestChi2 / 3.0;
+    res.passesCut = (reducedChi2 <= fMaxChi2Cut);
 
-		if (outdir && hBestChi2) {
-			hBestChi2->Fill(reducedChi2);
-			if (hChi2_BestVsNext && second_best_chi2 < 1e8) {
-				hChi2_BestVsNext->Fill(reducedChi2, second_best_chi2 / 3.0);
-			}
-		}
-	}
+    if (hBestPermutation) {
+        hBestPermutation->Fill(best_perm_index);
+    }
 
-	return res;
+    // Differences relative to the final best score.
+    for (size_t permIndex = 0; permIndex < allPerms.size(); ++permIndex) {
+        if (h2Chi2DifByPermutation) {
+            h2Chi2DifByPermutation->Fill(
+                permIndex,
+                res.permChi2s[permIndex] - res.bestChi2
+            );
+        }
+    }
+
+    if (outdir) {
+        if (hBestChi2) hBestChi2->Fill(reducedChi2);
+
+        if (second_best_chi2 < 1e8) {
+            if (hChi2_BestVsNext) {
+                hChi2_BestVsNext->Fill(
+                    reducedChi2,
+                    second_best_chi2 / 3.0
+                );
+            }
+
+            if (hChi2_NextMinusBest) {
+                // Raw chi2 difference, consistent with the histogram title.
+                hChi2_NextMinusBest->Fill(
+                    second_best_chi2 - res.bestChi2
+                );
+            }
+        }
+    }
+}
+
+return res;
 }

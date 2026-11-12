@@ -192,7 +192,7 @@ void SABREPID_N2_M2::InitDiagnostics(TDirectory* targetDir) {
 
 	hBestPermutation = new TH1D("hBestPermutation","Best particle assignment;Assignment;Counts",2,-0.5,1.5);
 	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext","Best #chi^{2} vs next-best #chi^{2};Best #chi^{2}/3;Next-best #chi^{2}/3",500,0.0,500.0,500,0.0,500.0);
-
+	hChi2_NextMinusBest = new TH1D("hChi2_NextMinusBest", "#chi^{2}_{Next} - #chi^{2}_{Best}", 500, 0, 250);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by particle assignment;Assignment;#chi^{2}", 2, -0.5, 1.5, 500, 0.0, 500.0);
 
 	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation","(#chi^{2}_{i}-#chi^{2}_{best}) by assignment;Assignment;#Delta#chi^{2}",2,-0.5,1.5,500,0.0,500.0);
@@ -272,7 +272,10 @@ PIDResult_N2_M2 SABREPID_N2_M2::EvaluateEvent(const double E[2],const double the
 
 	if(hBestChi2) hBestChi2->Fill(reducedChi2);
 
-	if(hChi2_BestVsNext && second_best_chi2 < 1e9) hChi2_BestVsNext->Fill(reducedChi2,second_best_chi2 / 3.0);
+	if(hChi2_BestVsNext && second_best_chi2 < 1e9){
+		hChi2_BestVsNext->Fill(reducedChi2, second_best_chi2);
+		hChi2_NextMinusBest->Fill(second_best_chi2 - reducedChi2);
+	}
 
 	//fill only after determing best chi2 (so after cycling all perms once)
 	if (h2Chi2DifByPermutation) {

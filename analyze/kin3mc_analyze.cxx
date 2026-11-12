@@ -31,6 +31,8 @@ void kin3mc_analyze2(const char* filename){
 
 	TH1D *hRelativeAngleCM = new TH1D("hRelativeAngleCM", "Relative Angle Between Decay1,Daughter in CM", 100, 0, TMath::Pi());
 
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1402, -0.01, 7);
+
 	ifstream infile(filename);
 
 	double ejE, ejTheta, ejPhi, recE, recTheta, recPhi, bu1E, bu1Theta, bu1Phi, daughterE, daughterTheta, daughterPhi;
@@ -74,6 +76,8 @@ void kin3mc_analyze2(const char* filename){
 		// double relangle = (alpha.Vect()).Angle(deuteron.Vect());
 
 		lithium = alpha + deuteron;
+
+		hRecoilEx->Fill(lithium.M() - massgs_6Li);
 
 		// Parent/recoil direction in the chosen production frame: lab here.
 		const TVector3 recoilAxisLab = lithium.Vect().Unit();

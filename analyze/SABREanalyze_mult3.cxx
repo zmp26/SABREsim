@@ -51,6 +51,11 @@
 #include "PID_Mult2.h"
 #include "PID_Mult2.cpp"
 
+const double M2AA_MIN = 55.573e6;//GeV^2 / c^4
+const double M2AA_MAX = 55.576e6;//GeV^2 / c^4
+
+const double M2PA_MIN = 21.772e6;//GeV^2 / c^4
+
 //helper function for jacobi kx, ky coordinates given k1, k2, k3, and masses m1, m2, m3:
 std::pair<TVector3,TVector3> getJacobiMomenta(TVector3 k1, TVector3 k2, TVector3 k3, double m1, double m2, double m3){
 
@@ -159,46 +164,6 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
-	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begs->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsright->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
-	hExSPS_8begs->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
-	hExSPS_8begsleft->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
-	hExSPS_8begsright->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsright", 1200, 0, 6);
-	hExSPS_8begsleft2right->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
-	hExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 									800, 55.57e6, 55.69e6,
 									800, 21.76e6, 21.84e6);
@@ -219,6 +184,14 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
 
+	TH2D *hErel_aa = new TH2D("hErel_aa","Erel p+a+a vs Erel a+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_aa->SetDirectory(outfile);
+
+	TH2D *hErel_pa = new TH2D("hErel_pa","Erel p+a+a vs Erel p+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_pa->SetDirectory(outfile);
+
+
+
 	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
 	// 								800, 55.57e6, 55.69e6,
 	// 								800, 21.76e6, 21.84e6,
@@ -236,18 +209,6 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
@@ -262,6 +223,24 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
+
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1600, -1, 7);
+	hRecoilEx->SetDirectory(outfile);
+
+	TH1D *hExSPS = new TH1D("hExSPS", "SPS E_{x}", 1600, -1, 7);
+	hExSPS->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsGated = new TH1D("hExSPS_8BegsGated", "SPS E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hExSPS_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsAntiGated = new TH1D("hRecoilEx_8BegsAntiGated", "Recoil E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsAntiGated = new TH1D("hExSPS_8BegsAntiGated", "SPS E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
 
 	//jacobi T histograms
 
@@ -472,9 +451,6 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hDalitzEx_a2 = new TH2D("hDalitzEx_a2", "Ex(^{5}Li = p+#alpha_{2}) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li = p+#alpha_{2})", 100, 0, 2, 100, 0, 2);
 	hDalitzEx_a2->SetDirectory(outfile);
-
-	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil Ex (^{8}Be_{gs} cut)", 100, 0, 10);
-	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Recoil Ex (^{5}Li_{gs} cut)", 100, 0, 10);
 
 	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
 	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex SABRE (8Begs Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
@@ -873,56 +849,9 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
 
-			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hExSPS_8begs->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft->Fill(ExSPS);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-
-			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsright->Fill(ExSPS);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-			} else {
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-			}
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a));
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha2.E()-mass_a));
+			hErel_aa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(alpha1.E()-mass_a + alpha2.E()-mass_a));
 
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
@@ -983,33 +912,20 @@ void B10ha_SABREPID(const char* input_filename, TString simchan="paa"){
 
 			recoilEx = recoil.M() - massgs_9B;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
-			if(std::sqrt(m2_aa) - massgs_8Be > 0 && std::sqrt(m2_aa) - massgs_8Be < 0.5){
+			hRecoilEx->Fill(recoilEx);
+			hExSPS->Fill(ExSPS);
+
+			if(m2_aa >= M2AA_MIN && m2_aa <= M2AA_MAX){ //gate on events consistent with 9B -> p + 8Be(0+)
 				hRecoilEx_8BegsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
-				//std::cout << "Filled hRecoilEx_8BegsGated" << std::endl;
-			} else if(std::sqrt(m2_pa1) - massgs_5Li > 0 && std::sqrt(m2_pa1) - massgs_5Li < 1){
-				hRecoilEx_5LigsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
-				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
-			} else if(std::sqrt(m2_pa2) - massgs_5Li > 0 && std::sqrt(m2_pa2) - massgs_5Li < 1){
-				hRecoilEx_5LigsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
-				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
+				hExSPS_8BegsGated->Fill(ExSPS);
+			} else if(m2_aa > M2AA_MAX && (m2_pa1 >= M2PA_MIN || m2_pa2 >= M2PA_MIN)){ //gate on events inconsistent with 9B -> p + 8Be(0+)
+				hRecoilEx_8BegsAntiGated->Fill(recoilEx);
+				hExSPS_8BegsAntiGated->Fill(ExSPS);
 			}
 
 			outtree->Fill();
 
-		}// else {
-		// 	m2aa = -666.;
-		// 	m2pa1 = -666.;
-		// 	m2pa2 = -666.;
-		// 	proton.SetPxPyPzE(0.,0.,0.,0.);
-		// 	alpha1.SetPxPyPzE(0.,0.,0.,0.);
-		// 	alpha2.SetPxPyPzE(0.,0.,0.,0.);
-		// 	recoil.SetPxPyPzE(0.,0.,0.,0.);
-		// }
-
-		//outtree->Fill();
+		}
 
 		if(i % 10000 == 0){
 			std::cout << "Processed " << i << " events..." << std::endl;
@@ -1036,7 +952,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
-	std::string out_str = stem + "_kin4mcPID_Mult3.root";
+	std::string out_str = stem + "_SABREPID_Mult3.root";
 
 	TMassTable fMassTable;
 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
@@ -1133,46 +1049,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
-	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begs->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsright->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
-	hExSPS_8begs->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
-	hExSPS_8begsleft->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
-	hExSPS_8begsright->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsright", 1200, 0, 6);
-	hExSPS_8begsleft2right->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
-	hExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 									800, 55.57e6, 55.69e6,
 									800, 21.76e6, 21.84e6);
@@ -1193,6 +1069,14 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_a2->SetDirectory(outfile);
 
+	TH2D *hErel_aa = new TH2D("hErel_aa","Erel p+a+a vs Erel a+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_aa->SetDirectory(outfile);
+
+	TH2D *hErel_pa = new TH2D("hErel_pa","Erel p+a+a vs Erel p+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_pa->SetDirectory(outfile);
+
+
+
 	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
 	// 								800, 55.57e6, 55.69e6,
 	// 								800, 21.76e6, 21.84e6,
@@ -1210,18 +1094,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
@@ -1236,6 +1108,24 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
+
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1600, -1, 7);
+	hRecoilEx->SetDirectory(outfile);
+
+	TH1D *hExSPS = new TH1D("hExSPS", "SPS E_{x}", 1600, -1, 7);
+	hExSPS->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsGated = new TH1D("hExSPS_8BegsGated", "SPS E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hExSPS_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsAntiGated = new TH1D("hRecoilEx_8BegsAntiGated", "Recoil E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsAntiGated = new TH1D("hExSPS_8BegsAntiGated", "SPS E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
 
 	//jacobi T histograms
 
@@ -1260,7 +1150,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	TH2D *hExSPS_ExEt_T = new TH2D("hExSPS_ExEt_T","hExSPS_ExEt_T",100,0,1,1400,0,7);
 	hExSPS_ExEt_T->SetDirectory(outfile);
 
-
 	//jacobi Y1 histograms
 
 	TH1D *hCosThetaK_Y1 = new TH1D("hCosThetaK_Y1","hCosThetaK_Y1", 200, -1, 1);
@@ -1283,7 +1172,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hExSPS_ExEt_Y1 = new TH2D("hExSPS_ExEt_Y1","hExSPS_ExEt_Y1",100,0,1,1400,0,7);
 	hExSPS_ExEt_Y1->SetDirectory(outfile);
-
 
 	//jacobi Y2 histograms
 
@@ -1425,7 +1313,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 		double currentECenter = 0.5*(currentEMin+currentEMax);
 
 		TString name = Form("hDalitz_%d_%.1f_%.1f", i, currentEMin, currentEMax);
-		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.2f - %.2f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
+		TString title = Form("M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha} [%.3f - %.3f MeV];M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}", currentEMin, currentEMax);
 
 		vDalitz[i] = new TH2D(name.Data(), title.Data(),
 							  200, 55.57e6, 55.69e6,
@@ -1448,9 +1336,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 	TH2D *hDalitzEx_a2 = new TH2D("hDalitzEx_a2", "Ex(^{5}Li = p+#alpha_{2}) vs Ex(^{8}Be);Ex(^{8}Be);Ex(^{5}Li = p+#alpha_{2})", 100, 0, 2, 100, 0, 2);
 	hDalitzEx_a2->SetDirectory(outfile);
-
-	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil Ex (^{8}Be_{gs} cut)", 100, 0, 10);
-	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Recoil Ex (^{5}Li_{gs} cut)", 100, 0, 10);
 
 	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
 	TH2D *hRecoilExSPS_vs_RecoilExSABRE_8BegsGated = new TH2D("hRecoilExSPS_vs_RecoilExSABRE_8BegsGated", "Recoil Ex SPS vs Recoil Ex SABRE (8Begs Gated);SABRE;SPS", 100, 0, 10, 100, 0, 10);
@@ -1553,6 +1438,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("thetaH_a2_deg", &thetaH_a2_deg, "thetaH_a2_deg/D");
 
 	//jacobi branches
+	//jacobi T
 	outtree->Branch("kxTMag", &kxTMag, "kxTMag/D");
 	outtree->Branch("kyTMag", &kyTMag, "kyTMag/D");
 	outtree->Branch("costhetakT", &costhetakT, "costhetakT/D");
@@ -1582,12 +1468,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 	outtree->Branch("residual_pz", &residual_pz, "residual_pz/D");
 	outtree->Branch("residual_Pmag", &residual_pmag, "residual_Pmag/D");
 
-	double kin4mc_E[3], kin4mc_theta[3], kin4mc_phi[3];
-
-	// kin4mc_E[0] = kinE[1]; kin4mc_E[1] = kinE[2]; kin4mc_E[2] = kinE[3];
-	// kin4mc_theta[0] = kintheta[1]; kin4mc_theta[1] = kintheta[2]; kin4mc_theta[2] = kintheta[3];
-	// kin4mc_phi[0] = kinphi[1]; kin4mc_phi[1] = kinphi[2]; kin4mc_phi[2] = kinphi[3];
-
 	for(long i=0; i<numentries; i++){
 		//skip if Ex < 1.7:
 		// if(Ex < 1.7){
@@ -1596,14 +1476,13 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 		intree->GetEntry(i);
 
-		for(int i=1; i<4; i++){
-			kin4mc_E[i-1] = kinE[i];
-			kin4mc_theta[i-1] = kintheta[i];
-			kin4mc_phi[i-1] = kinphi[i];
-		}
+		double kin4mc_E[2], kin4mc_theta[2], kin4mc_phi[2];
 
-		// for(int i=0; i<3; i++) std::cout << "bu" << i << " = (" << kinE[i] << ", " << kintheta[i] << ", " << kinphi[i] << ")" << std::endl;
-		// std::cout << std::endl;
+		for(int j=1; j<4; j++){
+			kin4mc_E[j-1] = kinE[j];
+			kin4mc_theta[j-1] = kintheta[j];
+			kin4mc_phi[j-1] = kinphi[j];
+		}
 
 		PIDResult_N3_M3 res = pidSolver.EvaluateEvent(kin4mc_E, kin4mc_theta, kin4mc_phi, SPSE, SPSTheta, SPSPhi);
 
@@ -1669,6 +1548,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			alpha2 = buildP4(E[alpha_hit_index2], theta[alpha_hit_index2], phi[alpha_hit_index2], alpha2_mass);
 			recoil = proton + alpha1 + alpha2;
 
+
 			//jacobi coordinates:
 			TLorentzVector jacobi_recoil = recoil;
 			jacobi_recoil.Boost(-jacobi_recoil.BoostVector());
@@ -1679,9 +1559,11 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			TLorentzVector jacobi_alpha2 = alpha2;
 			jacobi_alpha2.Boost(-jacobi_recoil.BoostVector());
 
+
 			//E_TIM = (jacobi_alpha1.E() - mass_a + jacobi_alpha2.E() - mass_a + jacobi_proton.E() - mass_p);
 			E_TIM = (jacobi_alpha1.E() + jacobi_alpha2.E() + jacobi_proton.E());
 		
+
 			//jacobi T system, with 1 = alpha1, 2 = alpha2, 3 = proton
 			double mu_x = mass_a*mass_a/(2.*mass_a);
 			double mu_y = mass_p*2.*mass_a/(mass_p+mass_a+mass_a);
@@ -1707,7 +1589,7 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 			alpha2ThetaCM = (std::acos(jacobi_alpha2.Vect()[2]/jacobi_alpha2.Vect().Mag()))*180./M_PI;
 			alpha2PhiCM = (std::atan2(jacobi_alpha2.Vect()[1],jacobi_alpha2.Vect()[0]))*180./M_PI;
-			if(alpha2PhiCM < 0) alpha2PhiCM += 360.;
+			if(alpha2PhiCM < 0) alpha2PhiCM += 360.;;
 			hAlphaThetaCM->Fill(alpha2ThetaCM);
 			hAlphaPhiCM->Fill(alpha2PhiCM);
 
@@ -1860,56 +1742,9 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
 
-			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hExSPS_8begs->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft->Fill(ExSPS);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-
-			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsright->Fill(ExSPS);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-			} else {
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-			}
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a));
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha2.E()-mass_a));
+			hErel_aa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(alpha1.E()-mass_a + alpha2.E()-mass_a));
 
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
@@ -1928,8 +1763,6 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 			hSABRERingNumber_vs_SABRERingE->Fill(wedgeE[2], wedgeStrip[2]);
 
 			hEx8Be_VS_Ex9B->Fill(ExSPS, std::sqrt(m2_aa)-massgs_8Be);
-
-			//std::cout << "...here?" << std::endl;
 
 			if(Ex >= BORON9_ALPHATHRESH_MEV){
 				hDalitzInvMass->Fill(m2_aa, m2_pa1);//x = a+a, y = p+a
@@ -1972,33 +1805,20 @@ void B10ha_kin4mcPID(const char* input_filename, TString simchan="paa"){
 
 			recoilEx = recoil.M() - massgs_9B;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
-			if(std::sqrt(m2_aa) - massgs_8Be > 0 && std::sqrt(m2_aa) - massgs_8Be < 0.5){
+			hRecoilEx->Fill(recoilEx);
+			hExSPS->Fill(ExSPS);
+
+			if(m2_aa >= M2AA_MIN && m2_aa <= M2AA_MAX){ //gate on events consistent with 9B -> p + 8Be(0+)
 				hRecoilEx_8BegsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
-				//std::cout << "Filled hRecoilEx_8BegsGated" << std::endl;
-			} else if(std::sqrt(m2_pa1) - massgs_5Li > 0 && std::sqrt(m2_pa1) - massgs_5Li < 1){
-				hRecoilEx_5LigsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
-				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
-			} else if(std::sqrt(m2_pa2) - massgs_5Li > 0 && std::sqrt(m2_pa2) - massgs_5Li < 1){
-				hRecoilEx_5LigsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
-				//std::cout << "Filled hRecoilEx_5LigsGated" << std::endl;
+				hExSPS_8BegsGated->Fill(ExSPS);
+			} else if(m2_aa > M2AA_MAX && (m2_pa1 >= M2PA_MIN || m2_pa2 >= M2PA_MIN)){ //gate on events inconsistent with 9B -> p + 8Be(0+)
+				hRecoilEx_8BegsAntiGated->Fill(recoilEx);
+				hExSPS_8BegsAntiGated->Fill(ExSPS);
 			}
 
 			outtree->Fill();
 
-		}// else {
-		// 	m2aa = -666.;
-		// 	m2pa1 = -666.;
-		// 	m2pa2 = -666.;
-		// 	proton.SetPxPyPzE(0.,0.,0.,0.);
-		// 	alpha1.SetPxPyPzE(0.,0.,0.,0.);
-		// 	alpha2.SetPxPyPzE(0.,0.,0.,0.);
-		// 	recoil.SetPxPyPzE(0.,0.,0.,0.);
-		// }
-
-		//outtree->Fill();
+		}
 
 		if(i % 10000 == 0){
 			std::cout << "Processed " << i << " events..." << std::endl;
@@ -2109,46 +1929,6 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
-	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begs->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsright->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
-	hExSPS_8begs->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
-	hExSPS_8begsleft->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
-	hExSPS_8begsright->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsleft2right", 1200, 0, 6);
-	hExSPS_8begsleft2right->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
-	hExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 									800, 55.57e6, 55.69e6,
 									800, 21.76e6, 21.84e6);
@@ -2158,6 +1938,12 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 									800, 21.76e6, 21.84e6,
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
+
+	TH2D *hErel_aa = new TH2D("hErel_aa","Erel p+a+a vs Erel a+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_aa->SetDirectory(outfile);
+
+	TH2D *hErel_pa = new TH2D("hErel_pa","Erel p+a+a vs Erel p+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_pa->SetDirectory(outfile);
 
 	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
 	// 								800, 55.57e6, 55.69e6,
@@ -2176,18 +1962,6 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
@@ -2202,6 +1976,24 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
+
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1600, -1, 7);
+	hRecoilEx->SetDirectory(outfile);
+
+	TH1D *hExSPS = new TH1D("hExSPS", "SPS E_{x}", 1600, -1, 7);
+	hExSPS->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsGated = new TH1D("hExSPS_8BegsGated", "SPS E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hExSPS_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsAntiGated = new TH1D("hRecoilEx_8BegsAntiGated", "Recoil E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsAntiGated = new TH1D("hExSPS_8BegsAntiGated", "SPS E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
 
 	//jacobi T histograms
 
@@ -2411,11 +2203,6 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 		vDalitzBoundary[i] = MakeDalitzBoundary(W, i, currentEMin, currentEMax);
 
 	}
-
-
-	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
-	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
-	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
 
 	TH2D *hCatania = new TH2D("catania_plot", "Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q)", 100, 0, 10, 100, 0, 10);
 
@@ -2807,55 +2594,9 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
-			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hExSPS_8begs->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsright->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-			} else {
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-			}
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a));
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha2.E()-mass_a));
+			hErel_aa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(alpha1.E()-mass_a + alpha2.E()-mass_a));
 
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
@@ -2885,9 +2626,6 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
 
-				hDalitzEx->Fill(ex_8Be, ex_5Li1);
-				hDalitzEx->Fill(ex_8Be, ex_5Li2);
-
 				hCosThetaH->Fill(cosThetaH_a1);
 				hCosThetaH->Fill(cosThetaH_a2);
 
@@ -2899,7 +2637,6 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			}
 
-			//
 			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
 
@@ -2912,39 +2649,27 @@ void B10ha_SABREPID_Mult2(const char* input_filename){
 
 			recoilEx = recoil.M() - massgs_9B;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
+			hRecoilEx->Fill(recoilEx);
+			hExSPS->Fill(ExSPS);
 
-			if(ex_8Be > 0. && ex_8Be < 0.5){
+			if(m2_aa >= M2AA_MIN && m2_aa <= M2AA_MAX){ //gate on events consistent with 9B -> p + 8Be(0+)
 				hRecoilEx_8BegsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
-			} else if((ex_5Li1 > 0. && ex_5Li1 < 1.) || (ex_5Li2 > 0. && ex_5Li2 < 1.)){
-				hRecoilEx_5LigsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
+				hExSPS_8BegsGated->Fill(ExSPS);
+			} else if(m2_aa > M2AA_MAX && (m2_pa1 >= M2PA_MIN || m2_pa2 >= M2PA_MIN)){ //gate on events inconsistent with 9B -> p + 8Be(0+)
+				hRecoilEx_8BegsAntiGated->Fill(recoilEx);
+				hExSPS_8BegsAntiGated->Fill(ExSPS);
 			}
-			outtree->Fill();
-		}// else {
-		// 	m2_aa = -666.;
-		// 	m2_pa1 = -666.;
-		// 	m2_pa2 = -666.;
-		// 	P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
-		// 	P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
-		// 	P4_missing.SetPxPyPzE(0., 0., 0., 0.);
-		// 	recoil.SetPxPyPzE(0., 0., 0., 0.);
-		// }
 
-		//outtree->Fill();
+			outtree->Fill();
+		}
 
 		if(i % 10000 == 0){
 			std::cout << "Processed " << i << " events..." << std::endl;
 		}
 	}
-	
-	// outfile->cd();
-	// outfile->Write();
-	// outfile->Close();
-	// infile->Close();
-	// delete infile;
 
 	infile->Close();
+	
 	dalitzSlicesDir->cd();
 	for(int i=0; i<nSlices; i++) if(vDalitzBoundary[i]) vDalitzBoundary[i]->Write();
 	outfile->cd();
@@ -2959,7 +2684,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	std::string s = input_filename;
 	size_t last_dot = s.find_last_of(".");
 	std::string stem = (last_dot == std::string::npos ? s : s.substr(0, last_dot));
-	std::string out_str = stem + "_kin4mcPID_Mult2.root";
+	std::string out_str = stem + "_SABREPID_Mult2.root";
 
 	TMassTable fMassTable;
 	fMassTable.Init("/home/zachpurcell/masstable/masstable.dat");
@@ -3008,7 +2733,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	intree->SetBranchAddress("SPSPhi", &SPSPhi);
 
 	double E[2], theta[2], phi[2], wedgeE[2];
-	double kinE[4], kintheta[4], kinphi[4];
+	double kinE[4], kintheta[4], kinphi[4];//[0] = ejectile, [1] = decay1/bu1,	[2] = decay2/bu2,	[3] = decay3/bu3
 	int ringStrip[2], wedgeStrip[2];
 	intree->SetBranchAddress("SabreRingEnergy_hit1", &E[0]);
 	intree->SetBranchAddress("SabreWedgeEnergy_hit1", &wedgeE[0]);
@@ -3047,46 +2772,6 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass->SetDirectory(outfile);
 
-	TH2D *hDalitzInvMass_8begs = new TH2D("hDalitzInvMass_8begs", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begs->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft = new TH2D("hDalitzInvMass_8begsleft", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsright = new TH2D("hDalitzInvMass_8begsright", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsright->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsleft2right = new TH2D("hDalitzInvMass_8begsleft2right", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsleft2right->SetDirectory(outfile);
-
-	TH2D *hDalitzInvMass_8begsANTI = new TH2D("hDalitzInvMass_8begsANTI", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
-									800, 55.57e6, 55.69e6,
-									800, 21.76e6, 21.84e6);
-	hDalitzInvMass_8begsANTI->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begs = new TH1D("hExSPS_8begs", "hExSPS_8begs", 1200, 0, 6);
-	hExSPS_8begs->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft = new TH1D("hExSPS_8begsleft", "hExSPS_8begsleft", 1200, 0, 6);
-	hExSPS_8begsleft->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsright = new TH1D("hExSPS_8begsright", "hExSPS_8begsright", 1200, 0, 6);
-	hExSPS_8begsright->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsleft2right = new TH1D("hExSPS_8begsleft2right", "hExSPS_8begsleft2right", 1200, 0, 6);
-	hExSPS_8begsleft2right->SetDirectory(outfile);
-
-	TH1D *hExSPS_8begsANTI = new TH1D("hExSPS_8begsANTI", "hExSPS_8begsANTI", 1200, 0, 6);
-	hExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hDalitzInvMass_all = new TH2D("hDalitzInvMass_all", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 									800, 55.57e6, 55.69e6,
 									800, 21.76e6, 21.84e6);
@@ -3096,6 +2781,12 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 									800, 21.76e6, 21.84e6,
 									800, 21.76e6, 21.84e6);
 	hDalitzInvMass_pa1_pa2->SetDirectory(outfile);
+
+	TH2D *hErel_aa = new TH2D("hErel_aa","Erel p+a+a vs Erel a+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_aa->SetDirectory(outfile);
+
+	TH2D *hErel_pa = new TH2D("hErel_pa","Erel p+a+a vs Erel p+a", 1400/8, 0, 7, 1400/8, 0, 7);
+	hErel_pa->SetDirectory(outfile);
 
 	// TH3D *hDalitzSlices = new TH3D("hDalitzSlices", "hDalitzSlices;M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha};Ex", 
 	// 								800, 55.57e6, 55.69e6,
@@ -3114,18 +2805,6 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS_8begs = new TH2D("hSABREsumE_vs_ExSPS_8begs", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begs->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsleft = new TH2D("hSABREsumE_vs_ExSPS_8begsleft", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsleft->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsright = new TH2D("hSABREsumE_vs_ExSPS_8begsright", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsright->SetDirectory(outfile);
-
-	TH2D *hSABREsumE_vs_ExSPS_8begsANTI = new TH2D("hSABREsumE_vs_ExSPS_8begsANTI", "SABRE sum E vs Ex SPS", 1400, 0, 7, 1400, 0, 7);
-	hSABREsumE_vs_ExSPS_8begsANTI->SetDirectory(outfile);
-
 	TH2D *hSABRERingNumber_vs_ExSPS = new TH2D("hSABRERingNumber_vs_ExSPS", "hSABRERingNumber_vs_ExSPS", 1400, 0, 7, 80, 47.5, 127.5);
 	hSABRERingNumber_vs_ExSPS->SetDirectory(outfile);
 
@@ -3140,6 +2819,24 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
+
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1600, -1, 7);
+	hRecoilEx->SetDirectory(outfile);
+
+	TH1D *hExSPS = new TH1D("hExSPS", "SPS E_{x}", 1600, -1, 7);
+	hExSPS->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Recoil E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsGated = new TH1D("hExSPS_8BegsGated", "SPS E_{x} (gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hExSPS_8BegsGated->SetDirectory(outfile);
+
+	TH1D *hRecoilEx_8BegsAntiGated = new TH1D("hRecoilEx_8BegsAntiGated", "Recoil E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
+
+	TH1D *hExSPS_8BegsAntiGated = new TH1D("hExSPS_8BegsAntiGated", "SPS E_{x} (anti gate on ^{9}B #rightarrow ^{8}Be 0^{+})", 1402, -0.01, 7);
+	hRecoilEx_8BegsAntiGated->SetDirectory(outfile);
 
 	//jacobi T histograms
 
@@ -3232,6 +2929,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 	TH2D *hExSPS_ExEt_Y = new TH2D("hExSPS_ExEt_Y","hExSPS_ExEt_Y",100,0,1,1400,0,7);
 	hExSPS_ExEt_Y->SetDirectory(outfile);
+
 
 	//CM angles (CM of recoil break up, so 9B CM)
 	TH1D *hProtonThetaCM = new TH1D("hProtonThetaCM","hProtonThetaCM", 90, 0, 180);
@@ -3349,11 +3047,6 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 	}
 
-
-	TH2D *hDalitzEx = new TH2D("hDalitzEx", "Ex(^{5}Li) vs Ex(^{8}Be); Ex(^{8}Be); Ex(^{5}Li)", 200, 0, 8, 200, 0, 8);
-	TH1D *hRecoilEx_8BegsGated = new TH1D("hRecoilEx_8BegsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{8}Be_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
-	TH1D *hRecoilEx_5LigsGated = new TH1D("hRecoilEx_5LigsGated", "Ex(^{5}Li) vs Ex(^{8}Be) (^{5}Li_{gs} Gated); Ex(f^{8}Be); Ex(^{5}Li)", 200, 0, 8);
-
 	TH2D *hCatania = new TH2D("catania_plot", "Catania Plot (P_{missing}^{2}/(2m) vs E_{missing}-Q)", 100, 0, 10, 100, 0, 10);
 
 	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE; SABRE; SPS", 100, 0, 8, 100, 0, 8);
@@ -3390,6 +3083,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 	double ExSPS, recoilEx, SABREsumE;
 	double cosThetaH_a1, cosThetaH_a2;
 	double thetaH_a1_deg, thetaH_a2_deg;
+
 	double kxTMag, kyTMag, costhetakT, E_xT, E_yT, E_Txy_T; //only one set, as exchange of 1,2 -> 2,1 of a1 and a2 in T system changes only cos(thetak) -> -cos(thetak)
 	double kxY1Mag, kyY1Mag, costhetakY1, E_xY1, E_yY1, E_Txy_Y1;//need this set and below as exchange of 1,2 -> 2,1 of a1 and a2 in Y system is more complicated! (cos(thetak) -/> -cos(thetak), generally)
 	double kxY2Mag, kyY2Mag, costhetakY2, E_xY2, E_yY2, E_Txy_Y2;// '' /\/\/\/\ see above /\/\/\/\  ''
@@ -3485,9 +3179,8 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 		);
 	};
 
-
 	double kin4mc_E[2], kin4mc_theta[2], kin4mc_phi[2];
-	
+
 
 	for(long i=0; i<numentries; i++){
 		intree->GetEntry(i);
@@ -3694,7 +3387,7 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 			hEyEt_CosThetaK_Y->Fill(costhetakY2, E_yY2/E_Txy_Y2);//cumulative
 			hExSPS_ExEt_Y2->Fill(E_xY2/E_Txy_Y2, ExSPS);
 			hExSPS_ExEt_Y->Fill(E_xY2/E_Txy_Y2, ExSPS);
-
+			
 			//get helicty angle here:
 			//	parent frame: 			rest frame of recoil (recoil = p + alpha1 + alpha2)
 			//	intermediate: 			alpha1 + alpha2
@@ -3746,55 +3439,9 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa1);
 			hDalitzInvMass_all->Fill(m2_aa, m2_pa2);
-			if(m2_aa >= BE8GS_CUT_MIN && m2_aa <= BE8GS_CUT_MAX){
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begs->Fill(m2_aa, m2_pa1);
-				hExSPS_8begs->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begs->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-			} else if(m2_aa >= BE8GS_CUTLEFT_MIN && m2_aa <= BE8GS_CUTLEFT_MAX){
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsleft->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-			} else if(m2_aa >= BE8GS_CUTRIGHT_MIN && m2_aa <= BE8GS_CUTRIGHT_MAX){
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsright->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsright->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsright->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsleft2right->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsleft2right->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-			} else {
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa1);
-				hDalitzInvMass_8begsANTI->Fill(m2_aa, m2_pa2);
-				hExSPS_8begsANTI->Fill(ExSPS);
-
-				hSABREsumE_vs_ExSPS_8begsANTI->Fill(ExSPS, SABREsumE);
-			}
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a));
+			hErel_pa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(proton.E()-mass_p + alpha2.E()-mass_a));
+			hErel_aa->Fill(std::sqrt(proton.E()-mass_p + alpha1.E()-mass_a + alpha2.E()-mass_a), std::sqrt(alpha1.E()-mass_a + alpha2.E()-mass_a));
 
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[0]);
 			hSABRERingNumber_vs_ExSPS->Fill(ExSPS, ringStrip[1]);
@@ -3824,9 +3471,6 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 				hDalitzInvMass_pa1_pa2->Fill(m2_pa2, m2_pa1);
 
-				hDalitzEx->Fill(ex_8Be, ex_5Li1);
-				hDalitzEx->Fill(ex_8Be, ex_5Li2);
-
 				hCosThetaH->Fill(cosThetaH_a1);
 				hCosThetaH->Fill(cosThetaH_a2);
 
@@ -3838,7 +3482,6 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			}
 
-			//
 			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
 
@@ -3851,39 +3494,27 @@ void B10ha_kin4mcPID_Mult2(const char* input_filename){
 
 			recoilEx = recoil.M() - massgs_9B;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
+			hRecoilEx->Fill(recoilEx);
+			hExSPS->Fill(ExSPS);
 
-			if(ex_8Be > 0. && ex_8Be < 0.5){
+			if(m2_aa >= M2AA_MIN && m2_aa <= M2AA_MAX){ //gate on events consistent with 9B -> p + 8Be(0+)
 				hRecoilEx_8BegsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_8BegsGated->Fill(recoilEx, Ex);
-			} else if((ex_5Li1 > 0. && ex_5Li1 < 1.) || (ex_5Li2 > 0. && ex_5Li2 < 1.)){
-				hRecoilEx_5LigsGated->Fill(recoilEx);
-				hRecoilExSPS_vs_RecoilExSABRE_5LigsGated->Fill(recoilEx, Ex);
+				hExSPS_8BegsGated->Fill(ExSPS);
+			} else if(m2_aa > M2AA_MAX && (m2_pa1 >= M2PA_MIN || m2_pa2 >= M2PA_MIN)){ //gate on events inconsistent with 9B -> p + 8Be(0+)
+				hRecoilEx_8BegsAntiGated->Fill(recoilEx);
+				hExSPS_8BegsAntiGated->Fill(ExSPS);
 			}
-			outtree->Fill();
-		}// else {
-		// 	m2_aa = -666.;
-		// 	m2_pa1 = -666.;
-		// 	m2_pa2 = -666.;
-		// 	P4_hit0.SetPxPyPzE(0., 0., 0., 0.);
-		// 	P4_hit1.SetPxPyPzE(0., 0., 0., 0.);
-		// 	P4_missing.SetPxPyPzE(0., 0., 0., 0.);
-		// 	recoil.SetPxPyPzE(0., 0., 0., 0.);
-		// }
 
-		//outtree->Fill();
+			outtree->Fill();
+		}
 
 		if(i % 10000 == 0){
 			std::cout << "Processed " << i << " events..." << std::endl;
 		}
 	}
-	
-	// outfile->cd();
-	// outfile->Write();
-	// outfile->Close();
-	// infile->Close();
-	// delete infile;
 
 	infile->Close();
+
 	dalitzSlicesDir->cd();
 	for(int i=0; i<nSlices; i++) if(vDalitzBoundary[i]) vDalitzBoundary[i]->Write();
 	outfile->cd();

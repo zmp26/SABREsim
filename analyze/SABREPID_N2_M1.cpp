@@ -149,6 +149,7 @@ void SABREPID_N2_M1::InitDiagnostics(TDirectory* targetDir) {
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by particle assignment;Assignment;#chi^{2}", 2, -0.5, 1.5, 500., 0.0, 500.);
 	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "(#chi^{2}_{i}-#chi^{2}_{best}) by assignment;Assignment;#Delta#chi^{2}", 2, -0.5, 1.5, 500, 0.0, 500.);
 	hMissingMass = new TH1D("hMissingMass", "Reconstructed Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0.0, 10000.);
+	hChi2_NextMinusBest = new TH1D("hChi2_NextMinusBest", "#chi^{2}_{Next} - #chi^{2}_{Best}", 500, 0, 250);
 
 	for (size_t i = 0; i < allPerms.size(); ++i) {
 		const TString label = Form("Det: %s, Miss: %s", fHypothesis.final_particles[allPerms[i][0]].Data(), fHypothesis.final_particles[allPerms[i][1]].Data());
@@ -215,7 +216,10 @@ PIDResult_N2_M1 SABREPID_N2_M1::EvaluateEvent(const double E[1], const double th
 	if(hBestPermutation) hBestPermutation->Fill(best_perm_index);
 	if(hBestChi2) hBestChi2->Fill(reducedChi2);
 	if(hMissingMass) hMissingMass->Fill(best_missing_mass);
-	if(hChi2_BestVsNext && second_best_chi2 < 1e9) hChi2_BestVsNext->Fill(reducedChi2, second_best_chi2);
+	if(hChi2_BestVsNext && second_best_chi2 < 1e9){
+		hChi2_BestVsNext->Fill(reducedChi2, second_best_chi2);
+		hChi2_NextMinusBest->Fill(second_best_chi2 - reducedChi2);
+	}
 
 	if(h2Chi2DifByPermutation) {
 		for(size_t permIndex = 0; permIndex < allPerms.size(); ++permIndex) {

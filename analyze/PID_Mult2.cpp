@@ -86,6 +86,7 @@ void PID_Mult2::InitDiagnostics(TDirectory* targetDir){
 	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs 2nd Best #chi^{2};Best #chi^{2};2nd Best #chi^{2}", 500, 0, 500, 500, 0, 500);
 	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by permutation;Permutation;#chi^{2}", 6, -0.5, 5.5, 500, 0, 500);
 	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "#(chi^{2}_{i} - #chi^{2}_{best}) by Permutation;Permutation;#(chi^{2}_{i} - #chi^{2}_{best})",6, -0.5, 5.5, 500, 0, 500);
+	hChi2_NextMinusBest = new TH1D("hChi2_NextMinusBest", "#chi^{2}_{Next} - #chi^{2}_{Best}", 500, 0, 250);
 
 	for(int i=0; i<6; i++){
 		TString label = Form("P%d: H0=%s, H1=%s, Miss=%s", i, fHypothesis.final_particles[allPerms[i][0]].Data(), fHypothesis.final_particles[allPerms[i][1]].Data(),fHypothesis.final_particles[allPerms[i][2]].Data());
@@ -159,16 +160,107 @@ double PID_Mult2::ComputePermutationChi2(const std::array<int,3>& perm, const do
 	return chi2_mass;
 }
 
-PIDResult_N3_M2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2], const double phi[2],
-								  const double SPS_E, const double SPSTheta, const double SPSPhi){
+// PIDResult_N3_M2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2], const double phi[2],
+// 								  const double SPS_E, const double SPSTheta, const double SPSPhi){
 
+// 	PIDResult_N3_M2 res;
+// 	res.Reset();
+
+// 	double beam_p = std::sqrt(fHypothesis.beamEnergyMeV * fHypothesis.beamEnergyMeV + 2.*fHypothesis.beamEnergyMeV*fHypothesis.mass_beam);
+// 	TLorentzVector P_beam(0., 0., beam_p, fHypothesis.beamEnergyMeV+fHypothesis.mass_beam);
+// 	TLorentzVector P_target(0., 0., 0., fHypothesis.mass_target);
+// 	TLorentzVector P_ejectile = Build4Vector(SPS_E, SPSTheta, SPSPhi, fHypothesis.mass_ejectile);
+
+// 	TLorentzVector P_recoil_expected = P_beam + P_target - P_ejectile;
+
+// 	double min_chi2 = 1e9;
+// 	double second_best_chi2 = 1e9;
+// 	int best_perm_index = -1;
+// 	TLorentzVector best_p_missing;
+// 	double best_sigma_M = 0.;
+
+// 	for(size_t permindex=0; permindex<6; permindex++){
+// 		const auto& perm = allPerms[permindex];
+
+// 		TLorentzVector P_missing;
+// 		double sigma_M = 0.;
+// 		double chi2 = ComputePermutationChi2(perm, E, theta, phi, SPS_E, SPSTheta, SPSPhi, P_recoil_expected, P_missing, sigma_M);
+
+// 		res.permChi2s[permindex] = chi2;
+// 		if(h2Chi2ByPermutation){
+// 			h2Chi2ByPermutation->Fill(permindex, chi2);
+// 		}
+
+// 		if(chi2 < min_chi2){
+// 			second_best_chi2 = min_chi2;
+// 			min_chi2 = chi2;
+// 			best_perm_index = static_cast<int>(permindex);
+// 			best_p_missing = P_missing;
+// 			best_sigma_M = sigma_M;
+// 		} else if(chi2 < second_best_chi2){
+// 			second_best_chi2 = chi2;
+// 		}
+
+// 		if(h2Chi2DifByPermutation){
+// 			h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
+// 		}
+
+// 	}
+
+// 	if(best_perm_index >= 0){
+// 		res.bestChi2Index = best_perm_index;
+// 		res.bestChi2 = min_chi2;
+
+// 		res.hit_indices = {allPerms[best_perm_index][0], allPerms[best_perm_index][1]};
+// 		res.missing_species_index = allPerms[best_perm_index][2];
+
+// 		res.missing_px = best_p_missing.Px();
+// 		res.missing_py = best_p_missing.Py();
+// 		res.missing_pz = best_p_missing.Pz();
+// 		res.missing_Etot = best_p_missing.E();
+// 		res.missing_Pmag = best_p_missing.P();
+// 		res.missing_MassCalc = best_p_missing.M();
+
+// 		res.SABREsumE = E[0] + E[1];
+
+// 		res.passesCut = (res.bestChi2 <= fMaxChi2Cut);
+
+// 		if(outdir){
+// 			if(hBestPermutation) hBestPermutation->Fill(best_perm_index);
+// 			if(hBestChi2) hBestChi2->Fill(res.bestChi2);
+// 			if(hMissingMassBest) hMissingMassBest->Fill(res.missing_MassCalc);
+// 			if(hSigmaMBest) hSigmaMBest->Fill(best_sigma_M);
+// 			if(hChi2_BestVsNext && second_best_chi2 < 1e8){
+// 				hChi2_BestVsNext->Fill(res.bestChi2, second_best_chi2); 
+// 				hChi2_NextMinusBest->Fill(second_best_chi2 - res.bestChi2);
+// 			}
+// 		}
+// 	}
+
+// 	return res;
+// }
+
+PIDResult_N3_M2 PID_Mult2::EvaluateEvent(
+	const double E[2], const double theta[2], const double phi[2],
+	const double SPS_E, const double SPSTheta, const double SPSPhi)
+{
 	PIDResult_N3_M2 res;
 	res.Reset();
 
-	double beam_p = std::sqrt(fHypothesis.beamEnergyMeV * fHypothesis.beamEnergyMeV + 2.*fHypothesis.beamEnergyMeV*fHypothesis.mass_beam);
-	TLorentzVector P_beam(0., 0., beam_p, fHypothesis.beamEnergyMeV+fHypothesis.mass_beam);
-	TLorentzVector P_target(0., 0., 0., fHypothesis.mass_target);
-	TLorentzVector P_ejectile = Build4Vector(SPS_E, SPSTheta, SPSPhi, fHypothesis.mass_ejectile);
+	double beam_p = std::sqrt(
+		fHypothesis.beamEnergyMeV *
+		(fHypothesis.beamEnergyMeV + 2.0 * fHypothesis.mass_beam)
+	);
+
+	TLorentzVector P_beam(
+		0.0, 0.0, beam_p,
+		fHypothesis.beamEnergyMeV + fHypothesis.mass_beam
+	);
+	TLorentzVector P_target(0.0, 0.0, 0.0, fHypothesis.mass_target);
+
+	TLorentzVector P_ejectile = Build4Vector(
+		SPS_E, SPSTheta, SPSPhi, fHypothesis.mass_ejectile
+	);
 
 	TLorentzVector P_recoil_expected = P_beam + P_target - P_ejectile;
 
@@ -176,60 +268,99 @@ PIDResult_N3_M2 PID_Mult2::EvaluateEvent(const double E[2], const double theta[2
 	double second_best_chi2 = 1e9;
 	int best_perm_index = -1;
 	TLorentzVector best_p_missing;
-	double best_sigma_M = 0.;
+	double best_sigma_M = 0.0;
 
-	for(size_t permindex=0; permindex<6; permindex++){
+	// Evaluate all six permutations.
+	for (size_t permindex = 0; permindex < allPerms.size(); ++permindex) {
 		const auto& perm = allPerms[permindex];
 
 		TLorentzVector P_missing;
-		double sigma_M = 0.;
-		double chi2 = ComputePermutationChi2(perm, E, theta, phi, SPS_E, SPSTheta, SPSPhi, P_recoil_expected, P_missing, sigma_M);
+		double sigma_M = 0.0;
+
+		double chi2 = ComputePermutationChi2(
+			perm, E, theta, phi,
+			SPS_E, SPSTheta, SPSPhi,
+			P_recoil_expected, P_missing, sigma_M
+		);
 
 		res.permChi2s[permindex] = chi2;
-		if(h2Chi2ByPermutation){
+
+		if (h2Chi2ByPermutation) {
 			h2Chi2ByPermutation->Fill(permindex, chi2);
 		}
 
-		if(chi2 < min_chi2){
-			second_best_chi2 = min_chi2;
+		// Track the best assignment.
+		if (chi2 < min_chi2) {
 			min_chi2 = chi2;
 			best_perm_index = static_cast<int>(permindex);
 			best_p_missing = P_missing;
 			best_sigma_M = sigma_M;
-		} else if(chi2 < second_best_chi2){
-			second_best_chi2 = chi2;
 		}
-
-		if(h2Chi2DifByPermutation){
-			h2Chi2DifByPermutation->Fill(permindex, chi2 - min_chi2);
-		}
-
 	}
 
-	if(best_perm_index >= 0){
+	// Two identical particles give equivalent pairs of scores.
+	auto sortedChi2 = res.permChi2s;
+	std::sort(sortedChi2.begin(), sortedChi2.end());
+	second_best_chi2 = sortedChi2[2];
+
+	if (best_perm_index >= 0) {
 		res.bestChi2Index = best_perm_index;
 		res.bestChi2 = min_chi2;
 
-		res.hit_indices = {allPerms[best_perm_index][0], allPerms[best_perm_index][1]};
+		res.hit_indices = {
+			allPerms[best_perm_index][0],
+			allPerms[best_perm_index][1]
+		};
 		res.missing_species_index = allPerms[best_perm_index][2];
 
-		res.missing_px = best_p_missing.Px();
-		res.missing_py = best_p_missing.Py();
-		res.missing_pz = best_p_missing.Pz();
-		res.missing_Etot = best_p_missing.E();
-		res.missing_Pmag = best_p_missing.P();
+		res.missing_px       = best_p_missing.Px();
+		res.missing_py       = best_p_missing.Py();
+		res.missing_pz       = best_p_missing.Pz();
+		res.missing_Etot     = best_p_missing.E();
+		res.missing_Pmag     = best_p_missing.P();
 		res.missing_MassCalc = best_p_missing.M();
 
 		res.SABREsumE = E[0] + E[1];
-
 		res.passesCut = (res.bestChi2 <= fMaxChi2Cut);
 
-		if(outdir){
-			if(hBestPermutation) hBestPermutation->Fill(best_perm_index);
-			if(hBestChi2) hBestChi2->Fill(res.bestChi2);
-			if(hMissingMassBest) hMissingMassBest->Fill(res.missing_MassCalc);
-			if(hSigmaMBest) hSigmaMBest->Fill(best_sigma_M);
-			if(hChi2_BestVsNext && second_best_chi2 < 1e8) hChi2_BestVsNext->Fill(res.bestChi2, second_best_chi2); 
+		// Compare every permutation with the final best score.
+		for (size_t permIndex = 0; permIndex < allPerms.size(); ++permIndex) {
+			if (h2Chi2DifByPermutation) {
+				h2Chi2DifByPermutation->Fill(
+					permIndex,
+					res.permChi2s[permIndex] - res.bestChi2
+				);
+			}
+		}
+
+		if (outdir) {
+			if (hBestPermutation) {
+				hBestPermutation->Fill(best_perm_index);
+			}
+			if (hBestChi2) {
+				hBestChi2->Fill(res.bestChi2);
+			}
+			if (hMissingMassBest) {
+				hMissingMassBest->Fill(res.missing_MassCalc);
+			}
+			if (hSigmaMBest) {
+				hSigmaMBest->Fill(best_sigma_M);
+			}
+
+			if (second_best_chi2 < 1e8) {
+				if (hChi2_BestVsNext) {
+					hChi2_BestVsNext->Fill(
+						res.bestChi2,
+						second_best_chi2
+					);
+				}
+
+				if (hChi2_NextMinusBest) {
+					hChi2_NextMinusBest->Fill(
+						second_best_chi2 - res.bestChi2
+					);
+				}
+			}
 		}
 	}
 

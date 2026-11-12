@@ -83,19 +83,19 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	outfile->cd();
 
 	//eventually add histograms below:
-	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 1600, -1, 7, 1600, -1, 7);
 	hRecoilExSPS_vs_RecoilExSABRE->SetDirectory(outfile);
 
-	TH2D *hRecoilFlipExSPS_vs_RecoilExSABRE = new TH2D("hRecoilFlipExSPS_vs_RecoilExSABRE", "Recoil Flip Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilFlipExSPS_vs_RecoilExSABRE = new TH2D("hRecoilFlipExSPS_vs_RecoilExSABRE", "Recoil Flip Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 1600, -1, 7, 1600, -1, 7);
 	hRecoilFlipExSPS_vs_RecoilExSABRE->SetDirectory(outfile);
 
-	TH1D *hRecoilExSABRE = new TH1D("hRecoilExSABRE", "Recoil EX SABRE", 100, 0, 10);
+	TH1D *hRecoilExSABRE = new TH1D("hRecoilExSABRE", "Recoil EX SABRE", 1600, -1, 7);
 	hRecoilExSABRE->SetDirectory(outfile);
 
-	TH1D *hRecoilFlipExSABRE = new TH1D("hRecoilFlipExSABRE", "Recoil EX SABRE", 100, 0, 10);
+	TH1D *hRecoilFlipExSABRE = new TH1D("hRecoilFlipExSABRE", "Recoil EX SABRE", 1600, -1, 7);
 	hRecoilFlipExSABRE->SetDirectory(outfile);
 
-	TH1D *hRecoilBothExSABRE = new TH1D("hRecoilBothExSABRE", "Recoil Ex (both assignments)", 100, 0, 10);
+	TH1D *hRecoilBothExSABRE = new TH1D("hRecoilBothExSABRE", "Recoil Ex (both assignments)", 1600, -1, 7);
 	hRecoilBothExSABRE->SetDirectory(outfile);
 
 	TH1D *hAlphaPicks = new TH1D("hAlphaPicks", "Hit Index Assigned to Alpha", 2, -0.5, 1.5);
@@ -116,7 +116,7 @@ void Li7ha_SABREPID_N2_M2(const char* input_filename){
 	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
 	hCosThetaHDeuteron->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 350, 0, 7, 350, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1600, -1, 7, 350, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
 	TH1D *hAlphaThetaCM = new TH1D("hAlphaThetaCM","#theta_{CM} of #alpha", 100, 0, TMath::Pi());
@@ -388,11 +388,14 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	outfile->cd();
 
 	//histos
-	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 100, 0, 10, 100, 0, 10);
+	TH2D *hRecoilExSPS_vs_RecoilExSABRE = new TH2D("hRecoilExSPS_vs_RecoilExSABRE", "Recoil Ex SPS vs Recoil Ex SABRE;SABRE;SPS", 1600, -1, 7, 1600, -1, 7);
 	hRecoilExSPS_vs_RecoilExSABRE->SetDirectory(outfile);
 
-	TH1D *hRecoilExSABRE = new TH1D("hRecoilExSABRE", "Recoil Ex SABRE", 100, 0, 10);
+	TH1D *hRecoilExSABRE = new TH1D("hRecoilExSABRE", "Recoil Ex SABRE", 1600, -1, 7);
 	hRecoilExSABRE->SetDirectory(outfile);
+
+	TH1D *hRecoilFlipExSABRE = new TH1D("hRecoilFlipExSABRE", "Recoil Flip Ex SABRE", 1600, -1, 7);
+	hRecoilFlipExSABRE->SetDirectory(outfile);
 
 	TH1D *hDetectedSpecies = new TH1D("hDetectedSpecies", "Assigned Detected Species Index;Species Index;Counts", 2, -0.5, 1.5);
 	hDetectedSpecies->GetXaxis()->SetBinLabel(1, "#alpha");
@@ -414,7 +417,7 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	TH1D *hCosThetaHDeuteron = new TH1D("hCosThetaHDeuteron", "cos(#theta^{h}_{d})", 100, -1., 1.);
 	hCosThetaHDeuteron->SetDirectory(outfile);
 
-	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 350, 0, 7, 350, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS = new TH2D("hSABREsumE_vs_ExSPS", "SABRE sum E vs Ex SPS", 1600, -1, 7, 350, 0, 7);
 	hSABREsumE_vs_ExSPS->SetDirectory(outfile);
 
 	TH1D *hCalcMissingMass = new TH1D("hCalcMissingMass", "Calculated Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0., 5000.);
@@ -454,6 +457,9 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	double ExSPS, recoilEx, SABREsumE, missingMassCalc;
 	double cosThetaH_alpha, cosThetaH_deuteron, thetaH_alpha, thetaH_deuteron;
 
+	TLorentzVector alphaflip, deuteronflip, recoilflip;
+	double recoilFlipEx;
+
 	double alphathetacm, deuteronthetacm, relangle;
 
 	double alphaIM, alphaFlipIM, deuteornIM, deuteronFlipIM;
@@ -476,9 +482,11 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 	outtree->Branch("P4_missing", &missingP4);
 
 	outtree->Branch("ExSPS", &ExSPS, "ExSPS/D");
-	outtree->Branch("RecEx", &recoilEx, "recoilEx/D");
+	outtree->Branch("RecEx", &recoilEx, "RecEx/D");
 	outtree->Branch("SABREsumE", &SABREsumE, "SABREsumE/D");
 	outtree->Branch("missingMassCalc", &missingMassCalc, "missingMassCalc/D");
+
+	outtree->Branch("RecFlipEx", &recoilFlipEx, "RecFlipEx/D");
 
 	outtree->Branch("thetaH_alpha", &thetaH_alpha, "thetaH_alpha/D");
 	outtree->Branch("thetaH_deuteron", &thetaH_deuteron, "thetaH_deuteron/D");
@@ -532,13 +540,19 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 			// Permutation 1: Det = Deuteron (1), Missing = Alpha (0)
 			if(detected_species_index == 0) {
 				alpha = buildP4(E[0], theta[0], phi[0], massgs_4He);
+				alphaflip = missingP4;
 				deuteron = missingP4;
+				deuteronflip = buildP4(E[0], theta[0], phi[0], massgs_2H);
+
 			} else {
 				deuteron = buildP4(E[0], theta[0], phi[0], massgs_2H);
+				deuteronflip = missingP4;
 				alpha = missingP4;
+				alphaflip = buildP4(E[0], theta[0], phi[0], massgs_4He);
 			}
 
 			recoil = alpha + deuteron;
+			recoilflip = alphaflip + deuteronflip;
 			TVector3 betaLabToCM = -recoil.BoostVector();
 
 			TLorentzVector alphaCM = alpha;
@@ -590,8 +604,10 @@ void Li7ha_SABREPID_N2_M1(const char* input_filename){
 			hSABREsumE_vs_ExSPS->Fill(ExSPS, SABREsumE);
 
 			recoilEx = recoil.M() - massgs_6Li;
+			recoilFlipEx = recoilflip.M() - massgs_6Li;
 			hRecoilExSPS_vs_RecoilExSABRE->Fill(recoilEx, Ex);
 			hRecoilExSABRE->Fill(recoilEx);
+			hRecoilFlipExSABRE->Fill(recoilFlipEx);
 
 			outtree->Fill();
 		}

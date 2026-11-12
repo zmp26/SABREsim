@@ -63,6 +63,9 @@ void kin4mc_dalitz(const char* filename){
 	TH2D *hExEt_CosThetaK_A = new TH2D("hExEt_CosThetaK_A","hExEt_CosThetaK_A",200,-1,1,100,0,1);
 	TH2D *hExEt_CosThetaK_B = new TH2D("hExEt_CosThetaK_B","hExEt_CosThetaK_B",200,-1,1,100,0,1);
 
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1600, -1, 7);
+	//TH1D *hExSPS = new TH1D("hExSPS", "SPS E_{x}", 1600, -1, 7);
+
 
 	ifstream infile(filename);
 
@@ -131,8 +134,10 @@ void kin4mc_dalitz(const char* filename){
 		hInvMass_pa1_vs_pa2->Fill((proton+alpha2).M(), (proton+alpha1).M());
 
 		hEx8Be_VS_Ex9B->Fill((proton+alpha1+alpha2).M()-massgs_9B, (alpha1+alpha2).M()-massgs_8Be);
+		hRecoilEx->Fill((proton+alpha1+alpha2).M()-massgs_9B);
+		//hExSPS->Fill();
 
-		hDalitzInvMass->Fill((alpha1+alpha2).M2(), (proton+alpha1).M2());
+		//hDalitzInvMass->Fill((alpha1+alpha2).M2(), (proton+alpha1).M2());
 		hDalitzInvMass_pa1->Fill((alpha1+alpha2).M2(), (proton+alpha1).M2());
 		hDalitzInvMass->Fill((alpha1+alpha2).M2(), (proton+alpha2).M2());
 		hDalitzInvMass_pa2->Fill((alpha1+alpha2).M2(), (proton+alpha2).M2());
@@ -264,6 +269,9 @@ void kin4mc_dalitz(const char* filename, const char* outfilename, const std::str
 	TH2D *hEx8Be_VS_Ex9B = new TH2D("hEx8Be_VS_Ex9B", "hEx8Be_VS_Ex9B", 1600, -1, 7, 1600, -1, 7);
 	hEx8Be_VS_Ex9B->SetDirectory(outfile);
 
+	TH1D *hRecoilEx = new TH1D("hRecoilEx", "Recoil E_{x}", 1600, -1, 7);
+	hRecoilEx->SetDirectory(outfile);
+
 	//jacobi T histograms
 
 	TH1D *hCosThetaK_T = new TH1D("hCosThetaK_T","hCosThetaK_T", 200, -1, 1);
@@ -371,6 +379,7 @@ void kin4mc_dalitz(const char* filename, const char* outfilename, const std::str
 
 
 	ifstream infile(filename);
+	std::cout << "filename = " << filename << "\n";
 
 	double ejE, ejTheta, ejPhi, bu1E, bu1Theta, bu1Phi, bu2E, bu2Theta, bu2Phi, bu3E, bu3Theta, bu3Phi;
 
@@ -384,6 +393,8 @@ void kin4mc_dalitz(const char* filename, const char* outfilename, const std::str
 	TVector3 k1_B, k2_B, k3_B, kx_B, ky_B;
 
 	while(infile >> ejE >> ejTheta >> ejPhi >> bu1E >> bu1Theta >> bu1Phi >> bu2E >> bu2Theta >> bu2Phi >> bu3E >> bu3Theta >> bu3Phi){
+
+		//std::cout << " ? " << std::endl;
 
 		double mass_bu1, mass_bu2, mass_bu3;
 
@@ -442,8 +453,9 @@ void kin4mc_dalitz(const char* filename, const char* outfilename, const std::str
 		hInvMass_pa1_vs_pa2->Fill((proton+alpha2).M(), (proton+alpha1).M());
 
 		hEx8Be_VS_Ex9B->Fill((proton+alpha1+alpha2).M()-massgs_9B, (alpha1+alpha2).M()-massgs_8Be);
+		hRecoilEx->Fill((proton+alpha1+alpha2).M()-massgs_9B);
 
-		hDalitzInvMass->Fill((alpha1+alpha2).M2(), (proton+alpha1).M2());
+		//hDalitzInvMass->Fill((alpha1+alpha2).M2(), (proton+alpha1).M2());
 		hDalitzInvMass_pa1->Fill((alpha1+alpha2).M2(), (proton+alpha1).M2());
 		hDalitzInvMass->Fill((alpha1+alpha2).M2(), (proton+alpha2).M2());
 		hDalitzInvMass_pa2->Fill((alpha1+alpha2).M2(), (proton+alpha2).M2());
