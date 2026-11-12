@@ -28,3 +28,4 @@ analyze/testcuts.txt
 anglemaps/sigmas/*txt
 anglemaps/sigmas/rays
 *.json
+config/SABREsim.conf.BAK
