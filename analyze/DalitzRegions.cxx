@@ -131,6 +131,31 @@ void DalitzRegions(TTree *tree){
 		TH2D *hExEt_Et_Y2 = new TH2D("hExEt_Et_Y2", "hExEt_Et_Y2", 1000, 0, 10, 100, 0, 1);
 		TH2D *hExSPS_ExEt_Y2 = new TH2D("hExSPS_ExEt_Y2","hExSPS_ExEt_Y2",100,0,1,1400,0,7);
 
+	TH2D *h2_a5Ligs_VS_p8Be0plus = new TH2D("h2_a5Ligs_VS_p8Be0plus", "h2_a5Ligs_VS_p8Be0plus", 3, 0.5, 3.5, 3, 0.5, 3.5);
+	h2_a5Ligs_VS_p8Be0plus->GetXaxis()->SetTitle("p+8Be(0^{+}) sigmas");
+	h2_a5Ligs_VS_p8Be0plus->GetYaxis()->SetTitle("a+5Li(gs) sigmas");
+	h2_a5Ligs_VS_p8Be0plus->SetDirectory(outfile);
+
+	// TH2D *h2_a5Ligs_VS_p8Be0plus_STRICT = new TH2D("h2_a5Ligs_VS_p8Be0plus_STRICT", "h2_a5Ligs_VS_p8Be0plus_STRICT", 3, 0.5, 3.5, 3, 0.5, 3.5);
+	// h2_a5Ligs_VS_p8Be0plus_STRICT->GetXaxis()->SetTitle("p+8Be(0^{+}) sigmas");
+	// h2_a5Ligs_VS_p8Be0plus_STRICT->GetYaxis()->SetTitle("a+5Li(gs) sigmas");
+	// h2_a5Ligs_VS_p8Be0plus_STRICT->SetDirectory(outfile);
+	
+	TH2D *h2_a5Ligs_VS_p8Be2plus = new TH2D("h2_a5Ligs_VS_p8Be2plus", "h2_a5Ligs_VS_p8Be2plus", 3, 0.5, 3.5, 3, 0.5, 3.5);
+	h2_a5Ligs_VS_p8Be2plus->GetXaxis()->SetTitle("p+8Be(2^{+}) sigmas");
+	h2_a5Ligs_VS_p8Be2plus->GetYaxis()->SetTitle("a+5Li(gs) sigmas");
+	h2_a5Ligs_VS_p8Be2plus->SetDirectory(outfile);
+
+	// TH2D *h2_a5Ligs_VS_p8Be2plus_STRICT = new TH2D("h2_a5Ligs_VS_p8Be2plus_STRICT", "h2_a5Ligs_VS_p8Be2plus_STRICT", 3, 0.5, 3.5, 3, 0.5, 3.5);
+	// h2_a5Ligs_VS_p8Be2plus_STRICT->GetXaxis()->SetTitle("p+8Be(2^{+}) sigmas");
+	// h2_a5Ligs_VS_p8Be2plus_STRICT->GetYaxis()->SetTitle("a+5Li(gs) sigmas");
+	// h2_a5Ligs_VS_p8Be2plus_STRICT->SetDirectory(outfile);
+
+	// TH2D *h2_p8Be0plus_VS_p8Be2plus = new TH2D("h2_p8Be0plus_VS_p8Be2plus", "h2_p8Be0plus_VS_p8Be2plus", 3, 0.5, 3.5, 3, 0.5, 3.5);
+	// h2_p8Be0plus_VS_p8Be2plus->GetXaxis()->SetTitle("p+8Be(2^{+}) sigmas");
+	// h2_p8Be0plus_VS_p8Be2plus->GetYaxis()->SetTitle("a+5Li(gs) sigmas");
+	// h2_p8Be0plus_VS_p8Be2plus->SetDirectory(outfile);
+
 
 	hDalitzInvMass->SetDirectory(outfile);
 
@@ -781,6 +806,88 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_Y2_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hExSPS_ExEt_Y2_a5Ligs_3->SetDirectory(a5Ligs_3);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////INCONSISTENT EVENTS //////////////////////////////////////////////////////////////////////////////////////////
+	
+	//dalitz plots
+	TH2D *hDalitzInvMass_none = new TH2D("hDalitzInvMass_none", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
+
+	//SABREsum histos
+	TH2D *hSABREsumE_vs_ExSPS_none = new TH2D("hSABREsumE_vs_ExSPS_none","hSABREsumE_vs_ExSPS_none", 1400, 0, 7, 1400, 0, 7);
+
+	//9B Ex histos:
+	TH1D *hExSPS_none = new TH1D("hExSPS_none", "hExSPS_none", 1600, -1, 7);
+	TH1D *hRecEx_none = new TH1D("hRecEx_none", "hRecEx_none", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_none = new TH2D("hRecEx_VS_ExSPS_none", "hRecEx_VS_ExSPS_none", 1600, -1, 7, 1600, -1, 7);
+
+	//jacobi histos
+		//1sig
+			//T
+				TH1D *hCosThetaK_T_none = new TH1D("hCosThetaK_T_none","hCosThetaK_T_none", 200, -1, 1);
+				TH1D *hExEt_T_none = new TH1D("hExEt_T_none","hExEt_T_none",100, 0, 1);
+				TH1D *hEyEt_T_none = new TH1D("hEyEt_T_none", "hEyEt_T_none", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_T_none = new TH2D("hExEt_CosThetaK_T_none","hExEt_CosThetaK_T_none",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_T_none = new TH2D("hEyEt_CosThetaK_T_none","hEyEt_CosThetaK_T_none",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_T_none = new TH2D("hExEt_Et_T_none", "hExEt_Et_T_none", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_T_none = new TH2D("hExSPS_ExEt_T_none","hExSPS_ExEt_T_none",100,0,1,1400,0,7);
+			//Y1
+				TH1D *hCosThetaK_Y1_none = new TH1D("hCosThetaK_Y1_none","hCosThetaK_Y1_none", 200, -1, 1);
+				TH1D *hExEt_Y1_none = new TH1D("hExEt_Y1_none","hExEt_Y1_none",100, 0, 1);
+				TH1D *hEyEt_Y1_none = new TH1D("hEyEt_Y1_none", "hEyEt_Y1_none", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y1_none = new TH2D("hExEt_CosThetaK_Y1_none","hExEt_CosThetaK_Y1_none",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y1_none = new TH2D("hEyEt_CosThetaK_Y1_none","hEyEt_CosThetaK_Y1_none",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y1_none = new TH2D("hExEt_Et_Y1_none", "hExEt_Et_Y1_none", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y1_none = new TH2D("hExSPS_ExEt_Y1_none","hExSPS_ExEt_Y1_none",100,0,1,1400,0,7);
+			//Y2
+				TH1D *hCosThetaK_Y2_none = new TH1D("hCosThetaK_Y2_none","hCosThetaK_Y2_none", 200, -1, 1);
+				TH1D *hExEt_Y2_none = new TH1D("hExEt_Y2_none","hExEt_Y2_none",100, 0, 1);
+				TH1D *hEyEt_Y2_none = new TH1D("hEyEt_Y2_none", "hEyEt_Y2_none", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y2_none = new TH2D("hExEt_CosThetaK_Y2_none","hExEt_CosThetaK_Y2_none",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y2_none = new TH2D("hEyEt_CosThetaK_Y2_none","hEyEt_CosThetaK_Y2_none",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y2_none = new TH2D("hExEt_Et_Y2_none", "hExEt_Et_Y2_none", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y2_none = new TH2D("hExSPS_ExEt_Y2_none","hExSPS_ExEt_Y2_none",100,0,1,1400,0,7);
+
+	//prep directories:
+	TDirectory *none = outfile->mkdir("none");
+
+	//set histograms owner to proper directory
+	hDalitzInvMass_none->SetDirectory(none);
+
+
+	hSABREsumE_vs_ExSPS_none->SetDirectory(none);
+
+
+	hExSPS_none->SetDirectory(none);
+	hRecEx_none->SetDirectory(none);
+	hRecEx_VS_ExSPS_none->SetDirectory(none);
+
+	hCosThetaK_T_none->SetDirectory(none);
+	hExEt_T_none->SetDirectory(none);
+	hEyEt_T_none->SetDirectory(none);
+	hExEt_CosThetaK_T_none->SetDirectory(none);
+	hEyEt_CosThetaK_T_none->SetDirectory(none);
+	hExEt_Et_T_none->SetDirectory(none);
+	hExSPS_ExEt_T_none->SetDirectory(none);
+
+	hCosThetaK_Y1_none->SetDirectory(none);
+	hExEt_Y1_none->SetDirectory(none);
+	hEyEt_Y1_none->SetDirectory(none);
+	hExEt_CosThetaK_Y1_none->SetDirectory(none);
+	hEyEt_CosThetaK_Y1_none->SetDirectory(none);
+	hExEt_Et_Y1_none->SetDirectory(none);
+	hExSPS_ExEt_Y1_none->SetDirectory(none);
+
+	hCosThetaK_Y2_none->SetDirectory(none);
+	hExEt_Y2_none->SetDirectory(none);
+	hEyEt_Y2_none->SetDirectory(none);
+	hExEt_CosThetaK_Y2_none->SetDirectory(none);
+	hEyEt_CosThetaK_Y2_none->SetDirectory(none);
+	hExEt_Et_Y2_none->SetDirectory(none);
+	hExSPS_ExEt_Y2_none->SetDirectory(none);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//prepare TTreeReader:
@@ -909,6 +1016,42 @@ void DalitzRegions(TTree *tree){
 		a5Ligs_sig2_check = IsInside(*m2_pa1, a5Ligs_sig2) || IsInside(*m2_pa2, a5Ligs_sig2);
 		a5Ligs_sig3_check = IsInside(*m2_pa1, a5Ligs_sig3) || IsInside(*m2_pa2, a5Ligs_sig3);
 		//std::cout << "a+5Li(gs) check (1/2/3): " << a5Ligs_sig1_check << ", " << a5Ligs_sig2_check << ", " << a5Ligs_sig3_check << std::endl;
+
+		int p8Be0plus_sigmaNum = -1, p8Be2plus_sigmaNum = -1, a5Ligs_sigmaNum = -1;
+
+		if(p8Be0plus_sig1_check){
+			p8Be0plus_sigmaNum = 1;
+		} else if(p8Be0plus_sig2_check){
+			p8Be0plus_sigmaNum = 2;
+		} else if(p8Be0plus_sig3_check){
+			p8Be0plus_sigmaNum = 3;
+		}
+
+		if(p8Be2plus_sig1_check){
+			p8Be2plus_sigmaNum = 1;
+		} else if(p8Be2plus_sig2_check){
+			p8Be2plus_sigmaNum = 2;
+		} else if(p8Be2plus_sig3_check){
+			p8Be2plus_sigmaNum = 3;
+		}
+
+		if(a5Ligs_sig1_check){
+			a5Ligs_sigmaNum = 1;
+		} else if(p8Be2plus_sig2_check){
+			a5Ligs_sigmaNum = 2;
+		} else if(p8Be2plus_sig3_check){
+			a5Ligs_sigmaNum = 3;
+		}
+
+
+		if(a5Ligs_sigmaNum != -1){
+			//fill h2_a5Ligs_VS_p8Be0plus
+			if(p8Be0plus_sigmaNum != -1) h2_a5Ligs_VS_p8Be0plus->Fill(p8Be0plus_sigmaNum, a5Ligs_sigmaNum);
+
+			//fill h2_a5Ligs_VS_p8Be2plus
+			if(p8Be2plus_sigmaNum != -1) h2_a5Ligs_VS_p8Be2plus->Fill(p8Be2plus_sigmaNum, a5Ligs_sigmaNum);
+		}
+
 
 		//next, check p+8Be(0+):
 		if(p8Be0plus_sig1_check){
@@ -1248,8 +1391,48 @@ void DalitzRegions(TTree *tree){
 			hExEt_Et_Y2_a5Ligs_3->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
 			hExSPS_ExEt_Y2_a5Ligs_3->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
 		}
-	}
+			//inconcistent events:
+		if(!p8Be0plus_sig1_check && !p8Be0plus_sig2_check && !p8Be0plus_sig3_check &&
+		   !p8Be2plus_sig1_check && !p8Be2plus_sig2_check && !p8Be2plus_sig3_check &&
+		   !a5Ligs_sig1_check    && !a5Ligs_sig2_check    && !a5Ligs_sig3_check){
+		   	//events that are not +/-3 sigma from any expected channel IM2
+			//std::cout << "entering a5Ligs_sig3_check" << std::endl;
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_none->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_none->Fill(*m2_aa, *m2_pa2);
 
+			hSABREsumE_vs_ExSPS_none->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_none->Fill(*ExSPS);
+			hRecEx_none->Fill(*RecEx);
+			hRecEx_VS_ExSPS_none->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_none->Fill(*costhetakT);
+			hExEt_T_none->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_none->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_none->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_none->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_none->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_none->Fill((*E_xT)/(*E_xT + *E_yT), *ExSPS);
+
+			hCosThetaK_Y1_none->Fill(*costhetakY1);
+			hExEt_Y1_none->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_none->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_none->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_none->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_none->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_none->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_none->Fill(*costhetakY2);
+			hExEt_Y2_none->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_none->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_none->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_none->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_none->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_none->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+		}
+
+	}
 	//std::cout << "out of loop" << std::endl;
 
 	outfile->cd();
