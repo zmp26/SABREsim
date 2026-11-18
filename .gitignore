@@ -29,3 +29,5 @@ anglemaps/sigmas/*txt
 anglemaps/sigmas/rays
 *.json
 config/SABREsim.conf.BAK
+config/SABREsim.conf.kin3mc.BAK
+config/SABREsim.conf.kin4mc.BAK
