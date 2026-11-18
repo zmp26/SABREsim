@@ -143,11 +143,11 @@ void SABREPID_N2_M1::InitDiagnostics(TDirectory* targetDir) {
 
 	outdir->cd();
 
-	hBestChi2 = new TH1D("hBestChi2", "Best assignment reduced #chi^{2};#chi^{2};Counts", 500, 0.0, 500.);
+	hBestChi2 = new TH1D("hBestChi2", "Best assignment reduced #chi^{2};#chi^{2};Counts", 500, 0.0, 500);
 	hBestPermutation = new TH1D("hBestPermutation", "Best particle assignment;Assignment;Counts", 2, -0.5, 1.5);
-	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs next-best #chi^{2};Best #chi^{2};Next-best #chi^{2}", 500, 0.0, 500., 500, 0.0, 500.);
-	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by particle assignment;Assignment;#chi^{2}", 2, -0.5, 1.5, 500., 0.0, 500.);
-	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "(#chi^{2}_{i}-#chi^{2}_{best}) by assignment;Assignment;#Delta#chi^{2}", 2, -0.5, 1.5, 500, 0.0, 500.);
+	hChi2_BestVsNext = new TH2D("hChi2_BestVsNext", "Best #chi^{2} vs next-best #chi^{2};Best #chi^{2};Next-best #chi^{2}", 500, 0.0, 500, 500, 0.0, 500);
+	h2Chi2ByPermutation = new TH2D("h2Chi2ByPermutation", "#chi^{2} by particle assignment;Assignment;#chi^{2}", 2, -0.5, 1.5, 500, 0.0, 500);
+	h2Chi2DifByPermutation = new TH2D("h2Chi2DifByPermutation", "(#chi^{2}_{i}-#chi^{2}_{best}) by assignment;Assignment;#Delta#chi^{2}", 2, -0.5, 1.5, 500, 0.0, 500);
 	hMissingMass = new TH1D("hMissingMass", "Reconstructed Missing Mass;Mass (MeV/c^{2});Counts", 1000, 0.0, 10000.);
 	hChi2_NextMinusBest = new TH1D("hChi2_NextMinusBest", "#chi^{2}_{Next} - #chi^{2}_{Best}", 500, 0, 250);
 

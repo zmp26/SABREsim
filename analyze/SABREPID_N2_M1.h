@@ -52,7 +52,7 @@ private:
 	TH1D* hChi2_NextMinusBest{nullptr};
 	TH1D* hMissingMass{nullptr};
 
-	TLorentzVector Build4Vector(double EMev, double thetaDeg, double phiDeg, double massMeV) const;
+	TLorentzVector Build4Vector(double EMeV, double thetaDeg, double phiDeg, double massMeV) const;
 
 	//std::array<std::array<double,3>,3> GetMomentumCovariance(double E, double thetaDeg, double phiDeg, double mass, double sigE, double sigThetaDeg, double sigPhiDeg) const;
 	//std::array<std::array<double,4>,4> GetMomentumCovariance(double E, double thetaDeg, double phiDeg, double mass, double sigE, double sigThetaDeg, double sigPhiDeg) const;
