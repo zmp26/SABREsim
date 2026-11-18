@@ -21,24 +21,27 @@ bool IsInside(double value, std::pair<double,double> bounds){
 
 void DalitzRegions(TTree *tree);
 
+//alpha threshold in IM2:
+double B9_alphathresh_IM2 = 21.7866e6;
+
 //declare channel regions here:
 //p+8Be(0+)
 std::pair<double, double> p8Be0plus_sig1 = {55.5746e6, 55.5750e6};
 std::pair<double, double> p8Be0plus_sig2 = {55.5744e6, 55.5752e6};
 std::pair<double, double> p8Be0plus_sig3 = {55.5742e6, 55.5754e6};
-bool p8Be0plus_sig1_check = false, p8Be0plus_sig2_check = false, p8Be0plus_sig3_check = false;
+bool p8Be0plus_sig1_check = false, p8Be0plus_sig2_check = false, p8Be0plus_sig3_check = false, p8Be0plus_A1_check = false, p8Be0plus_A2_check = false;
 
 //p+8Be(2+)
 std::pair<double, double> p8Be2plus_sig1 = {55.610e6, 55.630e6};
 std::pair<double, double> p8Be2plus_sig2 = {55.600e6, 55.639e6};
 std::pair<double, double> p8Be2plus_sig3 = {55.591e6, 55.649e6};
-bool p8Be2plus_sig1_check = false, p8Be2plus_sig2_check = false, p8Be2plus_sig3_check = false;
+bool p8Be2plus_sig1_check = false, p8Be2plus_sig2_check = false, p8Be2plus_sig3_check = false, p8Be2plus_B1_check = false, p8Be2plus_B2_check = false;
 
 //a+5Li
 std::pair<double, double> a5Ligs_sig1 = {21.7818e6, 21.7915e6};
 std::pair<double, double> a5Ligs_sig2 = {21.7769e6, 21.7964e6};
 std::pair<double, double> a5Ligs_sig3 = {21.7721e6, 21.8013e6};
-bool a5Ligs_sig1_check = false, a5Ligs_sig2_check = false, a5Ligs_sig3_check = false;
+bool a5Ligs_sig1_check = false, a5Ligs_sig2_check = false, a5Ligs_sig3_check = false, a5Ligs_C1_check = false, a5Ligs_C2_check = false, a5Ligs_C3_check = false;
 
 TTree *intree = nullptr;
 TFile *infile = nullptr;
@@ -89,6 +92,45 @@ void DalitzRegions(TTree *tree){
 		std::cout << "failed to create output file" << std::endl;
 		return;
 	}
+
+	//prepare output TTree:
+	TString outtreestring = Form("%s_regions", tree->GetName());
+	TTree *outtree = new TTree(outtreestring, outtreestring);
+
+	//variables for existing branches to be copied to new output tree
+	double tree_m2_aa, tree_m2_pa1, tree_m2_pa2, tree_ExSPS, tree_RecEx, tree_SABREsumE, tree_E_xT, tree_E_yT, tree_E_Txy_T, tree_costhetakT, tree_E_xY1, tree_E_yY1, tree_E_Txy_Y1, tree_costhetakY1,  tree_E_xY2, tree_E_yY2, tree_E_Txy_Y2, tree_costhetakY2, tree_E_TIM;
+
+	//variables for new branches in output tree
+	double tree_zscore_a5Ligs_1, tree_zscore_a5Ligs_2, tree_zscore_p8Be0plus, tree_zscore_p8Be2plus;
+
+	outtree->Branch("m2_aa", &tree_m2_aa, "m2_aa/D");
+	outtree->Branch("m2_pa1", &tree_m2_pa1, "m2_pa1/D");
+	outtree->Branch("m2_pa2", &tree_m2_pa2, "m2_pa2/D");
+	outtree->Branch("ExSPS", &tree_ExSPS, "ExSPS/D");
+	outtree->Branch("RecEx", &tree_RecEx, "RecEx/D");
+	outtree->Branch("SABREsumE", &tree_SABREsumE, "SABREsumE/D");
+	
+	outtree->Branch("E_xT", &tree_E_xT, "E_xT/D");
+	outtree->Branch("E_yT", &tree_E_yT, "E_yT/D");
+	outtree->Branch("E_Txy_T", &tree_E_Txy_T, "E_Txy_T/D");
+	outtree->Branch("costhetakT", &tree_costhetakT, "costhetakT/D");
+
+	outtree->Branch("E_xY1", &tree_E_xY1, "E_xY1/D");
+	outtree->Branch("E_yY1", &tree_E_yY1, "E_yY1/D");
+	outtree->Branch("E_Txy_Y1", &tree_E_Txy_Y1, "E_Txy_Y1/D");
+	outtree->Branch("costhetakY1", &tree_costhetakY1, "costhetakY1/D");
+
+	outtree->Branch("E_xY2", &tree_E_xY2, "E_xY2/D");
+	outtree->Branch("E_yY2", &tree_E_yY2, "E_yY2/D");
+	outtree->Branch("E_Txy_Y2", &tree_E_Txy_Y2, "E_Txy_Y2/D");
+	outtree->Branch("costhetakY2", &tree_costhetakY2, "costhetakY2/D");
+
+	outtree->Branch("zscore_a5Ligs_1", &tree_zscore_a5Ligs_1, "zscore_a5Ligs_1/D");
+	outtree->Branch("zscore_a5Ligs_2", &tree_zscore_a5Ligs_2, "zscore_a5Ligs_2/D");
+	outtree->Branch("zscore_p8Be0plus", &tree_zscore_p8Be0plus, "zscore_p8Be0plus/D");
+	outtree->Branch("zscore_p8Be2plus", &tree_zscore_p8Be2plus, "zscore_p8Be2plus/D");
+
+	outtree->SetDirectory(outfile);
 
 	//tree->SetDirectory(outfile);
 
@@ -156,6 +198,14 @@ void DalitzRegions(TTree *tree){
 	// h2_p8Be0plus_VS_p8Be2plus->GetYaxis()->SetTitle("a+5Li(gs) sigmas");
 	// h2_p8Be0plus_VS_p8Be2plus->SetDirectory(outfile);
 
+	//zscore histos:
+	TH1D *h_zscore_p8Be0plus = new TH1D("h_zscore_p8Be0plus", "h_zscore_p8Be0plus", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus = new TH1D("h_zscore_p8Be2plus", "h_zscore_p8Be2plus", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs = new TH1D("h_zscore_a5Ligs", "h_zscore_a5Ligs", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus", "h2_zscore_a5Ligs_vs_p8Be0plus", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus", "h2_zscore_a5Ligs_vs_p8Be2plus", 200, -10, 10, 200, -10, 10);
+
 
 	hDalitzInvMass->SetDirectory(outfile);
 
@@ -164,6 +214,12 @@ void DalitzRegions(TTree *tree){
 	hExSPS->SetDirectory(outfile);
 	hRecEx->SetDirectory(outfile);
 	hRecEx_VS_ExSPS->SetDirectory(outfile);
+
+	h_zscore_p8Be0plus->SetDirectory(outfile);
+	h_zscore_p8Be2plus->SetDirectory(outfile);
+	h_zscore_a5Ligs->SetDirectory(outfile);
+	h2_zscore_a5Ligs_vs_p8Be0plus->SetDirectory(outfile);
+	h2_zscore_a5Ligs_vs_p8Be2plus->SetDirectory(outfile);
 
 	hCosThetaK_T->SetDirectory(outfile);
 	hExEt_T->SetDirectory(outfile);
@@ -204,10 +260,20 @@ void DalitzRegions(TTree *tree){
 											800, 55.57e6, 55.69e6,
 											800, 21.76e6, 21.84e6);
 
+	TH2D *hDalitzInvMass_p8Be0_A1 = new TH2D("hDalitzInvMass_p8Be0_A1", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
+
+	TH2D *hDalitzInvMass_p8Be0_A2 = new TH2D("hDalitzInvMass_p8Be0_A2", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
+
 	//SABREsum histos
 	TH2D *hSABREsumE_vs_ExSPS_p8Be0_1 = new TH2D("hSABREsumE_vs_ExSPS_p8Be0_1","hSABREsumE_vs_ExSPS_p8Be0_1", 1400, 0, 7, 1400, 0, 7);
 	TH2D *hSABREsumE_vs_ExSPS_p8Be0_2 = new TH2D("hSABREsumE_vs_ExSPS_p8Be0_2","hSABREsumE_vs_ExSPS_p8Be0_2", 1400, 0, 7, 1400, 0, 7);
 	TH2D *hSABREsumE_vs_ExSPS_p8Be0_3 = new TH2D("hSABREsumE_vs_ExSPS_p8Be0_3","hSABREsumE_vs_ExSPS_p8Be0_3", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_p8Be0_A1 = new TH2D("hSABREsumE_vs_ExSPS_p8Be0_A1","hSABREsumE_vs_ExSPS_p8Be0_A1", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_p8Be0_A2 = new TH2D("hSABREsumE_vs_ExSPS_p8Be0_A2","hSABREsumE_vs_ExSPS_p8Be0_A2", 1400, 0, 7, 1400, 0, 7);
 
 	//9B Ex histos:
 	TH1D *hExSPS_p8Be0_1 = new TH1D("hExSPS_p8Be0_1", "hExSPS_p8Be0_1", 1600, -1, 7);
@@ -221,6 +287,29 @@ void DalitzRegions(TTree *tree){
 	TH1D *hExSPS_p8Be0_3 = new TH1D("hExSPS_p8Be0_3", "hExSPS_p8Be0_3", 1600, -1, 7);
 	TH1D *hRecEx_p8Be0_3 = new TH1D("hRecEx_p8Be0_3", "hRecEx_p8Be0_3", 1600, -1, 7);
 	TH2D *hRecEx_VS_ExSPS_p8Be0_3 = new TH2D("hRecEx_VS_ExSPS_p8Be0_3", "hRecEx_VS_ExSPS_p8Be0_3", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_p8Be0_A1 = new TH1D("hExSPS_p8Be0_A1", "hExSPS_p8Be0_A1", 1600, -1, 7);
+	TH1D *hRecEx_p8Be0_A1 = new TH1D("hRecEx_p8Be0_A1", "hRecEx_p8Be0_A1", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_p8Be0_A1 = new TH2D("hRecEx_VS_ExSPS_p8Be0_A1", "hRecEx_VS_ExSPS_p8Be0_A1", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_p8Be0_A2 = new TH1D("hExSPS_p8Be0_A2", "hExSPS_p8Be0_A2", 1600, -1, 7);
+	TH1D *hRecEx_p8Be0_A2 = new TH1D("hRecEx_p8Be0_A2", "hRecEx_p8Be0_A2", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_p8Be0_A2 = new TH2D("hRecEx_VS_ExSPS_p8Be0_A2", "hRecEx_VS_ExSPS_p8Be0_A2", 1600, -1, 7, 1600, -1, 7);
+
+	//zscore histos:
+	TH1D *h_zscore_p8Be0plus_A1 = new TH1D("h_zscore_p8Be0plus_A1", "h_zscore_p8Be0plus_A1", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_A1 = new TH1D("h_zscore_p8Be2plus_A1", "h_zscore_p8Be2plus_A1", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_A1 = new TH1D("h_zscore_a5Ligs_A1", "h_zscore_a5Ligs_A1", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_A1 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_A1", "h2_zscore_a5Ligs_vs_p8Be0plus_A1", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_A1 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_A1", "h2_zscore_a5Ligs_vs_p8Be2plus_A1", 200, -10, 10, 200, -10, 10);
+
+	TH1D *h_zscore_p8Be0plus_A2 = new TH1D("h_zscore_p8Be0plus_A2", "h_zscore_p8Be0plus_A2", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_A2 = new TH1D("h_zscore_p8Be2plus_A2", "h_zscore_p8Be2plus_A2", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_A2 = new TH1D("h_zscore_a5Ligs_A2", "h_zscore_a5Ligs_A2", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_A2 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_A2", "h2_zscore_a5Ligs_vs_p8Be0plus_A2", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_A2 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_A2", "h2_zscore_a5Ligs_vs_p8Be2plus_A2", 200, -10, 10, 200, -10, 10);
 
 	//jacobi histos
 		//1sig
@@ -299,20 +388,89 @@ void DalitzRegions(TTree *tree){
 				TH2D *hExEt_Et_Y2_p8Be0_3 = new TH2D("hExEt_Et_Y2_p8Be0_3", "hExEt_Et_Y2_p8Be0_3", 1000, 0, 10, 100, 0, 1);
 				TH2D *hExSPS_ExEt_Y2_p8Be0_3 = new TH2D("hExSPS_ExEt_Y2_p8Be0_3","hExSPS_ExEt_Y2_p8Be0_3",100,0,1,1400,0,7);
 
+		//A1
+			//T
+				TH1D *hCosThetaK_T_p8Be0_A1 = new TH1D("hCosThetaK_T_p8Be0_A1","hCosThetaK_T_p8Be0_A1", 200, -1, 1);
+				TH1D *hExEt_T_p8Be0_A1 = new TH1D("hExEt_T_p8Be0_A1","hExEt_T_p8Be0_A1",100, 0, 1);
+				TH1D *hEyEt_T_p8Be0_A1 = new TH1D("hEyEt_T_p8Be0_A1", "hEyEt_T_p8Be0_A1", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_T_p8Be0_A1 = new TH2D("hExEt_CosThetaK_T_p8Be0_A1","hExEt_CosThetaK_T_p8Be0_A1",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_T_p8Be0_A1 = new TH2D("hEyEt_CosThetaK_T_p8Be0_A1","hEyEt_CosThetaK_T_p8Be0_A1",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_T_p8Be0_A1 = new TH2D("hExEt_Et_T_p8Be0_A1", "hExEt_Et_T_p8Be0_A1", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_T_p8Be0_A1 = new TH2D("hExSPS_ExEt_T_p8Be0_A1","hExSPS_ExEt_T_p8Be0_A1",100,0,1,1400,0,7);
+			//Y1
+				TH1D *hCosThetaK_Y1_p8Be0_A1 = new TH1D("hCosThetaK_Y1_p8Be0_A1","hCosThetaK_Y1_p8Be0_A1", 200, -1, 1);
+				TH1D *hExEt_Y1_p8Be0_A1 = new TH1D("hExEt_Y1_p8Be0_A1","hExEt_Y1_p8Be0_A1",100, 0, 1);
+				TH1D *hEyEt_Y1_p8Be0_A1 = new TH1D("hEyEt_Y1_p8Be0_A1", "hEyEt_Y1_p8Be0_A1", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y1_p8Be0_A1 = new TH2D("hExEt_CosThetaK_Y1_p8Be0_A1","hExEt_CosThetaK_Y1_p8Be0_A1",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y1_p8Be0_A1 = new TH2D("hEyEt_CosThetaK_Y1_p8Be0_A1","hEyEt_CosThetaK_Y1_p8Be0_A1",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y1_p8Be0_A1 = new TH2D("hExEt_Et_Y1_p8Be0_A1", "hExEt_Et_Y1_p8Be0_A1", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y1_p8Be0_A1 = new TH2D("hExSPS_ExEt_Y1_p8Be0_A1","hExSPS_ExEt_Y1_p8Be0_A1",100,0,1,1400,0,7);
+			//Y2
+				TH1D *hCosThetaK_Y2_p8Be0_A1 = new TH1D("hCosThetaK_Y2_p8Be0_A1","hCosThetaK_Y2_p8Be0_A1", 200, -1, 1);
+				TH1D *hExEt_Y2_p8Be0_A1 = new TH1D("hExEt_Y2_p8Be0_A1","hExEt_Y2_p8Be0_A1",100, 0, 1);
+				TH1D *hEyEt_Y2_p8Be0_A1 = new TH1D("hEyEt_Y2_p8Be0_A1", "hEyEt_Y2_p8Be0_A1", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y2_p8Be0_A1 = new TH2D("hExEt_CosThetaK_Y2_p8Be0_A1","hExEt_CosThetaK_Y2_p8Be0_A1",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y2_p8Be0_A1 = new TH2D("hEyEt_CosThetaK_Y2_p8Be0_A1","hEyEt_CosThetaK_Y2_p8Be0_A1",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y2_p8Be0_A1 = new TH2D("hExEt_Et_Y2_p8Be0_A1", "hExEt_Et_Y2_p8Be0_A1", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y2_p8Be0_A1 = new TH2D("hExSPS_ExEt_Y2_p8Be0_A1","hExSPS_ExEt_Y2_p8Be0_A1",100,0,1,1400,0,7);
+
+		//A2
+			//T
+				TH1D *hCosThetaK_T_p8Be0_A2 = new TH1D("hCosThetaK_T_p8Be0_A2","hCosThetaK_T_p8Be0_A2", 200, -1, 1);
+				TH1D *hExEt_T_p8Be0_A2 = new TH1D("hExEt_T_p8Be0_A2","hExEt_T_p8Be0_A2",100, 0, 1);
+				TH1D *hEyEt_T_p8Be0_A2 = new TH1D("hEyEt_T_p8Be0_A2", "hEyEt_T_p8Be0_A2", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_T_p8Be0_A2 = new TH2D("hExEt_CosThetaK_T_p8Be0_A2","hExEt_CosThetaK_T_p8Be0_A2",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_T_p8Be0_A2 = new TH2D("hEyEt_CosThetaK_T_p8Be0_A2","hEyEt_CosThetaK_T_p8Be0_A2",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_T_p8Be0_A2 = new TH2D("hExEt_Et_T_p8Be0_A2", "hExEt_Et_T_p8Be0_A2", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_T_p8Be0_A2 = new TH2D("hExSPS_ExEt_T_p8Be0_A2","hExSPS_ExEt_T_p8Be0_A2",100,0,1,1400,0,7);
+			//Y1
+				TH1D *hCosThetaK_Y1_p8Be0_A2 = new TH1D("hCosThetaK_Y1_p8Be0_A2","hCosThetaK_Y1_p8Be0_A2", 200, -1, 1);
+				TH1D *hExEt_Y1_p8Be0_A2 = new TH1D("hExEt_Y1_p8Be0_A2","hExEt_Y1_p8Be0_A2",100, 0, 1);
+				TH1D *hEyEt_Y1_p8Be0_A2 = new TH1D("hEyEt_Y1_p8Be0_A2", "hEyEt_Y1_p8Be0_A2", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y1_p8Be0_A2 = new TH2D("hExEt_CosThetaK_Y1_p8Be0_A2","hExEt_CosThetaK_Y1_p8Be0_A2",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y1_p8Be0_A2 = new TH2D("hEyEt_CosThetaK_Y1_p8Be0_A2","hEyEt_CosThetaK_Y1_p8Be0_A2",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y1_p8Be0_A2 = new TH2D("hExEt_Et_Y1_p8Be0_A2", "hExEt_Et_Y1_p8Be0_A2", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y1_p8Be0_A2 = new TH2D("hExSPS_ExEt_Y1_p8Be0_A2","hExSPS_ExEt_Y1_p8Be0_A2",100,0,1,1400,0,7);
+			//Y2
+				TH1D *hCosThetaK_Y2_p8Be0_A2 = new TH1D("hCosThetaK_Y2_p8Be0_A2","hCosThetaK_Y2_p8Be0_A2", 200, -1, 1);
+				TH1D *hExEt_Y2_p8Be0_A2 = new TH1D("hExEt_Y2_p8Be0_A2","hExEt_Y2_p8Be0_A2",100, 0, 1);
+				TH1D *hEyEt_Y2_p8Be0_A2 = new TH1D("hEyEt_Y2_p8Be0_A2", "hEyEt_Y2_p8Be0_A2", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y2_p8Be0_A2 = new TH2D("hExEt_CosThetaK_Y2_p8Be0_A2","hExEt_CosThetaK_Y2_p8Be0_A2",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y2_p8Be0_A2 = new TH2D("hEyEt_CosThetaK_Y2_p8Be0_A2","hEyEt_CosThetaK_Y2_p8Be0_A2",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y2_p8Be0_A2 = new TH2D("hExEt_Et_Y2_p8Be0_A2", "hExEt_Et_Y2_p8Be0_A2", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y2_p8Be0_A2 = new TH2D("hExSPS_ExEt_Y2_p8Be0_A2","hExSPS_ExEt_Y2_p8Be0_A2",100,0,1,1400,0,7);
+
 	//prep directories:
 	TDirectory *p8Be0plus = outfile->mkdir("p8Be0plus");
 	TDirectory *p8Be0plus_1 = p8Be0plus->mkdir("p8Be0_1sig");
 	TDirectory *p8Be0plus_2 = p8Be0plus->mkdir("p8Be0_2sig");
 	TDirectory *p8Be0plus_3 = p8Be0plus->mkdir("p8Be0_3sig");
+	TDirectory *p8Be0plus_A1 = p8Be0plus->mkdir("A1");
+	TDirectory *p8Be0plus_A2 = p8Be0plus->mkdir("A2");
 
 	//set histograms owner to proper directory
 	hDalitzInvMass_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hDalitzInvMass_p8Be0_2->SetDirectory(p8Be0plus_2);
 	hDalitzInvMass_p8Be0_3->SetDirectory(p8Be0plus_3);
+	hDalitzInvMass_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hDalitzInvMass_p8Be0_A2->SetDirectory(p8Be0plus_A2);
 
 	hSABREsumE_vs_ExSPS_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hSABREsumE_vs_ExSPS_p8Be0_2->SetDirectory(p8Be0plus_2);
 	hSABREsumE_vs_ExSPS_p8Be0_3->SetDirectory(p8Be0plus_3);
+	hSABREsumE_vs_ExSPS_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hSABREsumE_vs_ExSPS_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+
+	h_zscore_p8Be0plus_A1->SetDirectory(p8Be0plus_A1);
+	h_zscore_p8Be2plus_A1->SetDirectory(p8Be0plus_A1);
+	h_zscore_a5Ligs_A1->SetDirectory(p8Be0plus_A1);
+	h2_zscore_a5Ligs_vs_p8Be0plus_A1->SetDirectory(p8Be0plus_A1);
+	h2_zscore_a5Ligs_vs_p8Be2plus_A1->SetDirectory(p8Be0plus_A1);
+	h_zscore_p8Be0plus_A2->SetDirectory(p8Be0plus_A2);
+	h_zscore_p8Be2plus_A2->SetDirectory(p8Be0plus_A2);
+	h_zscore_a5Ligs_A2->SetDirectory(p8Be0plus_A2);
+	h2_zscore_a5Ligs_vs_p8Be0plus_A2->SetDirectory(p8Be0plus_A2);
+	h2_zscore_a5Ligs_vs_p8Be2plus_A2->SetDirectory(p8Be0plus_A2);
 
 	hExSPS_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hRecEx_p8Be0_1->SetDirectory(p8Be0plus_1);
@@ -323,6 +481,12 @@ void DalitzRegions(TTree *tree){
 	hExSPS_p8Be0_3->SetDirectory(p8Be0plus_3);
 	hRecEx_p8Be0_3->SetDirectory(p8Be0plus_3);
 	hRecEx_VS_ExSPS_p8Be0_3->SetDirectory(p8Be0plus_3);
+	hExSPS_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hRecEx_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hRecEx_VS_ExSPS_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExSPS_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hRecEx_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hRecEx_VS_ExSPS_p8Be0_A2->SetDirectory(p8Be0plus_A2);
 
 	hCosThetaK_T_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hExEt_T_p8Be0_1->SetDirectory(p8Be0plus_1);
@@ -348,6 +512,22 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_T_p8Be0_3->SetDirectory(p8Be0plus_3);
 	hExSPS_ExEt_T_p8Be0_3->SetDirectory(p8Be0plus_3);
 
+	hCosThetaK_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hEyEt_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_CosThetaK_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hEyEt_CosThetaK_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_Et_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExSPS_ExEt_T_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+
+	hCosThetaK_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hEyEt_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_CosThetaK_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hEyEt_CosThetaK_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_Et_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExSPS_ExEt_T_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+
 	hCosThetaK_Y1_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hExEt_Y1_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hEyEt_Y1_p8Be0_1->SetDirectory(p8Be0plus_1);
@@ -371,6 +551,22 @@ void DalitzRegions(TTree *tree){
 	hEyEt_CosThetaK_Y1_p8Be0_3->SetDirectory(p8Be0plus_3);
 	hExEt_Et_Y1_p8Be0_3->SetDirectory(p8Be0plus_3);
 	hExSPS_ExEt_Y1_p8Be0_3->SetDirectory(p8Be0plus_3);
+
+	hCosThetaK_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hEyEt_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_CosThetaK_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hEyEt_CosThetaK_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_Et_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExSPS_ExEt_Y1_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+
+	hCosThetaK_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hEyEt_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_CosThetaK_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hEyEt_CosThetaK_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_Et_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExSPS_ExEt_Y1_p8Be0_A2->SetDirectory(p8Be0plus_A2);
 
 	hCosThetaK_Y2_p8Be0_1->SetDirectory(p8Be0plus_1);
 	hExEt_Y2_p8Be0_1->SetDirectory(p8Be0plus_1);
@@ -396,6 +592,22 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_Y2_p8Be0_3->SetDirectory(p8Be0plus_3);
 	hExSPS_ExEt_Y2_p8Be0_3->SetDirectory(p8Be0plus_3);
 
+	hCosThetaK_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hEyEt_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_CosThetaK_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hEyEt_CosThetaK_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExEt_Et_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+	hExSPS_ExEt_Y2_p8Be0_A1->SetDirectory(p8Be0plus_A1);
+
+	hCosThetaK_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hEyEt_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_CosThetaK_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hEyEt_CosThetaK_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExEt_Et_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+	hExSPS_ExEt_Y2_p8Be0_A2->SetDirectory(p8Be0plus_A2);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -409,12 +621,20 @@ void DalitzRegions(TTree *tree){
 	TH2D *hDalitzInvMass_p8Be2_3 = new TH2D("hDalitzInvMass_p8Be2_3", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 											800, 55.57e6, 55.69e6,
 											800, 21.76e6, 21.84e6);
+	TH2D *hDalitzInvMass_p8Be2_B1 = new TH2D("hDalitzInvMass_p8Be2_B1", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
+	TH2D *hDalitzInvMass_p8Be2_B2 = new TH2D("hDalitzInvMass_p8Be2_B2", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
 
 
 	//SABREsum histos
 	TH2D *hSABREsumE_vs_ExSPS_p8Be2_1 = new TH2D("hSABREsumE_vs_ExSPS_p8Be2_1","hSABREsumE_vs_ExSPS_p8Be2_1", 1400, 0, 7, 1400, 0, 7);
 	TH2D *hSABREsumE_vs_ExSPS_p8Be2_2 = new TH2D("hSABREsumE_vs_ExSPS_p8Be2_2","hSABREsumE_vs_ExSPS_p8Be2_2", 1400, 0, 7, 1400, 0, 7);
 	TH2D *hSABREsumE_vs_ExSPS_p8Be2_3 = new TH2D("hSABREsumE_vs_ExSPS_p8Be2_3","hSABREsumE_vs_ExSPS_p8Be2_3", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_p8Be2_B1 = new TH2D("hSABREsumE_vs_ExSPS_p8Be2_B1","hSABREsumE_vs_ExSPS_p8Be2_B1", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_p8Be2_B2 = new TH2D("hSABREsumE_vs_ExSPS_p8Be2_B2","hSABREsumE_vs_ExSPS_p8Be2_B2", 1400, 0, 7, 1400, 0, 7);
 
 	//9B Ex histos:
 	TH1D *hExSPS_p8Be2_1 = new TH1D("hExSPS_p8Be2_1", "hExSPS_p8Be2_1", 1600, -1, 7);
@@ -428,6 +648,29 @@ void DalitzRegions(TTree *tree){
 	TH1D *hExSPS_p8Be2_3 = new TH1D("hExSPS_p8Be2_3", "hExSPS_p8Be2_3", 1600, -1, 7);
 	TH1D *hRecEx_p8Be2_3 = new TH1D("hRecEx_p8Be2_3", "hRecEx_p8Be2_3", 1600, -1, 7);
 	TH2D *hRecEx_VS_ExSPS_p8Be2_3 = new TH2D("hRecEx_VS_ExSPS_p8Be2_3", "hRecEx_VS_ExSPS_p8Be2_3", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_p8Be2_B1 = new TH1D("hExSPS_p8Be2_B1", "hExSPS_p8Be2_B1", 1600, -1, 7);
+	TH1D *hRecEx_p8Be2_B1 = new TH1D("hRecEx_p8Be2_B1", "hRecEx_p8Be2_B1", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_p8Be2_B1 = new TH2D("hRecEx_VS_ExSPS_p8Be2_B1", "hRecEx_VS_ExSPS_p8Be2_B1", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_p8Be2_B2 = new TH1D("hExSPS_p8Be2_B2", "hExSPS_p8Be2_B2", 1600, -1, 7);
+	TH1D *hRecEx_p8Be2_B2 = new TH1D("hRecEx_p8Be2_B2", "hRecEx_p8Be2_B2", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_p8Be2_B2 = new TH2D("hRecEx_VS_ExSPS_p8Be2_B2", "hRecEx_VS_ExSPS_p8Be2_B2", 1600, -1, 7, 1600, -1, 7);
+
+	//zscore histos:
+	TH1D *h_zscore_p8Be0plus_B1 = new TH1D("h_zscore_p8Be0plus_B1", "h_zscore_p8Be0plus_B1", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_B1 = new TH1D("h_zscore_p8Be2plus_B1", "h_zscore_p8Be2plus_B1", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_B1 = new TH1D("h_zscore_a5Ligs_B1", "h_zscore_a5Ligs_B1", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_B1 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_B1", "h2_zscore_a5Ligs_vs_p8Be0plus_B1", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_B1 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_B1", "h2_zscore_a5Ligs_vs_p8Be2plus_B1", 200, -10, 10, 200, -10, 10);
+
+	TH1D *h_zscore_p8Be0plus_B2 = new TH1D("h_zscore_p8Be0plus_B2", "h_zscore_p8Be0plus_B2", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_B2 = new TH1D("h_zscore_p8Be2plus_B2", "h_zscore_p8Be2plus_B2", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_B2 = new TH1D("h_zscore_a5Ligs_B2", "h_zscore_a5Ligs_B2", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_B2 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_B2", "h2_zscore_a5Ligs_vs_p8Be0plus_B2", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_B2 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_B2", "h2_zscore_a5Ligs_vs_p8Be2plus_B2", 200, -10, 10, 200, -10, 10);
 
 	//jacobi histos
 		//1sig
@@ -505,20 +748,87 @@ void DalitzRegions(TTree *tree){
 				TH2D *hEyEt_CosThetaK_Y2_p8Be2_3 = new TH2D("hEyEt_CosThetaK_Y2_p8Be2_3","hEyEt_CosThetaK_Y2_p8Be2_3",200,-1,1,100,0,1);
 				TH2D *hExEt_Et_Y2_p8Be2_3 = new TH2D("hExEt_Et_Y2_p8Be2_3", "hExEt_Et_Y2_p8Be2_3", 1000, 0, 10, 100, 0, 1);
 				TH2D *hExSPS_ExEt_Y2_p8Be2_3 = new TH2D("hExSPS_ExEt_Y2_p8Be2_3","hExSPS_ExEt_Y2_p8Be2_3",100,0,1,1400,0,7);
+		//B1
+			//T
+				TH1D *hCosThetaK_T_p8Be2_B1 = new TH1D("hCosThetaK_T_p8Be2_B1","hCosThetaK_T_p8Be2_B1", 200, -1, 1);
+				TH1D *hExEt_T_p8Be2_B1 = new TH1D("hExEt_T_p8Be2_B1","hExEt_T_p8Be2_B1",100, 0, 1);
+				TH1D *hEyEt_T_p8Be2_B1 = new TH1D("hEyEt_T_p8Be2_B1", "hEyEt_T_p8Be2_B1", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_T_p8Be2_B1 = new TH2D("hExEt_CosThetaK_T_p8Be2_B1","hExEt_CosThetaK_T_p8Be2_B1",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_T_p8Be2_B1 = new TH2D("hEyEt_CosThetaK_T_p8Be2_B1","hEyEt_CosThetaK_T_p8Be2_B1",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_T_p8Be2_B1 = new TH2D("hExEt_Et_T_p8Be2_B1", "hExEt_Et_T_p8Be2_B1", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_T_p8Be2_B1 = new TH2D("hExSPS_ExEt_T_p8Be2_B1","hExSPS_ExEt_T_p8Be2_B1",100,0,1,1400,0,7);
+			//Y1
+				TH1D *hCosThetaK_Y1_p8Be2_B1 = new TH1D("hCosThetaK_Y1_p8Be2_B1","hCosThetaK_Y1_p8Be2_B1", 200, -1, 1);
+				TH1D *hExEt_Y1_p8Be2_B1 = new TH1D("hExEt_Y1_p8Be2_B1","hExEt_Y1_p8Be2_B1",100, 0, 1);
+				TH1D *hEyEt_Y1_p8Be2_B1 = new TH1D("hEyEt_Y1_p8Be2_B1", "hEyEt_Y1_p8Be2_B1", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y1_p8Be2_B1 = new TH2D("hExEt_CosThetaK_Y1_p8Be2_B1","hExEt_CosThetaK_Y1_p8Be2_B1",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y1_p8Be2_B1 = new TH2D("hEyEt_CosThetaK_Y1_p8Be2_B1","hEyEt_CosThetaK_Y1_p8Be2_B1",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y1_p8Be2_B1 = new TH2D("hExEt_Et_Y1_p8Be2_B1", "hExEt_Et_Y1_p8Be2_B1", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y1_p8Be2_B1 = new TH2D("hExSPS_ExEt_Y1_p8Be2_B1","hExSPS_ExEt_Y1_p8Be2_B1",100,0,1,1400,0,7);
+			//Y2
+				TH1D *hCosThetaK_Y2_p8Be2_B1 = new TH1D("hCosThetaK_Y2_p8Be2_B1","hCosThetaK_Y2_p8Be2_B1", 200, -1, 1);
+				TH1D *hExEt_Y2_p8Be2_B1 = new TH1D("hExEt_Y2_p8Be2_B1","hExEt_Y2_p8Be2_B1",100, 0, 1);
+				TH1D *hEyEt_Y2_p8Be2_B1 = new TH1D("hEyEt_Y2_p8Be2_B1", "hEyEt_Y2_p8Be2_B1", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y2_p8Be2_B1 = new TH2D("hExEt_CosThetaK_Y2_p8Be2_B1","hExEt_CosThetaK_Y2_p8Be2_B1",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y2_p8Be2_B1 = new TH2D("hEyEt_CosThetaK_Y2_p8Be2_B1","hEyEt_CosThetaK_Y2_p8Be2_B1",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y2_p8Be2_B1 = new TH2D("hExEt_Et_Y2_p8Be2_B1", "hExEt_Et_Y2_p8Be2_B1", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y2_p8Be2_B1 = new TH2D("hExSPS_ExEt_Y2_p8Be2_B1","hExSPS_ExEt_Y2_p8Be2_B1",100,0,1,1400,0,7);
+		//B2
+			//T
+				TH1D *hCosThetaK_T_p8Be2_B2 = new TH1D("hCosThetaK_T_p8Be2_B2","hCosThetaK_T_p8Be2_B2", 200, -1, 1);
+				TH1D *hExEt_T_p8Be2_B2 = new TH1D("hExEt_T_p8Be2_B2","hExEt_T_p8Be2_B2",100, 0, 1);
+				TH1D *hEyEt_T_p8Be2_B2 = new TH1D("hEyEt_T_p8Be2_B2", "hEyEt_T_p8Be2_B2", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_T_p8Be2_B2 = new TH2D("hExEt_CosThetaK_T_p8Be2_B2","hExEt_CosThetaK_T_p8Be2_B2",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_T_p8Be2_B2 = new TH2D("hEyEt_CosThetaK_T_p8Be2_B2","hEyEt_CosThetaK_T_p8Be2_B2",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_T_p8Be2_B2 = new TH2D("hExEt_Et_T_p8Be2_B2", "hExEt_Et_T_p8Be2_B2", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_T_p8Be2_B2 = new TH2D("hExSPS_ExEt_T_p8Be2_B2","hExSPS_ExEt_T_p8Be2_B2",100,0,1,1400,0,7);
+			//Y1
+				TH1D *hCosThetaK_Y1_p8Be2_B2 = new TH1D("hCosThetaK_Y1_p8Be2_B2","hCosThetaK_Y1_p8Be2_B2", 200, -1, 1);
+				TH1D *hExEt_Y1_p8Be2_B2 = new TH1D("hExEt_Y1_p8Be2_B2","hExEt_Y1_p8Be2_B2",100, 0, 1);
+				TH1D *hEyEt_Y1_p8Be2_B2 = new TH1D("hEyEt_Y1_p8Be2_B2", "hEyEt_Y1_p8Be2_B2", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y1_p8Be2_B2 = new TH2D("hExEt_CosThetaK_Y1_p8Be2_B2","hExEt_CosThetaK_Y1_p8Be2_B2",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y1_p8Be2_B2 = new TH2D("hEyEt_CosThetaK_Y1_p8Be2_B2","hEyEt_CosThetaK_Y1_p8Be2_B2",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y1_p8Be2_B2 = new TH2D("hExEt_Et_Y1_p8Be2_B2", "hExEt_Et_Y1_p8Be2_B2", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y1_p8Be2_B2 = new TH2D("hExSPS_ExEt_Y1_p8Be2_B2","hExSPS_ExEt_Y1_p8Be2_B2",100,0,1,1400,0,7);
+			//Y2
+				TH1D *hCosThetaK_Y2_p8Be2_B2 = new TH1D("hCosThetaK_Y2_p8Be2_B2","hCosThetaK_Y2_p8Be2_B2", 200, -1, 1);
+				TH1D *hExEt_Y2_p8Be2_B2 = new TH1D("hExEt_Y2_p8Be2_B2","hExEt_Y2_p8Be2_B2",100, 0, 1);
+				TH1D *hEyEt_Y2_p8Be2_B2 = new TH1D("hEyEt_Y2_p8Be2_B2", "hEyEt_Y2_p8Be2_B2", 100, 0, 1);
+				TH2D *hExEt_CosThetaK_Y2_p8Be2_B2 = new TH2D("hExEt_CosThetaK_Y2_p8Be2_B2","hExEt_CosThetaK_Y2_p8Be2_B2",200,-1,1,100,0,1);
+				TH2D *hEyEt_CosThetaK_Y2_p8Be2_B2 = new TH2D("hEyEt_CosThetaK_Y2_p8Be2_B2","hEyEt_CosThetaK_Y2_p8Be2_B2",200,-1,1,100,0,1);
+				TH2D *hExEt_Et_Y2_p8Be2_B2 = new TH2D("hExEt_Et_Y2_p8Be2_B2", "hExEt_Et_Y2_p8Be2_B2", 1000, 0, 10, 100, 0, 1);
+				TH2D *hExSPS_ExEt_Y2_p8Be2_B2 = new TH2D("hExSPS_ExEt_Y2_p8Be2_B2","hExSPS_ExEt_Y2_p8Be2_B2",100,0,1,1400,0,7);
 
 	//prep directories:
 	TDirectory *p8Be2plus = outfile->mkdir("p8Be2plus");
 	TDirectory *p8Be2plus_1 = p8Be2plus->mkdir("p8Be2_1sig");
 	TDirectory *p8Be2plus_2 = p8Be2plus->mkdir("p8Be2_2sig");
 	TDirectory *p8Be2plus_3 = p8Be2plus->mkdir("p8Be2_3sig");
+	TDirectory *p8Be2plus_B1 = p8Be2plus->mkdir("p8Be2_B1");
+	TDirectory *p8Be2plus_B2 = p8Be2plus->mkdir("p8Be2_B2");
 
 	hDalitzInvMass_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hDalitzInvMass_p8Be2_2->SetDirectory(p8Be2plus_2);
 	hDalitzInvMass_p8Be2_3->SetDirectory(p8Be2plus_3);
+	hDalitzInvMass_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hDalitzInvMass_p8Be2_B2->SetDirectory(p8Be2plus_B2);
 
 	hSABREsumE_vs_ExSPS_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hSABREsumE_vs_ExSPS_p8Be2_2->SetDirectory(p8Be2plus_2);
 	hSABREsumE_vs_ExSPS_p8Be2_3->SetDirectory(p8Be2plus_3);
+	hSABREsumE_vs_ExSPS_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hSABREsumE_vs_ExSPS_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+
+	h_zscore_p8Be0plus_B1->SetDirectory(p8Be2plus_B1);
+	h_zscore_p8Be2plus_B1->SetDirectory(p8Be2plus_B1);
+	h_zscore_a5Ligs_B1->SetDirectory(p8Be2plus_B1);
+	h2_zscore_a5Ligs_vs_p8Be0plus_B1->SetDirectory(p8Be2plus_B1);
+	h2_zscore_a5Ligs_vs_p8Be2plus_B1->SetDirectory(p8Be2plus_B1);
+	h_zscore_p8Be0plus_B2->SetDirectory(p8Be2plus_B2);
+	h_zscore_p8Be2plus_B2->SetDirectory(p8Be2plus_B2);
+	h_zscore_a5Ligs_B2->SetDirectory(p8Be2plus_B2);
+	h2_zscore_a5Ligs_vs_p8Be0plus_B2->SetDirectory(p8Be2plus_B2);
+	h2_zscore_a5Ligs_vs_p8Be2plus_B2->SetDirectory(p8Be2plus_B2);
 
 	hExSPS_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hRecEx_p8Be2_1->SetDirectory(p8Be2plus_1);
@@ -529,6 +839,13 @@ void DalitzRegions(TTree *tree){
 	hExSPS_p8Be2_3->SetDirectory(p8Be2plus_3);
 	hRecEx_p8Be2_3->SetDirectory(p8Be2plus_3);
 	hRecEx_VS_ExSPS_p8Be2_3->SetDirectory(p8Be2plus_3);
+	hExSPS_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hRecEx_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hRecEx_VS_ExSPS_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExSPS_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hRecEx_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hRecEx_VS_ExSPS_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+
 
 	hCosThetaK_T_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hExEt_T_p8Be2_1->SetDirectory(p8Be2plus_1);
@@ -554,6 +871,22 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_T_p8Be2_3->SetDirectory(p8Be2plus_3);
 	hExSPS_ExEt_T_p8Be2_3->SetDirectory(p8Be2plus_3);
 
+	hCosThetaK_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hEyEt_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_CosThetaK_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hEyEt_CosThetaK_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_Et_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExSPS_ExEt_T_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+
+	hCosThetaK_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hEyEt_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_CosThetaK_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hEyEt_CosThetaK_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_Et_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExSPS_ExEt_T_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+
 	hCosThetaK_Y1_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hExEt_Y1_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hEyEt_Y1_p8Be2_1->SetDirectory(p8Be2plus_1);
@@ -577,6 +910,22 @@ void DalitzRegions(TTree *tree){
 	hEyEt_CosThetaK_Y1_p8Be2_3->SetDirectory(p8Be2plus_3);
 	hExEt_Et_Y1_p8Be2_3->SetDirectory(p8Be2plus_3);
 	hExSPS_ExEt_Y1_p8Be2_3->SetDirectory(p8Be2plus_3);
+
+	hCosThetaK_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hEyEt_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_CosThetaK_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hEyEt_CosThetaK_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_Et_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExSPS_ExEt_Y1_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+
+	hCosThetaK_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hEyEt_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_CosThetaK_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hEyEt_CosThetaK_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_Et_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExSPS_ExEt_Y1_p8Be2_B2->SetDirectory(p8Be2plus_B2);
 
 	hCosThetaK_Y2_p8Be2_1->SetDirectory(p8Be2plus_1);
 	hExEt_Y2_p8Be2_1->SetDirectory(p8Be2plus_1);
@@ -602,6 +951,22 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_Y2_p8Be2_3->SetDirectory(p8Be2plus_3);
 	hExSPS_ExEt_Y2_p8Be2_3->SetDirectory(p8Be2plus_3);
 
+	hCosThetaK_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hEyEt_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_CosThetaK_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hEyEt_CosThetaK_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExEt_Et_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+	hExSPS_ExEt_Y2_p8Be2_B1->SetDirectory(p8Be2plus_B1);
+
+	hCosThetaK_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hEyEt_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_CosThetaK_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hEyEt_CosThetaK_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExEt_Et_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+	hExSPS_ExEt_Y2_p8Be2_B2->SetDirectory(p8Be2plus_B2);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//a+5Li(gs+)////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -614,11 +979,23 @@ void DalitzRegions(TTree *tree){
 	TH2D *hDalitzInvMass_a5Ligs_3 = new TH2D("hDalitzInvMass_a5Ligs_3", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
 											800, 55.57e6, 55.69e6,
 											800, 21.76e6, 21.84e6);
+	TH2D *hDalitzInvMass_a5Ligs_C1 = new TH2D("hDalitzInvMass_a5Ligs_C1", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
+	TH2D *hDalitzInvMass_a5Ligs_C2 = new TH2D("hDalitzInvMass_a5Ligs_C2", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
+	TH2D *hDalitzInvMass_a5Ligs_C3 = new TH2D("hDalitzInvMass_a5Ligs_C3", "M^{2}_{p+#alpha} vs M^{2}_{#alpha+#alpha};M^{2}_{#alpha+#alpha};M^{2}_{p+#alpha}",
+											800, 55.57e6, 55.69e6,
+											800, 21.76e6, 21.84e6);
 
 	//SABREsum histos
 	TH2D *hSABREsumE_vs_ExSPS_a5Ligs_1 = new TH2D("hSABREsumE_vs_ExSPS_a5Ligs_1","hSABREsumE_vs_ExSPS_a5Ligs_1", 1400, 0, 7, 1400, 0, 7);
 	TH2D *hSABREsumE_vs_ExSPS_a5Ligs_2 = new TH2D("hSABREsumE_vs_ExSPS_a5Ligs_2","hSABREsumE_vs_ExSPS_a5Ligs_2", 1400, 0, 7, 1400, 0, 7);
 	TH2D *hSABREsumE_vs_ExSPS_a5Ligs_3 = new TH2D("hSABREsumE_vs_ExSPS_a5Ligs_3","hSABREsumE_vs_ExSPS_a5Ligs_3", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_a5Ligs_C1 = new TH2D("hSABREsumE_vs_ExSPS_a5Ligs_C1","hSABREsumE_vs_ExSPS_a5Ligs_C1", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_a5Ligs_C2 = new TH2D("hSABREsumE_vs_ExSPS_a5Ligs_C2","hSABREsumE_vs_ExSPS_a5Ligs_C2", 1400, 0, 7, 1400, 0, 7);
+	TH2D *hSABREsumE_vs_ExSPS_a5Ligs_C3 = new TH2D("hSABREsumE_vs_ExSPS_a5Ligs_C3","hSABREsumE_vs_ExSPS_a5Ligs_C3", 1400, 0, 7, 1400, 0, 7);
 
 	//9B Ex histos:
 	TH1D *hExSPS_a5Ligs_1 = new TH1D("hExSPS_a5Ligs_1", "hExSPS_a5Ligs_1", 1600, -1, 7);
@@ -632,6 +1009,40 @@ void DalitzRegions(TTree *tree){
 	TH1D *hExSPS_a5Ligs_3 = new TH1D("hExSPS_a5Ligs_3", "hExSPS_a5Ligs_3", 1600, -1, 7);
 	TH1D *hRecEx_a5Ligs_3 = new TH1D("hRecEx_a5Ligs_3", "hRecEx_a5Ligs_3", 1600, -1, 7);
 	TH2D *hRecEx_VS_ExSPS_a5Ligs_3 = new TH2D("hRecEx_VS_ExSPS_a5Ligs_3", "hRecEx_VS_ExSPS_a5Ligs_3", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_a5Ligs_C1 = new TH1D("hExSPS_a5Ligs_C1", "hExSPS_a5Ligs_C1", 1600, -1, 7);
+	TH1D *hRecEx_a5Ligs_C1 = new TH1D("hRecEx_a5Ligs_C1", "hRecEx_a5Ligs_C1", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_a5Ligs_C1 = new TH2D("hRecEx_VS_ExSPS_a5Ligs_C1", "hRecEx_VS_ExSPS_a5Ligs_C1", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_a5Ligs_C2 = new TH1D("hExSPS_a5Ligs_C2", "hExSPS_a5Ligs_C2", 1600, -1, 7);
+	TH1D *hRecEx_a5Ligs_C2 = new TH1D("hRecEx_a5Ligs_C2", "hRecEx_a5Ligs_C2", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_a5Ligs_C2 = new TH2D("hRecEx_VS_ExSPS_a5Ligs_C2", "hRecEx_VS_ExSPS_a5Ligs_C2", 1600, -1, 7, 1600, -1, 7);
+
+	TH1D *hExSPS_a5Ligs_C3 = new TH1D("hExSPS_a5Ligs_C3", "hExSPS_a5Ligs_C3", 1600, -1, 7);
+	TH1D *hRecEx_a5Ligs_C3 = new TH1D("hRecEx_a5Ligs_C3", "hRecEx_a5Ligs_C3", 1600, -1, 7);
+	TH2D *hRecEx_VS_ExSPS_a5Ligs_C3 = new TH2D("hRecEx_VS_ExSPS_a5Ligs_C3", "hRecEx_VS_ExSPS_a5Ligs_C3", 1600, -1, 7, 1600, -1, 7);
+
+	//zscore histos:
+	TH1D *h_zscore_p8Be0plus_C1 = new TH1D("h_zscore_p8Be0plus_C1", "h_zscore_p8Be0plus_C1", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_C1 = new TH1D("h_zscore_p8Be2plus_C1", "h_zscore_p8Be2plus_C1", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_C1 = new TH1D("h_zscore_a5Ligs_C1", "h_zscore_a5Ligs_C1", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_C1 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_C1", "h2_zscore_a5Ligs_vs_p8Be0plus_C1", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_C1 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_C1", "h2_zscore_a5Ligs_vs_p8Be2plus_C1", 200, -10, 10, 200, -10, 10);
+
+	TH1D *h_zscore_p8Be0plus_C2 = new TH1D("h_zscore_p8Be0plus_C2", "h_zscore_p8Be0plus_C2", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_C2 = new TH1D("h_zscore_p8Be2plus_C2", "h_zscore_p8Be2plus_C2", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_C2 = new TH1D("h_zscore_a5Ligs_C2", "h_zscore_a5Ligs_C2", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_C2 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_C2", "h2_zscore_a5Ligs_vs_p8Be0plus_C2", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_C2 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_C2", "h2_zscore_a5Ligs_vs_p8Be2plus_C2", 200, -10, 10, 200, -10, 10);
+
+	TH1D *h_zscore_p8Be0plus_C3 = new TH1D("h_zscore_p8Be0plus_C3", "h_zscore_p8Be0plus_C3", 200, -10, 10);
+	TH1D *h_zscore_p8Be2plus_C3 = new TH1D("h_zscore_p8Be2plus_C3", "h_zscore_p8Be2plus_C3", 200, -10, 10);
+	TH1D *h_zscore_a5Ligs_C3 = new TH1D("h_zscore_a5Ligs_C3", "h_zscore_a5Ligs_C3", 200, -10, 10);
+
+	TH2D *h2_zscore_a5Ligs_vs_p8Be0plus_C3 = new TH2D("h2_zscore_a5Ligs_vs_p8Be0plus_C3", "h2_zscore_a5Ligs_vs_p8Be0plus_C3", 200, -10, 10, 200, -10, 10);
+	TH2D *h2_zscore_a5Ligs_vs_p8Be2plus_C3 = new TH2D("h2_zscore_a5Ligs_vs_p8Be2plus_C3", "h2_zscore_a5Ligs_vs_p8Be2plus_C3", 200, -10, 10, 200, -10, 10);
 
 	//jacobi histos
 	//1sig
@@ -710,19 +1121,122 @@ void DalitzRegions(TTree *tree){
 			TH2D *hExEt_Et_Y2_a5Ligs_3 = new TH2D("hExEt_Et_Y2_a5Ligs_3", "hExEt_Et_Y2_a5Ligs_3", 1000, 0, 10, 100, 0, 1);
 			TH2D *hExSPS_ExEt_Y2_a5Ligs_3 = new TH2D("hExSPS_ExEt_Y2_a5Ligs_3","hExSPS_ExEt_Y2_a5Ligs_3",100,0,1,1400,0,7);
 
+	//C1
+		//T
+			TH1D *hCosThetaK_T_a5Ligs_C1 = new TH1D("hCosThetaK_T_a5Ligs_C1","hCosThetaK_T_a5Ligs_C1", 200, -1, 1);
+			TH1D *hExEt_T_a5Ligs_C1 = new TH1D("hExEt_T_a5Ligs_C1","hExEt_T_a5Ligs_C1",100, 0, 1);
+			TH1D *hEyEt_T_a5Ligs_C1 = new TH1D("hEyEt_T_a5Ligs_C1", "hEyEt_T_a5Ligs_C1", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_T_a5Ligs_C1 = new TH2D("hExEt_CosThetaK_T_a5Ligs_C1","hExEt_CosThetaK_T_a5Ligs_C1",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_T_a5Ligs_C1 = new TH2D("hEyEt_CosThetaK_T_a5Ligs_C1","hEyEt_CosThetaK_T_a5Ligs_C1",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_T_a5Ligs_C1 = new TH2D("hExEt_Et_T_a5Ligs_C1", "hExEt_Et_T_a5Ligs_C1", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_T_a5Ligs_C1 = new TH2D("hExSPS_ExEt_T_a5Ligs_C1","hExSPS_ExEt_T_a5Ligs_C1",100,0,1,1400,0,7);
+		//Y1
+			TH1D *hCosThetaK_Y1_a5Ligs_C1 = new TH1D("hCosThetaK_Y1_a5Ligs_C1","hCosThetaK_Y1_a5Ligs_C1", 200, -1, 1);
+			TH1D *hExEt_Y1_a5Ligs_C1 = new TH1D("hExEt_Y1_a5Ligs_C1","hExEt_Y1_a5Ligs_C1",100, 0, 1);
+			TH1D *hEyEt_Y1_a5Ligs_C1 = new TH1D("hEyEt_Y1_a5Ligs_C1", "hEyEt_Y1_a5Ligs_C1", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_Y1_a5Ligs_C1 = new TH2D("hExEt_CosThetaK_Y1_a5Ligs_C1","hExEt_CosThetaK_Y1_a5Ligs_C1",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_Y1_a5Ligs_C1 = new TH2D("hEyEt_CosThetaK_Y1_a5Ligs_C1","hEyEt_CosThetaK_Y1_a5Ligs_C1",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_Y1_a5Ligs_C1 = new TH2D("hExEt_Et_Y1_a5Ligs_C1", "hExEt_Et_Y1_a5Ligs_C1", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_Y1_a5Ligs_C1 = new TH2D("hExSPS_ExEt_Y1_a5Ligs_C1","hExSPS_ExEt_Y1_a5Ligs_C1",100,0,1,1400,0,7);
+		//Y2
+			TH1D *hCosThetaK_Y2_a5Ligs_C1 = new TH1D("hCosThetaK_Y2_a5Ligs_C1","hCosThetaK_Y2_a5Ligs_C1", 200, -1, 1);
+			TH1D *hExEt_Y2_a5Ligs_C1 = new TH1D("hExEt_Y2_a5Ligs_C1","hExEt_Y2_a5Ligs_C1",100, 0, 1);
+			TH1D *hEyEt_Y2_a5Ligs_C1 = new TH1D("hEyEt_Y2_a5Ligs_C1", "hEyEt_Y2_a5Ligs_C1", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_Y2_a5Ligs_C1 = new TH2D("hExEt_CosThetaK_Y2_a5Ligs_C1","hExEt_CosThetaK_Y2_a5Ligs_C1",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_Y2_a5Ligs_C1 = new TH2D("hEyEt_CosThetaK_Y2_a5Ligs_C1","hEyEt_CosThetaK_Y2_a5Ligs_C1",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_Y2_a5Ligs_C1 = new TH2D("hExEt_Et_Y2_a5Ligs_C1", "hExEt_Et_Y2_a5Ligs_C1", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_Y2_a5Ligs_C1 = new TH2D("hExSPS_ExEt_Y2_a5Ligs_C1","hExSPS_ExEt_Y2_a5Ligs_C1",100,0,1,1400,0,7);
+
+	//C2
+		//T
+			TH1D *hCosThetaK_T_a5Ligs_C2 = new TH1D("hCosThetaK_T_a5Ligs_C2","hCosThetaK_T_a5Ligs_C2", 200, -1, 1);
+			TH1D *hExEt_T_a5Ligs_C2 = new TH1D("hExEt_T_a5Ligs_C2","hExEt_T_a5Ligs_C2",100, 0, 1);
+			TH1D *hEyEt_T_a5Ligs_C2 = new TH1D("hEyEt_T_a5Ligs_C2", "hEyEt_T_a5Ligs_C2", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_T_a5Ligs_C2 = new TH2D("hExEt_CosThetaK_T_a5Ligs_C2","hExEt_CosThetaK_T_a5Ligs_C2",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_T_a5Ligs_C2 = new TH2D("hEyEt_CosThetaK_T_a5Ligs_C2","hEyEt_CosThetaK_T_a5Ligs_C2",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_T_a5Ligs_C2 = new TH2D("hExEt_Et_T_a5Ligs_C2", "hExEt_Et_T_a5Ligs_C2", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_T_a5Ligs_C2 = new TH2D("hExSPS_ExEt_T_a5Ligs_C2","hExSPS_ExEt_T_a5Ligs_C2",100,0,1,1400,0,7);
+		//Y1
+			TH1D *hCosThetaK_Y1_a5Ligs_C2 = new TH1D("hCosThetaK_Y1_a5Ligs_C2","hCosThetaK_Y1_a5Ligs_C2", 200, -1, 1);
+			TH1D *hExEt_Y1_a5Ligs_C2 = new TH1D("hExEt_Y1_a5Ligs_C2","hExEt_Y1_a5Ligs_C2",100, 0, 1);
+			TH1D *hEyEt_Y1_a5Ligs_C2 = new TH1D("hEyEt_Y1_a5Ligs_C2", "hEyEt_Y1_a5Ligs_C2", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_Y1_a5Ligs_C2 = new TH2D("hExEt_CosThetaK_Y1_a5Ligs_C2","hExEt_CosThetaK_Y1_a5Ligs_C2",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_Y1_a5Ligs_C2 = new TH2D("hEyEt_CosThetaK_Y1_a5Ligs_C2","hEyEt_CosThetaK_Y1_a5Ligs_C2",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_Y1_a5Ligs_C2 = new TH2D("hExEt_Et_Y1_a5Ligs_C2", "hExEt_Et_Y1_a5Ligs_C2", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_Y1_a5Ligs_C2 = new TH2D("hExSPS_ExEt_Y1_a5Ligs_C2","hExSPS_ExEt_Y1_a5Ligs_C2",100,0,1,1400,0,7);
+		//Y2
+			TH1D *hCosThetaK_Y2_a5Ligs_C2 = new TH1D("hCosThetaK_Y2_a5Ligs_C2","hCosThetaK_Y2_a5Ligs_C2", 200, -1, 1);
+			TH1D *hExEt_Y2_a5Ligs_C2 = new TH1D("hExEt_Y2_a5Ligs_C2","hExEt_Y2_a5Ligs_C2",100, 0, 1);
+			TH1D *hEyEt_Y2_a5Ligs_C2 = new TH1D("hEyEt_Y2_a5Ligs_C2", "hEyEt_Y2_a5Ligs_C2", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_Y2_a5Ligs_C2 = new TH2D("hExEt_CosThetaK_Y2_a5Ligs_C2","hExEt_CosThetaK_Y2_a5Ligs_C2",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_Y2_a5Ligs_C2 = new TH2D("hEyEt_CosThetaK_Y2_a5Ligs_C2","hEyEt_CosThetaK_Y2_a5Ligs_C2",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_Y2_a5Ligs_C2 = new TH2D("hExEt_Et_Y2_a5Ligs_C2", "hExEt_Et_Y2_a5Ligs_C2", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_Y2_a5Ligs_C2 = new TH2D("hExSPS_ExEt_Y2_a5Ligs_C2","hExSPS_ExEt_Y2_a5Ligs_C2",100,0,1,1400,0,7);
+
+	//C3
+		//T
+			TH1D *hCosThetaK_T_a5Ligs_C3 = new TH1D("hCosThetaK_T_a5Ligs_C3","hCosThetaK_T_a5Ligs_C3", 200, -1, 1);
+			TH1D *hExEt_T_a5Ligs_C3 = new TH1D("hExEt_T_a5Ligs_C3","hExEt_T_a5Ligs_C3",100, 0, 1);
+			TH1D *hEyEt_T_a5Ligs_C3 = new TH1D("hEyEt_T_a5Ligs_C3", "hEyEt_T_a5Ligs_C3", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_T_a5Ligs_C3 = new TH2D("hExEt_CosThetaK_T_a5Ligs_C3","hExEt_CosThetaK_T_a5Ligs_C3",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_T_a5Ligs_C3 = new TH2D("hEyEt_CosThetaK_T_a5Ligs_C3","hEyEt_CosThetaK_T_a5Ligs_C3",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_T_a5Ligs_C3 = new TH2D("hExEt_Et_T_a5Ligs_C3", "hExEt_Et_T_a5Ligs_C3", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_T_a5Ligs_C3 = new TH2D("hExSPS_ExEt_T_a5Ligs_C3","hExSPS_ExEt_T_a5Ligs_C3",100,0,1,1400,0,7);
+		//Y1
+			TH1D *hCosThetaK_Y1_a5Ligs_C3 = new TH1D("hCosThetaK_Y1_a5Ligs_C3","hCosThetaK_Y1_a5Ligs_C3", 200, -1, 1);
+			TH1D *hExEt_Y1_a5Ligs_C3 = new TH1D("hExEt_Y1_a5Ligs_C3","hExEt_Y1_a5Ligs_C3",100, 0, 1);
+			TH1D *hEyEt_Y1_a5Ligs_C3 = new TH1D("hEyEt_Y1_a5Ligs_C3", "hEyEt_Y1_a5Ligs_C3", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_Y1_a5Ligs_C3 = new TH2D("hExEt_CosThetaK_Y1_a5Ligs_C3","hExEt_CosThetaK_Y1_a5Ligs_C3",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_Y1_a5Ligs_C3 = new TH2D("hEyEt_CosThetaK_Y1_a5Ligs_C3","hEyEt_CosThetaK_Y1_a5Ligs_C3",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_Y1_a5Ligs_C3 = new TH2D("hExEt_Et_Y1_a5Ligs_C3", "hExEt_Et_Y1_a5Ligs_C3", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_Y1_a5Ligs_C3 = new TH2D("hExSPS_ExEt_Y1_a5Ligs_C3","hExSPS_ExEt_Y1_a5Ligs_C3",100,0,1,1400,0,7);
+		//Y2
+			TH1D *hCosThetaK_Y2_a5Ligs_C3 = new TH1D("hCosThetaK_Y2_a5Ligs_C3","hCosThetaK_Y2_a5Ligs_C3", 200, -1, 1);
+			TH1D *hExEt_Y2_a5Ligs_C3 = new TH1D("hExEt_Y2_a5Ligs_C3","hExEt_Y2_a5Ligs_C3",100, 0, 1);
+			TH1D *hEyEt_Y2_a5Ligs_C3 = new TH1D("hEyEt_Y2_a5Ligs_C3", "hEyEt_Y2_a5Ligs_C3", 100, 0, 1);
+			TH2D *hExEt_CosThetaK_Y2_a5Ligs_C3 = new TH2D("hExEt_CosThetaK_Y2_a5Ligs_C3","hExEt_CosThetaK_Y2_a5Ligs_C3",200,-1,1,100,0,1);
+			TH2D *hEyEt_CosThetaK_Y2_a5Ligs_C3 = new TH2D("hEyEt_CosThetaK_Y2_a5Ligs_C3","hEyEt_CosThetaK_Y2_a5Ligs_C3",200,-1,1,100,0,1);
+			TH2D *hExEt_Et_Y2_a5Ligs_C3 = new TH2D("hExEt_Et_Y2_a5Ligs_C3", "hExEt_Et_Y2_a5Ligs_C3", 1000, 0, 10, 100, 0, 1);
+			TH2D *hExSPS_ExEt_Y2_a5Ligs_C3 = new TH2D("hExSPS_ExEt_Y2_a5Ligs_C3","hExSPS_ExEt_Y2_a5Ligs_C3",100,0,1,1400,0,7);
+
 	//prep directories:
 	TDirectory *a5Ligs = outfile->mkdir("a5Ligs");
 	TDirectory *a5Ligs_1 = a5Ligs->mkdir("a5Ligs_1sig");
 	TDirectory *a5Ligs_2 = a5Ligs->mkdir("a5Ligs_2sig");
 	TDirectory *a5Ligs_3 = a5Ligs->mkdir("a5Ligs_3sig");
+	TDirectory *a5Ligs_C1 = a5Ligs->mkdir("a5Ligs_C1");
+	TDirectory *a5Ligs_C2 = a5Ligs->mkdir("a5Ligs_C2");
+	TDirectory *a5Ligs_C3 = a5Ligs->mkdir("a5Ligs_C3");
 
 	hDalitzInvMass_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hDalitzInvMass_a5Ligs_2->SetDirectory(a5Ligs_2);
 	hDalitzInvMass_a5Ligs_3->SetDirectory(a5Ligs_3);
+	hDalitzInvMass_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hDalitzInvMass_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hDalitzInvMass_a5Ligs_C3->SetDirectory(a5Ligs_C3);
 
 	hSABREsumE_vs_ExSPS_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hSABREsumE_vs_ExSPS_a5Ligs_2->SetDirectory(a5Ligs_2);
 	hSABREsumE_vs_ExSPS_a5Ligs_3->SetDirectory(a5Ligs_3);
+	hSABREsumE_vs_ExSPS_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hSABREsumE_vs_ExSPS_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hSABREsumE_vs_ExSPS_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+
+	h_zscore_p8Be0plus_C1->SetDirectory(a5Ligs_C1);
+	h_zscore_p8Be2plus_C1->SetDirectory(a5Ligs_C1);
+	h_zscore_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	h2_zscore_a5Ligs_vs_p8Be0plus_C1->SetDirectory(a5Ligs_C1);
+	h2_zscore_a5Ligs_vs_p8Be2plus_C1->SetDirectory(a5Ligs_C1);
+	h_zscore_p8Be0plus_C2->SetDirectory(a5Ligs_C2);
+	h_zscore_p8Be2plus_C2->SetDirectory(a5Ligs_C2);
+	h_zscore_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	h2_zscore_a5Ligs_vs_p8Be0plus_C2->SetDirectory(a5Ligs_C2);
+	h2_zscore_a5Ligs_vs_p8Be2plus_C2->SetDirectory(a5Ligs_C2);
+	h_zscore_p8Be0plus_C3->SetDirectory(a5Ligs_C3);
+	h_zscore_p8Be2plus_C3->SetDirectory(a5Ligs_C3);
+	h_zscore_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	h2_zscore_a5Ligs_vs_p8Be0plus_C3->SetDirectory(a5Ligs_C3);
+	h2_zscore_a5Ligs_vs_p8Be2plus_C3->SetDirectory(a5Ligs_C3);
 
 	hExSPS_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hRecEx_a5Ligs_1->SetDirectory(a5Ligs_1);
@@ -733,6 +1247,9 @@ void DalitzRegions(TTree *tree){
 	hExSPS_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hRecEx_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hRecEx_VS_ExSPS_a5Ligs_3->SetDirectory(a5Ligs_3);
+	hExSPS_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hRecEx_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hRecEx_VS_ExSPS_a5Ligs_C3->SetDirectory(a5Ligs_C3);
 
 	hCosThetaK_T_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hExEt_T_a5Ligs_1->SetDirectory(a5Ligs_1);
@@ -758,6 +1275,30 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_T_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hExSPS_ExEt_T_a5Ligs_3->SetDirectory(a5Ligs_3);
 
+	hCosThetaK_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hEyEt_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_CosThetaK_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hEyEt_CosThetaK_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_Et_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExSPS_ExEt_T_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+
+	hCosThetaK_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hEyEt_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_CosThetaK_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hEyEt_CosThetaK_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_Et_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExSPS_ExEt_T_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+
+	hCosThetaK_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hEyEt_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_CosThetaK_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hEyEt_CosThetaK_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_Et_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExSPS_ExEt_T_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+
 	hCosThetaK_Y1_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hExEt_Y1_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hEyEt_Y1_a5Ligs_1->SetDirectory(a5Ligs_1);
@@ -782,6 +1323,30 @@ void DalitzRegions(TTree *tree){
 	hExEt_Et_Y1_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hExSPS_ExEt_Y1_a5Ligs_3->SetDirectory(a5Ligs_3);
 
+	hCosThetaK_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hEyEt_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_CosThetaK_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hEyEt_CosThetaK_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_Et_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExSPS_ExEt_Y1_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+
+	hCosThetaK_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hEyEt_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_CosThetaK_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hEyEt_CosThetaK_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_Et_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExSPS_ExEt_Y1_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+
+	hCosThetaK_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hEyEt_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_CosThetaK_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hEyEt_CosThetaK_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_Et_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExSPS_ExEt_Y1_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+
 	hCosThetaK_Y2_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hExEt_Y2_a5Ligs_1->SetDirectory(a5Ligs_1);
 	hEyEt_Y2_a5Ligs_1->SetDirectory(a5Ligs_1);
@@ -805,6 +1370,30 @@ void DalitzRegions(TTree *tree){
 	hEyEt_CosThetaK_Y2_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hExEt_Et_Y2_a5Ligs_3->SetDirectory(a5Ligs_3);
 	hExSPS_ExEt_Y2_a5Ligs_3->SetDirectory(a5Ligs_3);
+
+	hCosThetaK_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hEyEt_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_CosThetaK_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hEyEt_CosThetaK_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExEt_Et_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+	hExSPS_ExEt_Y2_a5Ligs_C1->SetDirectory(a5Ligs_C1);
+
+	hCosThetaK_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hEyEt_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_CosThetaK_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hEyEt_CosThetaK_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExEt_Et_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+	hExSPS_ExEt_Y2_a5Ligs_C2->SetDirectory(a5Ligs_C2);
+
+	hCosThetaK_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hEyEt_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_CosThetaK_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hEyEt_CosThetaK_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExEt_Et_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
+	hExSPS_ExEt_Y2_a5Ligs_C3->SetDirectory(a5Ligs_C3);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -849,6 +1438,8 @@ void DalitzRegions(TTree *tree){
 				TH2D *hEyEt_CosThetaK_Y2_none = new TH2D("hEyEt_CosThetaK_Y2_none","hEyEt_CosThetaK_Y2_none",200,-1,1,100,0,1);
 				TH2D *hExEt_Et_Y2_none = new TH2D("hExEt_Et_Y2_none", "hExEt_Et_Y2_none", 1000, 0, 10, 100, 0, 1);
 				TH2D *hExSPS_ExEt_Y2_none = new TH2D("hExSPS_ExEt_Y2_none","hExSPS_ExEt_Y2_none",100,0,1,1400,0,7);
+
+
 
 	//prep directories:
 	TDirectory *none = outfile->mkdir("none");
@@ -922,6 +1513,28 @@ void DalitzRegions(TTree *tree){
 	//iterate through TTree entries:
 	//std::cout << "about to enter loop" << std::endl;
 	while(reader.Next()){
+
+		//update outtree variables:
+		tree_m2_aa = *m2_aa;
+		tree_m2_pa1 = *m2_pa1;
+		tree_m2_pa2 = *m2_pa2;
+		tree_ExSPS = *ExSPS;
+		tree_RecEx = *RecEx;
+		tree_SABREsumE = *SABREsumE;
+		tree_E_xT = *E_xT;
+		tree_E_yT = *E_yT;
+		tree_E_Txy_T = *E_Txy_T;
+		tree_costhetakT = *costhetakT;
+		tree_E_xY1 = *E_xY1;
+		tree_E_yY1 = *E_yY1;
+		tree_E_Txy_Y1 = *E_Txy_Y1;
+		tree_costhetakY1 = *costhetakY1;
+		tree_E_xY2 = *E_xY2;
+		tree_E_yY2 = *E_yY2;
+		tree_E_Txy_Y2 = *E_Txy_Y2;
+		tree_costhetakY2 = *costhetakY2;
+		tree_E_TIM = *E_TIM;
+
 		//std::cout << "entry = " << reader.GetCurrentEntry() << std::endl;
 		// std::cout << "m2_aa status: " << m2_aa.GetSetupStatus() << std::endl;
 		// std::cout << "m2_pa1 status: " << m2_pa1.GetSetupStatus() << std::endl;
@@ -1005,17 +1618,48 @@ void DalitzRegions(TTree *tree){
 		p8Be0plus_sig1_check = IsInside(*m2_aa, p8Be0plus_sig1);
 		p8Be0plus_sig2_check = IsInside(*m2_aa, p8Be0plus_sig2);
 		p8Be0plus_sig3_check = IsInside(*m2_aa, p8Be0plus_sig3);
+		p8Be0plus_A1_check = (IsInside(*m2_aa, p8Be0plus_sig1) && (*m2_pa1 < B9_alphathresh_IM2 || *m2_pa2 < B9_alphathresh_IM2));
+		p8Be0plus_A2_check = (IsInside(*m2_aa, p8Be0plus_sig1) && (*m2_pa1 > a5Ligs_sig3.second || *m2_pa2 > a5Ligs_sig3.second));
 		//std::cout << "p+8Be(0+) check (1/2/3): " << p8Be0plus_sig1_check << ", " << p8Be0plus_sig2_check << ", " << p8Be0plus_sig3_check << std::endl;
 
 		p8Be2plus_sig1_check = IsInside(*m2_aa, p8Be2plus_sig1);
 		p8Be2plus_sig2_check = IsInside(*m2_aa, p8Be2plus_sig2);
 		p8Be2plus_sig3_check = IsInside(*m2_aa, p8Be2plus_sig3);
+		p8Be2plus_B1_check = (IsInside(*m2_aa, p8Be2plus_sig2) && (*m2_pa1 < B9_alphathresh_IM2 || *m2_pa2 < B9_alphathresh_IM2));
+		p8Be2plus_B2_check = (IsInside(*m2_aa, p8Be2plus_sig2) && (*m2_pa1 > a5Ligs_sig3.second || *m2_pa2 > a5Ligs_sig3.second));
 		//std::cout << "p+8Be(2+) check (1/2/3): " << p8Be2plus_sig1_check << ", " << p8Be2plus_sig2_check << ", " << p8Be2plus_sig3_check << std::endl;
 
 		a5Ligs_sig1_check = IsInside(*m2_pa1, a5Ligs_sig1) || IsInside(*m2_pa2, a5Ligs_sig1);
 		a5Ligs_sig2_check = IsInside(*m2_pa1, a5Ligs_sig2) || IsInside(*m2_pa2, a5Ligs_sig2);
 		a5Ligs_sig3_check = IsInside(*m2_pa1, a5Ligs_sig3) || IsInside(*m2_pa2, a5Ligs_sig3);
+		a5Ligs_C1_check = ((IsInside(*m2_pa1, a5Ligs_sig2) || IsInside(*m2_pa2, a5Ligs_sig2)) && *m2_aa < p8Be0plus_sig1.first);
+		a5Ligs_C2_check = ((IsInside(*m2_pa1, a5Ligs_sig2) || IsInside(*m2_pa2, a5Ligs_sig2)) && IsInside(*m2_aa, std::make_pair(p8Be0plus_sig1.second, p8Be2plus_sig2.first))); 
+		a5Ligs_C3_check = ((IsInside(*m2_pa1, a5Ligs_sig2) || IsInside(*m2_pa2, a5Ligs_sig2)) && *m2_aa > p8Be2plus_sig2.second);
 		//std::cout << "a+5Li(gs) check (1/2/3): " << a5Ligs_sig1_check << ", " << a5Ligs_sig2_check << ", " << a5Ligs_sig3_check << std::endl;
+
+		//calculate z-score for each channel:
+		//double zscore_p8Be0plus, zscore_p8Be2plus, zscore_a5Ligs;
+		double zscore_p8Be0plus = (*m2_aa - (p8Be0plus_sig1.second + p8Be0plus_sig1.first)/2.)/((p8Be0plus_sig1.second - p8Be0plus_sig1.first)/2.);
+		double zscore_p8Be2plus = (*m2_aa - (p8Be2plus_sig1.second + p8Be2plus_sig1.first)/2.)/((p8Be2plus_sig1.second - p8Be2plus_sig1.first)/2.);
+		double zscore_a5Ligs_1 = (*m2_pa1 - (a5Ligs_sig1.second + a5Ligs_sig1.first)/2.)/((a5Ligs_sig1.second - a5Ligs_sig1.first)/2.);
+		double zscore_a5Ligs_2 = (*m2_pa2 - (a5Ligs_sig1.second + a5Ligs_sig1.first)/2.)/((a5Ligs_sig1.second - a5Ligs_sig1.first)/2.);
+
+		h_zscore_p8Be0plus->Fill(zscore_p8Be0plus);
+		h_zscore_p8Be2plus->Fill(zscore_p8Be2plus);
+		h_zscore_a5Ligs->Fill(zscore_a5Ligs_1);
+		h_zscore_a5Ligs->Fill(zscore_a5Ligs_2);
+
+		h2_zscore_a5Ligs_vs_p8Be0plus->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+		h2_zscore_a5Ligs_vs_p8Be0plus->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+
+		h2_zscore_a5Ligs_vs_p8Be2plus->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+		h2_zscore_a5Ligs_vs_p8Be2plus->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+
+		//update tree zscore variables:
+		tree_zscore_a5Ligs_1 = zscore_a5Ligs_1;
+		tree_zscore_a5Ligs_2 = zscore_a5Ligs_2;
+		tree_zscore_p8Be0plus = zscore_p8Be0plus;
+		tree_zscore_p8Be2plus = zscore_p8Be2plus;
 
 		int p8Be0plus_sigmaNum = -1, p8Be2plus_sigmaNum = -1, a5Ligs_sigmaNum = -1;
 
@@ -1166,6 +1810,95 @@ void DalitzRegions(TTree *tree){
 			hExSPS_ExEt_Y2_p8Be0_3->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
 		}
 
+		if(p8Be0plus_A1_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_p8Be0_A1->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_p8Be0_A1->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_p8Be0_A1->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_p8Be0_A1->Fill(*ExSPS);
+			hRecEx_p8Be0_A1->Fill(*RecEx);
+			hRecEx_VS_ExSPS_p8Be0_A1->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_p8Be0_A1->Fill(*costhetakT);
+			hExEt_T_p8Be0_A1->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_p8Be0_A1->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_p8Be0_A1->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_p8Be0_A1->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_p8Be0_A1->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_p8Be0_A1->Fill(*ExSPS, (*E_xT)/(*E_xT + *E_yT));
+
+			hCosThetaK_Y1_p8Be0_A1->Fill(*costhetakY1);
+			hExEt_Y1_p8Be0_A1->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_p8Be0_A1->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_p8Be0_A1->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_p8Be0_A1->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_p8Be0_A1->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_p8Be0_A1->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_p8Be0_A1->Fill(*costhetakY2);
+			hExEt_Y2_p8Be0_A1->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_p8Be0_A1->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_p8Be0_A1->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_p8Be0_A1->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_p8Be0_A1->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_p8Be0_A1->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_A1->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_A1->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_A1->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_A1->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_A1->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_A1->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_A1->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_A1->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+
+		} else if(p8Be0plus_A2_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_p8Be0_A2->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_p8Be0_A2->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_p8Be0_A2->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_p8Be0_A2->Fill(*ExSPS);
+			hRecEx_p8Be0_A2->Fill(*RecEx);
+			hRecEx_VS_ExSPS_p8Be0_A2->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_p8Be0_A2->Fill(*costhetakT);
+			hExEt_T_p8Be0_A2->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_p8Be0_A2->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_p8Be0_A2->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_p8Be0_A2->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_p8Be0_A2->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_p8Be0_A2->Fill(*ExSPS, (*E_xT)/(*E_xT + *E_yT));
+
+			hCosThetaK_Y1_p8Be0_A2->Fill(*costhetakY1);
+			hExEt_Y1_p8Be0_A2->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_p8Be0_A2->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_p8Be0_A2->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_p8Be0_A2->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_p8Be0_A2->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_p8Be0_A2->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_p8Be0_A2->Fill(*costhetakY2);
+			hExEt_Y2_p8Be0_A2->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_p8Be0_A2->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_p8Be0_A2->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_p8Be0_A2->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_p8Be0_A2->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_p8Be0_A2->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_A2->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_A2->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_A2->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_A2->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_A2->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_A2->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_A2->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_A2->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+		}
+
 		//now, check p+8Be(2+):
 		if(p8Be2plus_sig1_check){
 			//events that are +/- 1 sigma from expected p+8Be(2+) IM2
@@ -1277,6 +2010,94 @@ void DalitzRegions(TTree *tree){
 			hEyEt_CosThetaK_Y2_p8Be2_3->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
 			hExEt_Et_Y2_p8Be2_3->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
 			hExSPS_ExEt_Y2_p8Be2_3->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+		}
+
+		if(p8Be2plus_B1_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_p8Be2_B1->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_p8Be2_B1->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_p8Be2_B1->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_p8Be2_B1->Fill(*ExSPS);
+			hRecEx_p8Be2_B1->Fill(*RecEx);
+			hRecEx_VS_ExSPS_p8Be2_B1->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_p8Be2_B1->Fill(*costhetakT);
+			hExEt_T_p8Be2_B1->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_p8Be2_B1->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_p8Be2_B1->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_p8Be2_B1->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_p8Be2_B1->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_p8Be2_B1->Fill((*E_xT)/(*E_xT + *E_yT), *ExSPS);
+
+			hCosThetaK_Y1_p8Be2_B1->Fill(*costhetakY1);
+			hExEt_Y1_p8Be2_B1->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_p8Be2_B1->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_p8Be2_B1->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_p8Be2_B1->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_p8Be2_B1->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_p8Be2_B1->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_p8Be2_B1->Fill(*costhetakY2);
+			hExEt_Y2_p8Be2_B1->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_p8Be2_B1->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_p8Be2_B1->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_p8Be2_B1->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_p8Be2_B1->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_p8Be2_B1->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_B1->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_B1->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_B1->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_B1->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_B1->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_B1->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_B1->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_B1->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+		} else if(p8Be2plus_B2_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_p8Be2_B2->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_p8Be2_B2->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_p8Be2_B2->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_p8Be2_B2->Fill(*ExSPS);
+			hRecEx_p8Be2_B2->Fill(*RecEx);
+			hRecEx_VS_ExSPS_p8Be2_B2->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_p8Be2_B2->Fill(*costhetakT);
+			hExEt_T_p8Be2_B2->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_p8Be2_B2->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_p8Be2_B2->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_p8Be2_B2->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_p8Be2_B2->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_p8Be2_B2->Fill((*E_xT)/(*E_xT + *E_yT), *ExSPS);
+
+			hCosThetaK_Y1_p8Be2_B2->Fill(*costhetakY1);
+			hExEt_Y1_p8Be2_B2->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_p8Be2_B2->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_p8Be2_B2->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_p8Be2_B2->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_p8Be2_B2->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_p8Be2_B2->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_p8Be2_B2->Fill(*costhetakY2);
+			hExEt_Y2_p8Be2_B2->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_p8Be2_B2->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_p8Be2_B2->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_p8Be2_B2->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_p8Be2_B2->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_p8Be2_B2->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_B2->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_B2->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_B2->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_B2->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_B2->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_B2->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_B2->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_B2->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
 		}
 
 		//finally, check a+5Li(gs):
@@ -1391,6 +2212,138 @@ void DalitzRegions(TTree *tree){
 			hExEt_Et_Y2_a5Ligs_3->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
 			hExSPS_ExEt_Y2_a5Ligs_3->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
 		}
+
+		if(a5Ligs_C1_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_a5Ligs_C1->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_a5Ligs_C1->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_a5Ligs_C1->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_a5Ligs_C1->Fill(*ExSPS);
+			hRecEx_a5Ligs_C1->Fill(*RecEx);
+			hRecEx_VS_ExSPS_a5Ligs_C1->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_a5Ligs_C1->Fill(*costhetakT);
+			hExEt_T_a5Ligs_C1->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_a5Ligs_C1->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_a5Ligs_C1->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_a5Ligs_C1->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_a5Ligs_C1->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_a5Ligs_C1->Fill((*E_xT)/(*E_xT + *E_yT), *ExSPS);
+
+			hCosThetaK_Y1_a5Ligs_C1->Fill(*costhetakY1);
+			hExEt_Y1_a5Ligs_C1->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_a5Ligs_C1->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_a5Ligs_C1->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_a5Ligs_C1->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_a5Ligs_C1->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_a5Ligs_C1->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_a5Ligs_C1->Fill(*costhetakY2);
+			hExEt_Y2_a5Ligs_C1->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_a5Ligs_C1->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_a5Ligs_C1->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_a5Ligs_C1->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_a5Ligs_C1->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_a5Ligs_C1->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_C1->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_C1->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_C1->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_C1->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_C1->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_C1->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_C1->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_C1->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+		} else if(a5Ligs_C2_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_a5Ligs_C2->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_a5Ligs_C2->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_a5Ligs_C2->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_a5Ligs_C2->Fill(*ExSPS);
+			hRecEx_a5Ligs_C2->Fill(*RecEx);
+			hRecEx_VS_ExSPS_a5Ligs_C2->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_a5Ligs_C2->Fill(*costhetakT);
+			hExEt_T_a5Ligs_C2->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_a5Ligs_C2->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_a5Ligs_C2->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_a5Ligs_C2->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_a5Ligs_C2->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_a5Ligs_C2->Fill((*E_xT)/(*E_xT + *E_yT), *ExSPS);
+
+			hCosThetaK_Y1_a5Ligs_C2->Fill(*costhetakY1);
+			hExEt_Y1_a5Ligs_C2->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_a5Ligs_C2->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_a5Ligs_C2->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_a5Ligs_C2->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_a5Ligs_C2->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_a5Ligs_C2->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_a5Ligs_C2->Fill(*costhetakY2);
+			hExEt_Y2_a5Ligs_C2->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_a5Ligs_C2->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_a5Ligs_C2->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_a5Ligs_C2->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_a5Ligs_C2->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_a5Ligs_C2->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_C2->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_C2->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_C2->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_C2->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_C2->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_C2->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_C2->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_C2->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+		} else if(a5Ligs_C3_check){
+			//first, fill the cumulative histograms:
+			hDalitzInvMass_a5Ligs_C3->Fill(*m2_aa, *m2_pa1);
+			hDalitzInvMass_a5Ligs_C3->Fill(*m2_aa, *m2_pa2);
+
+			hSABREsumE_vs_ExSPS_a5Ligs_C3->Fill(*ExSPS, *SABREsumE);
+
+			hExSPS_a5Ligs_C3->Fill(*ExSPS);
+			hRecEx_a5Ligs_C3->Fill(*RecEx);
+			hRecEx_VS_ExSPS_a5Ligs_C3->Fill(*ExSPS, *RecEx);
+		
+			hCosThetaK_T_a5Ligs_C3->Fill(*costhetakT);
+			hExEt_T_a5Ligs_C3->Fill((*E_xT)/(*E_xT + *E_yT));
+			hEyEt_T_a5Ligs_C3->Fill((*E_yT)/(*E_xT + *E_yT));
+			hExEt_CosThetaK_T_a5Ligs_C3->Fill(*costhetakT, (*E_xT)/(*E_xT + *E_yT));
+			hEyEt_CosThetaK_T_a5Ligs_C3->Fill(*costhetakT, (*E_yT)/(*E_xT + *E_yT));
+			hExEt_Et_T_a5Ligs_C3->Fill((*E_xT + *E_yT), (*E_xT)/(*E_xT + *E_yT));
+			hExSPS_ExEt_T_a5Ligs_C3->Fill((*E_xT)/(*E_xT + *E_yT), *ExSPS);
+
+			hCosThetaK_Y1_a5Ligs_C3->Fill(*costhetakY1);
+			hExEt_Y1_a5Ligs_C3->Fill((*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_Y1_a5Ligs_C3->Fill((*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_CosThetaK_Y1_a5Ligs_C3->Fill(*costhetakY1, (*E_xY1)/(*E_xY1 + *E_yY1));
+			hEyEt_CosThetaK_Y1_a5Ligs_C3->Fill(*costhetakY1, (*E_yY1)/(*E_xY1 + *E_yY1));
+			hExEt_Et_Y1_a5Ligs_C3->Fill((*E_xY1 + *E_yY1), (*E_xY1)/(*E_xY1 + *E_yY1));
+			hExSPS_ExEt_Y1_a5Ligs_C3->Fill((*E_xY1)/(*E_xY1 + *E_yY1), *ExSPS);
+
+			hCosThetaK_Y2_a5Ligs_C3->Fill(*costhetakY2);
+			hExEt_Y2_a5Ligs_C3->Fill((*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_Y2_a5Ligs_C3->Fill((*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_CosThetaK_Y2_a5Ligs_C3->Fill(*costhetakY2, (*E_xY2)/(*E_xY2 + *E_yY2));
+			hEyEt_CosThetaK_Y2_a5Ligs_C3->Fill(*costhetakY2, (*E_yY2)/(*E_xY2 + *E_yY2));
+			hExEt_Et_Y2_a5Ligs_C3->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
+			hExSPS_ExEt_Y2_a5Ligs_C3->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
+
+			h_zscore_p8Be0plus_C3->Fill(zscore_p8Be0plus);
+			h_zscore_p8Be2plus_C3->Fill(zscore_p8Be2plus);
+			h_zscore_a5Ligs_C3->Fill(zscore_a5Ligs_1);
+			h_zscore_a5Ligs_C3->Fill(zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be0plus_C3->Fill(zscore_p8Be0plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be0plus_C3->Fill(zscore_p8Be0plus, zscore_a5Ligs_2);
+			h2_zscore_a5Ligs_vs_p8Be2plus_C3->Fill(zscore_p8Be2plus, zscore_a5Ligs_1);
+			h2_zscore_a5Ligs_vs_p8Be2plus_C3->Fill(zscore_p8Be2plus, zscore_a5Ligs_2);
+		}
+
 			//inconcistent events:
 		if(!p8Be0plus_sig1_check && !p8Be0plus_sig2_check && !p8Be0plus_sig3_check &&
 		   !p8Be2plus_sig1_check && !p8Be2plus_sig2_check && !p8Be2plus_sig3_check &&
@@ -1431,6 +2384,9 @@ void DalitzRegions(TTree *tree){
 			hExEt_Et_Y2_none->Fill((*E_xY2 + *E_yY2), (*E_xY2)/(*E_xY2 + *E_yY2));
 			hExSPS_ExEt_Y2_none->Fill((*E_xY2)/(*E_xY2 + *E_yY2), *ExSPS);
 		}
+
+		//fill outtree for current entry
+		outtree->Fill();
 
 	}
 	//std::cout << "out of loop" << std::endl;
